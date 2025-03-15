@@ -10,3 +10,11 @@ spec:
   values:
     controller:
       kind: DaemonSet
+      allowSnippetAnnotations: true
+      resources:
+        limits:
+          cpu: 250m
+          memory: 180Mi
+      service:
+        externalIPs:
+          - 10.200.32.1
