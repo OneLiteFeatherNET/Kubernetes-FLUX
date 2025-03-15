@@ -4,7 +4,7 @@ resources:
   - ../../../apps/base/nginx-ingress/
   - ../../../apps/base/reposilite/
   - ../../../apps/base/cert-manager/
-  - cert-manager/issuers.yaml
+  - cert-manager/issuers.yml
 patches:
   - path: nginx/release.yaml
   - path: reposilite/release.yaml
