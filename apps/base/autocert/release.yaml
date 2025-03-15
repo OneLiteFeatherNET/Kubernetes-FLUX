@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: autocert
+  namespace: autocert
+spec:
+  releaseName: autocert
+  chart:
+    spec:
+      chart: autocert
+      sourceRef:
+        kind: HelmRepository
+        name: smallstep
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  #
+  values: {}
