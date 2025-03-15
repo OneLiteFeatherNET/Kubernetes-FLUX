@@ -1,0 +1,43 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cert-manager
+  namespace: cert-manager
+spec:
+  chart:
+    spec:
+      version: ">=1.14.4"
+  values:
+    crds:
+      enabled: true
+    #global:
+    #   priorityClassName: system-cluster-critical
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+    resources:
+      limits:
+        cpu: "10m"
+        memory: "40Mi"
+      requests:
+        cpu: "5m"
+        memory: "32Mi"
+    webhook:
+      resources:
+        limits:
+          cpu: "5m"
+          memory: "15Mi"
+        requests:
+          cpu: "3m"
+          memory: "15Mi"
+    cainjector:
+      resources:
+        limits:
+          cpu: "50m"
+          memory: "100Mi"
+        requests:
+          cpu: "30m"
+          memory: "50Mi"
+

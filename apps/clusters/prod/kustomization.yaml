@@ -3,8 +3,11 @@ kind: Kustomization
 resources:
   - ../../../apps/base/nginx-ingress/
   - ../../../apps/base/reposilite/
+  - ../../../apps/base/cert-manager/
+  - cert-manager/issuers.yaml
 patches:
   - path: nginx/release.yaml
   - path: reposilite/release.yaml
+  - path: cert-manager/release.yaml
 
 
