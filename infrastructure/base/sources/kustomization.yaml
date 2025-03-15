@@ -5,3 +5,4 @@ resources:
   - nginx.yml
   - reposilite.yml
   - jetstack.yml
+  - smallstep.yml
