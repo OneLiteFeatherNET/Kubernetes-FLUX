@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: step-ca
+  namespace: step-ca
+spec:
+  releaseName: step-ca
+  chart:
+    spec:
+      chart: step-certificates
+      sourceRef:
+        kind: HelmRepository
+        name: step-certificates
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  # https://github.com/smallstep/helm-charts/blob/master/step-certificates/values.yaml
+  values: {}

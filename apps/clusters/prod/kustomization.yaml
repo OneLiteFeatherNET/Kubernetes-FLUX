@@ -5,6 +5,7 @@ resources:
   - ../../../apps/base/reposilite/
   - ../../../apps/base/cert-manager/
   - ../../../apps/base/autocert/
+  - ../../../apps/base/step-certificates/
 #  - cert-manager/issuers.yml
 patches:
   - path: nginx/release.yaml

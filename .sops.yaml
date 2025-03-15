@@ -1,4 +1,7 @@
 creation_rules:
+  - path_regex: apps/clusters/prod/step-certificates/release.yaml
+    encrypted_regex: ^(ca_password|provisioner_password)$
+    pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
   - path_regex: .*.yaml
     encrypted_regex: ^(data|stringData)$
     pgp: 0231831CB40B8E587B7353CBA3AF727721205A62

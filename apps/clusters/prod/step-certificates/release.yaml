@@ -1,0 +1,154 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+    name: step-ca
+    namespace: step-ca
+spec:
+    chart:
+        spec:
+            version: '>=1.28.2'
+    values:
+        # Helm template
+        inject:
+            enabled: true
+            # Config contains the configuration files ca.json and defaults.json
+            config:
+                files:
+                    ca.json:
+                        root: /home/step/certs/root_ca.crt
+                        federateRoots: []
+                        crt: /home/step/certs/intermediate_ca.crt
+                        key: /home/step/secrets/intermediate_ca_key
+                        address: :443
+                        dnsNames:
+                            - ca.apps.onelite.feather
+                            - 10.200.32.1
+                        logger:
+                            format: json
+                        db:
+                            type: badgerv2
+                            dataSource: /home/step/db
+                        authority:
+                            enableAdmin: false
+                            provisioners:
+                                - type: JWK
+                                  name: admin@onelitefeather.net
+                                  key:
+                                    use: sig
+                                    kty: EC
+                                    kid: OiMo753Qm59HojYUS-ba3w7OdmYnsDsfClv7PR3dh_A
+                                    crv: P-256
+                                    alg: ES256
+                                    x: QeFA1tBy7Jjw04gy0fLlukrePbhXYjhG01D44wJU5Z8
+                                    "y": 5jsme3MU8W82RIh816nYFq1B0_YzTiHRVw1XVTt1DNg
+                                  encryptedKey: eyJhbGciOiJQQkVTMi1IUzI1NitBMTI4S1ciLCJjdHkiOiJqd2sranNvbiIsImVuYyI6IkEyNTZHQ00iLCJwMmMiOjYwMDAwMCwicDJzIjoiNW9paDNrUTBLWU1zMFVIN1FfNUpwQSJ9.7MdlmojjtqgTYiDo1_7nxlkkMXsBRsiAyJPYbGeNKZ4kYw3iuVZjTA.zmxMBglHQqcJ9j0v.u8hF1_zCme3dqW_W9A8VY1n5Zp-cpkGilnAsN-9lVAqrEqtw1L1zXvihLXj81bptyuaZXuYWOANboK7HyXP8KR1XVTbsPjlxZa-tbyogVncOBvHLkjU-LQipemr4z7TTd2pa4JMpwtl8ackT8P2hmHRxhybH4QYKlEZxQO7AXulqopJvO5vZi-jUiJ51O2vLh33neWYdcMIN-qPy-wogc4PQj8KCKtTOivPTxUIlhZ8C41ZU1KYlyVr818NLZLG-X2XKs_1tqokhp51O_Of7vNVaDQThMWFR9vkS8AoNSp3ss8HB6oXE2JGUIpCHpeihF_95HosicAyqwMysVIs.Qdbv7zVc8t2DNzlG37nvHg
+                                  options:
+                                    x509: {}
+                                    ssh: {}
+                        tls:
+                            cipherSuites:
+                                - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+                                - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+                            minVersion: 1.2
+                            maxVersion: 1.3
+                            renegotiation: false
+                    defaults.json:
+                        ca-url: https://ca.apps.onelite.feather
+                        ca-config: /home/step/config/ca.json
+                        fingerprint: 8ed13e459b5fb22df3caa5f99f4c19d9b40a4685436236e8a5609e61ed1a190e
+                        root: /home/step/certs/root_ca.crt
+            # Certificates contains the root and intermediate certificate and
+            # optionally the SSH host and user public keys
+            certificates:
+                # intermediate_ca contains the text of the intermediate CA Certificate
+                intermediate_ca: |
+                    -----BEGIN CERTIFICATE-----
+                    MIIB7TCCAZOgAwIBAgIRALh56v+dmGiC4JuVSuoMnykwCgYIKoZIzj0EAwIwQDEa
+                    MBgGA1UEChMRT25lTGl0ZUZlYXRoZXIgQ0ExIjAgBgNVBAMTGU9uZUxpdGVGZWF0
+                    aGVyIENBIFJvb3QgQ0EwHhcNMjUwMzE1MjAyMjE3WhcNMzUwMzEzMjAyMjE3WjBI
+                    MRowGAYDVQQKExFPbmVMaXRlRmVhdGhlciBDQTEqMCgGA1UEAxMhT25lTGl0ZUZl
+                    YXRoZXIgQ0EgSW50ZXJtZWRpYXRlIENBMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD
+                    QgAEEk/dvCXaMdLicArKIE0vk8nW7eW5hW/HhAoM13K/vG5vVqylKc8L+jE1bRxK
+                    y76LGEuEzt9G++/ZW9KfQNffhKNmMGQwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB
+                    /wQIMAYBAf8CAQAwHQYDVR0OBBYEFEdca3s2HmZUPzk2A/bgnnACPUw6MB8GA1Ud
+                    IwQYMBaAFGg5g8JjAFjpHcNDV4EXvCf1j/+tMAoGCCqGSM49BAMCA0gAMEUCIQDs
+                    jCehbP1Q9mzF6aSikUUJmpvrZeWbuUyHO0kUGEsEQAIgOZgCbif7WLyl66fPaly7
+                    v7s0wKAgsQSbTYZnxhTrAVg=
+                    -----END CERTIFICATE-----
+                # root_ca contains the text of the root CA Certificate
+                root_ca: |
+                    -----BEGIN CERTIFICATE-----
+                    MIIBwjCCAWmgAwIBAgIQYxIjeKsPaPwVGMfUH++FlDAKBggqhkjOPQQDAjBAMRow
+                    GAYDVQQKExFPbmVMaXRlRmVhdGhlciBDQTEiMCAGA1UEAxMZT25lTGl0ZUZlYXRo
+                    ZXIgQ0EgUm9vdCBDQTAeFw0yNTAzMTUyMDIyMTZaFw0zNTAzMTMyMDIyMTZaMEAx
+                    GjAYBgNVBAoTEU9uZUxpdGVGZWF0aGVyIENBMSIwIAYDVQQDExlPbmVMaXRlRmVh
+                    dGhlciBDQSBSb290IENBMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmouTyyOr
+                    kBGqscprzWxpCNlijTqN9q4asUPLBJsueFv8mNjOUrZ1+gMbM869MCxKzvhFWzQh
+                    wDS+7wqUtocFDqNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYBAf8C
+                    AQEwHQYDVR0OBBYEFGg5g8JjAFjpHcNDV4EXvCf1j/+tMAoGCCqGSM49BAMCA0cA
+                    MEQCICmm1OatTX5epT3+pkNt/GLMt0sAwTTIdIVE2agDnor4AiAVMzFjncqWF2lD
+                    2hj8FAI7W1X78F14OCgFirKd/Gg8Nw==
+                    -----END CERTIFICATE-----
+            # Secrets contains the root and intermediate keys and optionally the SSH
+            # private keys
+            secrets:
+                # ca_password contains the password used to encrypt x509.intermediate_ca_key, ssh.host_ca_key and ssh.user_ca_key
+                # This value must be base64 encoded.
+                ca_password: ENC[AES256_GCM,data:M5hlhS/LaGqmHAugmsSB/F7Ip4nSEFAGC66eWY59DPQ=,iv:9vJoXty1xU00M6kMfJJeWFvqXUGN9QVPT8r0AV7cUo0=,tag:drtD/bqfNH6skS5qhD3ssA==,type:str]
+                provisioner_password: ENC[AES256_GCM,data:Ji8QmUudfsDrWqturmlacmdMbWnstLUDo3/cR/0qjVw=,iv:Q9OWI34s8vZR0XYAaOMtiBOrTiur9edizLqtckCj16Y=,tag:HYfAopGTR5e0sBklSKFA0g==,type:str]
+                x509:
+                    # intermediate_ca_key contains the contents of your encrypted intermediate CA key
+                    intermediate_ca_key: |
+                        -----BEGIN EC PRIVATE KEY-----
+                        Proc-Type: 4,ENCRYPTED
+                        DEK-Info: AES-256-CBC,02342853dad2ef881efe2a521a164158
+
+                        73joWQ358Iaj6NkswFuQejNUhGloBeMaX89w2t+x537sa1ByMNfU90ucFxSCAjdA
+                        /v1G5Z/bzylz+86gpOC7voGiVvA5RRGPyIwBrzT5R2nHmE/Jc3z6LRQtaQAOv9g/
+                        nrxgToduSlYl/Yo8/c4LBTU4l8+GWlHExh9E23I0wpM=
+                        -----END EC PRIVATE KEY-----
+                    # root_ca_key contains the contents of your encrypted root CA key
+                    # Note that this value can be omitted without impacting the functionality of step-certificates
+                    # If supplied, this should be encrypted using a unique password that is not used for encrypting
+                    # the intermediate_ca_key, ssh.host_ca_key or ssh.user_ca_key.
+                    root_ca_key: |
+                        -----BEGIN EC PRIVATE KEY-----
+                        Proc-Type: 4,ENCRYPTED
+                        DEK-Info: AES-256-CBC,a117345b3c4d5978ffe7df022ff7c349
+
+                        1Bzok5CPyWirAu8pwiEfi67JVDNQ8j6KT6EclEgYbG8PH3Xu2EWJVnyhcpZ2IjhD
+                        U0iSPeLaGC9V8J+1yPejQhltGWoQFptFhg+Le9znVWYcRYArhsvAB6tIJmul0EL7
+                        KiJYm+tc/+d6qgbQ9HTS7tMVW7ft9/XtnB4iG3POT9E=
+                        -----END EC PRIVATE KEY-----
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2025-03-15T20:25:58Z"
+    mac: ENC[AES256_GCM,data:o1EvhLyJE0prWsChzjgQhrdvn0xb6jSjcxn4cEY+Cb+E71QSa60SgmMGQUwaxzF3RvGI/OKdwmEUy7fmNCXXhuGsNCGMC7NfYnZyGXQ/oz3rh8YPBrw53rYTfJV8ZDNqP2p1ECB5hr9DBr7BP+jVkknXUgagCRJhPCSuAyXpRFY=,iv:TzDIUr38xw8b+iqm8EcBUeU9kdoBDZHldMCxb/0YCRY=,tag:trglrPdOrOUTtLrr+ivUgw==,type:str]
+    pgp:
+        - created_at: "2025-03-15T20:25:58Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAwWbRp0WX+I4AQ//Rtz6fC0JSfdOFpqF/3SRFYqXbzyvAZnmyJ6FIPwmwg7a
+            YtTQ/Slgc941KbHXhFccBtisBP6Ea87ivDXx9HohTynj3fPNH05t3ckDeUCtpiSc
+            /3HqxsZLDXVvaBvUuJAvi1S/+BPcARXmQNRA8PtsDxnxgJgKERqMH61wSBbX7VVH
+            qQPEAeliZNGSGlGxDTOZoT6Gpq+3a8U2Pp1Na/xe+HVgoT+TNWBXiCGvWeg4eJ1A
+            llCaSG1F5jR1HvUHALKImKN1qhtuAvD5RDb8cPpHkspmvmwrCfnM6ucQccgZYFdL
+            plP281ik8vflDNDD5wLZmzzLWy2r20kxFwozGk1dv0sIFrn9KsZpwUhW3Wo4yM6H
+            G1hrYvY9qnbLmHoEUKsZMvg2tfd4NbZ0rHVj99DkpcJfH24dr9RQEAGIYSmtfP49
+            uNti+D1CPniqANQRv/eoLufvxO2ldajoCWsXv5S5olbx+9JXWpc9FWuysgjkT9l3
+            t7GMKlUnI585HifetFluK3iM6z+LO5WU4FkG9Epez0CrIce5IJ4LOjL+nBBfq/Af
+            lupNh250zwSzjxEijiP6ZMeb3VcAXYbm3a1kRxY793gnDB2a6b6y+fOkGF8Y/W6M
+            +yWJZzso9iKETn/d0mq++oWlzl4d2NXPApfdCU5o2MqUkpLzAtW+bxXi0gD8xv/U
+            aAEJAhBgflc1tgrBkIr8qR8fKpgoDVkyN/0tWSCvTecT0K4OQEYXUL/9QKtTxFjF
+            b3JeQF8WRig2y+rvcR4hZHBuSuXs/PUoZ1sMrLxebkATJ4GZ3Bz/uCsphF+Z1HuT
+            y+Or4kg+mkfm
+            =J73B
+            -----END PGP MESSAGE-----
+          fp: 0231831CB40B8E587B7353CBA3AF727721205A62
+    encrypted_regex: ^(ca_password|provisioner_password)$
+    version: 3.9.4
