@@ -13,8 +13,8 @@ spec:
     ingress:
       enabled: true
       className: ""
-      annotations: { }
-      # kubernetes.io/ingress.class: nginx
+      annotations:
+        kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
       hosts:
         - host: reposilite.apps.onelite.feather
