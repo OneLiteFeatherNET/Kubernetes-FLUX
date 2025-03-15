@@ -23,5 +23,6 @@ metadata:
   name: service-ad
   namespace: metallb-system
 spec:
+  aggregationLength: 32
   ipAddressPools:
     - service-pool
