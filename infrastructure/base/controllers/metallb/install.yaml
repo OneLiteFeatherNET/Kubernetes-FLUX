@@ -1,0 +1,5 @@
+# kustomization.yml
+namespace: metallb-system
+
+resources:
+  - github.com/metallb/metallb/config/frr?ref=v0.14.9
