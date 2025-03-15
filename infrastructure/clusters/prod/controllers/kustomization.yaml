@@ -3,3 +3,6 @@ kind: Kustomization
 resources:
   - ../../../../infrastructure/base/controllers/metallb
   - ../../../../infrastructure/base/controllers/proxmox-csi
+  - ../../../../infrastructure/base/controllers/cert-manager
+patches:
+  - path: cert-manager/release.yaml
