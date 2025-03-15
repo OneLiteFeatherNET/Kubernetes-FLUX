@@ -18,3 +18,5 @@ spec:
     - name: infra-configs
   decryption:
     provider: sops
+    secretRef:
+      name: sops-gpg

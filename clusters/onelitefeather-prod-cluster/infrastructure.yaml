@@ -16,6 +16,8 @@ spec:
   wait: true
   decryption:
     provider: sops
+    secretRef:
+      name: sops-gpg
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -36,6 +38,8 @@ spec:
   wait: true
   decryption:
     provider: sops
+    secretRef:
+      name: sops-gpg
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -57,3 +61,5 @@ spec:
   wait: true
   decryption:
     provider: sops
+    secretRef:
+      name: sops-gpg
