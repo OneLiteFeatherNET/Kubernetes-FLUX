@@ -16,3 +16,5 @@ spec:
     - name: infra-sources
     - name: infra-controllers
     - name: infra-configs
+  decryption:
+    provider: sops
