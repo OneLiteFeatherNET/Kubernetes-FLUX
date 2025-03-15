@@ -4,14 +4,12 @@ metadata:
   name: proxmox-csi
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-allowVolumeExpansion: true
 parameters:
   csi.storage.k8s.io/fstype: ext4
   storage: local-lvm
   cache: writethrough
   ssd: "true"
-mountOptions:
-  - noatime
 provisioner: csi.proxmox.sinextra.dev
-reclaimPolicy: Retain
+allowVolumeExpansion: true
+reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
