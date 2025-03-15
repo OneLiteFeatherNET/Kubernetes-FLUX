@@ -17,7 +17,7 @@ spec:
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
       hosts:
-        - host: reposilite.onelite.feather
+        - host: reposilite.apps.onelite.feather
           paths:
             - path: /
               pathType: Prefix
