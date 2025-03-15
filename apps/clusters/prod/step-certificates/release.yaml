@@ -118,44 +118,44 @@ spec:
             secrets:
                 # ca_password contains the password used to encrypt x509.intermediate_ca_key, ssh.host_ca_key and ssh.user_ca_key
                 # This value must be base64 encoded.
-                ca_password: ENC[AES256_GCM,data:pZ6EC+7MPRKWBsZBfrU12BqVnuXvFblvOq/JQTI3+GI=,iv:7HWqSysYJu+ZvVdeCOrUvgqIxWabp7tpiYSvUF032lQ=,tag:X4qB6Y07qFiGm522xKrdag==,type:str]
-                provisioner_password: ENC[AES256_GCM,data:Ky5YoJYE87FEOVqGcRf7l2pmOykA2TP192/3ymf4ooA=,iv:Lh9MKUCkeGIdQnjNRdTZUn3j3pk/xJKpM+jAMiTix+Y=,tag:6enLAlUwEBlEPtHKoHIwMA==,type:str]
+                ca_password: ENC[AES256_GCM,data:OAVgGdoQ09c8OaEBkDkDpnHTPcGrYnqrRDSWw2M+DNyfqNGTOWc3ppjwfxQ=,iv:wkvp5DPzHySmR47Nnf/3+G0CupfyQgjpkKi0EUSs8gs=,tag:D7oQVmMWOQe/piB6nAc1xQ==,type:str]
+                provisioner_password: ENC[AES256_GCM,data:KpNrHjIcWutPLD/APP4v98fkqbxtWDXuv074uJp+L04IUBvo04vm0TbvFUg=,iv:YzdaSljK3eeUc3+aeL2J4VO3eJuxui8lvhDNGaBUmQM=,tag:XZUcCYYarOtxrEBEi/cu/g==,type:str]
                 x509:
                     # intermediate_ca_key contains the contents of your encrypted intermediate CA key
-                    intermediate_ca_key: ENC[AES256_GCM,data:BVb3bQ3DnKXLiJHI6h1YQCO5mlMJlDWbf4idEH6nZp80ao+prwhAg+352HS5uvwDNw1R9hr1JYdt0tbMmh9BwYmpnm/ZYxk4okGUNUaVlN0M/4voJ6dBkunBi7g5sU2ambi/HDv7CAOs3fC1WqLq5Bhc/JuyJtSCLmQZiS/rWYrqBzO9TWIvmCM2MxC46wQ6bJghr8qVL/8uU4G6JiGLfRj3UZJvWMUCJ+3YPHQCyN9JPGKwGPGyVN/tLmUDExYbxBjlnBpIdXeQjIimvrosfDPaU7Ekr/QAiWx7CW0OeAEBfdUwS8x6IwIoSw4CIafzO7mP6jLtHGR3xCzD4/pNNB+dqJ5G66/nB4aZm5m6JG8YU6DNFdg8OXyj0OMN2Mim77G3rg/oNGZQwugKZodxF5L/ezfxH5SHidw=,iv:EoXqs7HS9e1+dwwvthRPMGh6wtSFrgOW4+MfoETDjqQ=,tag:KEtSYdHcqHCzHdUFGf4XDA==,type:str]
+                    intermediate_ca_key: ENC[AES256_GCM,data:uSi0yvETUK024mwB68j6UfSGsFvk0J2bUj33V4Ia6+vCJThKSkKeKQ9lswwWNRllVTAuVoOejKa1kohMpIBY16yGEM4bEm0ZYG79MV5sZQXDnna53y4bdSStGcXOyQFENKG/xDn1IU5Bjn1CoZXVpGeLELlhmHbK7bri46ivkLVsXIcARHmkdQxlm63xYvtHRXp0I+AH5NnEMCmxHYpsWLQMcy0ZN4Eu6EjzdGL1ISsHrzww18HUfTqii7felLTPTxUGJA1JR4SN4VSPWWbIg7QgJ6Iw5+3/W2AFVJfBphGi7EUA7DXwMz72KtpSR5y6EdrvhPNkzzYmCCYKkELKiL9kLRMPhxzdD1QBaqOCOgwuhL9AbCYGXdrz1VtsLprfKCAyvsy7sMzKRLpyue649iCZPHfmvajkc1k=,iv:JF2imHeMRhaJRDAKArTWrmlT2CC1jXiOYwd97cChLzA=,tag:5BakdMZb2drPmkozjLqGHw==,type:str]
                     # root_ca_key contains the contents of your encrypted root CA key
                     # Note that this value can be omitted without impacting the functionality of step-certificates
                     # If supplied, this should be encrypted using a unique password that is not used for encrypting
                     # the intermediate_ca_key, ssh.host_ca_key or ssh.user_ca_key.
-                    root_ca_key: ENC[AES256_GCM,data:uwMAwqM5lA+8CCnsxU1Q0I9xgU1KILRlXmyBYYdqBJVcB9mTETOXLXbhJ+6c/QrUtcWRUA0GRm9KB+1SJZV0kI4xZPun0ICEGSEFQVNZjNWDRLqGleS0J/+xDQ8YXZEQyu5IJi5L93EGg9uPhcTiJFhB+mWXkNDn8b4gqZiDyGAx8Jn7xwh+gMvV9BKkNjpR2sERVffJRmR2PyC/U0emqpsrIcEzHR4m9gU4CMRUu/hr9v417PoRqFL8BZYJ9+Fh4NafPVKu3+dIgkNuMZggaEaMciWBzQ8LV8n+gcJHVn1/J9WEjOXMSBTnwrpYzZXEGEpyNOCJKLh7ca3AXesDOY9MvzpBKdWHnEYmwPzw71slb6y01iCRQC2Li03fv3zUJnS4Ny1T7HbFT5WthS2N60Q0jR2j0T5I0oA=,iv:An+mRPYMz/sUPk7usA6e91k3EkfqYx65CvkgfyA/wJI=,tag:eBBmqn9eivGi6+MPQ5nbIw==,type:str]
+                    root_ca_key: ENC[AES256_GCM,data:qvYp5LRh8yr3MpE6cWwwVfrqY+xBK4I50KqoajUU1mvn+S/kyMbOrOH8Uvlf29jzaG8fw9964YkjGLqo12NazqDZLyQnfK/MRqKY0cvEujbjhW8FFSYPwrGOax7Eh+DjHDiQWlhaGwzi2kGIMljEabEdg45F9OsgAT1HvM9y8l+Ey0fQHv3qXoIhn+wxrwsgWLD705lC0hUO36P63fRVWQx2LwvbpasX448Jt5w7xRaTtQ1e04mVyaQ2TDth7OFpisCywFcVnEEE8+zOkf/WndrIoNvZ5Z1Xvd6cOKaO/IWN2kGAJmBsHUWlwnfRqfZ69MJvlX3HO8/cXQZskdaFr3GpdQjBO53iRo3O7ThilarN/NOaZGNJMEQO+bBMy2AqHo4LWeQiSIUYu20sUaUrn5z5Cuq+K3LGBrE=,iv:wn8TIqixGir4ZsFEW1+slwByv0uE+/iNKCoM6Qhh+Dw=,tag:uokEnEqg/LuhUp5KsSmduA==,type:str]
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-03-15T20:45:13Z"
-    mac: ENC[AES256_GCM,data:sM3wZuJ7jqJ6CFAxtFXdghwBHiLKK+RxGgF/h+f/PJq7X1AfSDMpGMG3Ti+eVZWbVUOzPdU05fUg+EnJTznkTF5wcnSdUD/LhtnOz+aBuYnjCDP+p7EoMLRULGxaSSnD8nAnC+hS2q3UnXIQ0EO4XVdHc1MyG2n12mw0V04JxTQ=,iv:R8f9YXI+KxH55b1A3CDBXze+bvvTAuSICFVJn4dRdsc=,tag:MhZf+d6HS1SQNSFEsds0PQ==,type:str]
+    lastmodified: "2025-03-15T20:55:16Z"
+    mac: ENC[AES256_GCM,data:oC/YxQmNxfOhRVbnaoOVkq2hOvz1gYDEvPd0IsvLTYzVhjfk27gWa2BxWpk0WUHV2vC7Q3IkcI6ALJPe45CPtz8wIbacxGouzaq3VaB1LnAT7X6NgexV6vpwF0Pw9a4XzUOzWFezDjKSmUeOsnu6LaaJaRvZfuEB1BIqJ+ezNW8=,iv:a7IyFXDm2pD+DPlKnqVlGY5bvs4Jj+hQ4qy3ganue3I=,tag:9khOrmMtSgFkcuyjipQRQw==,type:str]
     pgp:
-        - created_at: "2025-03-15T20:45:12Z"
+        - created_at: "2025-03-15T20:55:16Z"
           enc: |-
             -----BEGIN PGP MESSAGE-----
 
-            hQIMAwWbRp0WX+I4AQ//UndAloHufKKzjrVfxYJTv+OujgcLSla1RSZt1IilrJG2
-            CqXOlUpuSpI4veqarKDVpIS4B+OpgTRbM7niUgN9uau5MK/RRS/YB5ZBYANYb4CF
-            eyP3IsfSc0GzqdwBrhjOpe0tcqiQ78uXEKn6zZdswjBP3ZCU90RACi0xLrs2b53E
-            jz9QkyzF/H7g+PEYHFvaw2m/q6DCQooVAr7gMjpltafECwPG7cJZlxIWizIFNpmm
-            oGQEh1mHAgT+VM0bYDt5wFaSGEDOGfJTHlqyBzz9coh34WbLW9CsEuPned5w0iM+
-            8lYWtvMr8gzELU71cTDL6f7IzzeaDZXcNeRcG2liJZqMEXrQhXu1dWCW8v28iugc
-            n8dycnPUNOGuo8BfXqk2KfN3bYBISO5rOLjg4lQwjS7LVQVv1A43BZDhzEKMz5NG
-            DBoshJMRru99IkbPK9MA5pwQKBFMoH6u6XVjSObhrJE9cLdmn9iw/1We43ODo3Re
-            FKr3imE7oO3HOvmrgbB62O8zS9yDgnu91RJHy/OJGOPBUKkj1VrIStdsAXo9UCUT
-            Zt3N3DcMv2SCCF/9bPkJVE7aw8tpI3yDIMuyAV02TeBEvMejUk83D+rpO3FRpvMG
-            z8yDPzqzXcn7hqt/Pv05CxZ4guxX8c54Fs9zN2Sdrh7wyE9/TNvmcE5Iij2qBQzU
-            aAEJAhCUTO2iNvJnxVZGd83lMJrpgGdQ0XHH5LpYRF3rIgV16JLE58ruYIxV+O1G
-            rfsErHCInytu5NoSzPuD91E6SN9nM7uT8GJ10IWVia6utpmv6MUpjXTNEIgnL7Wm
-            QHEOsKPeHD7y
-            =Rki0
+            hQIMAwWbRp0WX+I4ARAAg+dnWK2dRopbl3ElM4aXbk0JmW5njjuV8t898gPrFrFV
+            bfa4EWrKaneCpvqNstMxp79Gtqwt5qx9oFs1rVQ+VvINtSsBnnrw6UUoR/+2eSuv
+            WUONGGKXMsjnWtstT/gQEU16CHS7hwjOqwHoGef1fq9Re6HCUREH/nPF9tw65A00
+            fHQscj02vaw0OAxtHXObh1i679MM6pdcCd05Z07fEveUv2anJl7fKx81fPwDnz6a
+            mErkFzVXs54XoPV++CGGCHhDWfiXfZUIVigM9wopSue0W12pZDe4xGDhB1jn0XlD
+            WYnF4XqX70++IUHBSRRiTbIsYMp9bPYuVVnZcuxC3E/dgMh8n4+duWXAJqIauDFU
+            XjvB15xUvoONxDNYEkKhoWv08n3UnuYmCZTN8K50BZKPhboBUQnSBXfBAIijs9T+
+            TRx+Ety43ymYnQTVnDrjIe45P7n9ybenmuH2v6gtkej1/xkTgS/5wC+pKh5Q5UR/
+            NmMhFC1eIdjd2T4QKjhawQ4CNXq2rIETZE9a/m063OzZ/F6tq+sJsuivUB5hTPtG
+            KC3tAsJf79HQxBcHcK6HHI2lRSuWw2tUW25/7unQ3d8Bd7TY+u9HuGONG3oKJemZ
+            8hVgY7pFcV6lHjdk0z6pluLZbX/L2fRNGDoJXAi3FAp/siA15OGXXG+Uc4OybpLU
+            aAEJAhA5NV9JgcG2Ygcm4db188MK4Z8G7WmT4CZLkjRPF1Zm2hRsysyl46+cPdDA
+            pHjmzapMz2DwfR2rkrQenWDkEXyd8D9sZiI9s6VWx0+gqCSe3Al/mtzR6sL5Mc+X
+            RnjtbCGUu6YC
+            =xG7/
             -----END PGP MESSAGE-----
           fp: 0231831CB40B8E587B7353CBA3AF727721205A62
     encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca_key|root_ca_key)$
