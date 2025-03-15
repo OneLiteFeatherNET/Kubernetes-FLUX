@@ -10,7 +10,7 @@ spec:
       chart: step-certificates
       sourceRef:
         kind: HelmRepository
-        name: step-certificates
+        name: smallstep
         namespace: flux-system
   install:
     remediation:

@@ -4,12 +4,12 @@ resources:
   - ../../../apps/base/nginx-ingress/
   - ../../../apps/base/reposilite/
   - ../../../apps/base/cert-manager/
-  - ../../../apps/base/autocert/
   - ../../../apps/base/step-certificates/
 #  - cert-manager/issuers.yml
 patches:
   - path: nginx/release.yaml
   - path: reposilite/release.yaml
   - path: cert-manager/release.yaml
+  - path: step-certificates/release.yaml
 
 
