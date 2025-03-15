@@ -1,0 +1,18 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/clusters/prod
+  prune: true
+  wait: true
+  timeout: 5m0s
+  dependsOn:
+    - name: infra-sources
+    - name: infra-controllers
+    - name: infra-configs
