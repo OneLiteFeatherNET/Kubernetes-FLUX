@@ -48,7 +48,6 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: infra-sources
     - name: infra-controllers
   interval: 1h
   retryInterval: 1m
