@@ -8,7 +8,7 @@ spec:
     # Let's Encrypt will use this to contact you about expiring
     # certificates, and issues related to your account.
     email: certificates@onelitefeather.net
-    server: https://ca.onelite.feather/directory
+    server: https://ca.onelite.feather/acme/acme/directory
     caBundle: |
       -----BEGIN CERTIFICATE-----
       MIIBwjCCAWmgAwIBAgIQYxIjeKsPaPwVGMfUH++FlDAKBggqhkjOPQQDAjBAMRow
