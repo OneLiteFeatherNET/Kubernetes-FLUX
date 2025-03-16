@@ -6,3 +6,4 @@ resources:
   - reposilite.yml
   - jetstack.yml
   - smallstep.yml
+  - sonatype.yml
