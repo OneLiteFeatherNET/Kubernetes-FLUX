@@ -1,69 +1,6 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps-infra-based
-  namespace: flux-system
-spec:
-  interval: 5m0s
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./apps/clusters/prod/infra-based
-  prune: true
-  wait: true
-  timeout: 5m0s
-  dependsOn:
-    - name: infra-configs
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-gpg
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: apps-pre-apps
-  namespace: flux-system
-spec:
-  interval: 5m0s
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./apps/clusters/prod/pre-apps
-  prune: true
-  wait: true
-  timeout: 5m0s
-  dependsOn:
-    - name: apps-infra-based
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-gpg
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: apps-pre-apps-based
-  namespace: flux-system
-spec:
-  interval: 5m0s
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./apps/clusters/prod/pre-apps-based
-  prune: true
-  wait: true
-  timeout: 5m0s
-  dependsOn:
-    - name: apps-pre-apps
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-gpg
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: apps
   namespace: flux-system
 spec:
@@ -75,8 +12,6 @@ spec:
   prune: true
   wait: true
   timeout: 5m0s
-  dependsOn:
-    - name: apps-pre-apps-based
   decryption:
     provider: sops
     secretRef:

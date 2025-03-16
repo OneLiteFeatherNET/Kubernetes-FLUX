@@ -3,5 +3,4 @@ kind: Kustomization
 
 resources:
   - https://raw.githubusercontent.com/sergelogvinov/proxmox-csi-plugin/v0.11.0/docs/deploy/proxmox-csi-plugin-release.yml
-  - proxmox-csi-config.yaml
   - storage-class.yaml
