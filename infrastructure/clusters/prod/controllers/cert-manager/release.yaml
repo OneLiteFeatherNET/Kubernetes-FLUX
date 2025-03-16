@@ -27,10 +27,10 @@ spec:
     webhook:
       resources:
         limits:
-          cpu: "5m"
-          memory: "15Mi"
+          cpu: "10m"
+          memory: "25Mi"
         requests:
-          cpu: "3m"
+          cpu: "5m"
           memory: "15Mi"
     cainjector:
       resources:
