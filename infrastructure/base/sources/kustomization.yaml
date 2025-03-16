@@ -7,3 +7,4 @@ resources:
   - jetstack.yml
   - smallstep.yml
   - sonatype.yml
+  - grafana-labs.yml
