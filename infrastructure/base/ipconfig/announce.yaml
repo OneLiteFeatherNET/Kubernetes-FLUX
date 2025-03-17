@@ -6,6 +6,10 @@ spec:
   virtualRouters:
     - localASN: 64532
       exportPodCIDR: false
+      serviceAdvertisements: # <-- specify the service types to advertise
+        - LoadBalancerIP # <-- default
+        - ClusterIP      # <-- options
+        - ExternalIP     # <-- options
       neighbors:
         - peerAddress: '10.200.4.1/32'
           peerASN: 64504
