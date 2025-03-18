@@ -6,12 +6,3 @@ metadata:
 spec:
   interval: 5m
   url: https://sonatype.github.io/helm3-charts/
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: nxrm3-ha-repository
-  namespace: flux-system
-spec:
-  interval: 5m
-  url: https://sonatype.github.io/nxrm3-ha-repository/

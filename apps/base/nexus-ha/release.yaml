@@ -10,7 +10,7 @@ spec:
       chart: nxrm-ha
       sourceRef:
         kind: HelmRepository
-        name: nxrm3-ha-repository
+        name: sonatype
         namespace: flux-system
   install:
     remediation:
