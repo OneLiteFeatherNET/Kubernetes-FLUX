@@ -60,7 +60,7 @@ enableCiliumEndpointSlice: true
 
 loadBalancer:
   # https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#maglev-consistent-hashing
-#  algorithm: maglev
+  algorithm: maglev
   l7:
     backend: envoy
 gatewayAPI:
@@ -72,6 +72,8 @@ envoy:
       keepCapNetBindService: true
       envoy: [ NET_ADMIN, PERFMON, BPF, NET_BIND_SERVICE ]
 l7Proxy: true
+envoyConfig:
+  enabled: true
 
 ingressController:
   enabled: true

@@ -12,11 +12,8 @@ spec:
       accessMode: ReadWriteOnce
     ingress:
       enabled: true
-      className: "cilium"
       annotations:
-        kubernetes.io/ingress.class: cilium
         cert-manager.io/cluster-issuer: step-ca
-        kubernetes.io/tls-acme: "true"
       hosts:
         - host: reposilite.apps.onelite.feather
           paths:
