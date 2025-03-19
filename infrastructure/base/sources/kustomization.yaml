@@ -6,6 +6,5 @@ resources:
   - reposilite.yml
   - jetstack.yml
   - smallstep.yml
-  - sonatype.yml
   - grafana-labs.yml
   - node-red.yml

@@ -3,10 +3,8 @@ kind: Kustomization
 resources:
   - ../../../../apps/base/reposilite/
   - ../../../../apps/base/node-red/
-  - ../../../../apps/base/nexus-ha/
 patches:
   - path: reposilite/release.yaml
   - path: node-red/release.yaml
-  - path: nexus-ha/release.yaml
 
 
