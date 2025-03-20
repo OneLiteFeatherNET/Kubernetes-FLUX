@@ -64,7 +64,7 @@ loadBalancer:
   l7:
     backend: envoy
 gatewayAPI:
-  enabled: false
+  enabled: true
 envoy:
   enabled: true
   securityContext:
