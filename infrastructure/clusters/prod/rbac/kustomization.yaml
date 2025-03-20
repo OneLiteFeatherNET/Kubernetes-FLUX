@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - themeinerlp.yml
+  - onelitefeather.yml
