@@ -10,7 +10,7 @@ spec:
       chart: minio
       sourceRef:
         kind: HelmRepository
-        name: bitnami
+        name: bitnami-minio
         namespace: flux-system
   install:
     remediation:
