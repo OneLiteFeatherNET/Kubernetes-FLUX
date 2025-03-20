@@ -179,8 +179,8 @@ spec:
       ##     path: /
       ##
       extraHosts:
-        - name: minio.onelitefeather.dev
-          path: api
+        - name: api-minio.onelitefeather.dev
+          path: /
       ## @param apiIngress.extraPaths Any additional paths that may need to be added to the ingress under the main host
       ## For example: The ALB ingress controller requires a special rule for handling SSL redirection.
       ## extraPaths:
