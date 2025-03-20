@@ -51,10 +51,10 @@ spec:
         repmgrUsername: ""
         repmgrPassword: ""
         repmgrDatabase: ""
-        existingSecret: ""
+        existingSecret: "postgresql-ha-postgresql"
       ldap:
         bindpw: ""
-        existingSecret: ""
+        existingSecret: "postgresql-ha-pgpool"
       pgpool:
         adminUsername: ""
         adminPassword: ""
