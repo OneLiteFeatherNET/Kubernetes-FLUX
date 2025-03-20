@@ -8,11 +8,6 @@ spec:
     spec:
       version: ">=1.3.20"
   values:
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
-    deployment:
-      replicas: 3
     persistence:
       accessMode: ReadWriteOnce
       size: 25Gi
