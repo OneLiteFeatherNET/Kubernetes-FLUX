@@ -29,7 +29,7 @@ spec:
   interval: 5m
   url: oci://registry-1.docker.io/bitnamicharts/mariadb-galera
   ref:
-    semver: "=11.4.5"
+    semver: "=11.2.1"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
@@ -40,4 +40,4 @@ spec:
   interval: 5m
   url: oci://registry-1.docker.io/bitnamicharts/redis
   ref:
-    semver: "=7.4.2"
+    semver: "=20.11.3"
