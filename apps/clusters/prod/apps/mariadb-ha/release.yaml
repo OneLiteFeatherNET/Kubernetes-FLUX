@@ -177,7 +177,8 @@ spec:
       ## This can be used toset the LoadBalancer service type to internal only.
       ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
       ##
-      annotations: { }
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.32.4
       ## @param service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
       ## If "ClientIP", consecutive client requests will be directed to the same Pod
       ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
