@@ -5,13 +5,10 @@ metadata:
   namespace: minio
 spec:
   releaseName: minio
-  chart:
-    spec:
-      chart: minio
-      sourceRef:
-        kind: HelmRepository
-        name: bitnami-minio
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: minio
+    namespace: flux-system
   install:
     remediation:
       retries: 3

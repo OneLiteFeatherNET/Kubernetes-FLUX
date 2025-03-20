@@ -4,9 +4,6 @@ metadata:
   name: minio
   namespace: minio
 spec:
-  chart:
-    spec:
-      version: "=>15.0.7"
   values:
     mode: distributed
     persistence:

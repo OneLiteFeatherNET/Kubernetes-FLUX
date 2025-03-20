@@ -1,9 +1,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: bitnami-minio
   namespace: flux-system
 spec:
   interval: 5m
-  type: oci
   url: oci://registry-1.docker.io/bitnamicharts/minio
+  ref:
+    semver: ">=15.0.7"
