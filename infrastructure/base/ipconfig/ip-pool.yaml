@@ -5,5 +5,5 @@ metadata:
   name: ip-pool
 spec:
   blocks:
-    - start: 10.200.32.0
-      stop: 10.200.32.255
+    - start: 10.200.32.1
+      stop: 10.200.32.254
