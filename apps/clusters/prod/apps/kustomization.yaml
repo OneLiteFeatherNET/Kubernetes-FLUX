@@ -5,10 +5,12 @@ resources:
   - ../../../../apps/base/minio/
   - ../../../../apps/base/postgresql-ha/
   - ../../../../apps/base/mariadb-ha/
+  - ../../../../apps/base/redis/
 patches:
   - path: reposilite/release.yaml
   - path: minio/release.yaml
   - path: postgresql-ha/release.yaml
   - path: mariadb-ha/release.yaml
+  - path: redis/release.yaml
 
 
