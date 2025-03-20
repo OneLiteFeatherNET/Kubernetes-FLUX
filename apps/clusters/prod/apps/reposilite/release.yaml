@@ -11,6 +11,12 @@ spec:
     persistence:
       accessMode: ReadWriteOnce
       size: 25Gi
+    env:
+      - name: REPOSILITE_LOCAL_DATABASE
+        valueFrom:
+          secretKeyRef:
+            name: reposilite-secrets
+            key: DATABASE
     ingress:
       enabled: true
       annotations:

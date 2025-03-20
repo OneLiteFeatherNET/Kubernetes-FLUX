@@ -13,4 +13,7 @@ patches:
   - path: mariadb-ha/release.yaml
   - path: redis/release.yaml
 
-
+secretGenerator:
+  - name: reposilite-secrets
+    envs:
+      - reposilite/reposilite.env
