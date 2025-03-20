@@ -31,5 +31,8 @@ spec:
         maxReplicas: 2
         targetCPUUtilizationPercentage: 80
         targetMemoryUtilizationPercentage: 85
-
+      config:
+        enable-real-ip: "true"
+        use-forwarded-headers: "true"
+        forwarded-for-header: "True-Client-IP"
 
