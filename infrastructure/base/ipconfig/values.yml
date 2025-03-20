@@ -76,8 +76,8 @@ envoyConfig:
   enabled: true
 
 ingressController:
-  enabled: true
-  default: true
+  enabled: false
+  default: false
   loadbalancerMode: shared
   hostNetwork:
     enabled: false
