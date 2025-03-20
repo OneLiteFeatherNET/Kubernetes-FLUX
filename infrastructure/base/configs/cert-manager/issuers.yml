@@ -12,11 +12,11 @@ spec:
     privateKeySecretRef:
       # Secret resource that will be used to store the account's private key.
       name: onelitefeather-net-issuer-account-key-letsencrypt-staging
-    # Add a single challenge solver, HTTP01 using cilium
+    # Add a single challenge solver, HTTP01 using nginx
     solvers:
       - http01:
           ingress:
-            ingressClassName: cilium
+            ingressClassName: nginx
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -33,9 +33,9 @@ spec:
     privateKeySecretRef:
       # Secret resource that will be used to store the account's private key.
       name: onelitefeather-net-issuer-account-key-step-ca
-    # Add a single challenge solver, HTTP01 using cilium
+    # Add a single challenge solver, HTTP01 using nginx
     solvers:
       - http01:
           ingress:
-            ingressClassName: cilium
+            ingressClassName: nginx
 ---
