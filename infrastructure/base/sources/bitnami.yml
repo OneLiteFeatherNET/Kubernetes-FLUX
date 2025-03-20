@@ -18,4 +18,15 @@ spec:
   interval: 5m
   url: oci://registry-1.docker.io/bitnamicharts/postgresql-ha
   ref:
-    semver: ">=15.3.7"
+    semver: "=15.3.7"
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: mariadb-ha
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://registry-1.docker.io/bitnamicharts/mariadb-galera
+  ref:
+    semver: "=11.4.5"
