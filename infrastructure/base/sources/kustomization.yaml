@@ -8,3 +8,4 @@ resources:
   - smallstep.yml
   - grafana-labs.yml
   - node-red.yml
+  - bitnami.yml
