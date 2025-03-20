@@ -9,7 +9,7 @@ spec:
     spec:
       chart: minio
       sourceRef:
-        kind: OCIRepository
+        kind: HelmRepository
         name: bitnami
         namespace: flux-system
   install:
