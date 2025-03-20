@@ -2140,7 +2140,8 @@ spec:
       sessionAffinityConfig: { }
       ## @param service.annotations Provide any additional annotations both for PostgreSQL and Pgpool services
       ##
-      annotations: { }
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.32.3
       ## @param service.serviceLabels Labels for PostgreSQL service
       ##
       serviceLabels: { }
