@@ -12,6 +12,8 @@ spec:
       accessMode: ReadWriteOnce
       size: 25Gi
     env:
+      - name: JAVA_OPTS
+        value: "-Xmx64M -Dreposilite.s3.pathStyleAccessEnabled=true"
       - name: REPOSILITE_LOCAL_DATABASE
         valueFrom:
           secretKeyRef:
