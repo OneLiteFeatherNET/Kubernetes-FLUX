@@ -1,0 +1,16 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ingress-nginx
+  namespace: ingress-nginx
+spec:
+  chart:
+    spec:
+      version: ">=1.12.0"
+  values:
+    controller:
+      service:
+        annotations:
+          io.cilium/lb-ipam-ips: 10.200.32.1
+
+
