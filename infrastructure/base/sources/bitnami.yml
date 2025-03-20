@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
-  name: bitnami-minio
+  name: minio
   namespace: flux-system
 spec:
   interval: 5m
