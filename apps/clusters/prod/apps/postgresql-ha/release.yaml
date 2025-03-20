@@ -45,20 +45,9 @@ spec:
         ## @param global.security.allowInsecureImages Allows skipping image verification
         allowInsecureImages: false
       postgresql:
-        username: ""
-        password: ""
-        database: ""
-        repmgrUsername: ""
-        repmgrPassword: ""
-        repmgrDatabase: ""
         existingSecret: "postgresql-ha-postgresql"
-      ldap:
-        bindpw: ""
-        existingSecret: "postgresql-ha-pgpool"
       pgpool:
-        adminUsername: ""
-        adminPassword: ""
-        existingSecret: ""
+        existingSecret: "postgresql-ha-pgpool"
       ## Compatibility adaptations for Kubernetes platforms
       ##
       compatibility:
