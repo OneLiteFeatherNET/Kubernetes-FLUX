@@ -7,7 +7,7 @@ spec:
   interval: 5m
   url: oci://registry-1.docker.io/bitnamicharts/minio
   ref:
-    semver: ">=15.0.7"
+    semver: "=15.0.7"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
@@ -30,3 +30,14 @@ spec:
   url: oci://registry-1.docker.io/bitnamicharts/mariadb-galera
   ref:
     semver: "=11.4.5"
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: redis
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://registry-1.docker.io/bitnamicharts/redis
+  ref:
+    semver: "=7.4.2"
