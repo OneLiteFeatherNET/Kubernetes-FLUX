@@ -9,6 +9,8 @@ spec:
       version: ">=1.12.0"
   values:
     controller:
+      ingressClassResource:
+        default: true
       service:
         externalTrafficPolicy: Local
         annotations:
