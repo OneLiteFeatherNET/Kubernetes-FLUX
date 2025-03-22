@@ -47,7 +47,7 @@ spec:
       postgresql:
         existingSecret: "postgresql-ha-postgresql"
       pgpool:
-        existingSecret: ""
+        existingSecret: "postgresql-ha-postgresql"
       ## Compatibility adaptations for Kubernetes platforms
       ##
       compatibility:
