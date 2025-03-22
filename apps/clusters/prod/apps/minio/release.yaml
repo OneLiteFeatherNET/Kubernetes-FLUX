@@ -24,7 +24,7 @@ spec:
       # ingressClassName: ""
       ## @param ingress.hostname Default host for the ingress resource
       ##
-      hostname: minio.apps.onelite.feather
+      hostname: minio.onelitefeather.dev
       ## @param ingress.path The Path to MinIO&reg;. You may need to set this to '/*' in order to use this with ALB ingress controllers.
       ##
       path: /
@@ -47,7 +47,7 @@ spec:
       ##   cert-manager.io/cluster-issuer: cluster-issuer-name
       ##
       annotations:
-        cert-manager.io/cluster-issuer: step-ca
+        cert-manager.io/cluster-issuer: letsencrypt-prod
         ingress.kubernetes.io/ssl-redirect: "true"
         ingress.kubernetes.io/proxy-body-size: "2G"
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -70,9 +70,7 @@ spec:
       ##   - name: minio.local
       ##     path: /
       ##
-      extraHosts:
-        - name: minio.onelitefeather.dev
-          path: /
+      extraHosts: []
       ## @param ingress.extraPaths Any additional paths that may need to be added to the ingress under the main host
       ## For example: The ALB ingress controller requires a special rule for handling SSL redirection.
       ## extraPaths:
@@ -92,8 +90,8 @@ spec:
       ##
       extraTls:
         - hosts:
-            - minio.apps.onelite.feather
-          secretName: minio-apps-onelite-feather-tls
+            - minio.onelitefeather.dev
+          secretName: minio-onelitefeather-dev-tls
       ## @param ingress.secrets If you're providing your own certificates, please use this to add the certificates as secrets
       ## key and certificate are expected in PEM format
       ## name should line up with a secretName set further up
@@ -142,7 +140,7 @@ spec:
       # ingressClassName: ""
       ## @param apiIngress.hostname Default host for the ingress resource
       ##
-      hostname: api.minio.apps.onelite.feather
+      hostname: api-minio.onelitefeather.dev
       ## @param apiIngress.path The Path to MinIO&reg;. You may need to set this to '/*' in order to use this with ALB ingress controllers.
       ##
       path: /
@@ -165,7 +163,7 @@ spec:
       ##   cert-manager.io/cluster-issuer: cluster-issuer-name
       ##
       annotations:
-        cert-manager.io/cluster-issuer: step-ca
+        cert-manager.io/cluster-issuer: letsencrypt-prod
         ingress.kubernetes.io/ssl-redirect: "true"
         ingress.kubernetes.io/proxy-body-size: "2G"
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -188,9 +186,7 @@ spec:
       ##   - name: minio.local
       ##     path: /
       ##
-      extraHosts:
-        - name: api-minio.onelitefeather.dev
-          path: /
+      extraHosts: []
       ## @param apiIngress.extraPaths Any additional paths that may need to be added to the ingress under the main host
       ## For example: The ALB ingress controller requires a special rule for handling SSL redirection.
       ## extraPaths:
@@ -210,8 +206,8 @@ spec:
       ##
       extraTls:
         - hosts:
-            - api.minio.apps.onelite.feather
-          secretName: api-minio-apps-onelite-feather-tls
+            - api-minio.onelitefeather.dev
+          secretName: api-minio-onelitefeather-dev-tls
       ## @param apiIngress.secrets If you're providing your own certificates, please use this to add the certificates as secrets
       ## key and certificate are expected in PEM format
       ## name should line up with a secretName set further up
