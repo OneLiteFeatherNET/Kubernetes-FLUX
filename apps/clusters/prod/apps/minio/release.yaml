@@ -48,6 +48,10 @@ spec:
       ##
       annotations:
         cert-manager.io/cluster-issuer: step-ca
+        ingress.kubernetes.io/ssl-redirect: "true"
+        ingress.kubernetes.io/proxy-body-size: "2G"
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       ## @param ingress.tls Enable TLS configuration for the hostname defined at `ingress.hostname` parameter
       ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
       ## You can:
@@ -162,6 +166,10 @@ spec:
       ##
       annotations:
         cert-manager.io/cluster-issuer: step-ca
+        ingress.kubernetes.io/ssl-redirect: "true"
+        ingress.kubernetes.io/proxy-body-size: "2G"
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       ## @param apiIngress.tls Enable TLS configuration for the hostname defined at `apiIngress.hostname` parameter
       ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.apiIngress.hostname }}`
       ## You can:
