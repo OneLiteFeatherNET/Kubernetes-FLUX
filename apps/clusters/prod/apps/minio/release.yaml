@@ -8,6 +8,8 @@ spec:
     mode: distributed
     persistence:
       size: 25Gi
+    auth:
+      existingSecret: 'minio-password-secret'
     ingress:
       ## @param ingress.enabled Enable ingress controller resource for MinIO Console
       ##

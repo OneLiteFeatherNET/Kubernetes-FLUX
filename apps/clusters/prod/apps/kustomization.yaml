@@ -5,6 +5,4 @@ resources:
   - postgresql-ha
   - redis
   - mariadb-ha
-  - ../../../../apps/base/minio/
-patches:
-  - path: minio/release.yaml
+  - minio
