@@ -47,7 +47,7 @@ spec:
       ##   cert-manager.io/cluster-issuer: cluster-issuer-name
       ##
       annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
+        cert-manager.io/cluster-issuer: letsencrypt-prod-dns
         ingress.kubernetes.io/proxy-body-size: "2G"
         nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       ## @param ingress.tls Enable TLS configuration for the hostname defined at `ingress.hostname` parameter
@@ -161,7 +161,7 @@ spec:
       ##   cert-manager.io/cluster-issuer: cluster-issuer-name
       ##
       annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
+        cert-manager.io/cluster-issuer: letsencrypt-prod-dns
         ingress.kubernetes.io/proxy-body-size: "2G"
         nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       ## @param apiIngress.tls Enable TLS configuration for the hostname defined at `apiIngress.hostname` parameter
