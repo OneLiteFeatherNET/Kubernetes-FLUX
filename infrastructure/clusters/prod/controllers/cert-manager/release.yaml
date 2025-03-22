@@ -19,11 +19,11 @@ spec:
         maxUnavailable: 1
     resources:
       limits:
-        cpu: "10m"
-        memory: "40Mi"
+        cpu: "40m"
+        memory: "80Mi"
       requests:
-        cpu: "5m"
-        memory: "32Mi"
+        cpu: "20m"
+        memory: "40Mi"
     webhook:
       resources:
         limits:
