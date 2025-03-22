@@ -630,7 +630,7 @@ spec:
         externalIPs: [ ]
         ## @param master.service.annotations Additional custom annotations for Redis&reg; master service
         ##
-        annotations: { }
+        annotations: {}
         ## @param master.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
         ## If "ClientIP", consecutive client requests will be directed to the same Pod
         ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
@@ -1061,7 +1061,7 @@ spec:
       service:
         ## @param replica.service.type Redis&reg; replicas service type
         ##
-        type: LoadBalancer
+        type: ClusterIP
         ## @param replica.service.ports.redis Redis&reg; replicas service port
         ##
         ports:
@@ -1103,8 +1103,7 @@ spec:
         loadBalancerSourceRanges: [ ]
         ## @param replica.service.annotations Additional custom annotations for Redis&reg; replicas service
         ##
-        annotations:
-          io.cilium/lb-ipam-ips: 10.200.32.5
+        annotations: {}
         ## @param replica.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
         ## If "ClientIP", consecutive client requests will be directed to the same Pod
         ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
@@ -1439,7 +1438,7 @@ spec:
       service:
         ## @param sentinel.service.type Redis&reg; Sentinel service type
         ##
-        type: ClusterIP
+        type: LoadBalancer
         ## @param sentinel.service.ports.redis Redis&reg; service port for Redis&reg;
         ## @param sentinel.service.ports.sentinel Redis&reg; service port for Redis&reg; Sentinel
         ##
@@ -1488,7 +1487,9 @@ spec:
         loadBalancerSourceRanges: [ ]
         ## @param sentinel.service.annotations Additional custom annotations for Redis&reg; Sentinel service
         ##
-        annotations: { }
+        annotations:
+          "lbipam.cilium.io/ips": "10.200.32.5"
+          "lbipam.cilium.io/sharing-key": "redis"
         ## @param sentinel.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
         ## If "ClientIP", consecutive client requests will be directed to the same Pod
         ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
