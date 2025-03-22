@@ -43,7 +43,7 @@ spec:
     - advertisementType: "Service"
       service:
         addresses:
-          - ExternalIP
+          # - ExternalIP
           - LoadBalancerIP
       selector: # <-- select all services
         matchExpressions:
