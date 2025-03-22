@@ -350,7 +350,7 @@ spec:
     ## @param existingSecret Use existing secret for password details (`rootUser.password`, `db.password`, `galera.mariabackup.password` will be ignored and picked up from this secret)
     ## The secret has to contain the keys mariadb-root-password, mariadb-galera-mariabackup-password and mariadb-password.
     ##
-    existingSecret: ""
+    existingSecret: "mariadb-ha-mariadb"
     ## @param usePasswordFiles Mount credentials as a files instead of using an environment variable.
     ##
     usePasswordFiles: true
