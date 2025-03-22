@@ -1166,7 +1166,7 @@ spec:
       ## @param pgpool.customUsersSecret Name of a secret containing the usernames and passwords of accounts that will be added to pgpool_passwd
       ## The secret must contain the keys "usernames" and "passwords" respectively.
       ##
-      customUsersSecret: ""
+      customUsersSecret: "pgpool-custom-user-secret"
       ## @param pgpool.existingSecret Pgpool admin password using existing secret
       ##
       existingSecret: ""

@@ -12,3 +12,6 @@ secretGenerator:
   - name: postgresql-ha-postgresql
     envs:
       - postgresql.env
+  - name: pgpool-custom-user-secret
+    envs:
+      - postgresql.env
