@@ -948,7 +948,7 @@ spec:
         host: "postgresql-ha-pgpool.postgresql-ha.svc.cluster.local"
         port: "5432"
         username: "harbor"
-        password: ""
+        # password: ""
         coreDatabase: "harbor"
         # if using existing secret, the key must be "password"
         existingSecret: "harbor-secret"
