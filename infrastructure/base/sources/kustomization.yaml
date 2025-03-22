@@ -9,3 +9,4 @@ resources:
   - grafana-labs.yml
   - node-red.yml
   - bitnami.yml
+  - harbor.yml
