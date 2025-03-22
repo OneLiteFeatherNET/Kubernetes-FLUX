@@ -231,7 +231,7 @@ spec:
           bucket: harbor
           #accesskey: awsaccesskey
           #secretkey: awssecretkey
-          regionendpoint: http://minio.minio.svc.cluster.local:9000
+          regionendpoint: https://api-minio.onelitefeather.dev
           #encrypt: false
           #keyid: mykeyid
           secure: false
