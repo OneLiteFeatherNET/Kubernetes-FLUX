@@ -8,7 +8,7 @@ resources:
 patches:
   - path: release.yaml
 
-#secretGenerator:
-#  - name: minio-password-secret
-#    envs:
-#      - minio.env
+secretGenerator:
+  - name: harbor-secret
+    envs:
+      - harbor.env

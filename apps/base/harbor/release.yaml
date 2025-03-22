@@ -5,10 +5,13 @@ metadata:
   namespace: harbor
 spec:
   releaseName: harbor
-  chartRef:
-    kind: OCIRepository
-    name: harbor
-    namespace: flux-system
+  chart:
+    spec:
+      chart: harbor
+      sourceRef:
+        kind: HelmRepository
+        name: harbor
+        namespace: flux-system
   install:
     remediation:
       retries: 3
