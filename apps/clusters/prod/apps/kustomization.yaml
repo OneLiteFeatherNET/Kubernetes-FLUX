@@ -3,10 +3,9 @@ kind: Kustomization
 resources:
   - reposilite
   - postgresql-ha
+  - redis
   - ../../../../apps/base/minio/
   - ../../../../apps/base/mariadb-ha/
-  - ../../../../apps/base/redis/
 patches:
   - path: minio/release.yaml
   - path: mariadb-ha/release.yaml
-  - path: redis/release.yaml

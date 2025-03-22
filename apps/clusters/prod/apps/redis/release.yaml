@@ -162,7 +162,7 @@ spec:
       ## @param auth.existingSecret The name of an existing secret with Redis&reg; credentials
       ## NOTE: When it's set, the previous `auth.password` parameter is ignored
       ##
-      existingSecret: ""
+      existingSecret: "redis-password-secret"
       ## @param auth.existingSecretPasswordKey Password key to be retrieved from existing secret
       ## NOTE: ignored unless `auth.existingSecret` parameter is set
       ##
@@ -1178,7 +1178,7 @@ spec:
       ## IMPORTANT: this will disable the master and replicas services and
       ## create a single Redis&reg; service exposing both the Redis and Sentinel ports
       ##
-      enabled: false
+      enabled: true
       ## Bitnami Redis&reg; Sentinel image version
       ## ref: https://hub.docker.com/r/bitnami/redis-sentinel/tags/
       ## @param sentinel.image.registry [default: REGISTRY_NAME] Redis&reg; Sentinel image registry
@@ -1338,7 +1338,7 @@ spec:
       persistence:
         ## @param sentinel.persistence.enabled Enable persistence on Redis&reg; sentinel nodes using Persistent Volume Claims (Experimental)
         ##
-        enabled: false
+        enabled: true
         ## @param sentinel.persistence.storageClass Persistent Volume storage class
         ## If defined, storageClassName: <storageClass>
         ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -1778,7 +1778,7 @@ spec:
     metrics:
       ## @param metrics.enabled Start a sidecar prometheus exporter to expose Redis&reg; metrics
       ##
-      enabled: false
+      enabled: true
       ## Bitnami Redis&reg; Exporter image
       ## ref: https://hub.docker.com/r/bitnami/redis-exporter/tags/
       ## @param metrics.image.registry [default: REGISTRY_NAME] Redis&reg; Exporter image registry
