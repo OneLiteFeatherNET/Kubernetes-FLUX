@@ -11,7 +11,7 @@ spec:
     expose:
       # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
       # and fill the information in the corresponding section
-      type: ingress
+      type: loadBalancer
       tls:
         # Enable TLS or not.
         # Delete the "ssl-redirect" annotations in "expose.ingress.annotations" when TLS is disabled and "expose.type" is "ingress"
@@ -38,7 +38,7 @@ spec:
           secretName: ""
       ingress:
         hosts:
-          core: core-harbor.onelitefeather.dev
+          core: harbor.onelitefeather.dev
         # set to the type of ingress controller if it has specific requirements.
         # leave as `default` for most ingress controllers.
         # set to `gce` if using the GCE ingress controller
@@ -101,7 +101,8 @@ spec:
           # The service port Harbor listens on when serving HTTPS
           httpsPort: 443
         # Annotations on the loadBalancer service
-        annotations: { }
+        annotations:
+          "lbipam.cilium.io/ips": "10.200.32.6"
         # loadBalancer-specific labels
         labels: { }
         sourceRanges: [ ]
@@ -119,7 +120,7 @@ spec:
     # the IP address of k8s node
     #
     # If Harbor is deployed behind the proxy, set it as the URL of proxy
-    externalURL: https://core-harbor.onelitefeather.dev
+    externalURL: https://harbor.onelitefeather.dev:8999
 
     # The persistence is enabled by default and a default StorageClass
     # is needed in the k8s cluster to provision volumes dynamically.
