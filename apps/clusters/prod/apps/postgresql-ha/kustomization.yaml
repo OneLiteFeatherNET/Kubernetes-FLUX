@@ -14,4 +14,4 @@ secretGenerator:
       - postgresql.env
   - name: pgpool-custom-usernames
     envs:
-      - postgresql.env
+      - pgpool-custom-users.env
