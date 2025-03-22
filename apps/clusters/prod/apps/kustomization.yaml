@@ -6,3 +6,4 @@ resources:
   - redis
   - mariadb-ha
   - minio
+  - harbor
