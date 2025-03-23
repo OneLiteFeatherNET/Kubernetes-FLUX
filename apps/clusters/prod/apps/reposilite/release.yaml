@@ -28,6 +28,8 @@ spec:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: step-ca
+        ingress.kubernetes.io/proxy-body-size: "2G"
+        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       hosts:
         - host: reposilite.apps.onelite.feather
           paths:
