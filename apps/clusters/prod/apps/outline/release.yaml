@@ -13,8 +13,8 @@ spec:
         className: ""
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
-          ingress.kubernetes.io/proxy-body-size: "2G"
-          nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+          ingress.kubernetes.io/proxy-body-size: "5G"
+          nginx.ingress.kubernetes.io/proxy-body-size: "5G"
         hosts:
           - host: outline.onelitefeather.dev
             paths:
@@ -31,8 +31,8 @@ spec:
         className: ""
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
-          ingress.kubernetes.io/proxy-body-size: "2G"
-          nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+          ingress.kubernetes.io/proxy-body-size: "5G"
+          nginx.ingress.kubernetes.io/proxy-body-size: "5G"
         hosts:
           - host: collaboration.outline.onelitefeather.dev
             paths:
