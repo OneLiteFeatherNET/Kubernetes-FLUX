@@ -6,6 +6,16 @@ metadata:
 spec:
   values:
     replicaCount: 3
+    service:
+      port: 3000
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 3000
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 3000
     outline:
       # Generic Outline environment variables
       general:
