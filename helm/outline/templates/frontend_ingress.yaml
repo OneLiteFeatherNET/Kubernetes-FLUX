@@ -37,7 +37,7 @@ spec:
               service:
                 name: {{ include "outline.fullname" $ }}-frontend
                 port:
-                  number: {{ $.Values.service.port }}
+                  number: {{ $.Values.frontend.service.port }}
           {{- end }}
     {{- end }}
 {{- end }}
