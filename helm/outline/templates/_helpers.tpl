@@ -42,40 +42,12 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-{{- define "outline.labelsFrontend" -}}
-helm.sh/chart: {{ include "outline.chart" . }}
-{{ include "outline.selectorLabelsFrontend" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{- define "outline.labelsCollaboration" -}}
-helm.sh/chart: {{ include "outline.chart" . }}
-{{ include "outline.selectorLabelsCollaboration" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
 {{/*
 Selector labels
 */}}
 {{- define "outline.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "outline.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{- define "outline.selectorLabelsFrontend" -}}
-app.kubernetes.io/name: {{ include "outline.name" . }}-frontend
-app.kubernetes.io/instance: {{ .Release.Name }}-frontend
-{{- end }}
-
-{{- define "outline.selectorLabelsCollaboration" -}}
-app.kubernetes.io/name: {{ include "outline.name" . }}-collaboration
-app.kubernetes.io/instance: {{ .Release.Name }}-collaboration
 {{- end }}
 
 {{/*

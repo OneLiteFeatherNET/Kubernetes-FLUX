@@ -5,44 +5,23 @@ metadata:
   namespace: outline
 spec:
   values:
-    frontend:
-      replicaCount: 3
-      collaborationPrimaryWss: "wss://collaboration.outline.onelitefeather.dev"
-      collaborationPrimaryUrl: "https://collaboration.outline.onelitefeather.dev"
-      ingress:
-        enabled: true
-        className: ""
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-          ingress.kubernetes.io/proxy-body-size: "5G"
-          nginx.ingress.kubernetes.io/proxy-body-size: "5G"
-        hosts:
-          - host: outline.onelitefeather.dev
-            paths:
-              - path: /
-                pathType: ImplementationSpecific
-        tls:
-          - secretName: outline-onelitefeather-dev-tls
-            hosts:
-              - outline.onelitefeather.dev
-    collaboration:
-      replicaCount: 1
-      ingress:
-        enabled: true
-        className: ""
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-          ingress.kubernetes.io/proxy-body-size: "5G"
-          nginx.ingress.kubernetes.io/proxy-body-size: "5G"
-        hosts:
-          - host: collaboration.outline.onelitefeather.dev
-            paths:
-              - path: /
-                pathType: ImplementationSpecific
-        tls:
-          - secretName: collaboration-outline-onelitefeather-dev-tls
-            hosts:
-              - collaboration.outline.onelitefeather.dev
+    replicaCount: 1
+    ingress:
+      enabled: true
+      className: ""
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        ingress.kubernetes.io/proxy-body-size: "5G"
+        nginx.ingress.kubernetes.io/proxy-body-size: "5G"
+      hosts:
+        - host: outline.onelitefeather.dev
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: outline-onelitefeather-dev-tls
+          hosts:
+            - outline.onelitefeather.dev
     livenessProbe:
       httpGet:
         path: /_health
