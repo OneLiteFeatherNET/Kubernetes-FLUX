@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "outline.fullname" . }}-frontend
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.labelsFrontend" . | nindent 4 }}
   {{- with .Values.frontend.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

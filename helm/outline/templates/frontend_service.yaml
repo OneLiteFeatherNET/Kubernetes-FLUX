@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "outline.fullname" . }}-frontend
   labels:
-    {{- include "outline.labels" . | nindent 4 }}-frontend
+    {{- include "outline.labelsFrontend" . | nindent 4 }}
 spec:
   type: {{ .Values.frontend.service.type }}
   ports:

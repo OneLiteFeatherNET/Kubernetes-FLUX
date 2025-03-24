@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "outline.fullname" . }}-collaboration
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.labelsCollaboration" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.collaboration.replicaCount }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "outline.labels" . | nindent 8 }}
+        {{- include "outline.labelsCollaboration" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

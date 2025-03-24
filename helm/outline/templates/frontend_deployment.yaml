@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "outline.fullname" . }}-frontend
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.labelsFrontend" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.frontend.replicaCount }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "outline.labels" . | nindent 8 }}
+        {{- include "outline.labelsFrontend" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

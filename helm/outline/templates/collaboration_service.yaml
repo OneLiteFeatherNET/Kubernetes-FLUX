@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "outline.fullname" . }}-collaboration
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.labelsCollaboration" . | nindent 4 }}
 spec:
   type: {{ .Values.collaboration.service.type }}
   ports:

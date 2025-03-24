@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "outline.fullname" . }}-collaboration
   labels:
-    {{- include "outline.labels" . | nindent 4 }}-collaboration
+    {{- include "outline.labelsCollaboration" . | nindent 4 }}
   {{- with .Values.collaboration.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
