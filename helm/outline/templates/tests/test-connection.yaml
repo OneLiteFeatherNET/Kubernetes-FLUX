@@ -3,8 +3,7 @@ kind: Pod
 metadata:
   name: "{{ include "outline.fullname" . }}-test-connection"
   labels:
-    {{- include "outline.labelsFrontend" . | nindent 4 }}
-    {{- include "outline.labelsCollaboration" . | nindent 4 }}
+    {{- include "outline.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
