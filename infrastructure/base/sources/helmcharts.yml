@@ -8,5 +8,4 @@ spec:
   url: ssh://git@github.com/OneLiteFeatherNET/Kubernetes-FLUX.git
   ref:
     semver: "=>1.0.0"
-  gitImplementation: libgit2
 
