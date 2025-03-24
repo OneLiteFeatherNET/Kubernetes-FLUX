@@ -5,9 +5,43 @@ metadata:
   namespace: outline
 spec:
   values:
-    replicaCount: 3
-    service:
-      port: 3000
+    frontend:
+      replicaCount: 3
+      collaborationPrimaryUrl: "wss://collaboration.outline.onelitefeather.dev"
+      ingress:
+        enabled: true
+        className: ""
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          ingress.kubernetes.io/proxy-body-size: "2G"
+          nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+        hosts:
+          - host: outline.onelitefeather.dev
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls:
+          - secretName: outline-onelitefeather-dev-tls
+            hosts:
+              - outline.onelitefeather.dev
+    collaboration:
+      replicaCount: 1
+      ingress:
+        enabled: true
+        className: ""
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          ingress.kubernetes.io/proxy-body-size: "2G"
+          nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+        hosts:
+          - host: collaboration.outline.onelitefeather.dev
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls:
+          - secretName: collaboration-outline-onelitefeather-dev-tls
+            hosts:
+              - collaboration.outline.onelitefeather.dev
     livenessProbe:
       httpGet:
         path: /_health
@@ -21,8 +55,6 @@ spec:
       general:
         nodeEnv: production
         url: "https://outline.onelitefeather.dev"
-        port: 3000
-        collectionUrl: ""
         cdnUrl: ""
         forceHttps: true
         enableUpdates: true
@@ -122,19 +154,3 @@ spec:
         tlsCipher: ""
         secure: true
         existingSecret: ""
-    ingress:
-      enabled: true
-      className: ""
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "2G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
-      hosts:
-        - host: outline.onelitefeather.dev
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-      tls:
-        - secretName: outline-onelitefeather-dev-tls
-          hosts:
-            - outline.onelitefeather.dev
