@@ -103,6 +103,8 @@ spec:
               value: {{ .Values.outline.general.logLevel | quote }}
             - name: COLLABORATION_URL
               value: {{ .Values.frontend.collaborationPrimaryUrl | quote }}
+            - name: FILE_STORAGE_UPLOAD_MAX_SIZE
+              value: {{ .Values.outline.general.maxImportSize | quote }}
 
             # RATE LIMITER
             - name: RATE_LIMITER_ENABLED
