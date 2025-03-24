@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  url: ssh://git@github.com/OneLiteFeatherNET/Kubernetes-FLUX.git
+  url: https://github.com/OneLiteFeatherNET/Kubernetes-FLUX.git
   ref:
     semver: "=>1.0.0"
 
