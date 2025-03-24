@@ -4,7 +4,8 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "outline.fullname" . }}
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.labelsCollaboration" . | nindent 4 }}
+    {{- include "outline.labelsFrontend" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
