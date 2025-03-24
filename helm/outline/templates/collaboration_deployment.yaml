@@ -88,7 +88,7 @@ spec:
               value: "collaboration"
 
             - name: URL
-              value: {{ .Values.outline.general.url | quote }}
+              value: {{ .Values.frontend.collaborationPrimaryUrl | quote }}
             - name: PORT
               value: {{ .Values.collaboration.service.port | quote }}
             - name: FORCE_HTTPS
