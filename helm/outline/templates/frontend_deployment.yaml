@@ -302,8 +302,6 @@ spec:
               value: {{ .Values.outline.fileStorage.s3.forcePathStyle | quote }}
             - name: AWS_S3_ACL
               value: {{ .Values.outline.fileStorage.s3.acl | quote }}
-            - name: AWS_S3_UPLOAD_MAX_SIZE
-              value: {{ .Values.outline.fileStorage.uploadMaxSize | quote }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
