@@ -10,11 +10,11 @@ spec:
       port: 3000
     livenessProbe:
       httpGet:
-        path: /
+        path: /_health
         port: 3000
     readinessProbe:
       httpGet:
-        path: /
+        path: /_health
         port: 3000
     outline:
       # Generic Outline environment variables
