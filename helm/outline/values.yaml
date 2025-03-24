@@ -100,7 +100,7 @@ outline:
     forceHttps: true
     enableUpdates: true
     webConcurrency: 5
-    maxImportSize: 5120000
+    maxImportSize: "5120000"
     utilsSecret: ""
     secretKey: ""
     sslKey: ""
@@ -175,7 +175,7 @@ outline:
       existingSecret: ""
   fileStorage:
     type: s3
-    uploadMaxSize: 26214400
+    uploadMaxSize: "26214400"
     local:
         rootDir: /var/lib/outline/data
     s3:
