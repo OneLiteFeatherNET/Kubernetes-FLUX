@@ -112,19 +112,19 @@ spec:
         tlsCipher: ""
         secure: true
         existingSecret: ""
-  ingress:
-    enabled: true
-    className: ""
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      ingress.kubernetes.io/proxy-body-size: "2G"
-      nginx.ingress.kubernetes.io/proxy-body-size: "2G"
-    hosts:
-      - host: outline.onelitefeather.dev
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls:
-      - secretName: outline-onelitefeather-dev-tls
-        hosts:
-          - outline.onelitefeather.dev
+    ingress:
+      enabled: true
+      className: ""
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        ingress.kubernetes.io/proxy-body-size: "2G"
+        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+      hosts:
+        - host: outline.onelitefeather.dev
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: outline-onelitefeather-dev-tls
+          hosts:
+            - outline.onelitefeather.dev
