@@ -1525,7 +1525,7 @@ spec:
       ## (num_init_children - reserved_connections).
       ## ref: https://github.com/bitnami/containers/tree/main/bitnami/pgpool#configuration
       ##
-      reservedConnections: 1
+      reservedConnections: 0
       ## @param pgpool.maxPool The maximum number of cached connections in each child process (PGPOOL_MAX_POOL)
       ## ref: https://github.com/bitnami/containers/tree/main/bitnami/pgpool#configuration
       ##
