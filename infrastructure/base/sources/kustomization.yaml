@@ -10,3 +10,4 @@ resources:
   - node-red.yml
   - bitnami.yml
   - harbor.yml
+  - helmcharts.yml
