@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "outline.fullname" . }}-frontend
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.labels" . | nindent 4 }}-frontend
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.frontend.replicaCount }}
@@ -33,7 +33,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name }}-frontend
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}

@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: {{ include "outline.fullname" . }}-collaboration
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.labels" . | nindent 4 }}-collaboration
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.collaboration.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -33,7 +33,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name }}-collaboration
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
