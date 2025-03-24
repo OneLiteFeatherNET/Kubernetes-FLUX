@@ -292,14 +292,16 @@ spec:
               {{- end }}
             - name: AWS_REGION
               value: {{ .Values.outline.fileStorage.s3.region | quote }}
-            - name: AWS_UPLOAD_BUCKET_URL
+            - name: AWS_S3_UPLOAD_BUCKET_URL
               value: {{ .Values.outline.fileStorage.s3.uploadBucketUrl | quote }}
-            - name: AWS_UPLOAD_BUCKET_NAME
+            - name: AWS_S3_UPLOAD_BUCKET_NAME
               value: {{ .Values.outline.fileStorage.s3.uploadBucketName | quote }}
-            - name: AWS_FORCE_PATH_STYLE
+            - name: AWS_S3_FORCE_PATH_STYLE
               value: {{ .Values.outline.fileStorage.s3.forcePathStyle | quote }}
-            - name: AWS_ACL
+            - name: AWS_S3_ACL
               value: {{ .Values.outline.fileStorage.s3.acl | quote }}
+            - name: AWS_S3_UPLOAD_MAX_SIZE
+              value: {{ .Values.outline.fileStorage.uploadMaxSize | quote }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
