@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "outline.fullname" . }}
+  name: {{ include "outline.fullname" . }}-frontend
   labels:
     {{- include "outline.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.frontend.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "outline.selectorLabels" . | nindent 6 }}
+      {{- include "outline.selectorLabels" . | nindent 6 }}-frontend
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "outline.labels" . | nindent 8 }}
+        {{- include "outline.labels" . | nindent 8 }}-frontend
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -42,7 +42,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.frontend.service.port }}
               protocol: TCP
           {{- with .Values.livenessProbe }}
           livenessProbe:
@@ -84,11 +84,13 @@ spec:
               {{- else }}
               value: {{ .Values.outline.general.utilsSecret | quote }}
               {{- end }}
+            - name: SERVICES
+              value: "web,worker"
 
             - name: URL
               value: {{ .Values.outline.general.url | quote }}
             - name: PORT
-              value: {{ .Values.outline.general.port | quote }}
+              value: {{ .Values.frontend.service.port | quote }}
             - name: FORCE_HTTPS
               value: {{ .Values.outline.general.forceHttps | quote }}
             - name: ENABLE_UPDATES
@@ -99,6 +101,8 @@ spec:
               value: {{ .Values.outline.general.defaultLanguage | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.outline.general.logLevel | quote }}
+            - name: COLLABORATION_URL
+              value: {{ .Values.frontend.collaborationPrimaryUrl | quote }}
 
             # RATE LIMITER
             - name: RATE_LIMITER_ENABLED
@@ -286,7 +290,16 @@ spec:
               {{- else }}
               value: {{ .Values.outline.fileStorage.s3.secretAccessKey | quote }}
               {{- end }}
-            # ...remaining S3 vars...
+            - name: AWS_REGION
+              value: {{ .Values.outline.fileStorage.s3.region | quote }}
+            - name: AWS_UPLOAD_BUCKET_URL
+              value: {{ .Values.outline.fileStorage.s3.uploadBucketUrl | quote }}
+            - name: AWS_UPLOAD_BUCKET_NAME
+              value: {{ .Values.outline.fileStorage.s3.uploadBucketName | quote }}
+            - name: AWS_FORCE_PATH_STYLE
+              value: {{ .Values.outline.fileStorage.s3.forcePathStyle | quote }}
+            - name: AWS_ACL
+              value: {{ .Values.outline.fileStorage.s3.acl | quote }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

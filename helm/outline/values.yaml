@@ -28,7 +28,6 @@
 # outline.smtp.existingSecret => SMTP_PASSWORD
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 1
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
@@ -44,13 +43,59 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+frontend:
+  replicaCount: 3
+  collaborationPrimaryUrl: "wss://collaboration.chart-example.local"
+  ingress:
+    enabled: false
+    className: ""
+    annotations: { }
+    # kubernetes.io/ingress.class: cilium
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: [ ]
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 3000
+collaboration:
+  replicaCount: 1
+  ingress:
+    enabled: false
+    className: ""
+    annotations: { }
+    # kubernetes.io/ingress.class: cilium
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: collaboration.chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: [ ]
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - collaboration.chart-example.local
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 3000
+
 outline:
   # Generic Outline environment variables
   general:
     nodeEnv: production
     url: "https://outline.apps.example.com"
-    port: 3000
-    collectionUrl: ""
     cdnUrl: ""
     forceHttps: true
     enableUpdates: true
@@ -181,29 +226,7 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 3000
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: cilium
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
