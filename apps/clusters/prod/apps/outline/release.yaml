@@ -7,7 +7,8 @@ spec:
   values:
     frontend:
       replicaCount: 3
-      collaborationPrimaryUrl: "wss://collaboration.outline.onelitefeather.dev"
+      collaborationPrimaryWss: "wss://collaboration.outline.onelitefeather.dev"
+      collaborationPrimaryUrl: "https://collaboration.outline.onelitefeather.dev"
       ingress:
         enabled: true
         className: ""

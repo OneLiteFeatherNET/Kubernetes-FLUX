@@ -102,7 +102,7 @@ spec:
             - name: LOG_LEVEL
               value: {{ .Values.outline.general.logLevel | quote }}
             - name: COLLABORATION_URL
-              value: {{ .Values.frontend.collaborationPrimaryUrl | quote }}
+              value: {{ .Values.frontend.collaborationPrimaryWss | quote }}
             - name: FILE_STORAGE_UPLOAD_MAX_SIZE
               value: {{ .Values.outline.general.maxImportSize | quote }}
 

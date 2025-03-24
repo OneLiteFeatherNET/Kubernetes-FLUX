@@ -45,7 +45,8 @@ fullnameOverride: ""
 
 frontend:
   replicaCount: 3
-  collaborationPrimaryUrl: "wss://collaboration.chart-example.local"
+  collaborationPrimaryWss: "wss://collaboration.chart-example.local"
+  collaborationPrimaryUrl: "https.://collaboration.chart-example.local"
   ingress:
     enabled: false
     className: ""
