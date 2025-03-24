@@ -7,5 +7,5 @@ spec:
   interval: 5m
   url: https://github.com/OneLiteFeatherNET/Kubernetes-FLUX.git
   ref:
-    semver: "=>1.0.0"
+    branch: main
 
