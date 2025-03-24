@@ -50,6 +50,15 @@ app.kubernetes.io/name: {{ include "outline.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "outline.selectorLabelsFrontend" -}}
+app.kubernetes.io/name: {{ include "outline.name" . }}-frontend
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- define "outline.selectorLabelsCollaboration" -}}
+app.kubernetes.io/name: {{ include "outline.name" . }}-frontend
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
 {{/*
 Create the name of the service account to use
 */}}

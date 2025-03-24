@@ -3,14 +3,14 @@ kind: Deployment
 metadata:
   name: {{ include "outline.fullname" . }}-frontend
   labels:
-    {{- include "outline.labels" . | nindent 4 }}-frontend
+    {{- include "outline.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.frontend.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "outline.selectorLabels" . | nindent 6 }}-frontend
+      {{- include "outline.selectorLabelsFrontend" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "outline.labels" . | nindent 8 }}-frontend
+        {{- include "outline.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
