@@ -7,3 +7,4 @@ resources:
   - mariadb-ha
   - minio
   - harbor
+  - outline
