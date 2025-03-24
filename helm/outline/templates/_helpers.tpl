@@ -74,7 +74,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "outline.selectorLabelsCollaboration" -}}
-app.kubernetes.io/name: {{ include "outline.name" . }}-frontend
+app.kubernetes.io/name: {{ include "outline.name" . }}-collaboration
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
