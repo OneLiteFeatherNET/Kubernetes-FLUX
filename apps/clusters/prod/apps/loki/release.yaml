@@ -52,7 +52,7 @@ spec:
           admin: loki-admin
         s3:
           # AWS endpoint URL
-          endpoint: minio.minio.svc.cluster.local:9000
+          endpoint: http://minio.minio.svc.cluster.local:9000
           # AWS region where the S3 bucket is located
           region: us-west-2
           # AWS signature version (e.g., v2 or v4)
