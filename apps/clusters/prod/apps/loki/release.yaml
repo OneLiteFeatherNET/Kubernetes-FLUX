@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: loki
-  namespace: loki
+  namespace: grafana
 spec:
   chart:
     spec:
@@ -30,6 +30,8 @@ spec:
         # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
         max_concurrent: 4
       schemaConfig:
+        memberlist:
+          cluster_label: "loki"
         configs:
           - from: "2025-03-25"
             store: tsdb

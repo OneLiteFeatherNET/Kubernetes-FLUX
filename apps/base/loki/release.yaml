@@ -2,9 +2,9 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: loki
-  namespace: loki
+  namespace: grafana
 spec:
-  releaseName: loki-stack
+  releaseName: loki
   chart:
     spec:
       chart: loki
