@@ -29,9 +29,10 @@ spec:
       querier:
         # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
         max_concurrent: 4
-      schemaConfig:
+      structuredConfig:
         memberlist:
           cluster_label: "loki"
+      schemaConfig:
         configs:
           - from: "2025-03-25"
             store: tsdb

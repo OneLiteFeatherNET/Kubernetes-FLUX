@@ -9,3 +9,4 @@ resources:
   - harbor
   - outline
   - loki
+  - utils/ingress.yaml

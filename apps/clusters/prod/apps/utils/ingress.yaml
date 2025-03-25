@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-pushgateway
+  annotations:
+    cert-manager.io/cluster-issuer: step-ca
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - grafana-push.apps.onelite.feather
+      secretName: grafana-push-apps-onelite-feather-tls
+  rules:
+    - host: grafana-push.apps.onelite.feather
+      http:
+        paths:
+          - path: /loki
+            pathType: Prefix
+            backend:
+              service:
+                name: loki-gateway
+                port:
+                  number: 80
+#          - path: /v1
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: tempo-gateway
+#                port:
+#                  number: 80
+#          - path: /api
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: mimir-nginx
+#                port:
+#                  number: 80
+#          - path: /metrics
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: grafana-loki-prometheus-pushgateway
+#                port:
+#                  number: 9091
