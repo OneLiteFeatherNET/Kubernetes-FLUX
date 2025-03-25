@@ -66,17 +66,17 @@ spec:
             response_header_timeout: 0s
             insecure_skip_verify: true
 
-      minio:
-        enabled: false
+    minio:
+      enabled: false
 
-      deploymentMode: SimpleScalable
-      gateway:
-        service:
-          type: LoadBalancer
+    deploymentMode: SimpleScalable
+    gateway:
+      service:
+        type: LoadBalancer
 
-      backend:
-        replicas: 2
-      read:
-        replicas: 2
-      write:
-        replicas: 3
+    backend:
+      replicas: 2
+    read:
+      replicas: 2
+    write:
+      replicas: 3
