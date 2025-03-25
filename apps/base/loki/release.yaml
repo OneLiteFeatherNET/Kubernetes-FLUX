@@ -4,10 +4,10 @@ metadata:
   name: loki
   namespace: loki
 spec:
-  releaseName: loki
+  releaseName: loki-stack
   chart:
     spec:
-      chart: loki
+      chart: loki-stack
       sourceRef:
         kind: HelmRepository
         name: grafana-labs
