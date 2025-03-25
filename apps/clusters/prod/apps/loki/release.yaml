@@ -75,6 +75,14 @@ spec:
 
     singleBinary:
       replicas: 3
+    chunksCache:
+      resources:
+        requests:
+          memory: 1Gi
+          cpu: 500m
+        limits:
+          memory: 2Gi
+          cpu: 1
 
     # Zero out replica counts of other deployment modes
     backend:
