@@ -18,8 +18,11 @@ spec:
       targetPath: loki.storage.s3.accessKeyId
   values:
     loki:
-      commonConfig:
-        replication_factor: 3
+      ingester:
+        chunk_encoding: snappy
+      querier:
+        # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
+        max_concurrent: 4
       schemaConfig:
         configs:
           - from: "2025-03-25"
@@ -40,8 +43,7 @@ spec:
         allow_structured_metadata: true
         volume_enabled: true
         retention_period: 672h # 28 days retention
-      ruler:
-        enable_api: true
+
       storage:
         type: s3
         bucketNames:
@@ -62,37 +64,17 @@ spec:
           # HTTP configuration settings
           http_config: { }
 
-    minio:
-      enabled: false
+      minio:
+        enabled: false
 
-    deploymentMode: SingleBinary
+      deploymentMode: SimpleScalable
+      gateway:
+        service:
+          type: LoadBalancer
 
-    singleBinary:
-      replicas: 3
-
-    # Zero out replica counts of other deployment modes
-    backend:
-      replicas: 0
-    read:
-      replicas: 0
-    write:
-      replicas: 0
-
-    ingester:
-      replicas: 0
-    querier:
-      replicas: 0
-    queryFrontend:
-      replicas: 0
-    queryScheduler:
-      replicas: 0
-    distributor:
-      replicas: 0
-    compactor:
-      replicas: 0
-    indexGateway:
-      replicas: 0
-    bloomCompactor:
-      replicas: 0
-    bloomGateway:
-      replicas: 0
+      backend:
+        replicas: 2
+      read:
+        replicas: 2
+      write:
+        replicas: 3
