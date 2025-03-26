@@ -49,6 +49,7 @@ spec:
         retention_period: 672h # 28 days retention
 
       storage:
+        filesystem: null
         type: s3
         bucketNames:
           chunks: loki-chunk
