@@ -9,4 +9,5 @@ resources:
   - harbor
   - outline
   - loki
+  - node-red
   - utils/ingress.yaml
