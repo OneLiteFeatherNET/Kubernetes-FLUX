@@ -11,18 +11,23 @@ spec:
     persistence:
       enabled: true
     ingress:
+      annotations:
+        cert-manager.io/cluster-issuer: step-ca
+        ingress.kubernetes.io/proxy-body-size: 2G
+        nginx.ingress.kubernetes.io/proxy-body-size: 2G
+      className: nginx
       enabled: true
-      className: "nginx"
       hosts:
         - host: node-red.apps.onelite.feather
           paths:
             - path: /
               pathType: Prefix
       tls:
-        hosts:
-          - node-red.apps.onelite.feather
-        certificate:
-         enabled: true
-         issuerRef:
-           kind: ClusterIssuer
-           name: "step-ca"
+        - certificate:
+            enabled: true
+            issuerRef:
+              kind: ClusterIssuer
+              name: step-ca
+          hosts:
+            - node-red.apps.onelite.feather
+          secretName: node-red-apps-onelite-feather-tls
