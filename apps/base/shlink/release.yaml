@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: shlink
+  namespace: shlink
+spec:
+  releaseName: shlink
+  chart:
+    spec:
+      chart: ./helm/shlink
+      sourceRef:
+        kind: GitRepository
+        name: helmcharts
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  #
+  values: {}

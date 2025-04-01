@@ -10,4 +10,5 @@ resources:
   - outline
   - loki
   - node-red
+  - shlink
   - utils/ingress.yaml

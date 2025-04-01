@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: shlink
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/shlink/
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: shlink-secret
+    envs:
+      - shlink.env
