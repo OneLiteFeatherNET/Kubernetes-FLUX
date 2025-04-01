@@ -1525,7 +1525,7 @@ spec:
         enabled: false
         ## @param sentinel.masterService.type Redis&reg; Sentinel master service type
         ##
-        type: ClusterIP
+        type: LoadBalancer
         ## @param sentinel.masterService.ports.redis Redis&reg; service port for Redis&reg;
         ##
         ports:
@@ -1945,7 +1945,7 @@ spec:
         enabled: true
         ## @param metrics.service.type Redis&reg; exporter service type
         ##
-        type: ClusterIP
+        type: LoadBalancer
         ## @param metrics.service.ports.http Redis&reg; exporter service port
         ##
         ports:
@@ -1974,7 +1974,8 @@ spec:
         loadBalancerSourceRanges: [ ]
         ## @param metrics.service.annotations Additional custom annotations for Redis&reg; exporter service
         ##
-        annotations: { }
+        annotations:
+          "lbipam.cilium.io/ips": "10.200.32.5"
         ## @param metrics.service.clusterIP Redis&reg; exporter service Cluster IP
         ##
         clusterIP: ""
