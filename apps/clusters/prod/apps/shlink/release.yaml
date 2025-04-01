@@ -32,11 +32,11 @@ spec:
     livenessProbe:
       httpGet:
         path: /rest/health
-        port: 8080
+        port: http
     readinessProbe:
       httpGet:
         path: /rest/health
-        port: 8080
+        port: http
     service:
       port: 8080
     shlink:
