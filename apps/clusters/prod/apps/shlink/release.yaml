@@ -31,11 +31,11 @@ spec:
             - 1lf.link
     livenessProbe:
       httpGet:
-        path: /
+        path: /rest/health
         port: 8080
     readinessProbe:
       httpGet:
-        path: /
+        path: /rest/health
         port: 8080
     shlink:
       database:
