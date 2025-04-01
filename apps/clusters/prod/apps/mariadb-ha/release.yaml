@@ -734,7 +734,7 @@ spec:
         - ReadWriteOnce
       ## @param persistence.size Persistent Volume Size
       ##
-      size: 25Gi
+      size: 200Gi
     ## @param priorityClassName Priority Class Name for Statefulset
     ##
     priorityClassName: ""
