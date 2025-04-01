@@ -99,11 +99,11 @@ resources: {}
 livenessProbe:
   httpGet:
     path: /rest/health
-    port: http
+    port: 8080
 readinessProbe:
   httpGet:
     path: /rest/health
-    port: http
+    port: 8080
 
 autoscaling:
   enabled: false

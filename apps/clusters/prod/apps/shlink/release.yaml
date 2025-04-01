@@ -29,6 +29,16 @@ spec:
         - secretName: 1lf-link-tls
           hosts:
             - 1lf.link
+    livenessProbe:
+      httpGet:
+        path: /rest/health
+        port: 8080
+    readinessProbe:
+      httpGet:
+        path: /rest/health
+        port: 8080
+    service:
+      port: 8080
     shlink:
       database:
         adapter: maria
