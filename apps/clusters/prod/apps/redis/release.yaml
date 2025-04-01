@@ -576,7 +576,7 @@ spec:
       service:
         ## @param master.service.type Redis&reg; master service type
         ##
-        type: ClusterIP
+        type: LoadBalancer
         ## @param master.service.portNames.redis Redis&reg; master service port name
         ##
         portNames:
@@ -630,7 +630,8 @@ spec:
         externalIPs: [ ]
         ## @param master.service.annotations Additional custom annotations for Redis&reg; master service
         ##
-        annotations: {}
+        annotations:
+          io.cilium/lb-ipam-ips: 10.200.32.5
         ## @param master.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
         ## If "ClientIP", consecutive client requests will be directed to the same Pod
         ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
@@ -1945,7 +1946,7 @@ spec:
         enabled: true
         ## @param metrics.service.type Redis&reg; exporter service type
         ##
-        type: LoadBalancer
+        type: ClusterIP
         ## @param metrics.service.ports.http Redis&reg; exporter service port
         ##
         ports:
@@ -1974,8 +1975,7 @@ spec:
         loadBalancerSourceRanges: [ ]
         ## @param metrics.service.annotations Additional custom annotations for Redis&reg; exporter service
         ##
-        annotations:
-          "lbipam.cilium.io/ips": "10.200.32.5"
+        annotations: { }
         ## @param metrics.service.clusterIP Redis&reg; exporter service Cluster IP
         ##
         clusterIP: ""
