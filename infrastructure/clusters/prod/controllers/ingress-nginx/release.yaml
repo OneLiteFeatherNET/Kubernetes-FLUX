@@ -9,6 +9,7 @@ spec:
       version: ">=1.12.0"
   values:
     controller:
+      kind: DaemonSet
       ingressClassResource:
         default: true
       service:
