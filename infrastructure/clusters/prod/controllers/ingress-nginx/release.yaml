@@ -15,7 +15,7 @@ spec:
       service:
         externalTrafficPolicy: Local
         annotations:
-          io.cilium/lb-ipam-ips: 10.200.32.1
+          io.cilium/lb-ipam-ips: "10.200.32.1,10.200.32.4"
       admissionWebhooks:
         timeoutSeconds: 30
       allowSnippetAnnotations: true
