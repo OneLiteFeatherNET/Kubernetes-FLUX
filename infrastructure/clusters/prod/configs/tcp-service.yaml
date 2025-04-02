@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: tcp-services
-  namespace: ingress-nginx
-data:
-  "3306": "mariadb-ha/mariadb-ha-mariadb-galera:3306"
