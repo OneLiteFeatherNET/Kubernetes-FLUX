@@ -816,7 +816,7 @@ spec:
       enabled: true
       ## Initializing the database could take some time
       ##
-      initialDelaySeconds: 120
+      initialDelaySeconds: 300
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1
@@ -832,7 +832,7 @@ spec:
     ##
     readinessProbe:
       enabled: true
-      initialDelaySeconds: 30
+      initialDelaySeconds: 120
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1
