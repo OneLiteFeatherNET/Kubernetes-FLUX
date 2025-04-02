@@ -132,7 +132,7 @@ spec:
     service:
       ## @param service.type Kubernetes service type
       ##
-      type: LoadBalancer
+      type: ClusterIP
       ## @param service.clusterIP Specific cluster IP when service type is cluster IP. Use `None` for headless service
       ## e.g:
       ## clusterIP: None
