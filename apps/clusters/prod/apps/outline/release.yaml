@@ -13,6 +13,12 @@ spec:
         cert-manager.io/cluster-issuer: letsencrypt-prod
         ingress.kubernetes.io/proxy-body-size: "5G"
         nginx.ingress.kubernetes.io/proxy-body-size: "5G"
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          expires -1; # Sendet "Cache-Control: no-cache, no-store, must-revalidate" und Expires in der Vergangenheit
+          # Oder spezifischer:
+          # add_header Cache-Control "no-store, no-cache, must-revalidate";
+          # add_header Pragma "no-cache"; # Für ältere HTTP/1.0 Proxies/Clients
+          # expires 0;
       hosts:
         - host: outline.onelitefeather.dev
           paths:
