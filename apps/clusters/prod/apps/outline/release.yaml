@@ -58,7 +58,7 @@ spec:
         sslCert: ""
         defaultLanguage: en_US
         dropboxKey: ""
-        logLevel: info
+        logLevel: debug
         existingSecret: "outline-secret"
       rateLimiter:
         enabled: false
