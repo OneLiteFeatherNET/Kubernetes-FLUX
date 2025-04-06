@@ -9,6 +9,6 @@ patches:
   - path: release.yaml
 
 secretGenerator:
-  - name: auth-minio-secret
+  - name: auth-grafana-secret
     envs:
       - grafana.env
