@@ -7,20 +7,24 @@ spec:
   chart:
     spec:
       version: "*"
-  valuesFrom:
-    - kind: Secret
-      name: auth-minio-secret
-      valuesKey: GF_S3_SECRET_KEY
-      targetPath: loki.storage.s3.secretAccessKey
-    - kind: Secret
-      name: auth-minio-secret
-      valuesKey: GF_S3_ACCESS_KEY
-      targetPath: loki.storage.s3.accessKeyId
-    - kind: Secret
-      name: auth-minio-secret
-      valuesKey: GF_S3_URL
-      targetPath: loki.storage.s3.s3
+#  valuesFrom:
+#    - kind: Secret
+#      name: auth-minio-secret
+#      valuesKey: GF_S3_SECRET_KEY
+#      targetPath: loki.storage.s3.secretAccessKey
+#    - kind: Secret
+#      name: auth-minio-secret
+#      valuesKey: GF_S3_ACCESS_KEY
+#      targetPath: loki.storage.s3.accessKeyId
+#    - kind: Secret
+#      name: auth-minio-secret
+#      valuesKey: GF_S3_URL
+#      targetPath: loki.storage.s3.s3
   values:
+    imageRenderer:
+      enabled: true
+    persistence:
+      enabled: true
     ingress:
       enabled: true
       # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName

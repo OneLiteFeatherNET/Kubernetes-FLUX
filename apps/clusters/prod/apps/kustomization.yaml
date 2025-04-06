@@ -11,4 +11,5 @@ resources:
   - loki
   - node-red
   - shlink
+  - grafana
   - utils/ingress.yaml
