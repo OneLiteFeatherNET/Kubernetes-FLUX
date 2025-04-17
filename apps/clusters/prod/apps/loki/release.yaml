@@ -24,6 +24,7 @@ spec:
     commonConfig:
       replication_factor: 1
     loki:
+      auth_enabled: false
       ingester:
         chunk_encoding: snappy
       querier:
