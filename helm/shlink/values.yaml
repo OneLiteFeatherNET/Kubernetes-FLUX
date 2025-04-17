@@ -5,14 +5,39 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: shlinkio/shlink
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "stable"
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+shlink:
+  database:
+    # Supported Type: mysql, maria, postgres, mssql
+    driver: 'maria'
+    host: ''
+    name: 'shlink'
+    password: ''
+    port: 3306
+    user: ''
+    # DB_PASSWORD as KEY
+    secretName: ''
+  general:
+   defaultDomain: 's.test'
+   httpsEnabled: true
+   # GEOLITE_LICENSE_KEY as KEY
+   goliteLicenseKey: ''
+   secretName: ''
+   timezone: 'Europe/Helsinki'
+  realtime:
+    redis:
+      servers: ''
+      # REDIS_SERVERS as KEY
+      secretName: ''
+      enabled: true
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -41,7 +66,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ingress:
   enabled: false
@@ -73,11 +98,11 @@ resources: {}
 
 livenessProbe:
   httpGet:
-    path: /
+    path: /rest/health
     port: http
 readinessProbe:
   httpGet:
-    path: /
+    path: /rest/health
     port: http
 
 autoscaling:

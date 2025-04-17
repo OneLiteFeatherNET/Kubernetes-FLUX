@@ -13,6 +13,7 @@ spec:
     remediation:
       retries: 3
   interval: 1m0s
+  timeout: 30m
   # Default values
   # https://github.com/grafana/helm-charts/blob/main/charts/loki-stack/values.yaml
   values: {}

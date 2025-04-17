@@ -50,6 +50,52 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          env:
+            - name: DEFAULT_DOMAIN
+              value: {{ .Values.shlink.general.defaultDomain | quote }}
+            - name: IS_HTTPS_ENABLED
+              value: {{ .Values.shlink.general.httpsEnabled | quote }}
+            - name: GEOLITE_LICENSE_KEY
+              {{- if .Values.shlink.general.secretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.shlink.general.secretName | quote }}
+                  key: GEOLITE_LICENSE_KEY
+              {{- else }}
+              value: {{ .Values.shlink.general.goliteLicenseKey | quote }}
+              {{- end }}
+            - name: TIMEZONE
+              value: {{ .Values.shlink.general.timezone | quote }}
+            - name: DB_DRIVER
+              value: {{ .Values.shlink.database.driver | quote }}
+            - name: DB_HOST
+              value: {{ .Values.shlink.database.host | quote }}
+            - name: DB_NAME
+              value: {{ .Values.shlink.database.name | quote }}
+            - name: DB_USER
+              value: {{ .Values.shlink.database.user | quote }}
+            - name: DB_PASSWORD
+              {{- if .Values.shlink.database.secretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.shlink.database.secretName | quote }}
+                  key: DB_PASSWORD
+              {{- else }}
+              value: {{ .Values.shlink.database.password | quote }}
+              {{- end }}
+            - name: DB_PORT
+              value: {{ .Values.shlink.database.port | quote }}
+            - name: REDIS_PUB_SUB_ENABLED
+              value: {{ .Values.shlink.realtime.redis.enabled | quote }}
+            - name: REDIS_SERVERS
+              {{- if .Values.shlink.realtime.redis.secretName }}
+              valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.shlink.realtime.redis.secretName | quote }}
+                    key: REDIS_SERVERS
+              {{- else }}
+              value: {{ .Values.shlink.realtime.redis.servers | quote }}
+              {{- end }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

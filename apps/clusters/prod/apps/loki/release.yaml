@@ -10,11 +10,11 @@ spec:
   valuesFrom:
     - kind: Secret
       name: auth-minio-secret
-      valuesKey: GF_S3_ACCESS_KEY
+      valuesKey: GF_S3_SECRET_KEY
       targetPath: loki.storage.s3.secretAccessKey
     - kind: Secret
       name: auth-minio-secret
-      valuesKey: GF_S3_SECRET_KEY
+      valuesKey: GF_S3_ACCESS_KEY
       targetPath: loki.storage.s3.accessKeyId
     - kind: Secret
       name: auth-minio-secret

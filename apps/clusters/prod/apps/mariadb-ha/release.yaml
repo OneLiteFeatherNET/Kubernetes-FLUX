@@ -132,7 +132,7 @@ spec:
     service:
       ## @param service.type Kubernetes service type
       ##
-      type: LoadBalancer
+      type: ClusterIP
       ## @param service.clusterIP Specific cluster IP when service type is cluster IP. Use `None` for headless service
       ## e.g:
       ## clusterIP: None
@@ -734,7 +734,7 @@ spec:
         - ReadWriteOnce
       ## @param persistence.size Persistent Volume Size
       ##
-      size: 25Gi
+      size: 500Gi
     ## @param priorityClassName Priority Class Name for Statefulset
     ##
     priorityClassName: ""
@@ -791,7 +791,7 @@ spec:
     ## @param resourcesPreset Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if resources is set (resources is recommended for production).
     ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
     ##
-    resourcesPreset: "small"
+    resourcesPreset: "large"
     ## @param resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
     ## Example:
     ## resources:
@@ -816,7 +816,7 @@ spec:
       enabled: true
       ## Initializing the database could take some time
       ##
-      initialDelaySeconds: 120
+      initialDelaySeconds: 900
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1
@@ -832,7 +832,7 @@ spec:
     ##
     readinessProbe:
       enabled: true
-      initialDelaySeconds: 30
+      initialDelaySeconds: 120
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1

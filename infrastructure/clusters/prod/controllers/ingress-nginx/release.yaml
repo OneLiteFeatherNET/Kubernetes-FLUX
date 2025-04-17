@@ -9,12 +9,13 @@ spec:
       version: ">=1.12.0"
   values:
     controller:
+      kind: DaemonSet
       ingressClassResource:
         default: true
       service:
         externalTrafficPolicy: Local
         annotations:
-          io.cilium/lb-ipam-ips: 10.200.32.1
+          io.cilium/lb-ipam-ips: "10.200.32.1,10.200.32.4"
       admissionWebhooks:
         timeoutSeconds: 30
       allowSnippetAnnotations: true
@@ -35,4 +36,6 @@ spec:
         enable-real-ip: "true"
         use-forwarded-headers: "true"
         forwarded-for-header: "True-Client-IP"
+    tcp:
+      "3306": "mariadb-ha/mariadb-ha-mariadb-galera:3306"
 

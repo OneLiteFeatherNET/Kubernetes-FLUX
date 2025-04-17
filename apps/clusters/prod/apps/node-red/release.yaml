@@ -11,22 +11,23 @@ spec:
     persistence:
       enabled: true
     ingress:
-      enabled: true
-      className: "cilium"
       annotations:
-        kubernetes.io/ingress.class: cilium
         cert-manager.io/cluster-issuer: step-ca
-        kubernetes.io/tls-acme: "true"
+        ingress.kubernetes.io/proxy-body-size: 2G
+        nginx.ingress.kubernetes.io/proxy-body-size: 2G
+      className: nginx
+      enabled: true
       hosts:
         - host: node-red.apps.onelite.feather
           paths:
             - path: /
               pathType: Prefix
       tls:
-        hosts:
-          - node-red.apps.onelite.feather
-        certificate:
-         enabled: true
-         issuerRef:
-           kind: ClusterIssuer
-           name: "step-ca"
+        - certificate:
+            enabled: true
+            issuerRef:
+              kind: ClusterIssuer
+              name: step-ca
+          hosts:
+            - node-red.apps.onelite.feather
+          secretName: node-red-apps-onelite-feather-tls

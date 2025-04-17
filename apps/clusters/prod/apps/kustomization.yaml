@@ -9,4 +9,7 @@ resources:
   - harbor
   - outline
   - loki
+  - node-red
+  - shlink
+  - grafana
   - utils/ingress.yaml
