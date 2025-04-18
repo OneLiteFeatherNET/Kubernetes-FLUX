@@ -65,7 +65,7 @@ spec:
       http:
         paths:
           - path: "/pyroscope(/|$)(.*)"
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: pyroscope
