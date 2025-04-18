@@ -26,13 +26,13 @@ spec:
                 name: loki-gateway
                 port:
                   number: 80
-#          - path: /v1
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: tempo-gateway
-#                port:
-#                  number: 80
+          - path: /pyroscope
+            pathType: Prefix
+            backend:
+              service:
+                name: pyroscope
+                port:
+                  number: 4040
 #          - path: /api
 #            pathType: Prefix
 #            backend:
