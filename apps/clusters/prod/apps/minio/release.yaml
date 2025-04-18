@@ -7,7 +7,7 @@ spec:
   values:
     mode: distributed
     persistence:
-      size: 25Gi
+      size: 100Gi
     auth:
       existingSecret: 'minio-password-secret'
     ingress:
