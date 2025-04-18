@@ -8,6 +8,7 @@ metadata:
     ingress.kubernetes.io/proxy-body-size: "2G"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1$2
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
@@ -26,7 +27,7 @@ spec:
                 name: loki-gateway
                 port:
                   number: 80
-          - path: /pyroscope
+          - path: /pyroscope(/|$)(.*)
             pathType: Prefix
             backend:
               service:
