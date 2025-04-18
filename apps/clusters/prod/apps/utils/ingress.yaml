@@ -1,14 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: grafana-pushgateway
+  name: loki-ingress
   namespace: grafana
   annotations:
     ingress.kubernetes.io/ssl-redirect: "true"
     ingress.kubernetes.io/proxy-body-size: "2G"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "2G"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1$2
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
@@ -27,13 +26,6 @@ spec:
                 name: loki-gateway
                 port:
                   number: 80
-          - path: /pyroscope(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: pyroscope
-                port:
-                  number: 4040
 #          - path: /api
 #            pathType: Prefix
 #            backend:
@@ -48,3 +40,33 @@ spec:
 #                name: grafana-loki-prometheus-pushgateway
 #                port:
 #                  number: 9091
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pyroscope-ingress
+  namespace: grafana
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/proxy-body-size: "2G"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - grafana-push.onelitefeather.dev
+      secretName: grafana-push-onelitefeather-dev-tls
+  rules:
+    - host: grafana-push.onelitefeather.dev
+      http:
+        paths:
+          - path: /pyroscope
+            pathType: Prefix
+            backend:
+              service:
+                name: pyroscope
+                port:
+                  number: 4040
