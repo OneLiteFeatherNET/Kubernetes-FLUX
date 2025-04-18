@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pyroscope
+  namespace: grafana
+spec:
+  releaseName: pyroscope
+  chart:
+    spec:
+      chart: pyroscope
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-labs
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 0
+  interval: 1m0s
+  # Default values
+  # https://github.com/grafana/pyroscope/blob/main/operations/pyroscope/helm/pyroscope/values.yaml
+  values: {}

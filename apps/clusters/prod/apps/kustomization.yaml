@@ -9,6 +9,7 @@ resources:
   - harbor
   - outline
   - loki
+  - pyroscope
   - node-red
   - shlink
   - grafana

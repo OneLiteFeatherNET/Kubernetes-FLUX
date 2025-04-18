@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  chart:
+    spec:
+      version: "*"
+  valuesFrom:
+    - kind: Secret
+      name: auth-minio-secret
+      valuesKey: GF_S3_SECRET_KEY
+      targetPath: pyroscope.structuredConfig.storage.s3.secret_access_key
+    - kind: Secret
+      name: auth-minio-secret
+      valuesKey: GF_S3_ACCESS_KEY
+      targetPath: pyroscope.structuredConfig.storage.s3.access_key_id
+  values:
+    pyroscope:
+      structuredConfig:
+        storage:
+          backend: s3
+          s3:
+            bucket_name: pyroscope
+            region: eu-west-2
+            insecure: true
+            endpoint: minio.minio.svc.cluster.local:9000
