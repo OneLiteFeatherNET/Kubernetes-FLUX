@@ -48,6 +48,7 @@ metadata:
   namespace: grafana
   annotations:
     ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
     ingress.kubernetes.io/proxy-body-size: "2G"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "2G"
