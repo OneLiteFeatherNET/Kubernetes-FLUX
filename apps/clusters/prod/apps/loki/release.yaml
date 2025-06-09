@@ -78,8 +78,8 @@ spec:
 
     deploymentMode: SimpleScalable
 
-    singleBinary:
-      replicas: 3
+#    singleBinary:
+#      replicas: 3
     chunksCache:
       resources:
         requests:
