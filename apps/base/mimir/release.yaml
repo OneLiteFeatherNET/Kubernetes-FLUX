@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  releaseName: mimir
+  chart:
+    spec:
+      chart: mimir-distributed
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-labs
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 0
+  interval: 1m0s
+  # Default values
+  # https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/values.yaml
+  values: {}
