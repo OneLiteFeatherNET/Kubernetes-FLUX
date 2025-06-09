@@ -76,7 +76,7 @@ spec:
     minio:
       enabled: false
 
-    deploymentMode: SingleBinary
+    deploymentMode: SimpleScalable
 
     singleBinary:
       replicas: 3
@@ -91,27 +91,12 @@ spec:
 
     # Zero out replica counts of other deployment modes
     backend:
-      replicas: 0
+      replicas: 2
     read:
-      replicas: 0
+      replicas: 2
     write:
-      replicas: 0
+      replicas: 3
 
-    ingester:
-      replicas: 0
-    querier:
-      replicas: 0
-    queryFrontend:
-      replicas: 0
-    queryScheduler:
-      replicas: 0
-    distributor:
-      replicas: 0
-    compactor:
-      replicas: 0
-    indexGateway:
-      replicas: 0
-    bloomCompactor:
-      replicas: 0
-    bloomGateway:
-      replicas: 0
+    gateway:
+      service:
+        type: LoadBalancer
