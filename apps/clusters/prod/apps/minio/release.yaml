@@ -6,6 +6,7 @@ metadata:
 spec:
   values:
     mode: distributed
+    resourcesPreset: 'small'
     persistence:
       size: 100Gi
     auth:
