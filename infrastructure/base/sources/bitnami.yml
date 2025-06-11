@@ -7,7 +7,7 @@ spec:
   interval: 5m
   url: oci://registry-1.docker.io/bitnamicharts/minio
   ref:
-    semver: "=15.0.7"
+    semver: "=16.0.10"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
