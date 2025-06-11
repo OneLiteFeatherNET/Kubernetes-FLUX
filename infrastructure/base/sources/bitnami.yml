@@ -40,7 +40,7 @@ spec:
   interval: 5m
   url: oci://registry-1.docker.io/bitnamicharts/redis
   ref:
-    semver: "=20.11.3"
+    semver: "=21.2.3"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
