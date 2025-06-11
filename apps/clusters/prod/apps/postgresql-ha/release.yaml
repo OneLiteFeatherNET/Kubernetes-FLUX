@@ -2148,7 +2148,7 @@ spec:
     ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
     backup:
       ## @param backup.enabled Enable the logical dump of the database "regularly"
-      enabled: false
+      enabled: true
       cronjob:
         ## @param backup.cronjob.schedule Set the cronjob parameter schedule
         schedule: "@daily"
@@ -2223,7 +2223,7 @@ spec:
         ## @param backup.cronjob.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if backup.cronjob.resources is set (backup.cronjob.resources is recommended for production).
         ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
         ##
-        resourcesPreset: "nano"
+        resourcesPreset: "micro"
         ## @param backup.cronjob.resources Set container requests and limits for different resources like CPU or memory
         ## Example:
         resources: { }
@@ -2273,7 +2273,7 @@ spec:
             - ReadWriteOnce
           ## @param backup.cronjob.storage.size PVC Storage Request for the backup data volume
           ##
-          size: 8Gi
+          size: 35Gi
           ## @param backup.cronjob.storage.annotations PVC annotations
           ##
           annotations: { }
