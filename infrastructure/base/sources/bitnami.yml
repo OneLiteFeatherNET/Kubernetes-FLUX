@@ -51,4 +51,4 @@ spec:
   interval: 5m
   url: oci://registry-1.docker.io/bitnamicharts/harbor
   ref:
-    semver: "=24.4.0"
+    semver: "=26.7.4"
