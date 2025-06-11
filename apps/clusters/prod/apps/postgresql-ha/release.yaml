@@ -4,9 +4,6 @@ metadata:
   name: postgresql-ha
   namespace: postgresql-ha
 spec:
-  chart:
-    spec:
-      version: "=>16.0.11"
   values:
     # Copyright Broadcom, Inc. All Rights Reserved.
     # SPDX-License-Identifier: APACHE-2.0
