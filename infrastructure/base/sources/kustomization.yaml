@@ -11,3 +11,4 @@ resources:
   - bitnami.yml
   - harbor.yml
   - helmcharts.yml
+  - checkmk.yml
