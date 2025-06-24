@@ -5,7 +5,9 @@ resources:
   - ../../../../infrastructure/base/controllers/ingress-nginx
   - ../../../../infrastructure/base/controllers/cert-manager
   - ../../../../infrastructure/base/controllers/step-certificates
+  - ../../../../infrastructure/base/controllers/checkmk
 patches:
   - path: cert-manager/release.yaml
   - path: step-certificates/release.yaml
   - path: ingress-nginx/release.yaml
+  - path: checkmk/release.yaml
