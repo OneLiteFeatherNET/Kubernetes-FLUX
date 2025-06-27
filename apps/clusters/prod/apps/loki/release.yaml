@@ -52,7 +52,8 @@ spec:
       limits_config:
         allow_structured_metadata: true
         volume_enabled: true
-        retention_period: 672h # 28 days retention
+        retention_period: 336h # 14 days retention
+        max_query_lookback: 336h # 14 days lookback
 
       storage:
         filesystem: null
