@@ -33,6 +33,11 @@ spec:
       structuredConfig:
         memberlist:
           cluster_label: "loki"
+      compactor:
+        retention_enabled: true
+        retention_delete_delay: 2h
+        retention_delete_worker_count: 150
+        delete_request_store: s3
       schemaConfig:
         configs:
           - from: "2025-03-25"
