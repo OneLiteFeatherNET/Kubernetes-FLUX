@@ -8,7 +8,7 @@ spec:
     mode: distributed
     resourcesPreset: 'small'
     persistence:
-      size: 100Gi
+      size: 200Gi
     auth:
       existingSecret: 'minio-password-secret'
     ingress:
