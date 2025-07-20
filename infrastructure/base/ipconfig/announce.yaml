@@ -45,6 +45,6 @@ spec:
         addresses:
           # - ExternalIP
           - LoadBalancerIP
-        selector:
-          matchExpressions:
-            - {key: somekey, operator: NotIn, values: ['never-used-value']}   #Select all the LoadBalancer services to be available externally
+      selector:
+        matchExpressions:
+          - {key: somekey, operator: NotIn, values: ['never-used-value']}   #Select all the LoadBalancer services to be available externally
