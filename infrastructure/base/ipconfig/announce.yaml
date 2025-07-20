@@ -45,6 +45,6 @@ spec:
         addresses:
           # - ExternalIP
           - LoadBalancerIP
-      selector: # <-- select all services
-        matchExpressions:
-          - { key: bgp, operator: NotIn, values: [ 'not-allowed' ] }
+        selector:
+          matchExpressions:
+            - {key: somekey, operator: NotIn, values: ['never-used-value']}   #Select all the LoadBalancer services to be available externally
