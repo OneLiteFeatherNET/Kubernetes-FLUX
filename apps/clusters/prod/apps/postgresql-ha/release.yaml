@@ -2122,7 +2122,7 @@ spec:
       ## Values: ClientIP or None
       ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
       ##
-      sessionAffinity: "None"
+      sessionAffinity: "ClientIP"
       ## @param service.sessionAffinityConfig Additional settings for the sessionAffinity
       ## sessionAffinityConfig:
       ##   clientIP:
