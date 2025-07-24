@@ -25,6 +25,14 @@ spec:
       replication_factor: 1
     loki:
       auth_enabled: false
+      commonConfig:
+        ring:
+          kvstore:
+            # Backend storage to use for the ring. Supported values are: consul, etcd,
+            # inmemory, memberlist, multi.
+            # CLI flag: -common.storage.ring.store
+            # https://github.com/grafana/loki/issues/12138
+            store: memberlist
       ingester:
         chunk_encoding: snappy
       querier:
