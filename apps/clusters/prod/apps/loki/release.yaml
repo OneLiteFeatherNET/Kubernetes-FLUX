@@ -102,8 +102,6 @@ spec:
         maxReplicas: 10
         targetCPUUtilizationPercentage: 80
         targetMemoryUtilizationPercentage: 85
-      persistence:
-        enabled: false
 
     # Zero out replica counts of other deployment modes
     backend:
