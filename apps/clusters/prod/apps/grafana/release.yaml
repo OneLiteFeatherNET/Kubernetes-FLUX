@@ -25,6 +25,8 @@ spec:
       enabled: true
     persistence:
       enabled: true
+    grafana.ini:
+      root_url: 'https://grafana.onelitefeather.dev'
     ingress:
       enabled: true
       # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
