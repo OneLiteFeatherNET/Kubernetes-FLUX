@@ -96,6 +96,14 @@ spec:
 
     singleBinary:
       replicas: 3
+      autoscaling:
+        enabled: true
+        minReplicas: 3
+        maxReplicas: 10
+        targetCPUUtilizationPercentage: 80
+        targetMemoryUtilizationPercentage: 85
+      persistence:
+        enabled: false
 
     # Zero out replica counts of other deployment modes
     backend:
@@ -123,6 +131,16 @@ spec:
       replicas: 0
     bloomGateway:
       replicas: 0
+
+    chunksCache:
+      resources:
+        requests:
+          memory: 1Gi
+          cpu: 500m
+        limits:
+          memory: 2Gi
+          cpu: 1
+
 
     gateway:
       service:
