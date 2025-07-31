@@ -51,10 +51,10 @@ spec:
       replicas: 3
       resources:
         limits:
-          memory: 2.1Gi
+          memory: 512Mi
         requests:
           cpu: 200m
-          memory: 1Gi
+          memory: 200Mi
       topologySpreadConstraints: { }
       affinity:
         podAntiAffinity:
