@@ -22,7 +22,7 @@ spec:
       targetPath: grafana\.ini.database.password
   values:
     imageRenderer:
-      enabled: true
+      enabled: false
     deploymentStrategy:
       type: RollingUpdate
     persistence:
