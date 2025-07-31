@@ -21,6 +21,7 @@ spec:
       valuesKey: GF_POSTGRESQL_PASSWORD
       targetPath: grafana\.ini.database.password
   values:
+    replicas: 2
     assertNoLeakedSecrets: false
     imageRenderer:
       enabled: true
