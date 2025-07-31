@@ -12,3 +12,4 @@ resources:
   - harbor.yml
   - helmcharts.yml
   - checkmk.yml
+  - arc.yml
