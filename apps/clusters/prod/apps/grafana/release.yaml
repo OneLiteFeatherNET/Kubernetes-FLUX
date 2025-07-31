@@ -45,7 +45,7 @@ spec:
         host: postgresql-ha-pgpool.postgresql-ha.svc.cluster.local:5432
         name: grafana
         user: grafana
-        ssl_mode: require
+        ssl_mode: disable
       panels:
         disable_sanitize_html: true
       auth.azuread:
