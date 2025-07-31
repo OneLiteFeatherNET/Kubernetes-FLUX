@@ -1,9 +1,10 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: k8s-runners
+  name: actions-runner-controller
   namespace: actions-runner-controller
 spec:
+  releaseName: k8s-runners
   valuesFrom:
     - kind: Secret
       name: actions-runner-controller-secret
