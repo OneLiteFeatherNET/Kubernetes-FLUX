@@ -12,5 +12,6 @@ resources:
   - node-red
   - shlink
   - grafana
+  - mimir
 #  - action-runner-controller
   - utils/ingress.yaml
