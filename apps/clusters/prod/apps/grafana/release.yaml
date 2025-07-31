@@ -59,6 +59,14 @@ spec:
         role_attribute_strict: false
         allow_assign_grafana_admin: false
     headlessService: true
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Logging
+            type: loki
+            url: http://loki-gateway.grafana.svc.cluster.local:80
+            isDefault: true
 
     ingress:
       enabled: true
