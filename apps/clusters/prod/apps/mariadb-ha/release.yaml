@@ -172,7 +172,7 @@ spec:
       ## @param service.externalTrafficPolicy %%MAIN_CONTAINER_NAME%% service external traffic policy
       ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
       ##
-      externalTrafficPolicy: Cluster
+      externalTrafficPolicy: Local
       ## @param service.annotations Additional annotations for MariaDB Galera service
       ## This can be used toset the LoadBalancer service type to internal only.
       ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
@@ -816,7 +816,7 @@ spec:
       enabled: true
       ## Initializing the database could take some time
       ##
-      initialDelaySeconds: 900
+      initialDelaySeconds: 300
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1
@@ -832,7 +832,7 @@ spec:
     ##
     readinessProbe:
       enabled: true
-      initialDelaySeconds: 120
+      initialDelaySeconds: 60
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1

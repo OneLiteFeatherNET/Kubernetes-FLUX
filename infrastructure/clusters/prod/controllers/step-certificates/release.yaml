@@ -22,6 +22,7 @@ spec:
             type: LoadBalancer
             annotations:
                 io.cilium/lb-ipam-ips: 10.200.32.2
+            externalTrafficPolicy: Local
         # Helm template
         inject:
             enabled: true

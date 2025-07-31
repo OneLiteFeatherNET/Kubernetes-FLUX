@@ -2114,7 +2114,7 @@ spec:
       ## @param service.externalTrafficPolicy Enable client source IP preservation
       ## ref https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
       ##
-      externalTrafficPolicy: Cluster
+      externalTrafficPolicy: Local
       ## @param service.extraPorts Extra ports to expose (normally used with the `sidecar` value)
       ##
       extraPorts: [ ]
@@ -2122,7 +2122,7 @@ spec:
       ## Values: ClientIP or None
       ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
       ##
-      sessionAffinity: "None"
+      sessionAffinity: "ClientIP"
       ## @param service.sessionAffinityConfig Additional settings for the sessionAffinity
       ## sessionAffinityConfig:
       ##   clientIP:
