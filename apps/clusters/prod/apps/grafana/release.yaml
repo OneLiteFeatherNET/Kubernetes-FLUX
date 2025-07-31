@@ -21,8 +21,9 @@ spec:
       valuesKey: GF_POSTGRESQL_PASSWORD
       targetPath: grafana\.ini.database.password
   values:
+    assertNoLeakedSecrets: false
     imageRenderer:
-      enabled: false
+      enabled: true
     deploymentStrategy:
       type: RollingUpdate
     persistence:
