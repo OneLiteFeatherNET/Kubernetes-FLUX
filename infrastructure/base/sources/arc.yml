@@ -1,8 +1,11 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
+kind: OCIRepository
 metadata:
-  name: arc-chart
+  name: gha-runner-scale-set
   namespace: flux-system
 spec:
   interval: 5m
-  url: https://actions-runner-controller.github.io/actions-runner-controller
+  url: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+  ref:
+    semver: "=0.12.1"
+

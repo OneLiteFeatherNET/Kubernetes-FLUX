@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: k8s-runners
+  namespace: actions-runner-controller
+spec:
+  valuesFrom:
+    - kind: Secret
+      name: actions-runner-controller-secret
+      valuesKey: GITHUB_TOKEN
+      targetPath: githubConfigSecret.github_token
+    - kind: Secret
+      name: actions-runner-controller-secret
+      valuesKey: GITHUB_CONFIG_URL
+      targetPath: githubConfigSecret.githubConfigUrl
