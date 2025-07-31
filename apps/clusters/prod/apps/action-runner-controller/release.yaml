@@ -16,4 +16,5 @@ spec:
       targetPath: githubConfigSecret.githubConfigUrl
   values:
     controllerServiceAccount:
-      name: k8s-runners
+      namespace: actions-runner-controller
+      name: actions-runner-controller-gha-rs-controller
