@@ -42,5 +42,37 @@ spec:
             s3:
              bucket_name: "mimir"
              endpoint: "minio.minio.svc.cluster.local:9000"
+             insecure: true
              http:
               insecure_skip_verify: true
+    store_gateway:
+      persistentVolume:
+        size: 10Gi
+      replicas: 3
+      resources:
+        limits:
+          memory: 2.1Gi
+        requests:
+          cpu: 200m
+          memory: 1Gi
+      topologySpreadConstraints: { }
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: target # support for enterprise.legacyLabels
+                    operator: In
+                    values:
+                      - store-gateway
+              topologyKey: 'kubernetes.io/hostname'
+
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                      - store-gateway
+              topologyKey: 'kubernetes.io/hostname'
+      zoneAwareReplication:
+        topologyKey: 'kubernetes.io/hostname'
