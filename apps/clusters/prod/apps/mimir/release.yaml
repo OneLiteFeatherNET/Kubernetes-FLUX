@@ -15,11 +15,11 @@ spec:
     - kind: Secret
       name: auth-minio-secret
       valuesKey: GF_S3_SECRET_KEY
-      targetPath: spec.values.mimir.structuredConfig.common.storage.s3.secret_access_key
+      targetPath: mimir.structuredConfig.common.storage.s3.secret_access_key
     - kind: Secret
       name: auth-minio-secret
       valuesKey: GF_S3_ACCESS_KEY
-      targetPath: spec.values.mimir.structuredConfig.common.storage.s3.access_key_id
+      targetPath: mimir.structuredConfig.common.storage.s3.access_key_id
   # Default values
   # https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/values.yaml
   values:
