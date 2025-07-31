@@ -7,27 +7,58 @@ spec:
   chart:
     spec:
       version: "*"
-#  valuesFrom:
-#    - kind: Secret
-#      name: auth-minio-secret
-#      valuesKey: GF_S3_SECRET_KEY
-#      targetPath: loki.storage.s3.secretAccessKey
-#    - kind: Secret
-#      name: auth-minio-secret
-#      valuesKey: GF_S3_ACCESS_KEY
-#      targetPath: loki.storage.s3.accessKeyId
-#    - kind: Secret
-#      name: auth-minio-secret
-#      valuesKey: GF_S3_URL
-#      targetPath: loki.storage.s3.s3
+  valuesFrom:
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GF_AUTH_AZUREAD_CLIENT_ID
+      targetPath: grafana\.ini.auth\.azuread.client_id
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GF_AUTH_AZUREAD_CLIENT_SECRET
+      targetPath: grafana\.ini.auth\.azuread.client_secret
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GF_POSTGRESQL_PASSWORD
+      targetPath: grafana\.ini.database.password
   values:
     imageRenderer:
       enabled: true
+    deploymentStrategy:
+      type: RollingUpdate
     persistence:
-      enabled: true
+      enabled: false
+    service:
+      port: 3000
     grafana.ini:
-      root_url: 'https://grafana.onelitefeather.dev'
-      domain: "grafana.onelitefeather.dev"
+      server:
+        root_url: 'https://%(domain)s/'
+        domain: "grafana.onelitefeather.dev"
+        serve_from_sub_path: true
+      log:
+        mode: console
+      log.console:
+        level: warn
+        format: json
+      database:
+        type: postgres
+        host: postgresql-ha-pgpool.postgresql-ha.svc.cluster.local:5432
+        name: grafana
+        user: grafana
+        ssl_mode: require
+      panels:
+        disable_sanitize_html: true
+      auth.azuread:
+        name: Azure AD
+        enabled: true
+        allow_sign_up: true
+        scopes: openid email profile
+        auth_url: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/oauth2/v2.0/authorize
+        token_url: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/oauth2/v2.0/token
+        allowed_domains: onelitefeather.net
+        role_attribute_strict: false
+        allow_assign_grafana_admin: false
+    headlessService: true
+
     ingress:
       enabled: true
       # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
