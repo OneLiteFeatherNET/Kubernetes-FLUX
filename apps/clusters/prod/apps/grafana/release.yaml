@@ -36,6 +36,10 @@ spec:
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD_STARDUST
       targetPath: datasources.datasources\.yaml.datasources[5].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD_PLOTSQUARED
+      targetPath: datasources.datasources\.yaml.datasources[6].secureJsonData.password
   values:
     replicas: 2
     assertNoLeakedSecrets: false
@@ -124,6 +128,16 @@ spec:
             user: stardust
             jsonData:
               database: stardust
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: PlotSquared
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
+            user: plotsquared
+            jsonData:
+              database: plotsquared
               maxOpenConns: 100
               maxIdleConns: 100
               maxIdleConnsAuto: true
