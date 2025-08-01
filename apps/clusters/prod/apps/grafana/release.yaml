@@ -116,7 +116,7 @@ spec:
               connMaxLifetime: 14400
           - name: PlotSquared
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
             user: root
             jsonData:
               database: plotsquared
@@ -126,7 +126,7 @@ spec:
               connMaxLifetime: 14400
           - name: LuckPerms
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
             user: root
             jsonData:
               database: luckperms
@@ -136,7 +136,7 @@ spec:
               connMaxLifetime: 14400
           - name: BlueMap
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
             user: root
             jsonData:
               database: bluemap
@@ -146,7 +146,7 @@ spec:
               connMaxLifetime: 14400
           - name: ShLink
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
             user: root
             jsonData:
               database: shlink
@@ -156,7 +156,7 @@ spec:
               connMaxLifetime: 14400
           - name: StarDust
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
             user: root
             jsonData:
               database: stardust
@@ -166,7 +166,7 @@ spec:
               connMaxLifetime: 14400
           - name: PlayerKits
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
             user: root
             jsonData:
               database: playerkists
@@ -176,7 +176,7 @@ spec:
               connMaxLifetime: 14400
           - name: CloudNet
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
             user: root
             jsonData:
               database: cloudnet
