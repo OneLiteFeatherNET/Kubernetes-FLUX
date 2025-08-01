@@ -22,7 +22,7 @@ spec:
       targetPath: grafana\.ini.database.password
     - kind: Secret
       name: auth-grafana-secret
-      valuesKey: GRAFANA_MYSQL_PASSWORD
+      valuesKey: GRAFANA_MYSQL_PASSWORD_COREPROTECT
       targetPath: datasources.datasources\.yaml.datasources[2].secureJsonData.password
   values:
     replicas: 2
@@ -76,10 +76,10 @@ spec:
             type: prometheus
             url: http://mimir-nginx.grafana.svc.cluster:80/prometheus
             isDefault: false
-          - name: MariaDB K8S
+          - name: CoreProtect
             type: mysql
             url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
-            user: root
+            user: coreprotect
             jsonData:
               database: coreprotect
               maxOpenConns: 100
