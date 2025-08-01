@@ -23,35 +23,35 @@ spec:
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[2].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[2].secureJsonData.password
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[3].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[3].secureJsonData.password
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[4].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[4].secureJsonData.password
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[5].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[5].secureJsonData.password
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[6].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[6].secureJsonData.password
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[7].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[7].secureJsonData.password
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[8].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[8].secureJsonData.password
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD
-      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[9].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[9].secureJsonData.password
   values:
     replicas: 2
     assertNoLeakedSecrets: false
