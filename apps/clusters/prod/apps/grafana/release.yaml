@@ -31,7 +31,11 @@ spec:
     - kind: Secret
       name: auth-grafana-secret
       valuesKey: GRAFANA_MYSQL_PASSWORD_BLUEMAP
-      targetPath: datasources.datasources\.yaml.datasources[3].secureJsonData.password
+      targetPath: datasources.datasources\.yaml.datasources[4].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD_STARDUST
+      targetPath: datasources.datasources\.yaml.datasources[5].secureJsonData.password
   values:
     replicas: 2
     assertNoLeakedSecrets: false
@@ -110,6 +114,16 @@ spec:
             user: bluemap
             jsonData:
               database: bluemap
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: StarDust
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
+            user: stardust
+            jsonData:
+              database: stardust
               maxOpenConns: 100
               maxIdleConns: 100
               maxIdleConnsAuto: true
