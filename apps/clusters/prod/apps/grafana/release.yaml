@@ -20,6 +20,38 @@ spec:
       name: auth-grafana-secret
       valuesKey: GF_POSTGRESQL_PASSWORD
       targetPath: grafana\.ini.database.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[2].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[3].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[4].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[5].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[6].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[7].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[8].secureJsonData.password
+    - kind: Secret
+      name: auth-grafana-secret
+      valuesKey: GRAFANA_MYSQL_PASSWORD
+      targetPath: grafana\.ini.datasources.datasources\.yaml.datasources[9].secureJsonData.password
   values:
     replicas: 2
     assertNoLeakedSecrets: false
@@ -72,6 +104,86 @@ spec:
             type: prometheus
             url: http://mimir-nginx.grafana.svc.cluster:80/prometheus
             isDefault: false
+          - name: CoreProtect
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: coreprotect
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: PlotSquared
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: plotsquared
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: LuckPerms
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: luckperms
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: BlueMap
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: bluemap
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: ShLink
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: shlink
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: StarDust
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: stardust
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: PlayerKits
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: playerkists
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
+          - name: CloudNet
+            type: mysql
+            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster:3306
+            user: root
+            jsonData:
+              database: cloudnet
+              maxOpenConns: 100
+              maxIdleConns: 100
+              maxIdleConnsAuto: true
+              connMaxLifetime: 14400
 
     ingress:
       enabled: true
