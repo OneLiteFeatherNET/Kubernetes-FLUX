@@ -68,6 +68,10 @@ spec:
             type: loki
             url: http://loki-gateway.grafana.svc.cluster.local:80
             isDefault: true
+          - name: Metrics
+            type: prometheus
+            url: http://mimir-nginx.grafana.svc.cluster:80/prometheus
+            isDefault: false
 
     ingress:
       enabled: true
