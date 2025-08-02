@@ -39,4 +39,4 @@ spec:
               service:
                 name: pushgateway-prometheus-pushgateway
                 port:
-                  number: 8080
+                  number: 9091
