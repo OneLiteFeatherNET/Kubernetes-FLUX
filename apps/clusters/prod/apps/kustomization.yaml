@@ -13,6 +13,6 @@ resources:
   - shlink
   - grafana
   - mimir
-  -
+  - pushgateway
 #  - action-runner-controller
   - utils/ingress.yaml
