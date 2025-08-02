@@ -33,3 +33,10 @@ spec:
                 name: mimir-nginx
                 port:
                   number: 80
+          - path: /metrics
+            pathType: Prefix
+            backend:
+              service:
+                name: pushgateway-prometheus-pushgateway
+                port:
+                  number: 8080
