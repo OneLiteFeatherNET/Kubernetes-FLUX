@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+  namespace: grafana
+spec:
+  releaseName: alloy
+  chart:
+    spec:
+      chart: alloy
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-labs
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 0
+  interval: 1m0s
+  # Default values
+  # https://raw.githubusercontent.com/grafana/alloy/main/operations/helm/charts/alloy/values.yaml
+  values: {}
