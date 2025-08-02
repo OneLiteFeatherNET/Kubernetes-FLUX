@@ -33,10 +33,3 @@ spec:
                 name: mimir-nginx
                 port:
                   number: 80
-          - path: /metrics
-            pathType: Prefix
-            backend:
-              service:
-                name: mimir-nginx
-                port:
-                  number: 80
