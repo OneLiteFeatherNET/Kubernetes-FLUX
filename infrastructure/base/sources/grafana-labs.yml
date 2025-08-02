@@ -6,3 +6,15 @@ metadata:
 spec:
   interval: 5m
   url: https://grafana.github.io/helm-charts
+---
+# oci://ghcr.io/prometheus-community/charts/prometheus-pushgateway
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: prometheus-pushgateway
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://ghcr.io/prometheus-community/charts/prometheus-pushgateway
+  ref:
+    semver: "=3.4.1"
