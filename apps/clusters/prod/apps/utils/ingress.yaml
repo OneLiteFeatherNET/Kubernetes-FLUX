@@ -33,10 +33,10 @@ spec:
                 name: mimir-nginx
                 port:
                   number: 80
-#          - path: /metrics
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: grafana-loki-prometheus-pushgateway
-#                port:
-#                  number: 9091
+          - path: /metrics
+            pathType: Prefix
+            backend:
+              service:
+                name: mimir-nginx
+                port:
+                  number: 80
