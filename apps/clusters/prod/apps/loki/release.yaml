@@ -138,3 +138,8 @@ spec:
         limits:
           memory: 2Gi
           cpu: 1
+
+
+    gateway:
+      service:
+        type: LoadBalancer
