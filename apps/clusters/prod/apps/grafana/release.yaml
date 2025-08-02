@@ -90,7 +90,7 @@ spec:
             isDefault: true
           - name: Metrics
             type: prometheus
-            url: http://mimir-nginx.grafana.svc.cluster:80/prometheus
+            url: http://mimir-nginx.grafana.svc.cluster.local:80/prometheus
             isDefault: false
           - name: CoreProtect
             type: mysql
