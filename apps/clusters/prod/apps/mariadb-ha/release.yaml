@@ -395,7 +395,7 @@ spec:
         forceBootstrap: true
         ## @param galera.bootstrap.bootstrapFromNode Node to bootstrap from, you will need to change this parameter in case you want to bootstrap from other node
         ##
-        bootstrapFromNode: 0
+        bootstrapFromNode: 1
         ## @param galera.bootstrap.forceSafeToBootstrap Force `safe_to_bootstrap: 1` in `grastate.date` file
         ## This will set safe_to_bootstrap=1 in the node indicated by bootstrapFromNode.
         ##
