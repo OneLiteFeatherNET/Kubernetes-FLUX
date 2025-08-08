@@ -143,3 +143,6 @@ spec:
     gateway:
       service:
         type: LoadBalancer
+        # -- Annotations for the gateway service
+        annotations:
+          io.cilium/lb-ipam-ips: 10.200.32.6
