@@ -1,25 +1,195 @@
+// === Generated from your template (kept your remote_write URL) ===
+// Goal: scrape Prometheus metrics and collect Kubernetes logs & events across ALL namespaces.
+// Notes:
+// - Uses discovery.kubernetes without namespace filters (default = all namespaces) — see docs.
+// - For metrics, only Pods/Services annotated with `prometheus.io/scrape: "true"` are scraped.
+//   You can override path/port via `prometheus.io/path` and `prometheus.io/port` annotations.
+// - For logs, loki.source.kubernetes tails container logs over the Kubernetes API (no DaemonSet needed).
+// - Set environment variables in your Deployment for LOKI_URL (and optionally PROM_REMOTE_WRITE_URL).
+//
+// Original snippet for reference:
+// discovery.kubernetes "pods" {
+//   role = "pod"
+//   /*namespaces {
+//     own_namespace = true
+//     names         = ["grafana"]
+//   }*/
+// }
+// discovery.kubernetes "services" {
+//   role = "service"
+// }
+// 
+// prometheus.scrape "pods" {
+//   targets    = discovery.kubernetes.pods.targets
+//   forward_to = [prometheus.remote_write.default.receiver]
+// }
+// prometheus.scrape "services" {
+//   targets    = discovery.kubernetes.services.targets
+//   forward_to = [prometheus.remote_write.default.receiver]
+// }
+// 
+// prometheus.remote_write "default" {
+//   endpoint {
+//     url = "http://mimir-nginx.grafana.svc.cluster.local/api/v1/push"
+//   }
+// }
+
+logging {
+  level  = sys.env("ALLOY_LOG_LEVEL") // default INFO if unset
+  format = "logfmt"
+}
+
+// -----------------------------
+// Kubernetes discovery (all ns)
+// -----------------------------
 discovery.kubernetes "pods" {
   role = "pod"
-  /*namespaces {
-    own_namespace = true
-    names         = ["grafana"]
-  }*/
 }
-discovery.kubernetes "services" {
-  role = "service"
+discovery.kubernetes "endpoints" {
+  role = "endpoints"
+}
+
+// -----------------------------
+// METRICS (Prometheus) pipeline
+// -----------------------------
+
+// Pods: respect standard Prometheus annotations
+discovery.relabel "pods_metrics" {
+  targets = discovery.kubernetes.pods.targets
+
+  // scrape=true
+  rule {
+    action        = "keep"
+    source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+    regex         = "true"
+  }
+
+  // custom path
+  rule {
+    action        = "replace"
+    source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+    target_label  = "__metrics_path__"
+    regex         = "(.+)"
+  }
+
+  // custom port
+  rule {
+    action        = "replace"
+    source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+    target_label  = "__address__"
+    regex         = "([^:]+)(?::\d+)?;(\d+)"
+    replacement   = "$1:$2"
+  }
+
+  // add pod labels as Prom labels (careful with cardinality)
+  rule { action = "labelmap" regex = "__meta_kubernetes_pod_label_(.+)" }
+
+  // common labels
+  rule { action = "replace" source_labels = ["__meta_kubernetes_namespace"]       target_label = "namespace" }
+  rule { action = "replace" source_labels = ["__meta_kubernetes_pod_name"]        target_label = "pod" }
+  rule { action = "replace" source_labels = ["__meta_kubernetes_pod_container_name"] target_label = "container" }
 }
 
 prometheus.scrape "pods" {
-  targets    = discovery.kubernetes.pods.targets
-  forward_to = [prometheus.remote_write.default.receiver]
-}
-prometheus.scrape "services" {
-  targets    = discovery.kubernetes.services.targets
+  targets    = discovery.relabel.pods_metrics.output
   forward_to = [prometheus.remote_write.default.receiver]
 }
 
-prometheus.remote_write "default" {
-  endpoint {
-    url = "http://mimir-nginx.grafana.svc.cluster.local/api/v1/push"
+// Services/Endpoints: respect standard annotations
+discovery.relabel "svc_metrics" {
+  targets = discovery.kubernetes.endpoints.targets
+
+  // scrape=true
+  rule {
+    action        = "keep"
+    source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scrape"]
+    regex         = "true"
   }
+
+  // custom path
+  rule {
+    action        = "replace"
+    source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_path"]
+    target_label  = "__metrics_path__"
+    regex         = "(.+)"
+  }
+
+  // custom port
+  rule {
+    action        = "replace"
+    source_labels = ["__address__", "__meta_kubernetes_service_annotation_prometheus_io_port"]
+    target_label  = "__address__"
+    regex         = "([^:]+)(?::\d+)?;(\d+)"
+    replacement   = "$1:$2"
+  }
+
+  // add service labels as Prom labels
+  rule { action = "labelmap" regex = "__meta_kubernetes_service_label_(.+)" }
+
+  // common labels
+  rule { action = "replace" source_labels = ["__meta_kubernetes_namespace"] target_label = "namespace" }
+  rule { action = "replace" source_labels = ["__meta_kubernetes_service_name"] target_label = "service" }
+}
+
+prometheus.scrape "services" {
+  targets    = discovery.relabel.svc_metrics.output
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+// Remote write (kept your original URL; you can also set PROM_REMOTE_WRITE_URL to override)
+prometheus.remote_write "default" {
+  external_labels = {
+    "cluster"     = sys.env("CLUSTER"),         // optional
+    "__replica__" = sys.env("KUBE_POD_NAME"),   // good for HA fanout
+  }
+  endpoint {
+    url = coalesce(sys.env("PROM_REMOTE_WRITE_URL"), "http://mimir-nginx.grafana.svc.cluster.local/api/v1/push")
+    // headers = { "X-Scope-OrgID" = sys.env("PROM_TENANT") } // Grafana Cloud / Mimir multi-tenant
+  }
+}
+
+// -----------------------------
+// LOGS (Loki) pipeline (all ns)
+// -----------------------------
+
+loki.write "default" {
+  endpoint {
+    url = sys.env("LOKI_URL") // e.g. http://loki-gateway.grafana.svc.cluster.local/loki/api/v1/push
+    // tenant_id = sys.env("LOKI_TENANT_ID")
+    // basic_auth { username = sys.env("LOKI_USERNAME"); password = sys.env("LOKI_PASSWORD") }
+  }
+}
+
+// Pod container logs via Kubernetes API
+loki.source.kubernetes "pods" {
+  targets    = discovery.kubernetes.pods.targets
+  forward_to = [loki.process.k8s_logs.receiver]
+}
+
+// Enrich with Kubernetes metadata; drop nothing by default
+loki.process "k8s_logs" {
+  stage.kubernetes {}        // add pod, namespace, labels, etc.
+  // Example filters (uncomment if needed):
+  // stage.drop { expression = "contains(line, "/healthz") or contains(line, "/readyz") or contains(line, "/livez")" }
+  forward_to = [loki.write.default.receiver]
+}
+
+// Kubernetes Events (all namespaces by default)
+loki.source.kubernetes_events "events" {
+  // log_format = "json" // defaults to "logfmt"
+  forward_to = [loki.process.k8s_events.receiver]
+}
+
+loki.process "k8s_events" {
+  // If using default logfmt, parse and add a few useful labels
+  stage.logfmt {}
+  stage.labels {
+    values = {
+      "level"     = "type",
+      "reason"    = "reason",
+      "obj_kind"  = "involvedObject.kind",
+      "obj_name"  = "involvedObject.name",
+    }
+  }
+  forward_to = [loki.write.default.receiver]
 }
