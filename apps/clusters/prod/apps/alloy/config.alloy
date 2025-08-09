@@ -1,46 +1,25 @@
-// === Grafana Alloy — final config ===
-// Cluster-wide metrics & logs (all namespaces).
-// - Prometheus metrics: opt-in via standard annotations.
-// - Logs: Kubernetes Pod logs + Kubernetes Events.
-// - Loki write endpoint: baked in (your gateway).
-// - Ingress-NGINX helper: parses JSON logs and sets a few low-cardinality labels.
-//
-// Ops tips:
-// * Keep labels conservative to avoid high cardinality in Loki/Prometheus.
-// * You can override endpoints via env vars if needed.
-//
-// ----- Global logging for Alloy itself -----
 logging {
-  level  = sys.env("ALLOY_LOG_LEVEL") // default INFO if unset
+  level  = sys.env("ALLOY_LOG_LEVEL")
   format = "logfmt"
 }
 
-// =============================
-// Kubernetes discovery (all ns)
-// =============================
 discovery.kubernetes "pods" {
   role = "pod"
 }
+
 discovery.kubernetes "endpoints" {
   role = "endpoints"
 }
 
-// =============================
-// METRICS (Prometheus) pipeline
-// =============================
-
-// Pods: respect standard Prometheus annotations
 discovery.relabel "pods_metrics" {
   targets = discovery.kubernetes.pods.targets
 
-  // scrape=true
   rule {
     action        = "keep"
     source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
     regex         = "true"
   }
 
-  // custom path
   rule {
     action        = "replace"
     source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
@@ -48,22 +27,36 @@ discovery.relabel "pods_metrics" {
     regex         = "(.+)"
   }
 
-  // custom port
   rule {
     action        = "replace"
     source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
     target_label  = "__address__"
-    regex         = "([^:]+)(?::\d+)?;(\d+)"
+    regex         = "([^:]+)(?::\\d+)?;(\\d+)"
     replacement   = "$1:$2"
   }
 
-  // add pod labels as Prom labels (careful with cardinality)
-  rule { action = "labelmap" regex = "__meta_kubernetes_pod_label_(.+)" }
+  rule {
+    action = "labelmap"
+    regex  = "__meta_kubernetes_pod_label_(.+)"
+  }
 
-  // common labels
-  rule { action = "replace" source_labels = ["__meta_kubernetes_namespace"]          target_label = "namespace" }
-  rule { action = "replace" source_labels = ["__meta_kubernetes_pod_name"]           target_label = "pod" }
-  rule { action = "replace" source_labels = ["__meta_kubernetes_pod_container_name"] target_label = "container" }
+  rule {
+    action        = "replace"
+    source_labels = ["__meta_kubernetes_namespace"]
+    target_label  = "namespace"
+  }
+
+  rule {
+    action        = "replace"
+    source_labels = ["__meta_kubernetes_pod_name"]
+    target_label  = "pod"
+  }
+
+  rule {
+    action        = "replace"
+    source_labels = ["__meta_kubernetes_pod_container_name"]
+    target_label  = "container"
+  }
 }
 
 prometheus.scrape "pods" {
@@ -71,18 +64,15 @@ prometheus.scrape "pods" {
   forward_to = [prometheus.remote_write.default.receiver]
 }
 
-// Services/Endpoints: respect standard annotations
 discovery.relabel "svc_metrics" {
   targets = discovery.kubernetes.endpoints.targets
 
-  // scrape=true
   rule {
     action        = "keep"
     source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scrape"]
     regex         = "true"
   }
 
-  // custom path
   rule {
     action        = "replace"
     source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_path"]
@@ -90,21 +80,30 @@ discovery.relabel "svc_metrics" {
     regex         = "(.+)"
   }
 
-  // custom port
   rule {
     action        = "replace"
     source_labels = ["__address__", "__meta_kubernetes_service_annotation_prometheus_io_port"]
     target_label  = "__address__"
-    regex         = "([^:]+)(?::\d+)?;(\d+)"
+    regex         = "([^:]+)(?::\\d+)?;(\\d+)"
     replacement   = "$1:$2"
   }
 
-  // add service labels as Prom labels
-  rule { action = "labelmap" regex = "__meta_kubernetes_service_label_(.+)" }
+  rule {
+    action = "labelmap"
+    regex  = "__meta_kubernetes_service_label_(.+)"
+  }
 
-  // common labels
-  rule { action = "replace" source_labels = ["__meta_kubernetes_namespace"] target_label = "namespace" }
-  rule { action = "replace" source_labels = ["__meta_kubernetes_service_name"] target_label = "service" }
+  rule {
+    action        = "replace"
+    source_labels = ["__meta_kubernetes_namespace"]
+    target_label  = "namespace"
+  }
+
+  rule {
+    action        = "replace"
+    source_labels = ["__meta_kubernetes_service_name"]
+    target_label  = "service"
+  }
 }
 
 prometheus.scrape "services" {
@@ -112,79 +111,70 @@ prometheus.scrape "services" {
   forward_to = [prometheus.remote_write.default.receiver]
 }
 
-// Remote write: override with PROM_REMOTE_WRITE_URL if needed
 prometheus.remote_write "default" {
   external_labels = {
-    "cluster"     = sys.env("CLUSTER"),         // optional
-    "__replica__" = sys.env("KUBE_POD_NAME"),   // good for HA fanout (set via Downward API)
+    "cluster"     = sys.env("CLUSTER"),
+    "__replica__" = sys.env("KUBE_POD_NAME"),
   }
   endpoint {
     url = coalesce(sys.env("PROM_REMOTE_WRITE_URL"), "http://mimir-nginx.grafana.svc.cluster.local/api/v1/push")
-    // headers = { "X-Scope-OrgID" = sys.env("PROM_TENANT") } // Grafana Cloud / Mimir multi-tenant
   }
 }
 
-// =============================
-// LOGS (Loki) pipeline (all ns)
-// =============================
-
-// Loki write endpoint — hard-coded to your gateway
 loki.write "default" {
   endpoint {
     url = "http://loki-gateway.grafana.svc.cluster.local:80/loki/api/v1/push"
-    // tenant_id = sys.env("LOKI_TENANT_ID")
-    // basic_auth { username = sys.env("LOKI_USERNAME"); password = sys.env("LOKI_PASSWORD") }
   }
 }
 
-// Pod container logs via Kubernetes API
 loki.source.kubernetes "pods" {
   targets    = discovery.kubernetes.pods.targets
   forward_to = [loki.process.k8s_logs.receiver]
 }
 
-// Enrich with Kubernetes metadata; add targeted parsing for ingress-nginx JSON logs
 loki.process "k8s_logs" {
-  // Always enrich with Kubernetes metadata (namespace, pod, container, labels)
-  stage.kubernetes {}
-
-  // --- Focused branch for ingress-nginx controller logs in JSON format ---
   stage.match {
-    selector = "{namespace="ingress-nginx", container="controller"}"
-    // Try to parse JSON access logs (as configured in your Helm values)
-    stage.json {}
-
-    // Add a few stable labels for better queries (avoid high-cardinality labels like path/ip/user-agent)
+    selector = "{namespace=\"ingress-nginx\", container=\"controller\"}"
+    stage.json {
+      expressions = {
+        status       = "status",
+        method       = "method",
+        host         = "vhost",
+        request_time = "request_time",
+      }
+    }
     stage.labels {
       values = {
-        status = "status",
-        method = "method",
-        host   = "vhost",
+        status = "",
+        method = "",
+        host   = "",
       }
     }
   }
 
-  // Example global filters (disabled by default). Uncomment if too chatty:
-  // stage.drop { expression = "contains(line, "/healthz") or contains(line, "/readyz") or contains(line, "/livez")" }
-
   forward_to = [loki.write.default.receiver]
 }
 
-// Kubernetes Events (all namespaces by default)
 loki.source.kubernetes_events "events" {
-  // log_format = "json" // defaults to "logfmt"
+  log_format = "json"
   forward_to = [loki.process.k8s_events.receiver]
 }
 
 loki.process "k8s_events" {
-  // If using default logfmt, parse and add a few useful labels
-  stage.logfmt {}
+  stage.json {
+    expressions = {
+      type     = "type",
+      reason   = "reason",
+      obj_kind = "involvedObject.kind",
+      obj_name = "involvedObject.name",
+    }
+  }
   stage.labels {
     values = {
-      "level"     = "type",
-      "reason"    = "reason",
-      "obj_kind"  = "involvedObject.kind",
-      "obj_name"  = "involvedObject.name",
+      level    = "type",
+      reason   = "reason",
+      obj_kind = "obj_kind",
+      obj_name = "obj_name",
     }
   }
   forward_to = [loki.write.default.receiver]
