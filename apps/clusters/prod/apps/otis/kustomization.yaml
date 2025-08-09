@@ -12,3 +12,7 @@ secretGenerator:
   - name: otis-secret
     envs:
       - otis.env
+  - name: otis-dockerconfigjson
+    files:
+      - secrets/.dockerconfigjson
+    type: kubernetes.io/dockerconfigjson

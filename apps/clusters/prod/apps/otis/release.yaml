@@ -4,4 +4,6 @@ metadata:
   name: otis
   namespace: otis
 spec:
-  values: {}
+  values:
+    imagePullSecrets:
+      - name: otis-dockerconfigjson
