@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: otis
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/otis/
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: otis-secret
+    envs:
+      - otis.env
