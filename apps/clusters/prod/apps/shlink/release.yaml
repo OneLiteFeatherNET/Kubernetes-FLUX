@@ -11,8 +11,8 @@ spec:
       className: ""
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "5G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "5G"
+        nginx.ingress.kubernetes.io/limit-rps: "5"
+        nginx.ingress.kubernetes.io/limit-connections: "4"
       hosts:
         - host: shlink.onelitefeather.dev
           paths:
