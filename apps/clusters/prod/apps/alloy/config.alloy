@@ -1,47 +1,23 @@
-// === Generated from your template (kept your remote_write URL) ===
-// Goal: scrape Prometheus metrics and collect Kubernetes logs & events across ALL namespaces.
-// Notes:
-// - Uses discovery.kubernetes without namespace filters (default = all namespaces) — see docs.
-// - For metrics, only Pods/Services annotated with `prometheus.io/scrape: "true"` are scraped.
-//   You can override path/port via `prometheus.io/path` and `prometheus.io/port` annotations.
-// - For logs, loki.source.kubernetes tails container logs over the Kubernetes API (no DaemonSet needed).
-// - Set environment variables in your Deployment for LOKI_URL (and optionally PROM_REMOTE_WRITE_URL).
+// === Grafana Alloy — final config ===
+// Cluster-wide metrics & logs (all namespaces).
+// - Prometheus metrics: opt-in via standard annotations.
+// - Logs: Kubernetes Pod logs + Kubernetes Events.
+// - Loki write endpoint: baked in (your gateway).
+// - Ingress-NGINX helper: parses JSON logs and sets a few low-cardinality labels.
 //
-// Original snippet for reference:
-// discovery.kubernetes "pods" {
-//   role = "pod"
-//   /*namespaces {
-//     own_namespace = true
-//     names         = ["grafana"]
-//   }*/
-// }
-// discovery.kubernetes "services" {
-//   role = "service"
-// }
-// 
-// prometheus.scrape "pods" {
-//   targets    = discovery.kubernetes.pods.targets
-//   forward_to = [prometheus.remote_write.default.receiver]
-// }
-// prometheus.scrape "services" {
-//   targets    = discovery.kubernetes.services.targets
-//   forward_to = [prometheus.remote_write.default.receiver]
-// }
-// 
-// prometheus.remote_write "default" {
-//   endpoint {
-//     url = "http://mimir-nginx.grafana.svc.cluster.local/api/v1/push"
-//   }
-// }
-
+// Ops tips:
+// * Keep labels conservative to avoid high cardinality in Loki/Prometheus.
+// * You can override endpoints via env vars if needed.
+//
+// ----- Global logging for Alloy itself -----
 logging {
   level  = sys.env("ALLOY_LOG_LEVEL") // default INFO if unset
   format = "logfmt"
 }
 
-// -----------------------------
+// =============================
 // Kubernetes discovery (all ns)
-// -----------------------------
+// =============================
 discovery.kubernetes "pods" {
   role = "pod"
 }
@@ -49,9 +25,9 @@ discovery.kubernetes "endpoints" {
   role = "endpoints"
 }
 
-// -----------------------------
+// =============================
 // METRICS (Prometheus) pipeline
-// -----------------------------
+// =============================
 
 // Pods: respect standard Prometheus annotations
 discovery.relabel "pods_metrics" {
@@ -85,8 +61,8 @@ discovery.relabel "pods_metrics" {
   rule { action = "labelmap" regex = "__meta_kubernetes_pod_label_(.+)" }
 
   // common labels
-  rule { action = "replace" source_labels = ["__meta_kubernetes_namespace"]       target_label = "namespace" }
-  rule { action = "replace" source_labels = ["__meta_kubernetes_pod_name"]        target_label = "pod" }
+  rule { action = "replace" source_labels = ["__meta_kubernetes_namespace"]          target_label = "namespace" }
+  rule { action = "replace" source_labels = ["__meta_kubernetes_pod_name"]           target_label = "pod" }
   rule { action = "replace" source_labels = ["__meta_kubernetes_pod_container_name"] target_label = "container" }
 }
 
@@ -136,11 +112,11 @@ prometheus.scrape "services" {
   forward_to = [prometheus.remote_write.default.receiver]
 }
 
-// Remote write (kept your original URL; you can also set PROM_REMOTE_WRITE_URL to override)
+// Remote write: override with PROM_REMOTE_WRITE_URL if needed
 prometheus.remote_write "default" {
   external_labels = {
     "cluster"     = sys.env("CLUSTER"),         // optional
-    "__replica__" = sys.env("KUBE_POD_NAME"),   // good for HA fanout
+    "__replica__" = sys.env("KUBE_POD_NAME"),   // good for HA fanout (set via Downward API)
   }
   endpoint {
     url = coalesce(sys.env("PROM_REMOTE_WRITE_URL"), "http://mimir-nginx.grafana.svc.cluster.local/api/v1/push")
@@ -148,13 +124,14 @@ prometheus.remote_write "default" {
   }
 }
 
-// -----------------------------
+// =============================
 // LOGS (Loki) pipeline (all ns)
-// -----------------------------
+// =============================
 
+// Loki write endpoint — hard-coded to your gateway
 loki.write "default" {
   endpoint {
-    url = sys.env("LOKI_URL") // e.g. http://loki-gateway.grafana.svc.cluster.local/loki/api/v1/push
+    url = "http://loki-gateway.grafana.svc.cluster.local:80/loki/api/v1/push"
     // tenant_id = sys.env("LOKI_TENANT_ID")
     // basic_auth { username = sys.env("LOKI_USERNAME"); password = sys.env("LOKI_PASSWORD") }
   }
@@ -166,11 +143,30 @@ loki.source.kubernetes "pods" {
   forward_to = [loki.process.k8s_logs.receiver]
 }
 
-// Enrich with Kubernetes metadata; drop nothing by default
+// Enrich with Kubernetes metadata; add targeted parsing for ingress-nginx JSON logs
 loki.process "k8s_logs" {
-  stage.kubernetes {}        // add pod, namespace, labels, etc.
-  // Example filters (uncomment if needed):
+  // Always enrich with Kubernetes metadata (namespace, pod, container, labels)
+  stage.kubernetes {}
+
+  // --- Focused branch for ingress-nginx controller logs in JSON format ---
+  stage.match {
+    selector = "{namespace="ingress-nginx", container="controller"}"
+    // Try to parse JSON access logs (as configured in your Helm values)
+    stage.json {}
+
+    // Add a few stable labels for better queries (avoid high-cardinality labels like path/ip/user-agent)
+    stage.labels {
+      values = {
+        status = "status",
+        method = "method",
+        host   = "vhost",
+      }
+    }
+  }
+
+  // Example global filters (disabled by default). Uncomment if too chatty:
   // stage.drop { expression = "contains(line, "/healthz") or contains(line, "/readyz") or contains(line, "/livez")" }
+
   forward_to = [loki.write.default.receiver]
 }
 
