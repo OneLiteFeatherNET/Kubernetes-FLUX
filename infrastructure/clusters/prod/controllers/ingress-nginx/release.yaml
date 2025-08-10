@@ -39,4 +39,8 @@ spec:
         strict-validate-path-type: "false"
         log-format-escape-json: "true"
         log-format-upstream: '{"time":"$time_iso8601","remote_addr":"$proxy_protocol_addr","x_forwarded_for":"$proxy_add_x_forwarded_for","request_id":"$req_id","bytes_sent":$bytes_sent,"request_time":$request_time,"status":$status,"vhost":"$host","request_proto":"$server_protocol","path":"$uri","request_query":"$args","request_length":$request_length,"method":"$request_method","http_referrer":"$http_referer","http_user_agent":"$http_user_agent"}'
+        gzip-level: "6"
+        use-gzip: "true"
+        brotli-level: "6"
+        use-http2: "true"
 
