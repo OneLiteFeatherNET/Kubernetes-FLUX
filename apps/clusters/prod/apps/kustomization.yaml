@@ -17,5 +17,6 @@ resources:
   - otis
   - vulpes-backend
   - alloy
+  - bluemap
 #  - action-runner-controller
   - utils/ingress.yaml
