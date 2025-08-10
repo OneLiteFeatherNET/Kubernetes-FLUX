@@ -16,3 +16,6 @@ spec:
     provider: sops
     secretRef:
       name: sops-gpg
+  postBuild:
+    substitute:
+      ALLOWED_CIDRS: "172.16.0.0/26,10.200.0.0/16,192.168.0.0/16"
