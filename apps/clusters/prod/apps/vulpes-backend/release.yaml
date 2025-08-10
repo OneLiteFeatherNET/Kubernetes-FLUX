@@ -6,7 +6,7 @@ metadata:
 spec:
   values:
     image:
-      repository: harbor.onelitefeather.dev/vulpes/otis-backend
+      repository: harbor.onelitefeather.dev/vulpes/vulpes-backend
       pullPolicy: IfNotPresent
       tag: "1.2.0-beta.5"
     imagePullSecrets:
