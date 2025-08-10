@@ -15,7 +15,10 @@ spec:
       maxSurge: 1
     autoscaling:
       enabled: true
+      minReplicas: 1
       maxReplicas: 3
+      targetCPUUtilizationPercentage: 95
+      targetMemoryUtilizationPercentage: 95
     env:
       - name: JAVA_OPTS
         value: "-Xmx64M -Dreposilite.s3.pathStyleAccessEnabled=true"
