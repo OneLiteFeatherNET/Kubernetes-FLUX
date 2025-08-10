@@ -41,6 +41,19 @@ spec:
       port: 8080
     podAnnotations:
       prometheus.io/scrape: "false"
+    resources:
+      limits:
+        cpu: 200m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 95
+      # targetMemoryUtilizationPercentage: 80
     shlink:
       database:
         adapter: maria
