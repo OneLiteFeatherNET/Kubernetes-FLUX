@@ -24,11 +24,10 @@ spec:
       initContainers:
         - name: seed-webapp
           image: ghcr.io/bluemap-minecraft/bluemap:v5.11
-          command: ["/bin/sh","-lc"]
-          # robust: prüft /app/web, loggt ls, bricht sauber ab mit Hinweis
+          command: ["/bin/sh","-c"]
           args:
             - |
-              set -euo pipefail
+              set -eu
               if [ -d /app/web ]; then
                 echo "[seed] /app/web gefunden, Inhalt:"
                 ls -la /app/web || true
@@ -36,9 +35,9 @@ spec:
                 echo "[seed] Webapp nach /work kopiert."
               else
                 echo "[seed][FATAL] /app/web existiert nicht in diesem Image-Tag."
-                echo "Bitte prüfe den verwendeten Tag der BlueMap-Image (z.B. :5.11) oder die Doku-Volumes."
                 exit 1
               fi
+
           volumeMounts:
             - name: webroot
               mountPath: /work
