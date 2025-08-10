@@ -39,6 +39,8 @@ spec:
         port: http
     service:
       port: 8080
+    podAnnotations:
+      prometheus.io/scrape: "false"
     shlink:
       database:
         adapter: maria
