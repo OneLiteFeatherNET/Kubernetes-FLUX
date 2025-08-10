@@ -614,7 +614,7 @@ spec:
     extraFlags: ""
     ## @param replicaCount Desired number of cluster nodes
     ##
-    replicaCount: 3
+    replicaCount: 5
     ## @param updateStrategy.type updateStrategy for MariaDB Master StatefulSet
     ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
     ##
