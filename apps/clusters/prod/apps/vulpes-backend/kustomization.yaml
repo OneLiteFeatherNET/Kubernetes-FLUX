@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: vulpes
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - harbor-pull.secret.yaml
+  - ../../../../../apps/base/vulpes-backend
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: vulpes-app-db
+    envs:
+      - vulpes.env

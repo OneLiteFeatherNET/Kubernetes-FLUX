@@ -15,6 +15,7 @@ resources:
   - mimir
   - pushgateway
   - otis
+  - vulpes-backend
   - alloy
 #  - action-runner-controller
   - utils/ingress.yaml

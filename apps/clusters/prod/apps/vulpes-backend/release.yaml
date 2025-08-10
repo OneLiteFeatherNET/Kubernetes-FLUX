@@ -1,0 +1,64 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vulpes-backend
+  namespace: vulpes
+spec:
+  values:
+    image:
+      repository: harbor.onelitefeather.dev/vulpes/otis-backend
+      pullPolicy: IfNotPresent
+      tag: "1.2.0-beta.5"
+    imagePullSecrets:
+      - name: harbor-pull
+    service:
+      port: 8080
+    ingress:
+      enabled: true
+      className: nginx
+      annotations:
+        ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/whitelist-source-range: "${ALLOWED_CIDRS}"
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+
+      hosts:
+        - host: vulpes-backend.apps.onelitefeather.dev
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: vulpes-backend-apps-onelitefeather-dev-tls
+          hosts:
+            - vulpes-backend.apps.onelitefeather.dev
+    profiles: [ "prod" ]
+
+    config:
+      base: |-
+        micronaut:
+          application:
+            name: Vulpes Backend
+      profiles:
+        prod: |-
+          datasources:
+            default:
+              dialect: POSTGRES
+              url: $${JDBC_URL}
+              username: $${DB_USER}
+              password: $${DB_PASS}
+              driver-class-name: org.postgresql.Driver
+    envFrom:
+      - secretRef:
+          name: vulpes-app-db
+
+    readinessProbe:
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    livenessProbe:
+      path: /health
+      initialDelaySeconds: 15
+      periodSeconds: 10
