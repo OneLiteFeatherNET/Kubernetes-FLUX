@@ -53,7 +53,6 @@ spec:
               url: $${JDBC_URL}
               username: $${DB_USER}
               password: $${DB_PASS}
-              driver-class-name: org.postgresql.Driver
     envFrom:
       - secretRef:
           name: vulpes-app-db
