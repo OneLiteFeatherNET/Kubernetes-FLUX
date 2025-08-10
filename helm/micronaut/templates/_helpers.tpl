@@ -38,3 +38,15 @@ helm.sh/chart: {{ include "micronaut.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
+
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "micronaut.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "micronaut.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
