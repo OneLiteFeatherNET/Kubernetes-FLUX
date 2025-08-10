@@ -11,6 +11,10 @@ spec:
       size: 200Gi
     auth:
       existingSecret: 'minio-password-secret'
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/path: "/minio/v2/metrics/cluster"
+      prometheus.io/port: "9000"
     ingress:
       ## @param ingress.enabled Enable ingress controller resource for MinIO Console
       ##
