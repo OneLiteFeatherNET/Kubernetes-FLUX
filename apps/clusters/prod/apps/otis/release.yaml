@@ -6,4 +6,4 @@ metadata:
 spec:
   values:
     imagePullSecrets:
-      - name: otis-dockerconfigjson
+      - name: harbor-pull

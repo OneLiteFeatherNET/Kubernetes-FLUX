@@ -4,6 +4,7 @@ namespace: otis
 generatorOptions:
   disableNameSuffixHash: true
 resources:
+  - harbor-pull.secret.yaml
   - ../../../../../apps/base/otis/
 patches:
   - path: release.yaml
@@ -12,7 +13,3 @@ secretGenerator:
   - name: otis-secret
     envs:
       - otis.env
-  - name: otis-dockerconfigjson
-    files:
-      - secrets/.dockerconfigjson
-    type: kubernetes.io/dockerconfigjson
