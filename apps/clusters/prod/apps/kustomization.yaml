@@ -14,7 +14,7 @@ resources:
   - grafana
   - mimir
   - pushgateway
-#  - otis
+  - otis
   - alloy
 #  - action-runner-controller
   - utils/ingress.yaml
