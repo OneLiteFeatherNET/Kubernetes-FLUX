@@ -5,5 +5,9 @@ metadata:
   namespace: otis
 spec:
   values:
+    image:
+      repository: harbor.onelitefeather.dev/otis/otis
+      pullPolicy: IfNotPresent
+      tag: "1.3.2"
     imagePullSecrets:
       - name: harbor-pull
