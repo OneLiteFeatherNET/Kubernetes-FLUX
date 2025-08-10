@@ -15,10 +15,10 @@ spec:
       maxSurge: 1
     resources:
       requests:
-        cpu: 1000m
+        cpu: 600m
         memory: 256Mi
       limits:
-        cpu: 1500m
+        cpu: 1000m
         memory: 512Mi
     autoscaling:
       enabled: true
