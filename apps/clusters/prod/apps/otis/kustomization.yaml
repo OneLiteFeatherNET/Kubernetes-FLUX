@@ -5,11 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - harbor-pull.secret.yaml
+  - otis-app-db.sops.yaml
   - ../../../../../apps/base/otis/
 patches:
   - path: release.yaml
-
-secretGenerator:
-  - name: otis-secret
-    envs:
-      - otis.env

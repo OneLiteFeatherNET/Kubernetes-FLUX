@@ -7,7 +7,7 @@ spec:
   releaseName: otis
   chart:
     spec:
-      chart: ./helm/otis
+      chart: ./helm/micronaut
       sourceRef:
         kind: GitRepository
         name: helmcharts
