@@ -158,3 +158,10 @@ env:
     value: "-XX:MaxRAMPercentage=75.0 -Duser.timezone=UTC"
 
 envFrom: []
+
+containerSecurityContext:
+  enabled: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
