@@ -23,9 +23,22 @@ spec:
             secretName: bluemap-sqlphp
       initContainers:
         - name: seed-webapp
-          image: ghcr.io/bluemap-minecraft/bluemap:5.11
+          image: ghcr.io/bluemap-minecraft/bluemap:v5.11
           command: ["/bin/sh","-lc"]
-          args: ["cp -a /app/web/. /work"]
+          # robust: prüft /app/web, loggt ls, bricht sauber ab mit Hinweis
+          args:
+            - |
+              set -euo pipefail
+              if [ -d /app/web ]; then
+                echo "[seed] /app/web gefunden, Inhalt:"
+                ls -la /app/web || true
+                cp -a /app/web/. /work
+                echo "[seed] Webapp nach /work kopiert."
+              else
+                echo "[seed][FATAL] /app/web existiert nicht in diesem Image-Tag."
+                echo "Bitte prüfe den verwendeten Tag der BlueMap-Image (z.B. :5.11) oder die Doku-Volumes."
+                exit 1
+              fi
           volumeMounts:
             - name: webroot
               mountPath: /work
@@ -40,7 +53,6 @@ spec:
             - name: sqlphp
               mountPath: /var/www/sql.php
               subPath: sql.php
-          # Ressourcen & Probes je nach Bedarf ergänzen
         - name: nginx
           image: nginx:1.27-alpine
           ports:
