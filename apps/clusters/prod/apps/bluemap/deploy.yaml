@@ -1,0 +1,57 @@
+# k8s/maps/deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bluemap-web
+  namespace: bluemap
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: bluemap-web }
+  template:
+    metadata:
+      labels: { app: bluemap-web }
+    spec:
+      volumes:
+        - name: webroot
+          emptyDir: {}
+        - name: nginx-conf
+          configMap:
+            name: bluemap-nginx
+        - name: sqlphp
+          secret:
+            secretName: bluemap-sqlphp
+      initContainers:
+        - name: seed-webapp
+          image: ghcr.io/bluemap-minecraft/bluemap:5.11
+          command: ["/bin/sh","-lc"]
+          args: ["cp -a /app/web/. /work"]
+          volumeMounts:
+            - name: webroot
+              mountPath: /work
+      containers:
+        - name: php-fpm
+          image: php:8.3-fpm-alpine
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: webroot
+              mountPath: /var/www
+            - name: sqlphp
+              mountPath: /var/www/sql.php
+              subPath: sql.php
+          # Ressourcen & Probes je nach Bedarf ergänzen
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: webroot
+              mountPath: /var/www
+              readOnly: true
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+          readinessProbe:
+            httpGet: { path: /, port: 8080 }
+            initialDelaySeconds: 3
+            periodSeconds: 10

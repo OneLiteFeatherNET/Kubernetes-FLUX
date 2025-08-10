@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bluemap-nginx
+  namespace: bluemap
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      server_name _;
+
+      root /var/www;
+      index index.html index.php;
+
+      location / {
+        try_files $uri /sql.php;
+      }
+
+      location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass 127.0.0.1:9000;
+      }
+    }
