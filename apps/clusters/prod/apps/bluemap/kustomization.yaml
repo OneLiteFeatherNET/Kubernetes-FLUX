@@ -9,3 +9,5 @@ resources:
   - deploy.yaml
   - svc.yaml
   - ingress.yaml
+  - basic-auth.secret.yaml
+  - bluemap-sqlphp.yaml
