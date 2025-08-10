@@ -10,88 +10,85 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "micronaut.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "micronaut.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "micronaut.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- with .Values.podLabels }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-              {{- if and .Values.secrets.enabled .Values.secrets.files }}
+        {{- if and .Values.secrets.enabled .Values.secrets.files }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-              {{- end }}
-      {{- with .Values.podAnnotations }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      labels:
-        {{- include "micronaut.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+{{ toYaml . | indent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "micronaut.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      serviceAccountName: {{- if .Values.serviceAccount.create }} {{ include "micronaut.fullname" . }} {{- else }} {{ default "default" .Values.serviceAccount.name }} {{- end }}
+      {{- if .Values.securityContext.enabled }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+{{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
-          {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+        - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext:
+{{ toYaml .Values.containerSecurityContext | indent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           env:
-            # Aktivierte Micronaut-Profile/Environments (kommagetrennt)
             - name: MICRONAUT_ENVIRONMENTS
               value: "{{ join "," .Values.profiles }}"
-            # Externe Config-Dateien (Reihenfolge: base, dann alle Profile)
             - name: MICRONAUT_CONFIG_FILES
-              value: "/config/application.yml{{- range $p := .Values.profiles }},/config/application-{{$p}}.yml{{- end }}{{- if and .Values.secrets.enabled .Values.secrets.files }},/secrets/application-{{ index .Values.profiles 0 }}.yml{{- end }}"
-                      {{- range .Values.env }}
+              value: "/config/application.yml{{- range $p := .Values.profiles }},/config/application-{{$p}}.yml{{- end }}{{- if and .Values.secrets.enabled .Values.secrets.files }}{{- range $p := .Values.profiles }},/secrets/application-{{$p}}.yml{{- end }}{{- end }}"
+            {{- range .Values.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
-                      {{- end }}
-                    {{- if .Values.envFrom }}
+            {{- end }}
+          {{- if .Values.envFrom }}
           envFrom:
-          {{ toYaml .Values.envFrom | indent 12 }}
+{{ toYaml .Values.envFrom | indent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            {{- if and .Values.secrets.enabled .Values.secrets.files }}
+            - name: secrets
+              mountPath: /secrets
+            {{- end }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: config
+          configMap:
+            name: {{ include "micronaut.fullname" . }}-config
+        {{- if and .Values.secrets.enabled .Values.secrets.files }}
+        - name: secrets
+          secret:
+            secretName: {{ include "micronaut.fullname" . }}-secrets
+        {{- end }}
