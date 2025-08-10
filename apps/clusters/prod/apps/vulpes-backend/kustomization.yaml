@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - harbor-pull.secret.yaml
+  - basic-auth.secret.yaml
   - ../../../../../apps/base/vulpes-backend
 patches:
   - path: release.yaml
