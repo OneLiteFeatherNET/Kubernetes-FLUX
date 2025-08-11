@@ -1,50 +1,60 @@
-# infrastructure/db/mariadb-operator/40-mariadb-from-s3.yaml
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: MariaDB
 metadata:
   name: mariadb-galera
   namespace: mariadb-galera
 spec:
-  image:
-    repository: mariadb
-    tag: "11.4"
-    pullPolicy: IfNotPresent
-
+  image: "mariadb:11.4"
   replicas: 3
   galera:
     enabled: true
 
-  storage:
-    size: 50Gi
+  # PVC-Template
+  volumeClaimTemplate:
+    resources:
+      requests:
+        storage: 50Gi
+    accessModes: ["ReadWriteOnce"]
+    storageClassName: "<DEINE_SC>"
 
   rootPasswordSecretKeyRef:
     name: mariadb
     key: password
 
-  primaryService:
-    metadata:
-      labels:
-        app: mariadb-galera
-    spec:
-      type: LoadBalancer
-      annotations:
-        io.cilium/lb-ipam-ips: 10.200.32.4
-
-  service:
-    spec:
-      type: ClusterIP
-
+  # Bootstrap aus deinem PhysicalBackup
   bootstrapFrom:
-    physical:
-      s3:
-        bucket: "mariadb-galera-restore-point"
-        prefix: "backups/phys-2025-08-11"
-        region: "us-east-1"
-        endpoint: "http://minio.minio.svc.cluster.local:9000"
-        pathStyle: true
-        accessKeyIdSecretKeyRef:
-          name: mariadb
-          key: accessKeyId
-        secretAccessKeySecretKeyRef:
-          name: mariadb
-          key: secretAccessKey
+    backupRef:
+      name: mariadb-phys-minio
+      kind: PhysicalBackup
+  service:
+    type: ClusterIP
+  primaryService:
+    type: LoadBalancer
+    annotations:
+      io.cilium/lb-ipam-ips: 10.200.32.4
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: PhysicalBackup
+metadata:
+  name: mariadb-phys-minio
+  namespace: mariadb-galera
+spec:
+  # optional: Scheduling/Retention/Compression gehen hier auch
+  # schedule:
+  #   cron: "0 2 * * *"
+  #   suspend: false
+  # maxRetention: 720h
+  # compression: gzip
+  storage:
+    s3:
+      bucket: "mariadb-galera-restore-point"
+      prefix: "backups/phys-2025-08-11"
+      region: "us-east-1"
+      endpoint: "http://minio.minio.svc.cluster.local:9000"
+      pathStyle: true
+      accessKeyIdSecretKeyRef:
+        name: mariadb
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb
+        key: secret-access-key
