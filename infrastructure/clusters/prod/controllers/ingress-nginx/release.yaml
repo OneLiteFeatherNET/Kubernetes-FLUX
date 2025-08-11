@@ -19,6 +19,11 @@ spec:
       admissionWebhooks:
         timeoutSeconds: 30
       allowSnippetAnnotations: true
+      metrics:
+        enabled: true
+      podAnnotations:
+        prometheus.io/port: "10254"
+        prometheus.io/scrape: "true"
       resources:
         requests:
           cpu: 100m
