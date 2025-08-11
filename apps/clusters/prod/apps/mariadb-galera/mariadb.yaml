@@ -1,0 +1,50 @@
+# infrastructure/db/mariadb-operator/40-mariadb-from-s3.yaml
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: MariaDB
+metadata:
+  name: mariadb-galera
+  namespace: mariadb-galera
+spec:
+  image:
+    repository: mariadb
+    tag: "11.4"
+    pullPolicy: IfNotPresent
+
+  replicas: 3
+  galera:
+    enabled: true
+
+  storage:
+    size: 50Gi
+
+  rootPasswordSecretKeyRef:
+    name: mariadb
+    key: password
+
+  primaryService:
+    metadata:
+      labels:
+        app: mariadb-galera
+    spec:
+      type: LoadBalancer
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.32.4
+
+  service:
+    spec:
+      type: ClusterIP
+
+  bootstrapFrom:
+    physical:
+      s3:
+        bucket: "mariadb-galera-restore-point"
+        prefix: "backups/phys-2025-08-11"
+        region: "us-east-1"
+        endpoint: "http://minio.minio.svc.cluster.local:9000"
+        pathStyle: true
+        accessKeyIdSecretKeyRef:
+          name: mariadb
+          key: accessKeyId
+        secretAccessKeySecretKeyRef:
+          name: mariadb
+          key: secretAccessKey

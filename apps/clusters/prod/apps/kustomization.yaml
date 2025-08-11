@@ -4,7 +4,6 @@ resources:
   - reposilite
   - postgresql-ha
   - redis
-  - mariadb-ha
   - minio
   - harbor
   - outline
@@ -18,5 +17,6 @@ resources:
   - vulpes-backend
   - alloy
   - bluemap
+  - mariadb-galera
 #  - action-runner-controller
   - utils/ingress.yaml
