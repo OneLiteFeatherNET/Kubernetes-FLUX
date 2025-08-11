@@ -13,3 +13,4 @@ resources:
   - helmcharts.yml
   - checkmk.yml
   - arc.yml
+  - mariadb-operator.yml

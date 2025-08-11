@@ -1,0 +1,47 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mariadb-operator
+spec:
+  releaseName: mariadb-operator
+  chart:
+    spec:
+      chart: mariadb-operator
+      sourceRef:
+        kind: HelmRepository
+        name: mariadb-operator
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  #
+  values:
+    metrics:
+      enabled: true
+    webhook:
+      cert:
+        certManager:
+          enabled: true
+    ha:
+      enabled: true
+      replicas: 3
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - mariadb-operator
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                    - mariadb-operator
+            topologyKey: kubernetes.io/hostname
+
+    pdb:
+      enabled: true
+      maxUnavailable: 1
