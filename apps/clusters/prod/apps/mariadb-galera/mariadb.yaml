@@ -52,7 +52,7 @@ spec:
         io.cilium/lb-ipam-ips: 10.200.32.4
 ---
 apiVersion: k8s.mariadb.com/v1alpha1
-kind: Backup
+kind: PhysicalBackup
 metadata:
   name: mariadb-galera-backup
 spec:
@@ -82,10 +82,9 @@ spec:
           storage: 50Gi
       accessModes:
         - ReadWriteOnce
-  args:
-    - --single-transaction
-    - --all-databases
-  logLevel: info
+  timeout: 1h
+  podAffinity: true
+  serviceAccountName: backup
   resources:
     requests:
       cpu: 100m
