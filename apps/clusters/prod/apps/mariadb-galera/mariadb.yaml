@@ -84,8 +84,8 @@ spec:
       accessModes:
         - ReadWriteOnce
   timeout: 1h
-  podAffinity: true
-  serviceAccountName: backup
+#  podAffinity: true
+#  serviceAccountName: backup
   resources:
     requests:
       cpu: 100m
