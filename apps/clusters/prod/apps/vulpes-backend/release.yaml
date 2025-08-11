@@ -49,10 +49,11 @@ spec:
         prod: |-
           datasources:
             default:
-              dialect: POSTGRES
+              dialect: MYSQL
               url: $${JDBC_URL}
               username: $${DB_USER}
               password: $${DB_PASS}
+              schema-generate: NONE
     envFrom:
       - secretRef:
           name: vulpes-app-db

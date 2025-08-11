@@ -54,7 +54,7 @@ spec:
               password: $${DB_PASS}
               dialect: MYSQL
               driverClassName: org.mariadb.jdbc.Driver
-              schema-generate: CREATE
+              schema-generate: NONE
     envFrom:
       - secretRef:
           name: otis-app-db
