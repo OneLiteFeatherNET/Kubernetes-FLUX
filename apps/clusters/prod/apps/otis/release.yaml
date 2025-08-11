@@ -48,6 +48,9 @@ spec:
               url: $${JDBC_URL}
               username: $${DB_USER}
               password: $${DB_PASS}
+              dialect: MYSQL
+              driverClassName: org.mariadb.jdbc.Driver
+              schema-generate: CREATE
     envFrom:
       - secretRef:
           name: otis-app-db
