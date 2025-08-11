@@ -8,6 +8,30 @@ spec:
   replicas: 3
   galera:
     enabled: true
+  myCnf: |
+    [mariadb]
+    bind-address=*
+    default_storage_engine=InnoDB
+    binlog_format=row
+    innodb_autoinc_lock_mode=2
+    innodb_buffer_pool_size=3200MB
+    max_allowed_packet=1GB
+    # Schedule Pods in different Nodes to achieve real HA.
+  affinity:
+    antiAffinityEnabled: true
+  # When draining Nodes, make sure that you have at least 2 Pods available.
+  podDisruptionBudget:
+    maxUnavailable: 66%
+
+  # Ensure that the Pods are not preempted by Kubernetes to make room for new scheduled Pods.
+  priorityClassName: system-node-critical
+  # Configure enough compute resources. This is just an example, take a look at your historic compute metrics to estimate.
+  resources:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      memory: 4Gi
 
   storage:
     resizeInUseVolumes: true
@@ -26,3 +50,46 @@ spec:
     metadata:
       annotations:
         io.cilium/lb-ipam-ips: 10.200.32.4
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Backup
+metadata:
+  name: backup
+spec:
+  mariaDbRef:
+    name: mariadb
+  schedule:
+    cron: "*/1 * * * *"
+    suspend: false
+  timeZone: "UTC"
+  maxRetention: 720h # 30 days
+  compression: bzip2
+  storage:
+    s3:
+      bucket: mariadb-galera-backup
+      endpoint: minio.minio.svc.cluster.local:9000
+      accessKeyIdSecretKeyRef:
+        name: mariadb
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb
+        key: secret-access-key
+  # Define a PVC to use as staging area for keeping the backups while they are being processed.
+  stagingStorage:
+    persistentVolumeClaim:
+      resources:
+        requests:
+          storage: 50Gi
+      accessModes:
+        - ReadWriteOnce
+  args:
+    - --single-transaction
+    - --all-databases
+  logLevel: info
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
