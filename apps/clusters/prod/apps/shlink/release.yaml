@@ -57,7 +57,7 @@ spec:
     shlink:
       database:
         adapter: maria
-        host: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local
+        host: mariadb-galera.mariadb-galera.svc.cluster.local
         port: 3306
         user: shlink
         secretName: 'shlink-secret'
