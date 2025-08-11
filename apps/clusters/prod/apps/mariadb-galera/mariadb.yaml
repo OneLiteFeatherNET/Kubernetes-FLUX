@@ -34,7 +34,6 @@ spec:
         name: mariadb
         key: secret-access-key
     backupContentType: Physical
-    targetRecoveryTime: 2025-06-17T08:07:00Z
     stagingStorage:
       persistentVolumeClaim:
         resources:
