@@ -22,8 +22,6 @@ spec:
     name: mariadb
     key: password
   service:
-    type: ClusterIP
-  primaryService:
     type: LoadBalancer
     metadata:
       annotations:
