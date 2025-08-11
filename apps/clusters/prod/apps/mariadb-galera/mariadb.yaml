@@ -51,7 +51,7 @@ spec:
       annotations:
         io.cilium/lb-ipam-ips: 10.200.32.4
   metrics:
-    enabled: true
+    enabled: false
 ---
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: PhysicalBackup
