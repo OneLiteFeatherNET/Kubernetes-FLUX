@@ -61,7 +61,6 @@ spec:
   schedule:
     cron: "0 * * * *"
     suspend: false
-  timeZone: "UTC"
   maxRetention: 720h # 30 days
   compression: bzip2
   storage:
