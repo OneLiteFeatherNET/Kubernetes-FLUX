@@ -59,7 +59,7 @@ spec:
   mariaDbRef:
     name: mariadb-galera
   schedule:
-    cron: "*/1 * * * *"
+    cron: "0 * * * *"
     suspend: false
   timeZone: "UTC"
   maxRetention: 720h # 30 days
