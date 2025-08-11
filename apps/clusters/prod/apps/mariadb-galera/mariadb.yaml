@@ -9,13 +9,12 @@ spec:
   galera:
     enabled: true
 
-  # PVC-Template
-  volumeClaimTemplate:
-    resources:
-      requests:
-        storage: 50Gi
-    accessModes: ["ReadWriteOnce"]
-    storageClassName: "<DEINE_SC>"
+  storage:
+    volumeClaimTemplate:
+      resources:
+        requests:
+          storage: 50Gi
+      accessModes: ["ReadWriteOnce"]
 
   rootPasswordSecretKeyRef:
     name: mariadb
@@ -30,8 +29,9 @@ spec:
     type: ClusterIP
   primaryService:
     type: LoadBalancer
-    annotations:
-      io.cilium/lb-ipam-ips: 10.200.32.4
+    metadata:
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.32.4
 ---
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: PhysicalBackup
