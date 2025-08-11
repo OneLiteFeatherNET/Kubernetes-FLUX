@@ -22,11 +22,26 @@ spec:
     name: mariadb
     key: password
 
-  # Bootstrap aus deinem PhysicalBackup
   bootstrapFrom:
-    backupRef:
-      name: mariadb-phys-minio
-      kind: PhysicalBackup
+    s3:
+      bucket: mariadb-galera-restore-point
+      prefix: "backups/phys-2025-08-11"
+      endpoint: "http://minio.minio.svc.cluster.local:9000"
+      accessKeyIdSecretKeyRef:
+        name: mariadb
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb
+        key: secret-access-key
+    backupContentType: Physical
+    targetRecoveryTime: 2025-06-17T08:07:00Z
+    stagingStorage:
+      persistentVolumeClaim:
+        resources:
+          requests:
+            storage: 5Gi
+        accessModes:
+          - ReadWriteOnce
   service:
     type: ClusterIP
   primaryService:
@@ -34,29 +49,3 @@ spec:
     metadata:
       annotations:
         io.cilium/lb-ipam-ips: 10.200.32.4
----
-apiVersion: k8s.mariadb.com/v1alpha1
-kind: PhysicalBackup
-metadata:
-  name: mariadb-phys-minio
-  namespace: mariadb-galera
-spec:
-  # optional: Scheduling/Retention/Compression gehen hier auch
-  # schedule:
-  #   cron: "0 2 * * *"
-  #   suspend: false
-  # maxRetention: 720h
-  # compression: gzip
-  storage:
-    s3:
-      bucket: "mariadb-galera-restore-point"
-      prefix: "backups/phys-2025-08-11"
-      region: "us-east-1"
-      endpoint: "http://minio.minio.svc.cluster.local:9000"
-      pathStyle: true
-      accessKeyIdSecretKeyRef:
-        name: mariadb
-        key: access-key-id
-      secretAccessKeySecretKeyRef:
-        name: mariadb
-        key: secret-access-key
