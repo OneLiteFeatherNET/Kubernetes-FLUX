@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - harbor-pull.secret.yaml
+  - basic-auth.secret.yaml
   - ../../../../../apps/base/otis/
 patches:
   - path: release.yaml
