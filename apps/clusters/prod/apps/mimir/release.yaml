@@ -153,6 +153,12 @@ spec:
     chunks-cache:
       enabled: true
       replicas: 3
+      resources:
+        limits:
+          memory: 4Gi
+        requests:
+          cpu: 500m
+          memory: 2Gi
 
     index-cache:
       enabled: true
