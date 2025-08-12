@@ -11,6 +11,8 @@ spec:
   myCnf: |
     [mariadb]
     bind-address=*
+    max_connections=100000
+    max_user_connections=100000
     default_storage_engine=InnoDB
     binlog_format=row
     innodb_autoinc_lock_mode=2
