@@ -56,6 +56,7 @@ spec:
         root_url: 'https://%(domain)s'
         domain: "grafana.onelitefeather.dev"
         serve_from_sub_path: true
+        protocol: https
       log:
         mode: console
       log.console:
