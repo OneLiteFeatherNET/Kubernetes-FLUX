@@ -63,8 +63,8 @@ spec:
         level: warn
         format: json
       database:
-        type: postgres
-        host: postgresql-ha-pgpool.postgresql-ha.svc.cluster.local:5432
+        type: mysql
+        host: mariadb-galera.mariadb-galera.svc.cluster.local:3306
         name: grafana
         user: grafana
         ssl_mode: disable
