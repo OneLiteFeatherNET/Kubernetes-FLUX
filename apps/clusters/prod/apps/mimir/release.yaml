@@ -38,7 +38,6 @@ spec:
             enable_ha_tracker: true
             kvstore:
               store: memberlist
-            failover_timeout: 60s
         blocks_storage:
           s3:
             bucket_name: "mimir-blocks"
