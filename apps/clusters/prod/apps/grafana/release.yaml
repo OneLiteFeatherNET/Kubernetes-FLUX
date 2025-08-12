@@ -53,7 +53,7 @@ spec:
       port: 3000
     grafana.ini:
       server:
-        root_url: '%(protocol)s://%(domain)s:%(http_port)s'
+        root_url: 'https://%(domain)s'
         domain: "grafana.onelitefeather.dev"
         serve_from_sub_path: true
       log:
