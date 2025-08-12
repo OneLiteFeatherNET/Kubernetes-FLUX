@@ -56,7 +56,6 @@ spec:
         root_url: 'https://%(domain)s'
         domain: "grafana.onelitefeather.dev"
         serve_from_sub_path: true
-        protocol: https
       log:
         mode: console
       log.console:
@@ -152,9 +151,9 @@ spec:
       # Values can be templated
       annotations:
         ingress.kubernetes.io/ssl-redirect: "true"
-        ingress.kubernetes.io/proxy-body-size: "2G"
+        ingress.kubernetes.io/proxy-body-size: "1G"
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+        nginx.ingress.kubernetes.io/proxy-body-size: "1G"
         cert-manager.io/cluster-issuer: letsencrypt-prod
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
