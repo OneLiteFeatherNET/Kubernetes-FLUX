@@ -47,7 +47,7 @@ spec:
             kvstore:
               store: memberlist
         querier:
-          query_ingesters_within: 3h
+#          query_ingesters_within: 3h
           query_store_after: 3h
         blocks_storage:
           tsdb:
