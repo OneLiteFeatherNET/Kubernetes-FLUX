@@ -30,6 +30,13 @@ spec:
         join_members:
           - mimir-gossip-ring.mimir.svc.cluster.local
       structuredConfig:
+        ingester:
+          wal:
+            dir: /data/wal
+            segment_size: 64MB          # default 128MB
+            flush_interval: 1m          # default 10m
+            checkpoint_interval: 5m     # default 30m
+
         limits:
           ingestion_rate: 200000
           ingestion_burst_size: 600000
@@ -46,6 +53,9 @@ spec:
             kvstore:
               store: memberlist
         blocks_storage:
+          tsdb:
+            block_ranges_period: [ 1h ]       # default [2h]
+            head_compaction_interval: 15m   # default 1h
           backend: s3
           s3:
             bucket_name: "mimir-blocks"
