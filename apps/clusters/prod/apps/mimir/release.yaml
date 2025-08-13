@@ -30,13 +30,6 @@ spec:
         join_members:
           - mimir-gossip-ring.mimir.svc.cluster.local
       structuredConfig:
-        ingester:
-          wal:
-            dir: /data/wal
-            segment_size: 64MB          # default 128MB
-            flush_interval: 1m          # default 10m
-            checkpoint_interval: 5m     # default 30m
-
         limits:
           ingestion_rate: 200000
           ingestion_burst_size: 600000
@@ -52,10 +45,22 @@ spec:
             enable_ha_tracker: true
             kvstore:
               store: memberlist
+        querier:
+          query_ingesters_within: 3h
+          query_store_after: 3h
         blocks_storage:
           tsdb:
-            block_ranges_period: [ 1h ]       # default [2h]
-            head_compaction_interval: 15m   # default 1h
+            dir: /data/tsdb
+            # Kleinerer Blockbereich -> schneller kompaktierbar
+            block_ranges_period: [ 1h ]
+            # Wie oft wir den Head nach Compaction fragen
+            head_compaction_interval: 10m
+            # Wie oft fertige Blöcke hochgeladen werden
+            ship_interval: 1m
+            # Wie lange Ingester Blöcke lokal behalten dürfen
+            retention_period: 12h
+            # Beschleunigt WAL-Replay beim Start (optional)
+            wal_replay_concurrency: 3
           backend: s3
           s3:
             bucket_name: "mimir-blocks"
