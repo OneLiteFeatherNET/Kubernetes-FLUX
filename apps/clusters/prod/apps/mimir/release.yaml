@@ -27,6 +27,7 @@ spec:
       enabled: false
     mimir:
       memberlist:
+        cluster_label: "{{.Release.Name}}-{{.Release.Namespace}}"
         join_members:
           - mimir-gossip-ring.mimir.svc.cluster.local
       structuredConfig:
