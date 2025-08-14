@@ -31,7 +31,7 @@ spec:
               apk add --no-cache curl unzip
               echo "[seed] Lade aktuelle BlueMap WebApp..."
               TMP_ZIP="/tmp/bluemap.zip"
-              curl -fsSL https://github.com/BlueMap-Minecraft/BlueMap/releases/latest/download/BlueMap-WebApp.zip -o "$TMP_ZIP"
+              curl -fsSL https://github.com/BlueMap-Minecraft/BlueMap/releases/latest/download/bluemap-5.11-webapp.zip -o "$TMP_ZIP"
               echo "[seed] Entpacke..."
               unzip -q "$TMP_ZIP" -d /work
               echo "[seed] BlueMap WebApp bereit."
