@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: "*"
+      version: "=6.36.0"
   valuesFrom:
     - kind: Secret
       name: auth-minio-secret
