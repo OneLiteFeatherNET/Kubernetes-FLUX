@@ -24,10 +24,11 @@ spec:
       initContainers:
         - name: seed-webapp
           image: alpine:3.20
-          command: ["/bin/sh", "-c"]
+          command: [ "/bin/sh", "-c" ]
           args:
             - |
               set -eu
+              apk add --no-cache curl unzip
               echo "[seed] Lade aktuelle BlueMap WebApp..."
               TMP_ZIP="/tmp/bluemap.zip"
               curl -fsSL https://github.com/BlueMap-Minecraft/BlueMap/releases/latest/download/BlueMap-WebApp.zip -o "$TMP_ZIP"
