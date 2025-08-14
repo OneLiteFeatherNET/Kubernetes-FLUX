@@ -16,10 +16,28 @@ spec:
       - name: s3-conf
         secret:
           secretName: s3-conf
+      - name: bluemap-maps
+        configMap:
+          name: bluemap-maps
     volumeMounts:
       - name: s3-conf
         readOnly: true
         mountPath: "/app/config/storages/"
+      - name: bluemap-maps
+        mountPath: /app/config/maps/world.conf
+        subPath: world.conf
+      - name: bluemap-maps
+        mountPath: /app/config/maps/world_nether.conf
+        subPath: world_nether.conf
+      - name: bluemap-maps
+        mountPath: /app/config/maps/world_the_end.conf
+        subPath: world_the_end.conf
+      - name: bluemap-maps
+        mountPath: /app/config/maps/world_op.conf
+        subPath: world_op.conf
+      - name: bluemap-maps
+        mountPath: /app/config/maps/world_op_nether.conf
+        subPath: world_op_nether.conf
     bluemap:
       packs:
         - https://github.com/TheMeinerLP/BlueMapS3Storage/releases/download/v1.4.0/BlueMapS3Storage-1.4.0.jar

@@ -12,6 +12,13 @@ configMapGenerator:
   - name: bluemap-config
     files:
       - core.conf
+  - name: bluemap-maps
+    files:
+      - maps/world.conf
+      - maps/world_nether.conf
+      - maps/world_the_end.conf
+      - maps/world_op.conf
+      - maps/world_op_nether.conf
 secretGenerator:
   - name: s3-conf
     files:
