@@ -12,6 +12,13 @@ spec:
       retries: 0
   interval: 1m0s
   values:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: "1Gi"
+      requests:
+        cpu: 500m
+        memory: ".5Gi"
     replicaCount: 3
     volumes:
       - name: s3-conf
