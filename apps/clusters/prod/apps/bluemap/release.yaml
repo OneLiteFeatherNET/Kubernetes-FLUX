@@ -1,0 +1,40 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bluemap
+  namespace: bluemap
+spec:
+  chart:
+    spec:
+      version: "=1.0.2"
+  install:
+    remediation:
+      retries: 0
+  interval: 1m0s
+  values:
+    bluemap:
+      config:
+        - path: "/app/config/core.conf"
+          configMap:
+            name: bluemap-config
+            key: core.conf
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: step-ca
+        ingress.kubernetes.io/proxy-body-size: "2G"
+        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+      hosts:
+        - host: bluemap.apps.onelite.feather
+          paths:
+            - path: /
+              pathType: Prefix
+        - host: bluemap.onelitefeather.dev
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: bluemap-apps-onelite-feather-tls
+          hosts:
+            - bluemap.apps.onelite.feather
+

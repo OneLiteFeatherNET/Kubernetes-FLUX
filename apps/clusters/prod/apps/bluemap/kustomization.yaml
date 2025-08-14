@@ -4,10 +4,11 @@ namespace: bluemap
 generatorOptions:
   disableNameSuffixHash: true
 resources:
-  - namespace.yaml
-  - configmap-nginx.yaml
-  - deploy.yaml
-  - svc.yaml
-  - ingress.yaml
-  - basic-auth.secret.yaml
-  - bluemap-sqlphp.yaml
+  - ../../../../../apps/base/bluemap/
+patches:
+  - path: release.yaml
+
+configMapGenerator:
+  - name: bluemap-config
+    files:
+      - core.conf

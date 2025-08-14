@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bluemap
+  namespace: bluemap
+spec:
+  releaseName: bluemap
+  chart:
+    spec:
+      chart: bluemap
+      sourceRef:
+        kind: HelmRepository
+        name: themeinerlp
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  #
+  values: {}
