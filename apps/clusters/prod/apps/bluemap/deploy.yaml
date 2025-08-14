@@ -23,21 +23,17 @@ spec:
             secretName: bluemap-sqlphp
       initContainers:
         - name: seed-webapp
-          image: ghcr.io/bluemap-minecraft/bluemap:v5.11
-          command: ["/bin/sh","-c"]
+          image: alpine:3.20
+          command: ["/bin/sh", "-c"]
           args:
             - |
               set -eu
-              if [ -d /app/web ]; then
-                echo "[seed] /app/web gefunden, Inhalt:"
-                ls -la /app/web || true
-                cp -a /app/web/. /work
-                echo "[seed] Webapp nach /work kopiert."
-              else
-                echo "[seed][FATAL] /app/web existiert nicht in diesem Image-Tag."
-                exit 1
-              fi
-
+              echo "[seed] Lade aktuelle BlueMap WebApp..."
+              TMP_ZIP="/tmp/bluemap.zip"
+              curl -fsSL https://github.com/BlueMap-Minecraft/BlueMap/releases/latest/download/BlueMap-WebApp.zip -o "$TMP_ZIP"
+              echo "[seed] Entpacke..."
+              unzip -q "$TMP_ZIP" -d /work
+              echo "[seed] BlueMap WebApp bereit."
           volumeMounts:
             - name: webroot
               mountPath: /work
