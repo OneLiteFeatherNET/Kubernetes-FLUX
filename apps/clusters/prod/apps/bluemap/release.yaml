@@ -6,13 +6,23 @@ metadata:
 spec:
   chart:
     spec:
-      version: "=1.0.2"
+      version: "=1.0.3"
   install:
     remediation:
       retries: 0
   interval: 1m0s
   values:
+    volumes:
+      - name: s3-conf
+        secret:
+          secretName: s3-conf
+    volumeMounts:
+      - name: s3-conf
+        readOnly: true
+        mountPath: "/app/config/storages/"
     bluemap:
+      packs:
+        - https://github.com/TheMeinerLP/BlueMapS3Storage/releases/download/v1.4.0/BlueMapS3Storage-1.4.0.jar
       config:
         - path: "/app/config/core.conf"
           configMap:

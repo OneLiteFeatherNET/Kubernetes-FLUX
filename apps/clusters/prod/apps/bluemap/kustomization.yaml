@@ -12,3 +12,7 @@ configMapGenerator:
   - name: bluemap-config
     files:
       - core.conf
+secretGenerator:
+  - name: s3-conf
+    files:
+      - s3.conf
