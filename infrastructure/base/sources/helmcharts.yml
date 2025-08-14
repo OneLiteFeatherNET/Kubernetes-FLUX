@@ -11,7 +11,7 @@ spec:
 
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: GitRepository
+kind: HelmRepository
 metadata:
   name: themeinerlp
   namespace: flux-system
