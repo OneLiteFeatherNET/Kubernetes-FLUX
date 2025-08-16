@@ -45,6 +45,3 @@ spec:
         - name: websecure
           port: 443
           targetPort: 443
-    additionalArguments:
-      - "--entrypoints.web.http.middlewares=traefik-traefik-compress@kubernetescrd"
-      - "--entrypoints.websecure.http.middlewares=traefik-traefik-compress@kubernetescrd"
