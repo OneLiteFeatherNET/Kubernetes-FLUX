@@ -8,7 +8,7 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: "feature/treafik-replacement"
+    branch: "feature/traefik-replacement"
   secretRef:
     name: flux-system
   url: ssh://git@github.com/OneLiteFeatherNET/Kubernetes-FLUX
