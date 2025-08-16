@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/shlink/
+  - middlewares.yaml
 patches:
   - path: release.yaml
 

@@ -8,11 +8,12 @@ spec:
     replicaCount: 3
     ingress:
       enabled: true
-      className: ""
+      className: "traefik"
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
-        nginx.ingress.kubernetes.io/limit-rps: "5"
-        nginx.ingress.kubernetes.io/limit-connections: "4"
+        kubernetes.io/ingress.class: traefik
+        traefik.ingress.kubernetes.io/router.tls: "true"
+        traefik.ingress.kubernetes.io/router.middlewares: shlink-requests-per-seconds@kubernetescrd
       hosts:
         - host: shlink.onelitefeather.dev
           paths:

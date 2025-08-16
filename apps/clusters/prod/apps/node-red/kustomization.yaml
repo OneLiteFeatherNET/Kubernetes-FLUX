@@ -4,6 +4,7 @@ namespace: node-red
 generatorOptions:
   disableNameSuffixHash: true
 resources:
+  - middlewares.yaml
   - ../../../../../apps/base/node-red/
 patches:
   - path: release.yaml

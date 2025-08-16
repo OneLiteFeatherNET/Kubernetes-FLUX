@@ -56,8 +56,8 @@ spec:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: step-ca
-        ingress.kubernetes.io/proxy-body-size: "2G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.tls: "true"
       hosts:
         - host: reposilite.apps.onelite.feather
           paths:

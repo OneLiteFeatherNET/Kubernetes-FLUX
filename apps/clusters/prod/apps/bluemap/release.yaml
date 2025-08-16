@@ -58,8 +58,8 @@ spec:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "2G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+        kubernetes.io/ingress.class: traefik
+        traefik.ingress.kubernetes.io/router.tls: "true"
       hosts:
         - host: bluemap.apps.onelitefeather.dev
           paths:

@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: buffering-10g
+  namespace: harbor
+spec:
+  buffering:
+    maxRequestBodyBytes: 10737418240 # 10Gb
+    memRequestBodyBytes: 33554432 # 32Mib
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-middleware
+  namespace: harbor
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

@@ -1,0 +1,9 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: buffering-2g
+  namespace: node-red
+spec:
+  buffering:
+    maxRequestBodyBytes: 2147483648
+    memRequestBodyBytes: 10485760

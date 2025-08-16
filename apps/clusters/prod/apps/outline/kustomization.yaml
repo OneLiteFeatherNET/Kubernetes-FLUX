@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/outline/
+  - middlewares.yaml
 patches:
   - path: release.yaml
 

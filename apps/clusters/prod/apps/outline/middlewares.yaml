@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: buffering-2g
+  namespace: outline
+spec:
+  buffering:
+    maxRequestBodyBytes: 2147483648
+    memRequestBodyBytes: 10485760
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-middleware
+  namespace: outline
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

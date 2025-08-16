@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - harbor-pull.secret.yaml
   - basic-auth.secret.yaml
+  - middlewares.yaml
   - ../../../../../apps/base/otis/
 patches:
   - path: release.yaml

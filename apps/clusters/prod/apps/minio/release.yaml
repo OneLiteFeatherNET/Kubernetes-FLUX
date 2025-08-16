@@ -53,8 +53,9 @@ spec:
       ##
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "2G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+        traefik.ingress.kubernetes.io/router.middlewares: minio-buffering-2g@kubernetescrd
+        kubernetes.io/ingress.class: traefik
+        traefik.ingress.kubernetes.io/router.tls: "true"
       ## @param ingress.tls Enable TLS configuration for the hostname defined at `ingress.hostname` parameter
       ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
       ## You can:

@@ -13,9 +13,8 @@ spec:
     ingress:
       annotations:
         cert-manager.io/cluster-issuer: step-ca
-        ingress.kubernetes.io/proxy-body-size: 2G
-        nginx.ingress.kubernetes.io/proxy-body-size: 2G
-      className: nginx
+        traefik.ingress.kubernetes.io/router.middlewares: node-red-buffering-2g@kubernetescrd
+      className: traefik
       enabled: true
       hosts:
         - host: node-red.apps.onelite.feather

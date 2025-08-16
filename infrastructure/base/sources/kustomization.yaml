@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - nginx.yml
+  - traefik.yml
   - reposilite.yml
   - jetstack.yml
   - smallstep.yml

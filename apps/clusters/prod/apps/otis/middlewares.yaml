@@ -1,0 +1,31 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: basic-auth
+  namespace: otis
+spec:
+  basicAuth:
+    secret: basic-auth
+    realm: "Authentication Required"
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: ip-allowlist
+  namespace: otis
+spec:
+  ipAllowList:
+    sourceRange:
+      - 172.16.0.0/26
+      - 10.200.0.0/16
+      - 192.168.0.0/16
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: otis
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

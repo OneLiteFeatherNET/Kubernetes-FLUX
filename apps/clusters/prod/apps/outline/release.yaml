@@ -14,11 +14,12 @@ spec:
     replicaCount: 1
     ingress:
       enabled: true
-      className: ""
+      className: "treafik"
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "5G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "5G"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: outline-redirect-middleware@kubernetescrd,outline-buffering-2g@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
       hosts:
         - host: outline.onelitefeather.dev
           paths:
