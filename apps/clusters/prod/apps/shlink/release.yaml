@@ -43,11 +43,11 @@ spec:
       prometheus.io/scrape: "false"
     resources:
       limits:
-        cpu: 200m
-        memory: 512Mi
+        cpu: 2
+        memory: 2Gi
       requests:
-        cpu: 100m
-        memory: 256Mi
+        cpu: 200m
+        memory: .5Gi
     autoscaling:
       enabled: true
       minReplicas: 1
