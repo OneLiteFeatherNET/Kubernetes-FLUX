@@ -8,89 +8,10 @@ spec:
         spec:
             version: '>=1.28.2'
     values:
-        resources:
-            limits:
-                cpu: 100m
-                memory: 128Mi
-            requests:
-                cpu: 100m
-                memory: 128Mi
         autocert:
             enabled: true
-        service:
-            targetPort: 9000
-            type: LoadBalancer
-            annotations:
-                io.cilium/lb-ipam-ips: 10.200.32.2
-            externalTrafficPolicy: Local
-        # Helm template
         inject:
-            enabled: true
-            # Config contains the configuration files ca.json and defaults.json
-            config:
-                files:
-                    ca.json:
-                        root: /home/step/certs/root_ca.crt
-                        federateRoots: []
-                        crt: /home/step/certs/intermediate_ca.crt
-                        key: /home/step/secrets/intermediate_ca_key
-                        address: :9000
-                        dnsNames:
-                            - ca.onelite.feather
-                            - step-ca-step-certificates.step-ca.svc.cluster.local
-                        logger:
-                            format: json
-                        db:
-                            type: badgerv2
-                            dataSource: /home/step/db
-                        authority:
-                            claims:
-                                minTLSCertDuration: 5m
-                                maxTLSCertDuration: 131400h
-                                defaultTLSCertDuration: 17520h
-                                disableRenewal: false
-                                minHostSSHCertDuration: 5m
-                                maxHostSSHCertDuration: 1680h
-                                defaultHostSSHCertDuration: 720h
-                                minUserSSHCertDuration: 5m
-                                maxUserSSHCertDuration: 24h
-                                defaultUserSSHCertDuration: 24h
-                                enableAdmin: false
-                            provisioners:
-                                - type: JWK
-                                  name: admin@onelitefeather.net
-                                  key:
-                                    use: sig
-                                    kty: EC
-                                    kid: OiMo753Qm59HojYUS-ba3w7OdmYnsDsfClv7PR3dh_A
-                                    crv: P-256
-                                    alg: ES256
-                                    x: QeFA1tBy7Jjw04gy0fLlukrePbhXYjhG01D44wJU5Z8
-                                    "y": 5jsme3MU8W82RIh816nYFq1B0_YzTiHRVw1XVTt1DNg
-                                  encryptedKey: eyJhbGciOiJQQkVTMi1IUzI1NitBMTI4S1ciLCJjdHkiOiJqd2sranNvbiIsImVuYyI6IkEyNTZHQ00iLCJwMmMiOjYwMDAwMCwicDJzIjoiNW9paDNrUTBLWU1zMFVIN1FfNUpwQSJ9.7MdlmojjtqgTYiDo1_7nxlkkMXsBRsiAyJPYbGeNKZ4kYw3iuVZjTA.zmxMBglHQqcJ9j0v.u8hF1_zCme3dqW_W9A8VY1n5Zp-cpkGilnAsN-9lVAqrEqtw1L1zXvihLXj81bptyuaZXuYWOANboK7HyXP8KR1XVTbsPjlxZa-tbyogVncOBvHLkjU-LQipemr4z7TTd2pa4JMpwtl8ackT8P2hmHRxhybH4QYKlEZxQO7AXulqopJvO5vZi-jUiJ51O2vLh33neWYdcMIN-qPy-wogc4PQj8KCKtTOivPTxUIlhZ8C41ZU1KYlyVr818NLZLG-X2XKs_1tqokhp51O_Of7vNVaDQThMWFR9vkS8AoNSp3ss8HB6oXE2JGUIpCHpeihF_95HosicAyqwMysVIs.Qdbv7zVc8t2DNzlG37nvHg
-                                  options:
-                                    x509: {}
-                                    ssh: {}
-                                - type: ACME
-                                  name: acme
-                                  forceCN: true
-                                  claims: {}
-                        tls:
-                            cipherSuites:
-                                - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
-                                - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-                            minVersion: 1.2
-                            maxVersion: 1.3
-                            renegotiation: false
-                    defaults.json:
-                        ca-url: https://ca.apps.onelite.feather
-                        ca-config: /home/step/config/ca.json
-                        fingerprint: 8ed13e459b5fb22df3caa5f99f4c19d9b40a4685436236e8a5609e61ed1a190e
-                        root: /home/step/certs/root_ca.crt
-            # Certificates contains the root and intermediate certificate and
-            # optionally the SSH host and user public keys
             certificates:
-                # intermediate_ca contains the text of the intermediate CA Certificate
                 intermediate_ca: |
                     -----BEGIN CERTIFICATE-----
                     MIIB7TCCAZOgAwIBAgIRALh56v+dmGiC4JuVSuoMnykwCgYIKoZIzj0EAwIwQDEa
@@ -105,7 +26,6 @@ spec:
                     jCehbP1Q9mzF6aSikUUJmpvrZeWbuUyHO0kUGEsEQAIgOZgCbif7WLyl66fPaly7
                     v7s0wKAgsQSbTYZnxhTrAVg=
                     -----END CERTIFICATE-----
-                # root_ca contains the text of the root CA Certificate
                 root_ca: |
                     -----BEGIN CERTIFICATE-----
                     MIIBwjCCAWmgAwIBAgIQYxIjeKsPaPwVGMfUH++FlDAKBggqhkjOPQQDAjBAMRow
@@ -119,50 +39,109 @@ spec:
                     MEQCICmm1OatTX5epT3+pkNt/GLMt0sAwTTIdIVE2agDnor4AiAVMzFjncqWF2lD
                     2hj8FAI7W1X78F14OCgFirKd/Gg8Nw==
                     -----END CERTIFICATE-----
-            # Secrets contains the root and intermediate keys and optionally the SSH
-            # private keys
+            config:
+                files:
+                    ca.json:
+                        address: :9000
+                        authority:
+                            claims:
+                                defaultHostSSHCertDuration: 720h
+                                defaultTLSCertDuration: 17520h
+                                defaultUserSSHCertDuration: 24h
+                                disableRenewal: false
+                                enableAdmin: false
+                                maxHostSSHCertDuration: 1680h
+                                maxTLSCertDuration: 131400h
+                                maxUserSSHCertDuration: 24h
+                                minHostSSHCertDuration: 5m
+                                minTLSCertDuration: 5m
+                                minUserSSHCertDuration: 5m
+                            provisioners:
+                                - encryptedKey: eyJhbGciOiJQQkVTMi1IUzI1NitBMTI4S1ciLCJjdHkiOiJqd2sranNvbiIsImVuYyI6IkEyNTZHQ00iLCJwMmMiOjYwMDAwMCwicDJzIjoiNW9paDNrUTBLWU1zMFVIN1FfNUpwQSJ9.7MdlmojjtqgTYiDo1_7nxlkkMXsBRsiAyJPYbGeNKZ4kYw3iuVZjTA.zmxMBglHQqcJ9j0v.u8hF1_zCme3dqW_W9A8VY1n5Zp-cpkGilnAsN-9lVAqrEqtw1L1zXvihLXj81bptyuaZXuYWOANboK7HyXP8KR1XVTbsPjlxZa-tbyogVncOBvHLkjU-LQipemr4z7TTd2pa4JMpwtl8ackT8P2hmHRxhybH4QYKlEZxQO7AXulqopJvO5vZi-jUiJ51O2vLh33neWYdcMIN-qPy-wogc4PQj8KCKtTOivPTxUIlhZ8C41ZU1KYlyVr818NLZLG-X2XKs_1tqokhp51O_Of7vNVaDQThMWFR9vkS8AoNSp3ss8HB6oXE2JGUIpCHpeihF_95HosicAyqwMysVIs.Qdbv7zVc8t2DNzlG37nvHg
+                                  key:
+                                    alg: ES256
+                                    crv: P-256
+                                    kid: OiMo753Qm59HojYUS-ba3w7OdmYnsDsfClv7PR3dh_A
+                                    kty: EC
+                                    use: sig
+                                    x: QeFA1tBy7Jjw04gy0fLlukrePbhXYjhG01D44wJU5Z8
+                                    "y": 5jsme3MU8W82RIh816nYFq1B0_YzTiHRVw1XVTt1DNg
+                                  name: admin@onelitefeather.net
+                                  options:
+                                    ssh: {}
+                                    x509: {}
+                                  type: JWK
+                                - claims: {}
+                                  forceCN: true
+                                  name: acme
+                                  type: ACME
+                        crt: /home/step/certs/intermediate_ca.crt
+                        db:
+                            dataSource: /home/step/db
+                            type: badgerv2
+                        dnsNames:
+                            - ca.onelite.feather
+                            - step-ca-step-certificates.step-ca.svc.cluster.local
+                        federateRoots: []
+                        key: /home/step/secrets/intermediate_ca_key
+                        logger:
+                            format: json
+                        root: /home/step/certs/root_ca.crt
+                        tls:
+                            cipherSuites:
+                                - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+                                - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+                            maxVersion: 1.3
+                            minVersion: 1.2
+                            renegotiation: false
+                    defaults.json:
+                        ca-config: /home/step/config/ca.json
+                        ca-url: https://ca.apps.onelite.feather
+                        fingerprint: 8ed13e459b5fb22df3caa5f99f4c19d9b40a4685436236e8a5609e61ed1a190e
+                        root: /home/step/certs/root_ca.crt
+            enabled: true
             secrets:
-                # ca_password contains the password used to encrypt x509.intermediate_ca_key, ssh.host_ca_key and ssh.user_ca_key
-                # This value must be base64 encoded.
-                ca_password: ENC[AES256_GCM,data:+pZk+rvwO6FhV3qMMDiE0X65WGzV8LHkkiGzKyIw37kFVnzyc7RwJewiTVQ=,iv:BdV/hlBB5IEeVzvVY6dAmGXsiwqU8eVTx0biu9+rZ+k=,tag:8WMzfH1oQfzNKI/z4ScgSw==,type:str]
-                provisioner_password: ENC[AES256_GCM,data:8127iu/mVcNlNrsea9zg86aMsIEcGEVa/Eq40zfw3WmcTwZa0CxLrpB4w/E=,iv:CewYf3ZVsa9Cz4d83D2Y7a0JOvpxo34LH1rxwDJkg8k=,tag:vBYNOxTNVC2QVrL9RCUJgg==,type:str]
+                ca_password: ENC[AES256_GCM,data:2SsVwnPY6s7q+Z5ItW1/JvVH1H2zoj4eROSy2AH+4aVOTiZifwd6xvgF4Qw=,iv:5LXn1G3pVhUDfvfiNJpVYBCQ0pt911I7E+TrdyGAG/0=,tag:OvA3SkykbN8ZWDUkroGe3A==,type:str]
+                provisioner_password: ENC[AES256_GCM,data:xlNc5xNV4OR9asN49cBTGm/PK5dFa0xpdEH1mE5ixJuTpGUqN9ixLuyIBH4=,iv:Ty66Bj6JMH1SJVuBLN2ln86bfnR8aYnTQkDzFjKCdSg=,tag:MH+bAi+Ac6JinyVUDTsKtg==,type:str]
                 x509:
-                    # intermediate_ca_key contains the contents of your encrypted intermediate CA key
-                    intermediate_ca_key: ENC[AES256_GCM,data:kXra4gHD/+rfAmH9/ZSXxI4gFpxT00dJgh7kqB8DjeSwUHjBdPjTpr5NarLYtPo5ii8PBPs6hgEDXp+ZUKGDDWFY/WxGjFLlGvSsVqVtYUr3yLeuttqjKpy/uh8ujuiG5tBgb8lfSMBetOzN83B4hGTGFsZqAfptm0Akv05udcHGXXjeX2N6271Zrf561lERp6LfveaalXVaOiox+w4s/H7FUNn4Vg+iVOuwoitmNpgXrzYY2iZ+ISDNw0+0rL++XIHqwOKjRc7BB+Y8icCYD1YS7OG5J41TOq+UvQy3Kqmsu5qX5FeP1QzfyEIPLa6pfCstcEegUrs8+FsDg2rt2es9/PB1oBPDxcuacjjwn1o0/6xw7GYdr77z+V2hC7scvGRS2P0PPvxiABCJslK4fdHAkoE/1uaVblE=,iv:lR0ibrvXTYcNT6q13rVhptBUCkfUzQzDTdlQ9D0hHNw=,tag:gW2K6I2isrLV658teCkVZA==,type:str]
-                    # root_ca_key contains the contents of your encrypted root CA key
-                    # Note that this value can be omitted without impacting the functionality of step-certificates
-                    # If supplied, this should be encrypted using a unique password that is not used for encrypting
-                    # the intermediate_ca_key, ssh.host_ca_key or ssh.user_ca_key.
-                    root_ca_key: ENC[AES256_GCM,data:02AYM3hH9Sttw7q6nfnAiF3O604xnNv/PkgMkgf6JSh8CQWUlaNj6wAqsX+U1Z/yaVRxV8lZNoDgRwwd6fOiK7kM9Vhllu5mNgRzzrBtE32jEkiUrOlc9/g6sNrtH/t1qXasCmjmaF+S4N/qXoXnJojIawrF6ldF5Gjn4l/fegltp9falMI3VzE4sVtunIr5w68MDZdu1vmYZz057I2m8hAA6IuzjY4VwuBzOmGQ0e29E1CJUtTWgn4XNb4zRtSSrwszulTRa/wJVuY1ARtPPTyrYnlnjEe/eHyb9u/7O2bIHSJZtAjh5O9ngNLconDKIuvMTjOcFWms3NM6TR6l+eLvjRuiBw2ghShK34MEbAsuvNVoao4y4vLGl265zYCdJdcoaHbIrQMVo73hdIjDBAyQSWaVvdALj9c=,iv:m7+8jeGH6Li3XNXf2xdRQv14TyQ2QYMhkfl5XTL41U0=,tag:D1JG3TINtY/Gj1HXzNg0og==,type:str]
+                    intermediate_ca_key: ENC[AES256_GCM,data:ovlAn1r3suU3H1ZTgYkz2A6pkd/xvfUxi3+fz2QJwTP7WDaB5YNcGxCo626KdttMCAC1M8HPZ5KKpbxfaPOwpKMygaTN6CIY733L/P6evj54YBPJ/QsM/zWpcWad+hzHKjLuMZFikrhu6z/UDBPjx2sGkgKjjAHCfWHalGQqZIQSBgu9LwqgmlP0ZVKFTHfu0Z5RdaBd04erTEDIt8PIXIAz7zdYm+owEOAx7UWb9nJxmo49MiRMmmQHd9TI81Xls3czXEfU2iZzwbK8ZhnKpLbqW1HlSvfZzdgLJL6kHkSk4CpsY3YZ/HH8c3WFOKbz0mOW2TXGl5QeIfpxdCmf+Xs0LwgAgR0sCdzuPswlGJ/dcIld7f28GK115wRQft+bY8d6LKt09tyfseMjNT2uIlYIkhkRtQVfGsU=,iv:/HaFn38ED5f3Q0Wny/fNVh0Wd07KV6MxWb4/1nb0m/w=,tag:0ZViRmLBAeLmL7cHUP+DFg==,type:str]
+                    root_ca_key: ENC[AES256_GCM,data:+qq1JiQnXFNG9y0BWCrL3H665WmXi1fkMcyulrGFYwlIS7m3Lj1AX9LLD2dITLH8tBDoxfNGN4H1MHjP+b2MHdgFcWipABKi6+IiIaxI2bIq+Wlh6zKc3WLb0Wfcx7jNb2dFew0HMuzn9XkRljRb5ncDQVECDS7pSiNOEqIgZ7EBU/nxKPj2VOGhhNP1UCJ0D7siVqgSWysT4yRuBsUvDbAA6n2N2Ij6UsUHQ4AsgQq73e2vCi30y3t7aDf+G6Rrb3EztJtMrzmYF6SPcAmQuSxnHAKQx/XOFR5BdwwxhOBWephahnGC09D4eQiAzNfar/kuxj5ueUpN5C4Nt3ZEodb3hVt1EMdlgTfKRlfEjDkxNKIJ0Nje47GlJlIbZZGyzh1LD1pEf0WF/Qjiz/BS+gtbLVXZ/eQ03U0=,iv:UzdgsMeWYl/emnbXskeI/7quWSgmMFT8eXKbX5qDUtA=,tag:Y5TNB/xXXKsJWnPz67FaMw==,type:str]
+        resources:
+            limits:
+                cpu: 100m
+                memory: 128Mi
+            requests:
+                cpu: 100m
+                memory: 128Mi
+        service:
+            annotations:
+                io.cilium/lb-ipam-ips: 10.200.32.2
+            externalTrafficPolicy: Local
+            targetPort: 9000
+            type: LoadBalancer
 sops:
-    kms: []
-    gcp_kms: []
-    azure_kv: []
-    hc_vault: []
-    age: []
-    lastmodified: "2025-03-16T17:44:25Z"
-    mac: ENC[AES256_GCM,data:8dfEjR8iZIrPKBcZ/nq3K8lmukheu3lFdssm4FAmoUAHMW/WWFGar9uFYWTZVrQhB2i9bt9uNARatq9jU2h7VLyHVwBqXzLcsCnG/6u1DF8USUkjCEudKa10u0f4Ur215QLyk62oMzLKhFOzIBCtgHKeDV+IDBpT0ga4yQ5+WPk=,iv:ZsoagduEk7MwtFaUiOHIv4DnPXhA1oe3DOA2uko+o98=,tag:JgZ9SvYuxEUOmEjSIjJWoA==,type:str]
+    lastmodified: "2025-08-17T16:19:57Z"
+    mac: ENC[AES256_GCM,data:ATRMfDKgzVyIvl33eRPU0JY6el5ONmX55f6k4AsGD2p6w1qWdVnvBZoIim1ZAEgYLfWhP6AWdjvgqWfbBqUbzaobN1HnsRhle1T1I1rRrRt2TAoDrbsqYfCRbqeK3Qu+zGBrX+30XyQijgVxJcnFhcPSAH0b51rtKZQxtpcEXwM=,iv:JH1yek+5rEgeTbw/yAo1UrKb6jGG8PgO4x40wODMTlI=,tag:4bF4ybr3minMIxxWdOXuFQ==,type:str]
     pgp:
-        - created_at: "2025-03-16T17:44:25Z"
+        - created_at: "2025-08-17T16:19:57Z"
           enc: |-
             -----BEGIN PGP MESSAGE-----
 
-            hQIMAwWbRp0WX+I4AQ/+LGZH4yODZubvhgtvIkoWMY0yv1ndkpd5aTCQNBewK28i
-            y+q9hWjLrhfFZ/LdovjSOc5yhAJGNDV22rf5TY8DKG3wgzWxSmUTQy4n2ud7z1cq
-            cC+XWn3L3SYN1IfgVJochq11uW/TwQc4reX0/vBNmU/VVgNG2ZxVaRc/KhMsHykN
-            Oaf0uT5urJR2joWhrpRimkGBUJ8ShzoNdjUNQj9nunNkdpUO2rlEBI93y+WDLc7a
-            cp6Oe0Po4KkvRnVKPCeWcep4NF/RkeR/jlwuvo2R2Q4IRjFzr1DPY7zaCsjNsHUN
-            RkB9cXHIAPiZE0GsPzWHANa5IqpNy25TOpqiN/EYE0TXA+qBxapZMkd8SnYaOjKO
-            CcMk18igI3eDsAbAI6GP6NKBl6Oquqw1L+GwjKPxgo130C4/jal0vN8uAkwDQNMl
-            tZjXclczEw6hRSZBK2H4RJjThXAvAHU5pfJfNzx6TLzXFQaOIwU7Aqfd6ThdGY9C
-            fSl8YCxrf08BO6ECJw1PV0XVez+jZgtzqvkEfkenR+hJTuO7mtEEFqTG0WhXvXEo
-            qVtYoRh3Lh6A4Lkt0ym/T29V0b0lGr7zelfypcdVR3mKzN8NLmRIDxgyvL11pSTn
-            i5tGT/VfcKnb6X4YlLUgSb0nNVkTvP3hWTH3Fy0IADV5gSHtwBCIbpNCFMW1ENDU
-            aAEJAhAhdx8wL92m+7Xl00E2xnyDiR7DvqyI3on6igkzjurO3zWY+B9D6gMkxvUL
-            ctZRBn7JfNz5T+i6fsg+tZG9+0QQKT4LEiNmEmh5NNpik2RW7F02yoZYz2JGSq+D
-            qlGzJXMODPz7
-            =qLCA
+            hQIMAwWbRp0WX+I4AQ/+Jt9FZS5S89ZU3dr/W83XBe5aWZjGZD/iiaoAznyo9Y4k
+            dI41Bgna0Yznz2rtvSm5qzgwdWyAsPZzPoFbXq5smGuUcjtYieibYRTF1LbvMIeX
+            bB6yqiqTQ6RXc4hqu/4drfyzPETfcZjqqEIgV0tiQ2HzchZlWT5Qk0PuknZA/1x2
+            2p4iG0y0w+gDfc6huCbhSjcQqCOMl7aXtH5gDaKV3xvRcW6+CvwOvuXtBYrnTZuZ
+            xzzb/xhWfazXDAwnuDn+L3eEUSn+WOMWoI3mGNiWN6U2Rr3nM6qqkpvf0hwPXe1J
+            LrBdmXEmKNxZPDN4pZ5ssRoPKnR1IrQ+uk0qWjIJEHpH/8b36qyKN1theyTeFzXv
+            f14yR0N3Ehu+ojfwG4MnMA7tcY40dfJhAOKZugGQ2MfuGWgcxPSKbZSNocHCXvYy
+            0oxJTNRZ++PlIr4uTKXmbdjkppyDtXETrhLmRtu1FF1PJX3l+Fjx2cPe1+NBCkJv
+            yq1ozAj9rSvnw8bVLJtUZXc9LZqaJGH5m8harf5Q/rm/Lg4POhnsoYk7BQjNQJ/F
+            6J0IpGG7s7HwNrAKFuISGQYi56kxMgR2+zhM1IfKHyQgb+bBnjsFz9YBH0LKBiGF
+            az87fKUZTCNvSmW389xrqjH+g3SYzbDlxUwTAyn1NijsUOpPIlRQzk5ywwRZxc3S
+            XgHU0TIzFIVBzj0pvOKYubhb/1yrJKm3C/Cg3bPXnKn0RfgC1pVqbPHY9KmOrtNx
+            e5+6n4GxMRnlYuAAD6iaVmDFCceyYrtbg3gWsL6WqLIKKp48Set9Q4MH2Orqjco=
+            =6iSH
             -----END PGP MESSAGE-----
           fp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca_key|root_ca_key)$
-    version: 3.9.4
+    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
+    version: 3.10.2
