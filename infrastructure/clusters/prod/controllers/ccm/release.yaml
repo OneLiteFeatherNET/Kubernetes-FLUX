@@ -1,8 +1,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: minio
-  namespace: minio
+  name: proxmox-ccm
+  namespace: kube-system
 spec:
   values:
     affinity:
