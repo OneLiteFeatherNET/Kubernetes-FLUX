@@ -17,6 +17,7 @@ spec:
     useDaemonSet: true
 
     enabledControllers:
+      - cloud-node
       - cloud-node-lifecycle
 
     # -- Proxmox cluster config stored in secrets.
