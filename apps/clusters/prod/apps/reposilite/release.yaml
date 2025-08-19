@@ -54,6 +54,7 @@ spec:
             key: DATABASE
     ingress:
       enabled: true
+      ingressClassName: traefik
       annotations:
         cert-manager.io/cluster-issuer: step-ca
         traefik.ingress.kubernetes.io/router.entrypoints: websecure
