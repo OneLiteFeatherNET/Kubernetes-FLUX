@@ -14,6 +14,8 @@ spec:
         namespace: flux-system
       version: ">=26.0.0"
   values:
+    deployment:
+      kind: DaemonSet
     service:
       annotations:
         io.cilium/lb-ipam-ips: "10.200.32.1"
