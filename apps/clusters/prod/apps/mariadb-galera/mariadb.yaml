@@ -13,8 +13,8 @@ spec:
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
-      runAsNonRoot: true
-      runAsGroup: 1001
+    runAsNonRoot: true
+    fsGroup: 1001
   securityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
