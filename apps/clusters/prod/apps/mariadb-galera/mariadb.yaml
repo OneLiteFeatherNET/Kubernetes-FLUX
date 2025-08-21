@@ -8,17 +8,6 @@ spec:
   replicas: 5
   galera:
     enabled: true
-  # Talos requires that the Pods run as non-root users.
-  # The Pods will run as user 1001, which is the default user in the MariaDB image.
-  podSecurityContext:
-    seccompProfile:
-      type: RuntimeDefault
-    fsGroup: 1001
-  securityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    capabilities:
-      drop: [ "ALL" ]
   myCnf: |
     [mariadb]
     bind-address=*
