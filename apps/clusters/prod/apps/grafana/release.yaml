@@ -63,7 +63,7 @@ spec:
         format: json
       database:
         type: mysql
-        host: mariadb-galera.mariadb-galera.svc.cluster.local:3306
+        host: maxscale-galera.mariadb-galera.svc.cluster.local:3306
         name: grafana
         user: grafana
         ssl_mode: disable
@@ -94,7 +94,7 @@ spec:
             isDefault: false
           - name: CoreProtect
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
+            url: maxscale-galera.mariadb-galera.svc.cluster.local:3306
             user: coreprotect
             jsonData:
               database: coreprotect
@@ -104,7 +104,7 @@ spec:
               connMaxLifetime: 14400
           - name: LuckPerms
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
+            url: maxscale-galera.mariadb-galera.svc.cluster.local:3306
             user: luckperms
             jsonData:
               database: luckperms
@@ -114,7 +114,7 @@ spec:
               connMaxLifetime: 14400
           - name: BlueMap
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
+            url: maxscale-galera.mariadb-galera.svc.cluster.local:3306
             user: bluemap
             jsonData:
               database: bluemap
@@ -124,7 +124,7 @@ spec:
               connMaxLifetime: 14400
           - name: StarDust
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
+            url: maxscale-galera.mariadb-galera.svc.cluster.local:3306
             user: stardust
             jsonData:
               database: stardust
@@ -134,7 +134,7 @@ spec:
               connMaxLifetime: 14400
           - name: PlotSquared
             type: mysql
-            url: mariadb-ha-mariadb-galera.mariadb-ha.svc.cluster.local:3306
+            url: maxscale-galera.mariadb-galera.svc.cluster.local:3306
             user: plotsquared
             jsonData:
               database: plotsquared
