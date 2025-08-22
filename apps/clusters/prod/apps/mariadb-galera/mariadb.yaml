@@ -47,11 +47,11 @@ spec:
   rootPasswordSecretKeyRef:
     name: mariadb
     key: password
-  service:
-    type: LoadBalancer
-    metadata:
-      annotations:
-        io.cilium/lb-ipam-ips: 10.200.32.4
+#  service:
+#    type: LoadBalancer
+#    metadata:
+#      annotations:
+#        io.cilium/lb-ipam-ips: 10.200.32.4
   metrics:
     enabled: false
 ---
@@ -97,3 +97,27 @@ spec:
     limits:
       cpu: 300m
       memory: 512Mi
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: MaxScale
+metadata:
+  name: maxscale-galera
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  replicas: 2
+
+  kubernetesService:
+    type: LoadBalancer
+    metadata:
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.32.4
+
+  guiKubernetesService:
+    type: LoadBalancer
+    metadata:
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.32.7
+
+  metrics:
+    enabled: true
