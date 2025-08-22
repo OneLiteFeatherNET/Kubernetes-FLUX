@@ -14,7 +14,7 @@ spec:
     replicaCount: 1
     ingress:
       enabled: true
-      className: ""
+      className: "nginx"
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
         ingress.kubernetes.io/proxy-body-size: "5G"
