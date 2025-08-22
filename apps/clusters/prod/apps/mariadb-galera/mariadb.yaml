@@ -59,6 +59,7 @@ apiVersion: k8s.mariadb.com/v1alpha1
 kind: PhysicalBackup
 metadata:
   name: mariadb-galera-backup
+  namespace: mariadb-galera
 spec:
   mariaDbRef:
     name: mariadb-galera
