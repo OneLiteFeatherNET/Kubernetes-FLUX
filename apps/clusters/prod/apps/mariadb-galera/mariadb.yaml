@@ -110,6 +110,7 @@ spec:
 
   kubernetesService:
     type: LoadBalancer
+    externalTrafficPolicy: Local
     metadata:
       annotations:
         io.cilium/lb-ipam-ips: 10.200.32.4
