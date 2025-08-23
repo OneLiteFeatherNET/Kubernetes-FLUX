@@ -19,7 +19,7 @@ spec:
         memory: 256Mi
       limits:
         cpu: 1
-        memory: 512Mi
+        memory: 1024Mi
     autoscaling:
       enabled: true
       minReplicas: 2
