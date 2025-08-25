@@ -45,7 +45,8 @@ spec:
         micronaut:
           application:
             name: Otis Backend
-          server:
+            server:
+              port: 8080
             netty:
               access-logger:
                 enabled: false
