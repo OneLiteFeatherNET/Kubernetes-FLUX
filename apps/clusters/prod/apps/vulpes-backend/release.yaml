@@ -46,6 +46,7 @@ spec:
           application:
             name: Vulpes Backend
           server:
+            port: 8080
             netty:
               access-logger:
                 enabled: false
