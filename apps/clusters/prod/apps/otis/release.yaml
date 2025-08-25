@@ -50,8 +50,6 @@ spec:
             netty:
               access-logger:
                 enabled: false
-            ssl:
-              enabled: true
       profiles:
         prod: |-
           endpoints:
