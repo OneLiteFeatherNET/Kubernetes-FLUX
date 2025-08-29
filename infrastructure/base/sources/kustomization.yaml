@@ -15,3 +15,4 @@ resources:
   - arc.yml
   - mariadb-operator.yml
   - proxmox-ccm.yml
+  - backstage.yml
