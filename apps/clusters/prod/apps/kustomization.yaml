@@ -15,6 +15,7 @@ resources:
   - pushgateway
   - otis
   - vulpes-backend
+  - cnpg-operator
   - alloy
   - bluemap
   - mariadb-galera
