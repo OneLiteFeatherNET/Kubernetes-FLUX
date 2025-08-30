@@ -8,7 +8,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/otis/otis
       pullPolicy: IfNotPresent
-      tag: "1.6.0"
+      tag: "1.10.8"
     imagePullSecrets:
       - name: harbor-pull
     service:
@@ -44,17 +44,66 @@ spec:
       base: |-
         micronaut:
           application:
-            name: otis
+            name: Otis Backend
+            server:
+              port: 8080
+            netty:
+              access-logger:
+                enabled: false
       profiles:
         prod: |-
+          endpoints:
+            health:
+              enabled: true
+              sensitive: false
+            metrics:
+              enabled: true
+              sensitive: true
+          micrometer:
+            metrics:
+              enabled: true
+            export:
+              prometheus:
+                enabled: true
+          logger:
+            levels:
+              "org.hibernate.SQL": WARN
+              "org.hibernate.type.descriptor.sql": WARN
+              "org.hibernate.orm.connections.pooling": INFO
+              "com.zaxxer.hikari": INFO
+          jpa:
+            default:
+              properties:
+                hibernate:
+                  hbm2ddl.auto: none
+                  dialect: org.hibernate.dialect.MariaDBDialect
+                  format_sql: false
+                  show_sql: false
+                  jdbc.lob.non_contextual_creation: true
+                  connection.provider_disables_autocommit: true
+                  jdbc.batch_size: 50
+                  order_inserts: true
+                  order_updates: true
           datasources:
             default:
+              dialect: MYSQL
               url: $${JDBC_URL}
               username: $${DB_USER}
               password: $${DB_PASS}
-              dialect: MYSQL
-              driverClassName: org.mariadb.jdbc.Driver
               schema-generate: NONE
+              dialect: MYSQL
+              maximumPoolSize: 20
+              minimumIdle: 4
+              autoCommit: false
+              poolName: "HikariPool-Otis-Backend"
+              connectionTimeout: 10000
+              validationTimeout: 5000
+              idleTimeout: 600000
+              maxLifetime: 1700000
+              keepaliveTime: 300000
+              registerMbeans: true
+              leakDetectionThreshold: 20000
+              transactionIsolation: TRANSACTION_READ_COMMITTED
     envFrom:
       - secretRef:
           name: otis-app-db
