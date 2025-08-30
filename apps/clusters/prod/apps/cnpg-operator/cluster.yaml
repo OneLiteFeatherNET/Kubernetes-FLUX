@@ -9,3 +9,23 @@ spec:
   storage:
     size: 50Gi
   enableSuperuserAccess: true
+  backup:
+    barmanObjectStore:
+      # Align with MariaDB style: bucket + prefix combined into destinationPath
+      destinationPath: s3://entenhausen-cluster-pg-backup/backups
+      # MariaDB uses endpoint without scheme; CNPG expects full URL
+      endpointURL: http://minio.minio.svc.cluster.local:9000
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-backup
+          key: access-key-id
+        secretAccessKey:
+          name: cnpg-backup
+          key: secret-access-key
+      wal:
+        compression: gzip
+      data:
+        additionalCommandArgs:
+          - "--min-chunk-size=5MB"
+          - "--read-timeout=60"
+          - "-vv"

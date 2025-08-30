@@ -10,3 +10,8 @@ resources:
   - pooler-ro.yaml
 patches:
   - path: release.yaml
+
+secretGenerator:
+  - name: cnpg-backup
+    envs:
+      - s3-backup.env
