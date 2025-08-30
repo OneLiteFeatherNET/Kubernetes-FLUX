@@ -7,3 +7,4 @@ resources:
   - ../../../../../apps/base/cnpg-operator/
 patches:
   - path: release.yaml
+  - path: cluster.yaml
