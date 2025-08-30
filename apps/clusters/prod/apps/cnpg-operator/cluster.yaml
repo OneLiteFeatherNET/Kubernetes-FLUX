@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: pg-cluster
+  name: entenhausen-cluster-pg
   namespace: cnpg-system
 spec:
   instances: 3
