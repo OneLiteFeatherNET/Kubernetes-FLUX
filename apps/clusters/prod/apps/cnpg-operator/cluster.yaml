@@ -9,6 +9,7 @@ spec:
   storage:
     size: 50Gi
   enableSuperuserAccess: true
+  primaryUpdateStrategy: unsupervised
   backup:
     barmanObjectStore:
       # Align with MariaDB style: bucket + prefix combined into destinationPath
