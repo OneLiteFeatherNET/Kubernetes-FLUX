@@ -43,7 +43,6 @@ metadata:
 spec:
   cluster:
     name: entenhausen-cluster-pg
-  schedule: "0 2 * * *"
   method: plugin
   pluginConfiguration:
     name: barman-cloud.cloudnative-pg.io
