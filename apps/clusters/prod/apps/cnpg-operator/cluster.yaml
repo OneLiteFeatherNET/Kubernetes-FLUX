@@ -4,7 +4,7 @@ metadata:
   name: entenhausen-cluster-pg
   namespace: cnpg-system
 spec:
-  instances: 3
+  instances: 5
   imageName: ghcr.io/cloudnative-pg/postgresql:16
   storage:
     size: 50Gi
