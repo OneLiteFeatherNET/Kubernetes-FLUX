@@ -19,27 +19,3 @@ spec:
   # Default values
   # Unknown
   values: {}
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: cluster
-  namespace: cnpg-system
-spec:
-  releaseName: cluster
-  chart:
-    spec:
-      chart: cluster
-      sourceRef:
-        kind: HelmRepository
-        name: cnpg
-        namespace: flux-system
-  install:
-    remediation:
-      retries: 0
-  interval: 1m0s
-  # Default values
-  # Unknown
-  values: {}
-
