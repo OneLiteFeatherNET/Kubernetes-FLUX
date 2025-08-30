@@ -1,0 +1,13 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: entenhausen-cluster-pg-pooler-ro
+  namespace: cnpg-system
+spec:
+  cluster:
+    name: entenhausen-cluster-pg
+  type: ro
+  instances: 2
+  pgbouncer:
+    poolMode: session
+    parameters: {}
