@@ -1,9 +1,11 @@
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
 metadata:
-  name: cluster
+  name: pg-cluster
   namespace: cnpg-system
 spec:
-  chart:
-    spec:
-      version: "=0.3.1"
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+  storage:
+    size: 20Gi
+  enableSuperuserAccess: true
