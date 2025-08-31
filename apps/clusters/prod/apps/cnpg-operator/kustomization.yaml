@@ -15,3 +15,6 @@ secretGenerator:
   - name: cnpg-backup
     envs:
       - s3-backup.env
+  - name: bitnami-superuser
+    envs:
+      - bitnami-superuser.sops.env

@@ -10,6 +10,21 @@ spec:
     size: 50Gi
   enableSuperuserAccess: true
   primaryUpdateStrategy: unsupervised
+  bootstrap:
+    pg_basebackup:
+      source: bitnami-src
+  replica:
+    enabled: true
+    source: bitnami-src
+  externalClusters:
+    - name: bitnami-src
+      connectionParameters:
+        host: postgresql-ha-pgpool.postgresql-ha.svc
+        user: postgres
+        dbname: postgres
+      password:
+        name: bitnami-superuser
+        key: password
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
