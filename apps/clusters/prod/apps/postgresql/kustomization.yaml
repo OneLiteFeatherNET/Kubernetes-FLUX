@@ -13,6 +13,12 @@ secretGenerator:
   - name: cnpg-backup
     envs:
       - s3-backup.env
+  - name: role-outline
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/outline.sops.env
   - name: role-harbor
     options:
       labels:
