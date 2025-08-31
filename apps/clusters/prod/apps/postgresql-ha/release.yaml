@@ -621,7 +621,9 @@ spec:
       ##   host     repmgr         repmgr    0.0.0.0/0    md
       ##   ...
       ##
-      pgHbaConfiguration: ""
+      pgHbaConfiguration: |-
+        host    replication   postgres   10.244.0.0/16   scram-sha-256
+        host    all           postgres   10.244.0.0/16   scram-sha-256
       ## @param postgresql.configurationCM Name of existing ConfigMap with configuration files
       ## NOTE: This will override postgresql.repmgrConfiguration, postgresql.configuration and postgresql.pgHbaConfiguration
       ##
@@ -1467,7 +1469,7 @@ spec:
       ## @param pgpool.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `pgpool.pdb.minAvailable` and `pgpool.pdb.maxUnavailable` are empty.
       ##
       pdb:
-        create: true
+        create: false
         minAvailable: "1"
         maxUnavailable: ""
       ## @param pgpool.updateStrategy Strategy used to replace old Pods by new ones
