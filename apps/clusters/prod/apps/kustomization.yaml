@@ -20,3 +20,6 @@ resources:
   - mariadb-galera
 #  - action-runner-controller
   - utils/ingress.yaml
+  - ../../../../infrastructure/base/controllers/cnpg-operator
+patches:
+  - path: ../../../../infrastructure/clusters/prod/controllers/cnpg-operator/release.yaml
