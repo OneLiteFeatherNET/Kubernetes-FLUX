@@ -19,7 +19,8 @@ spec:
   externalClusters:
     - name: bitnami-src
       connectionParameters:
-        host: postgresql-ha-pgpool.postgresql-ha.svc
+        host: postgresql-ha-pgpool.postgresql-ha.svc.cluster.local
+        port: "5432"
         user: postgres
         dbname: postgres
         sslmode: disable
