@@ -3,4 +3,3 @@ kind: Kustomization
 namespace: minio-operator
 resources:
   - namespace.yaml
-  - https://github.com/minio/operator?ref=v7.1.1
