@@ -622,7 +622,6 @@ spec:
       ##   ...
       ##
       pgHbaConfiguration: |-
-        host    replication   postgres   10.244.0.0/16   scram-sha-256
         host    all           postgres   10.244.0.0/16   scram-sha-256
       ## @param postgresql.configurationCM Name of existing ConfigMap with configuration files
       ## NOTE: This will override postgresql.repmgrConfiguration, postgresql.configuration and postgresql.pgHbaConfiguration
