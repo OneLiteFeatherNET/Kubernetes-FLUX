@@ -3,10 +3,10 @@ kind: Kustomization
 namespace: cnpg-system
 generatorOptions:
   disableNameSuffixHash: true
-resources: []
-#  - cluster.yaml
-#  - pooler-rw.yaml
-#  - pooler-ro.yaml
+resources:
+  - cluster.yaml
+  - pooler-rw.yaml
+  - pooler-ro.yaml
 
 secretGenerator:
   - name: cnpg-backup
