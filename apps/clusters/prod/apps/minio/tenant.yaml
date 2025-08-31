@@ -19,7 +19,7 @@ spec:
   buckets:
     - name: "bluemap"
       region: "us-east-1"
-      objectLock: true
+      objectLock: false
     - name: "entenhausen-cluster-pg-backup"
       region: "us-east-1"
       objectLock: true
