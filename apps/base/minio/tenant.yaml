@@ -6,6 +6,7 @@ metadata:
 spec:
   pools:
     - servers: 4
+      name: entenhausen
       volumesPerServer: 1
       volumeClaimTemplate:
         metadata:
