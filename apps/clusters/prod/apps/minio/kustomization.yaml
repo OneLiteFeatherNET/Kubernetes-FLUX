@@ -4,7 +4,6 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/minio/
-  - tenant.yaml
 patches:
   - path: release.yaml
 secretGenerator:
@@ -12,10 +11,6 @@ secretGenerator:
     namespace: minio
     envs:
       - minio.env
-  - name: storage-configuration
-    namespace: minio-onelitefeather
-    files:
-      - config.env=storage-configuration.sops.env
 ### USERS
   - name: bluemap-user
     namespace: minio-onelitefeather
