@@ -621,10 +621,10 @@ spec:
       ##   host     repmgr         repmgr    0.0.0.0/0    md
       ##   ...
       ##
-      pgHbaConfiguration: |-
-        host    all           postgres   10.244.0.0/16   scram-sha-256
-        host    all           repmgr   10.244.0.0/16   scram-sha-256
-        host    all          repmgr    0.0.0.0/0    md5
+#      pgHbaConfiguration: |-
+#        host    all           postgres   10.244.0.0/16   scram-sha-256
+#        host    all           repmgr   10.244.0.0/16   scram-sha-256
+#        host    all          repmgr    0.0.0.0/0    md5
       ## @param postgresql.configurationCM Name of existing ConfigMap with configuration files
       ## NOTE: This will override postgresql.repmgrConfiguration, postgresql.configuration and postgresql.pgHbaConfiguration
       ##
