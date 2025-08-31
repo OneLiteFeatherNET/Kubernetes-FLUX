@@ -9,6 +9,19 @@ spec:
   storage:
     size: 50Gi
   enableSuperuserAccess: true
+  managed:
+    services:
+      ## disable the default services
+      disabledDefaultServices: [ "ro", "r" ]
+      additional:
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: "entenhausen-cluster-pg-rw"
+              annotations:
+                io.cilium/lb-ipam-ips: 10.200.32.3
+            spec:
+              type: LoadBalancer
 #  primaryUpdateStrategy: unsupervised
 #  bootstrap:
 #    pg_basebackup:
