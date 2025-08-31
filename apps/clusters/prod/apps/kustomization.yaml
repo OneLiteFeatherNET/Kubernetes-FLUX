@@ -24,4 +24,3 @@ resources:
   - ../../../../infrastructure/base/controllers/minio-operator
 patches:
   - path: ../../../../infrastructure/clusters/prod/controllers/cnpg-operator/release.yaml
-  - path: ../../../../infrastructure/clusters/prod/controllers/minio-operator/release.yaml
