@@ -1,19 +1,11 @@
 apiVersion: minio.min.io/v2
 kind: Tenant
 metadata:
-  name: minio
+  name: onelitefeather
   namespace: minio
 spec:
   pools:
     - servers: 4
       name: entenhausen
       volumesPerServer: 1
-      volumeClaimTemplate:
-        metadata:
-          name: data
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 200Gi
+      size: 200Gi
