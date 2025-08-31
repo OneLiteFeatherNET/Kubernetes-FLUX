@@ -29,10 +29,12 @@ spec:
           hosts:
             - outline.onelitefeather.dev
     livenessProbe:
+      initialDelaySeconds: 300
       httpGet:
         path: /_health
         port: 3000
     readinessProbe:
+      initialDelaySeconds: 300
       httpGet:
         path: /_health
         port: 3000
