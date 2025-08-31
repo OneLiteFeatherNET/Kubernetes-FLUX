@@ -2,7 +2,7 @@ apiVersion: minio.min.io/v2
 kind: Tenant
 metadata:
   name: onelitefeather
-  namespace: minio
+  namespace: minio-onelitefeather
   annotations:
     prometheus.io/path: /minio/v2/metrics/cluster
     prometheus.io/port: "9000"
