@@ -16,6 +16,7 @@ resources:
   - vulpes-backend
   - alloy
   - bluemap
+  - postgresql
   - mariadb-galera
 #  - action-runner-controller
   - utils/ingress.yaml
