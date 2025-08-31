@@ -22,6 +22,7 @@ spec:
         host: postgresql-ha-pgpool.postgresql-ha.svc
         user: postgres
         dbname: postgres
+        sslmode: disable
       password:
         name: bitnami-superuser
         key: password
