@@ -17,8 +17,6 @@ spec:
         passwordSecret:
           name: role-harbor
     services:
-      ## disable the default services
-      disabledDefaultServices: [ "ro", "r" ]
       additional:
         - selectorType: rw
           serviceTemplate:

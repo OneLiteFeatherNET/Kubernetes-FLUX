@@ -947,7 +947,7 @@ spec:
           #    memory: 128Mi
           #    cpu: 100m
       external:
-        host: "postgresql-ha-pgpool.postgresql-ha.svc.cluster.local"
+        host: "entenhausen-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local"
         port: "5432"
         username: "harbor"
         # password: ""
