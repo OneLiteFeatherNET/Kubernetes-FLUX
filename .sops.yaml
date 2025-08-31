@@ -2,6 +2,8 @@ creation_rules:
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: .*.env
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
+    path_regex: .*.sops.env
+  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: .*.sops.yaml
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: .dockerconfigjson
