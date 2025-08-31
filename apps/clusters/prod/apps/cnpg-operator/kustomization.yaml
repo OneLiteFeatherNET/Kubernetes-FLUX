@@ -5,9 +5,9 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/cnpg-operator/
-#  - cluster.yaml
-#  - pooler-rw.yaml
-#  - pooler-ro.yaml
+  - cluster.yaml
+  - pooler-rw.yaml
+  - pooler-ro.yaml
 patches:
   - path: release.yaml
 
