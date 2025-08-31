@@ -5,9 +5,35 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/minio/
+  - tenant.yaml
 patches:
   - path: release.yaml
 secretGenerator:
   - name: minio-password-secret
     envs:
       - minio.env
+  - name: storage-configuration
+    files:
+      - config.env=storage-configuration.sops.env
+### USERS
+  - name: bluemap-user
+    envs:
+      - users/bluemap.sops.env
+  - name: harbor-user
+    envs:
+      - users/harbor.sops.env
+  - name: loki-user
+    envs:
+      - users/loki.sops.env
+  - name: mariadb-galera-backup-user
+    envs:
+      - users/mariadb-galera-backup.sops.env
+  - name: mimir-user
+    envs:
+      - users/mimir.sops.env
+  - name: outline-user
+    envs:
+      - users/outline.sops.env
+  - name: reposilite-user
+    envs:
+      - users/reposilite.sops.env
