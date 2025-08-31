@@ -12,17 +12,6 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
-  name: postgresql-ha
-  namespace: flux-system
-spec:
-  interval: 5m
-  url: oci://registry-1.docker.io/bitnamicharts/postgresql-ha
-  ref:
-    semver: "=16.0.11"
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: OCIRepository
-metadata:
   name: redis
   namespace: flux-system
 spec:
