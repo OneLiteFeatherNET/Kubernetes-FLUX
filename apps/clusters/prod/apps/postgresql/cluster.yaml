@@ -10,6 +10,12 @@ spec:
     size: 50Gi
   enableSuperuserAccess: true
   managed:
+    roles:
+      - name: harbor
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-harbor
     services:
       ## disable the default services
       disabledDefaultServices: [ "ro", "r" ]
@@ -22,24 +28,6 @@ spec:
                 io.cilium/lb-ipam-ips: 10.200.32.3
             spec:
               type: LoadBalancer
-#  primaryUpdateStrategy: unsupervised
-#  bootstrap:
-#    pg_basebackup:
-#      source: bitnami-src
-#  replica:
-#    enabled: true
-#    source: bitnami-src
-#  externalClusters:
-#    - name: bitnami-src
-#      connectionParameters:
-#        host: postgresql-ha-postgresql.postgresql-ha.svc.cluster.local
-#        port: "5432"
-#        user: repmgr
-#        dbname: postgres
-#        sslmode: disable
-#      password:
-#        name: bitnami-superuser
-#        key: password
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true

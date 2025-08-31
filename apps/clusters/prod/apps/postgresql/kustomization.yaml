@@ -7,8 +7,15 @@ resources:
   - cluster.yaml
   - pooler-rw.yaml
   - pooler-ro.yaml
+  - database/harbor.yaml
 
 secretGenerator:
   - name: cnpg-backup
     envs:
       - s3-backup.env
+  - name: role-harbor
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/harbor.sops.env

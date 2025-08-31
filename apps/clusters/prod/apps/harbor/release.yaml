@@ -131,7 +131,7 @@ spec:
     # For storing images and charts, you can also use "azure", "gcs", "s3",
     # "swift" or "oss". Set it in the "imageChartStorage" section
     persistence:
-      enabled: true
+      enabled: false
       # Setting it to "keep" to avoid removing PVCs during a helm delete
       # operation. Leaving it empty will delete PVCs after the chart deleted
       # (this does not apply for PVCs that are created for internal database
