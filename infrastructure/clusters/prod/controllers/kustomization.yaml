@@ -9,6 +9,7 @@ resources:
   - ../../../../infrastructure/base/controllers/checkmk
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
   - ../../../../infrastructure/base/controllers/mariadb-operator
+  - https://github.com/minio/operator?ref=v7.1.1
 #  - ../../../../infrastructure/base/controllers/cnpg-operator
 patches:
   - path: cert-manager/release.yaml
