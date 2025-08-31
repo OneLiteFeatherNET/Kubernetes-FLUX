@@ -4,3 +4,4 @@ namespace: minio
 resources:
   - namespace.yaml
   - tenant.yaml
+  - release.yaml
