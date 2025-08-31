@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: minio
 resources:
   - namespace.yaml
-  - tenant.yaml
+#  - tenant.yaml
