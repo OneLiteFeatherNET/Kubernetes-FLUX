@@ -451,10 +451,10 @@ spec:
       ## @param postgresql.pdb.minAvailable Minimum number / percentage of pods that should remain scheduled
       ## @param postgresql.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `postgresql.pdb.minAvailable` and `postgresql.pdb.maxUnavailable` are empty.
       ##
-      pdb:
-        create: true
-        minAvailable: "3"
-        maxUnavailable: "1"
+#      pdb:
+#        create: true
+#        minAvailable: "3"
+#        maxUnavailable: "1"
       ## PostgreSQL configuration parameters
       ## @param postgresql.username PostgreSQL username
       ## @param postgresql.password PostgreSQL password
@@ -960,10 +960,10 @@ spec:
       ## @param witness.pdb.minAvailable Minimum number / percentage of pods that should remain scheduled
       ## @param witness.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `witness.pdb.minAvailable` and `witness.pdb.maxUnavailable` are empty.
       ##
-      pdb:
-        create: true
-        minAvailable: ""
-        maxUnavailable: ""
+#      pdb:
+#        create: true
+#        minAvailable: ""
+#        maxUnavailable: ""
       ## @param witness.upgradeRepmgrExtension Upgrade repmgr extension in the database
       ##
       upgradeRepmgrExtension: false
@@ -1468,10 +1468,10 @@ spec:
       ## @param pgpool.pdb.minAvailable Minimum number / percentage of pods that should remain scheduled
       ## @param pgpool.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `pgpool.pdb.minAvailable` and `pgpool.pdb.maxUnavailable` are empty.
       ##
-      pdb:
-        create: false
-        minAvailable: "1"
-        maxUnavailable: ""
+#      pdb:
+#        create: false
+#        minAvailable: "1"
+#        maxUnavailable: ""
       ## @param pgpool.updateStrategy Strategy used to replace old Pods by new ones
       ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
       ##
