@@ -17,7 +17,7 @@ spec:
         - selectorType: rw
           serviceTemplate:
             metadata:
-              name: "entenhausen-cluster-pg-rw"
+              name: "entenhausen-cluster-pg-rw-external"
               annotations:
                 io.cilium/lb-ipam-ips: 10.200.32.3
             spec:
