@@ -16,3 +16,4 @@ resources:
   - mariadb-operator.yml
   - proxmox-ccm.yml
   - cnpg.yml
+  - minio-operator.yml
