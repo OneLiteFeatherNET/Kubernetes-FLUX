@@ -5,6 +5,8 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/minio/
+patches:
+  - path: release.yaml
 secretGenerator:
   - name: minio-password-secret
     envs:
