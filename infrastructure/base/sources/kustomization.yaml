@@ -18,3 +18,4 @@ resources:
   - backstage.yml
   - cnpg.yml
   - minio-operator.yml
+  - crossplane.yml
