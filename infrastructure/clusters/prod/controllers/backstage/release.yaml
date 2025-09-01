@@ -8,11 +8,9 @@ spec:
     spec:
       version: "=2.6.1"
   values:
-    backstage:
-      extraEnvVarsSecrets:
-        - name: "backstage-postgres-secret"
-          secretName: "backstage-postgres-secret"
-          type: Opaque
+    extraEnvVarsSecrets:
+      - name: "backstage-postgres-secret"
+        secretName: "backstage-postgres-secret"
     appConfig:
       database:
         client: pg
