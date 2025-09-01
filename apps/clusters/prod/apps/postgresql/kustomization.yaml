@@ -9,6 +9,7 @@ resources:
   - pooler-ro.yaml
   - database/harbor.yaml
   - database/outline.yaml
+  - database/backstage.yaml
 
 secretGenerator:
   - name: cnpg-backup
@@ -26,3 +27,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/harbor.sops.env
+  - name: role-backstage
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/backstage.sops.env
