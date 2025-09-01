@@ -21,6 +21,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-outline
+      - name: backstage
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-backstage
     services:
       additional:
         - selectorType: rw
