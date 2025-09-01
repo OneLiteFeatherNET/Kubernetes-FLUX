@@ -6,4 +6,4 @@ metadata:
 spec:
   chart:
     spec:
-      version: "=cnpg-operator"
+      version: "=2.0.2"
