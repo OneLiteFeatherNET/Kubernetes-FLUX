@@ -10,8 +10,8 @@ spec:
   values:
     backstage:
       extraEnvVarsSecrets:
-        - name: "backstage-postgres-secret"
-          secretName: "backstage-postgres-secret"
+        - "backstage-postgres-secret"
+
       appConfig:
         database:
           client: pg
