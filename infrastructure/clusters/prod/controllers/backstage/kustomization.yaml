@@ -4,6 +4,8 @@ resources:
   - ../../../../../infrastructure/base/controllers/backstage
 patches:
   - path: release.yaml
+generatorOptions:
+  disableNameSuffixHash: true
 secretGenerator:
   - name: backstage-postgres-secret
     namespace: backstage
