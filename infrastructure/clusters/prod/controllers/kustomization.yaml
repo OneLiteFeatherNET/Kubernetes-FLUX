@@ -11,7 +11,7 @@ resources:
   - ../../../../infrastructure/base/controllers/mariadb-operator
   - ../../../../infrastructure/base/controllers/crossplane
   - https://github.com/minio/operator?ref=v7.1.1
-  - backstage
+#  - backstage
 #  - ../../../../infrastructure/base/controllers/cnpg-operator
 patches:
   - path: cert-manager/release.yaml
