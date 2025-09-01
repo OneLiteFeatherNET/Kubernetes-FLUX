@@ -2,7 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - reposilite
-  - postgresql-ha
   - redis
   - minio
   - harbor
@@ -17,6 +16,11 @@ resources:
   - vulpes-backend
   - alloy
   - bluemap
+  - postgresql
   - mariadb-galera
 #  - action-runner-controller
   - utils/ingress.yaml
+  - ../../../../infrastructure/base/controllers/cnpg-operator
+  - ../../../../infrastructure/base/controllers/minio-operator
+patches:
+  - path: ../../../../infrastructure/clusters/prod/controllers/cnpg-operator/release.yaml

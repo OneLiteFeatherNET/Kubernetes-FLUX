@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ingress-nginx-default
+  namespace: ingress-nginx
+spec:
+  secretName: ingress-nginx-default-tls
+  commonName: default.onelitefeather.dev
+  dnsNames:
+    - default.onelitefeather.dev
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: step-ca
+    kind: ClusterIssuer
+  usages:
+    - digital signature
+    - key encipherment

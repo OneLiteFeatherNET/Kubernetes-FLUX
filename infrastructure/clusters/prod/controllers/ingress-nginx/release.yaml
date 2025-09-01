@@ -37,6 +37,8 @@ spec:
         maxReplicas: 2
         targetCPUUtilizationPercentage: 80
         targetMemoryUtilizationPercentage: 85
+      extraArgs:
+        default-ssl-certificate: "ingress-nginx/ingress-nginx-default-tls"
       config:
         enable-real-ip: "true"
         use-forwarded-headers: "true"

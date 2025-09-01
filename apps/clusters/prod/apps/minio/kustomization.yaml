@@ -1,14 +1,42 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: minio
 generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/minio/
 patches:
   - path: release.yaml
-
 secretGenerator:
   - name: minio-password-secret
+    namespace: minio
     envs:
       - minio.env
+### USERS
+  - name: bluemap-user
+    namespace: minio-onelitefeather
+    envs:
+      - users/bluemap.sops.env
+  - name: harbor-user
+    namespace: minio-onelitefeather
+    envs:
+      - users/harbor.sops.env
+  - name: loki-user
+    namespace: minio-onelitefeather
+    envs:
+      - users/loki.sops.env
+  - name: mariadb-galera-backup-user
+    namespace: minio-onelitefeather
+    envs:
+      - users/mariadb-galera-backup.sops.env
+  - name: mimir-user
+    namespace: minio-onelitefeather
+    envs:
+      - users/mimir.sops.env
+  - name: outline-user
+    namespace: minio-onelitefeather
+    envs:
+      - users/outline.sops.env
+  - name: reposilite-user
+    namespace: minio-onelitefeather
+    envs:
+      - users/reposilite.sops.env
