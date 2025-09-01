@@ -10,7 +10,6 @@ resources:
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
   - ../../../../infrastructure/base/controllers/mariadb-operator
   - https://github.com/minio/operator?ref=v7.1.1
-  - ingress-nginx/default-certificate.yaml
 #  - ../../../../infrastructure/base/controllers/cnpg-operator
 patches:
   - path: cert-manager/release.yaml
