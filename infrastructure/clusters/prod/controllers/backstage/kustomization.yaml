@@ -6,5 +6,6 @@ patches:
   - path: release.yaml
 secretGenerator:
   - name: backstage-postgres-secret
+    namespace: backstage
     envs:
       - backstage-postgres-secret.sops.env
