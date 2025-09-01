@@ -10,8 +10,8 @@ resources:
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
   - ../../../../infrastructure/base/controllers/mariadb-operator
   - ../../../../infrastructure/base/controllers/crossplane
-  - ../../../../infrastructure/base/controllers/backstage
   - https://github.com/minio/operator?ref=v7.1.1
+  - backstage
 #  - ../../../../infrastructure/base/controllers/cnpg-operator
 patches:
   - path: cert-manager/release.yaml
@@ -19,5 +19,4 @@ patches:
   - path: ingress-nginx/release.yaml
   - path: checkmk/release.yaml
   - path: crossplane/release.yaml
-  - path: backstage/release.yaml
 #  - path: cnpg-operator/release.yaml

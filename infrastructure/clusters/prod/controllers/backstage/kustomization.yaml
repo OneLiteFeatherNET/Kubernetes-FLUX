@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cnpg-system
+resources:
+  - ../../../../../infrastructure/base/controllers/backstage
+patches:
+  - path: release.yaml
+secretGenerator:
+  - name: backstage-postgres-secret
+    envs:
+      - backstage-postgres-secret.sops.env
