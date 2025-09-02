@@ -10,7 +10,7 @@ spec:
   database: "plotsquared"
   table: "*"
   username: "plotsquared"
-  grantOption: true
+  grantOption: false
   host: "%"
   # Delete the resource in the database whenever the CR gets deleted.
   # Alternatively, you can specify Skip in order to omit deletion.
