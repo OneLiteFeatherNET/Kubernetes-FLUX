@@ -1,0 +1,19 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: backstage
+  namespace: backstage
+spec:
+  releaseName: backstage
+  chart:
+    spec:
+      chart: backstage
+      sourceRef:
+        kind: HelmRepository
+        name: backstage
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 0
+  interval: 1m0s
+  values: {}

@@ -1,0 +1,71 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: backstage
+  namespace: backstage
+spec:
+  chart:
+    spec:
+      version: "=2.6.1"
+  values:
+    backstage:
+      extraEnvVarsSecrets:
+        - "backstage-postgres-secret"
+
+      appConfig:
+        database:
+          client: pg
+          connection:
+            host: ${POSTGRES_HOST}
+            port: ${POSTGRES_PORT}
+            user: ${POSTGRES_USER}
+            password: ${POSTGRES_PASSWORD}
+    ingress:
+
+      # -- Enable the creation of the ingress resource
+      enabled: true
+
+      # -- Name of the IngressClass cluster resource which defines which controller will implement the resource (e.g nginx)
+      className: "nginx"
+
+      # -- Additional annotations for the Ingress resource
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/proxy-body-size: 100m
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+
+      # -- Hostname to be used to expose the route to access the backstage application (e.g: backstage.IP.nip.io)
+      host: "backstage.onelitefeather.dev"
+
+      # -- List of additional hostnames to be covered with this ingress record (e.g. a CNAME)
+      # <!-- E.g.
+      # extraHosts:
+      #   - name: backstage.env.example.com
+      #     path: / (Optional)
+      #     pathType: Prefix (Optional)
+      #     port: 7007 (Optional) -->
+      extraHosts: [ ]
+
+      # -- Path to be used to expose the full route to access the backstage application (e.g: IP.nip.io/backstage)
+      path: "/"
+
+      # -- Ingress TLS parameters
+      tls:
+
+        # -- Enable TLS configuration for the host defined at `ingress.host` parameter
+        enabled: true
+
+        # -- The name to which the TLS Secret will be called
+        secretName: "backstage-onelitefeather-dev-tls"
+
+      # -- The TLS configuration for additional hostnames to be covered with this ingress record.
+      # <br /> Ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+      # <!-- E.g.
+      # extraTls:
+      #   - hosts:
+      #     - backstage.env.example.com
+      #     secretName: backstage-env -->
+      extraTls: []

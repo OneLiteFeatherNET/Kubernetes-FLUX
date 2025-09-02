@@ -8,7 +8,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/vulpes/vulpes-backend
       pullPolicy: IfNotPresent
-      tag: "1.2.0-beta.11"
+      tag: "1.2.0-beta.26"
     imagePullSecrets:
       - name: harbor-pull
     service:
