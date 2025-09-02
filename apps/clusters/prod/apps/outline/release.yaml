@@ -10,7 +10,7 @@ spec:
       # This sets the pull policy for images.
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "0.84.0"
+      tag: "v0.87.3"
     replicaCount: 1
     ingress:
       enabled: true
