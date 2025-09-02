@@ -1,7 +1,7 @@
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: User
 metadata:
-  name: user-plotsquared
+  name: plotsquared
 spec:
   # If you want the user to be created with a different name than the resource name
   # name: user-custom
