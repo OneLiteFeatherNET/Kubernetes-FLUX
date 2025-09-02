@@ -3,15 +3,9 @@ kind: Kustomization
 namespace: mariadb-galera
 generatorOptions:
   disableNameSuffixHash: true
-resources:
-  - namespace.yaml
-  - mariadb.yaml
-  - users
-  - databases
-  - grants
-  - passwords
+resources: []
 
 secretGenerator:
-  - name: mariadb
+  - name: user-plotsquared-secret
     envs:
-      - mariadb-root.env
+      - plotsquared.sops.env
