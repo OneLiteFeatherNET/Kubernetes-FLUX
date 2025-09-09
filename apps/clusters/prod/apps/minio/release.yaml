@@ -9,6 +9,7 @@ spec:
     resourcesPreset: 'medium'
     persistence:
       size: 200Gi
+      volumeAttributesClassName: promox-backup
     auth:
       existingSecret: 'minio-password-secret'
     podAnnotations:
