@@ -9,3 +9,6 @@ secretGenerator:
   - name: user-plotsquared-secret
     envs:
       - plotsquared.sops.env
+  - name: user-discordbot-secret
+    envs:
+      - discordbot.sops.env
