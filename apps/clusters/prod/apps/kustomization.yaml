@@ -10,8 +10,8 @@ resources:
   - node-red
   - shlink
   - grafana
-  - mimir
-  - pushgateway
+#  - mimir
+#  - pushgateway
   - otis
   - vulpes-backend
   - alloy
