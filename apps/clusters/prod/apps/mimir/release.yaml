@@ -72,6 +72,7 @@ spec:
     compactor:
       persistentVolume:
         size: 20Gi
+        storageClassName: "proxmox-csi-thin"
       resources:
         limits:
           memory: 2.1Gi
@@ -89,6 +90,7 @@ spec:
     ingester:
       persistentVolume:
         size: 50Gi
+        storageClassName: "proxmox-csi-thin"
       replicas: 3
       resources:
         limits:
@@ -121,6 +123,7 @@ spec:
     store_gateway:
       persistentVolume:
         size: 10Gi
+        storageClassName: "proxmox-csi-thin"
       replicas: 3
       resources:
         limits:
