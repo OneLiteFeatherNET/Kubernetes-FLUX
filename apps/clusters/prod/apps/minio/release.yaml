@@ -9,7 +9,7 @@ spec:
     resourcesPreset: 'large'
     persistence:
       size: 200Gi
-      storageClass: 'proxmox-csi-thin'
+      storageClass: 'proxmox-csi-local-zfs'
     auth:
       existingSecret: 'minio-password-secret'
     podAnnotations:
