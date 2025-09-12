@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: proxmox-csi-local-zfs
+parameters:
+  csi.storage.k8s.io/fstype: ext4
+  storage: local-zfs
+  storageFormat: raw
+
+  ## Optional: Proxmox csi options
+  cache: none
+  ssd: "true"
+provisioner: csi.proxmox.sinextra.dev
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
