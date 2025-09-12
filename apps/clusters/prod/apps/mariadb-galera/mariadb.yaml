@@ -43,7 +43,7 @@ spec:
         requests:
           storage: 50Gi
       accessModes: ["ReadWriteOnce"]
-      storageClass: 'proxmox-csi-local-zfs'
+      storageClassName: proxmox-csi-local-zfs
 
   rootPasswordSecretKeyRef:
     name: mariadb
