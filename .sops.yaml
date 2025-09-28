@@ -8,7 +8,7 @@ creation_rules:
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: .dockerconfigjson
   - path_regex: .*.yaml
-    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
+    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca|root_ca|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
     pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: s3.conf

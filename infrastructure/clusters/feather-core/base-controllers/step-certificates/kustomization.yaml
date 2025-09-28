@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - ../../../../base/controllers/step-certificates
 patches:
-  - path: release.yaml
+  - path: release.sops.yaml
