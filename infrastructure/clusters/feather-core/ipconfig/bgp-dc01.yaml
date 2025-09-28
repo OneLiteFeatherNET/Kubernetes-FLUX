@@ -13,3 +13,5 @@ spec:
         - name: "opsense-dc01"
           peerASN: 64504
           peerAddress: 10.200.3.1
+          peerConfigRef:
+            name: "cilium-peer"

@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  - bgp-peer-config.yaml
   - lb-dc01.yaml
   - lb-dc06.yaml
   - bgp-dc01.yaml
