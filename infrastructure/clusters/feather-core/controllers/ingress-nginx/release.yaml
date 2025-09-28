@@ -1,0 +1,53 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ingress-nginx
+  namespace: ingress-nginx
+spec:
+  chart:
+    spec:
+      version: ">=4.12.3"
+  values:
+    controller:
+      kind: DaemonSet
+      ingressClassResource:
+        default: true
+      service:
+        externalTrafficPolicy: Local
+        labels:
+          onelite.feather/bgp: "announce"
+        annotations:
+          io.cilium/lb-ipam-ips: "10.200.90.1"
+      admissionWebhooks:
+        timeoutSeconds: 30
+      allowSnippetAnnotations: true
+      metrics:
+        enabled: true
+      podAnnotations:
+        prometheus.io/port: "10254"
+        prometheus.io/scrape: "true"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 90Mi
+        limits:
+          cpu: 800m
+          memory: 1Gi
+      autoscaling:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 2
+        targetCPUUtilizationPercentage: 80
+        targetMemoryUtilizationPercentage: 85
+      config:
+        enable-real-ip: "true"
+        use-forwarded-headers: "true"
+        forwarded-for-header: "True-Client-IP"
+        strict-validate-path-type: "false"
+        log-format-escape-json: "true"
+        log-format-upstream: '{"time":"$time_iso8601","remote_addr":"$proxy_protocol_addr","x_forwarded_for":"$proxy_add_x_forwarded_for","request_id":"$req_id","bytes_sent":$bytes_sent,"request_time":$request_time,"status":$status,"vhost":"$host","request_proto":"$server_protocol","path":"$uri","request_query":"$args","request_length":$request_length,"method":"$request_method","http_referrer":"$http_referer","http_user_agent":"$http_user_agent"}'
+        gzip-level: "6"
+        use-gzip: "true"
+        brotli-level: "6"
+        use-http2: "true"
+
