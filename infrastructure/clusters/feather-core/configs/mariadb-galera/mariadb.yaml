@@ -134,14 +134,13 @@ spec:
   mariaDbRef:
     name: mariadb-galera
   targetRecoveryTime: 2025-09-22T18:32:56Z
-  storage:
-    s3:
-      bucket: mariadb-galera-backup
-      prefix: backups
-      endpoint: s3.onelite.feather:7480
-      accessKeyIdSecretKeyRef:
-        name: mariadb
-        key: access-key-id
-      secretAccessKeySecretKeyRef:
-        name: mariadb
-        key: secret-access-key
+  s3:
+    bucket: mariadb-galera-backup
+    prefix: backups
+    endpoint: s3.onelite.feather:7480
+    accessKeyIdSecretKeyRef:
+      name: mariadb
+      key: access-key-id
+    secretAccessKeySecretKeyRef:
+      name: mariadb
+      key: secret-access-key
