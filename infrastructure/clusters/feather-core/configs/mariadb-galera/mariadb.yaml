@@ -5,7 +5,7 @@ metadata:
   namespace: mariadb-galera
 spec:
   image: "mariadb:11.4"
-  replicas: 5
+  replicas: 3
   galera:
     enabled: true
   myCnf: |
@@ -34,25 +34,19 @@ spec:
       memory: 4Gi
     limits:
       memory: 4Gi
-  bootstrapFrom:
-    backupRef:
-      name: mariadb-galera-backup
-      kind: PhysicalBackup
-    targetRecoveryTime: 2025-09-22T18:32:56Z
-    stagingStorage:
-      persistentVolumeClaim:
-        storageClassName: rook-external-rbd
-        resources:
-          requests:
-            storage: 50Gi
-        accessModes:
-          - ReadWriteOnce
 
   storage:
     resizeInUseVolumes: true
     waitForVolumeResize: true
     size: 50Gi
     storageClassName: rook-external-rbd
+    volumeClaimTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 50Gi
+      storageClassName: rook-external-rbd
 
   rootPasswordSecretKeyRef:
     name: mariadb
