@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPClusterConfig
+metadata:
+  name: bgp-dc06
+spec:
+  nodeSelector:
+    matchLabels:
+      topology.kubernetes.io/zone: "dc06"
+  bgpInstances:
+    - name: "dc06-64606"
+      localASN: 64606
+      peers:
+        - name: "opsense-dc01"
+          peerASN: 64504
+          peerAddress: 10.200.3.1

@@ -1,0 +1,12 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lb-dc01
+spec:
+  cidrs:
+    - cidr: 10.210.90.0/28
+  serviceSelector:
+    matchExpressions:
+      - key: onelite.feather/site
+        operator: In
+        values: ["dc01"]

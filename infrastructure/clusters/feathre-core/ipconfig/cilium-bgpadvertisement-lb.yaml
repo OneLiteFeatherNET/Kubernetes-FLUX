@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPAdvertisement
+metadata:
+  name: bgp-advertisements
+spec:
+  advertisements:
+    - advertisementType: "Service"
+      service:
+        addresses:
+          - LoadBalancerIP
+      selector:
+        matchExpressions:
+          - key: "onelite.feather/bgp"
+            operator: In
+            values: ["announce"]
