@@ -9,3 +9,4 @@ resources:
   - node-red.yml
   - reposilite.yml
   - smallstep.yml
+  - jetstack.yml
