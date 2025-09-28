@@ -3,10 +3,11 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: lb-dc06
 spec:
-  cidrs:
-    - cidr: 10.200.90.0/28
+  blocks:
+    - start: 10.200.90.1
+      stop: 10.200.90.15
   serviceSelector:
     matchExpressions:
       - key: onelite.feather/site
         operator: In
-        values: ["dc06"]
+        values: ["dc01"]

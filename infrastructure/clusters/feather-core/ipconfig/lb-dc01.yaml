@@ -3,8 +3,9 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: lb-dc01
 spec:
-  cidrs:
-    - cidr: 10.210.90.0/28
+  blocks:
+    - start: 10.210.90.1
+      stop: 10.210.90.15
   serviceSelector:
     matchExpressions:
       - key: onelite.feather/site
