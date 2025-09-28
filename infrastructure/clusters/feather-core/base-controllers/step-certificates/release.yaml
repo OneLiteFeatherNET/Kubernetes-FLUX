@@ -114,8 +114,9 @@ spec:
                 cpu: 100m
                 memory: 128Mi
         service:
-            annotations:
-                io.cilium/lb-ipam-ips: 10.200.32.2
+            labels:
+              onelite.feather/site: "dc06"
+              onelite.feather/bgp: "announce"
             externalTrafficPolicy: Local
             targetPort: 9000
             type: LoadBalancer
