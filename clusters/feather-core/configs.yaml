@@ -1,0 +1,21 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: controllers
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: controllers
+  interval: 1m
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/clusters/feather-core/configs
+  prune: true
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
