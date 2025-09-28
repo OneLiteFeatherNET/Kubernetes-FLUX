@@ -4,8 +4,8 @@ metadata:
   name: base-sources
   namespace: flux-system
 spec:
-  interval: 1m
-  retryInterval: 1m
+  interval: 10s
+  retryInterval: 10s
   timeout: 5m
   sourceRef:
     kind: GitRepository
