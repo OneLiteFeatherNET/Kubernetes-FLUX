@@ -92,15 +92,14 @@ spec:
                 cpu: ENC[AES256_GCM,data:LgYIfg==,iv:GAPKtUEfqXDeDnQYZWAqEelYOm9Vxe8Ok1tT2OnwHHU=,tag:izozCnav8Qcb3A5qHKSmsw==,type:str]
                 memory: ENC[AES256_GCM,data:BFm8e5A=,iv:WfzKIEy1MU0tiCogvi3++o0JzbF65xnH3bjS50Bt624=,tag:x/Eg0wK9OPRcDvWyXVu57Q==,type:str]
         service:
-            labels:
-                onelite.feather/site: ENC[AES256_GCM,data:k9xCDw==,iv:45mryOjNTKltxu3o4BPnLZXvxhVUgUioI7RQNfDAFaE=,tag:oZ6nQVQREujUc7a5mhKx8g==,type:str]
-                onelite.feather/bgp: ENC[AES256_GCM,data:iBqd2Q6tyMI=,iv:UKLnX78nQNvxmiPSVC4N3xtTSBNInVYVy9aLSeZyWDQ=,tag:2BItQs2pXqBmBS6UgYUhww==,type:str]
+            annotations:
+                io.cilium/lb-ipam-ips: ENC[AES256_GCM,data:vwMwVdoCYgqzzj3U,iv:w4olCbCqjc97N+VUq9hyz8sOACSTeTWhwBlLyrGEsmM=,tag:4GMGaoCS/k/2HyYq0ucW4g==,type:str]
             externalTrafficPolicy: ENC[AES256_GCM,data:avFzxvM=,iv:bAzrkBl06CRfdrWUE4NET3dfTYeGXizDV90iuWYI0Ag=,tag:u4VxpQcZ44IIFwNrPLMkqQ==,type:str]
             targetPort: ENC[AES256_GCM,data:FjYpQA==,iv:AKVH1nWp+ZWQzLmzTFPvXdnZVhxJn+PYMN85pp0+4XY=,tag:6Nc9+mSF4nst1QHvJ4/W8Q==,type:int]
             type: ENC[AES256_GCM,data:UHVQwJ8O1agKDl9z,iv:EX7T3ZpX9CRahlZAvMsfgAtzVcNftSL+ybavDXUCX+Y=,tag:6FGZ8o8sjyM1qf9VDLKF6w==,type:str]
 sops:
-    lastmodified: "2025-09-28T18:33:33Z"
-    mac: ENC[AES256_GCM,data:TzXBVMklGYf8J6vQRfRPsEG5ZmwMoe5je7Wdf8xCcOiHOLbuBb5aS2Zzgel0BIi3/rotn/zABK+bQewykWErSHlMKGOXKvGcxDeUSsfSs3tlX2GWo3YS6nMNTXGguV8LRnTbFsbi5hVvRfh+BOe4FKGC11ebUhsNWR7H0HUBY4k=,iv:iuaZ08R2cOdk0Z9f3DxdM7AnqpevSQKinuzinvxYOwg=,tag:byfZ+4FN/glazxj2p1Y88Q==,type:str]
+    lastmodified: "2025-09-28T18:55:44Z"
+    mac: ENC[AES256_GCM,data:n/zVb4f1eQjWKZncgl5ku5HkpGoqZ6pwOU/eM6k5I4SzfIkaFKYS5nkUJPy7pQfkrVIe9lSuDVVE1mBkJCByNHn5XMLpFW+tZxuKLBcB2j3fiN06p6tFplIJ8owTR4d+QF/cu8douDQiC/Qpuh7eaMxr7od+EdY0lQBCgb9MTZA=,iv:h4altMyv+Grhe9BcGwJVbosVpLkuoc5Fik1FZofJT74=,tag:IvkkvjN9QKK6FPvNLN+Yeg==,type:str]
     pgp:
         - created_at: "2025-09-28T18:32:22Z"
           enc: |-

@@ -8,8 +8,3 @@ spec:
       service:
         addresses:
           - LoadBalancerIP
-      selector:
-        matchExpressions:
-          - key: "onelite.feather/bgp"
-            operator: In
-            values: ["announce"]

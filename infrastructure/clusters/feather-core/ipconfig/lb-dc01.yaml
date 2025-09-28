@@ -6,8 +6,3 @@ spec:
   blocks:
     - start: 10.210.90.1
       stop: 10.210.90.15
-  serviceSelector:
-    matchExpressions:
-      - key: onelite.feather/site
-        operator: In
-        values: ["dc01"]
