@@ -41,6 +41,7 @@ spec:
     targetRecoveryTime: 2025-09-22T18:32:56Z
     stagingStorage:
       persistentVolumeClaim:
+        storageClassName: rook-external-rbd
         resources:
           requests:
             storage: 50Gi
