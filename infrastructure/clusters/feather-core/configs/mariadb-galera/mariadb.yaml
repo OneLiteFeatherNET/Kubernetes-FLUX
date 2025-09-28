@@ -74,7 +74,7 @@ spec:
     s3:
       bucket: mariadb-galera-backup
       prefix: backups
-      endpoint: minio.minio.svc.cluster.local:9000
+      endpoint: s3.onelite.feather:7480
       accessKeyIdSecretKeyRef:
         name: mariadb
         key: access-key-id
@@ -127,15 +127,13 @@ spec:
     enabled: true
 ---
 apiVersion: k8s.mariadb.com/v1alpha1
-kind: PhysicalRestore
+kind: Restore
 metadata:
-  name: mariadb-galera-restore
-  namespace: mariadb-galera
+  name: restore
 spec:
   mariaDbRef:
     name: mariadb-galera
-  backupRef:
-    name: mariadb-galera-backup
+  targetRecoveryTime: 2025-09-22T18:32:56Z
   storage:
     s3:
       bucket: mariadb-galera-backup
