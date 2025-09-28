@@ -3,3 +3,9 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - nginx.yml
+  - mariadb-operator.yml
+  - cnpg.yml
+  - helmcharts.yml
+  - node-red.yml
+  - reposilite.yml
+  - smallstep.yml

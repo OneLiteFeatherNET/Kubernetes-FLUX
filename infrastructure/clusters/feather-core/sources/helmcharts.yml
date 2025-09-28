@@ -1,0 +1,21 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: helmcharts
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://github.com/OneLiteFeatherNET/Kubernetes-FLUX.git
+  ref:
+    branch: main
+
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: themeinerlp
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://themeinerlp.github.io/HelmCharts/
+
