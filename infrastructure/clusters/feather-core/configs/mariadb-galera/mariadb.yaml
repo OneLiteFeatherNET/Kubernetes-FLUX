@@ -24,6 +24,21 @@ spec:
   # When draining Nodes, make sure that you have at least 2 Pods available.
   podDisruptionBudget:
     maxUnavailable: 66%
+  bootstrapFrom:
+    s3:
+      bucket: mariadb-galera-backup
+      prefix: backups
+      endpoint: s3.onelite.feather:7480
+      accessKeyIdSecretKeyRef:
+        name: mariadb
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb
+        key: secret-access-key
+      tls:
+        enabled: false
+    backupContentType: Physical
+    targetRecoveryTime: 2025-09-22T18:00:00Z
 
   # Ensure that the Pods are not preempted by Kubernetes to make room for new scheduled Pods.
   priorityClassName: system-node-critical
