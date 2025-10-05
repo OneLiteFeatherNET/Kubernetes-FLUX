@@ -5,6 +5,8 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - cluster.yaml
+  - object-store.yaml
+  - backup.yaml
   - pooler-rw.yaml
   - pooler-ro.yaml
   - database/harbor.yaml
