@@ -5,3 +5,5 @@ resources:
   - shlink
   - bluemap
   - harbor
+  - node-red
+  - outline

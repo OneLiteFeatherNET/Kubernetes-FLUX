@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: outline
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/outline/
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: outline-secret
+    envs:
+      - outline.env
