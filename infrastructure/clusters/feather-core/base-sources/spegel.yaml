@@ -1,8 +1,10 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
 metadata:
   name: spegel
+  namespace: flux-system
 spec:
-  type: "oci"
-  interval: 5m0s
+  interval: 5m
   url: oci://ghcr.io/spegel-org/helm-charts
+  ref:
+    semver: "=0.4.0"
