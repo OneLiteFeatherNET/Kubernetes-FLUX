@@ -8,6 +8,22 @@ spec:
     spec:
       version: ">=1.3.20"
   values:
+    ## Readiness and liveness probes
+    probes:
+      port: 8080 # The port Reposilite is running on inside the pod.
+      scheme: "HTTP" # Scheme to use in GET requests.
+      readiness:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 1
+      liveness:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 2
+        successThreshold: 1
+        failureThreshold: 3
     persistence:
       enabled: false
     rollingUpdate:
