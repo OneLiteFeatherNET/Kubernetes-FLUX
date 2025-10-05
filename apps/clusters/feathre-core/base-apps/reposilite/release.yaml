@@ -71,19 +71,15 @@ spec:
     ingress:
       enabled: true
       annotations:
-        cert-manager.io/cluster-issuer: step-ca
+        cert-manager.io/cluster-issuer: letsencrypt-prod
         ingress.kubernetes.io/proxy-body-size: "2G"
         nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       hosts:
-        - host: reposilite.apps.onelite.feather
+        - host: repo.onelitefeather.dev
           paths:
             - path: /
               pathType: Prefix
-#        - host: repo.onelitefeather.dev
-#          paths:
-#            - path: /
-#              pathType: Prefix
       tls:
-        - secretName: reposilite-apps-onelite-feather-tls
+        - secretName: repo-onelitefeather-dev-tls
           hosts:
-            - reposilite.apps.onelite.feather
+            - repo.onelitefeather.dev
