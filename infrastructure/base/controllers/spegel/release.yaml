@@ -13,3 +13,6 @@ spec:
       retries: 3
   interval: 1m0s
   timeout: 5m
+  values:
+    spegel:
+      containerdRegistryConfigPath: /etc/cri/conf.d/hosts
