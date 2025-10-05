@@ -947,7 +947,7 @@ spec:
           #    memory: 128Mi
           #    cpu: 100m
       external:
-        host: "entenhausen-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local"
+        host: "feathre-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local"
         port: "5432"
         username: "harbor"
         # password: ""
