@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: harbor
+spec:
+  name: harbor
+  owner: harbor
+  cluster:
+    name: feather-core-cluster-pg

@@ -1,0 +1,74 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: feather-core-cluster-pg
+  namespace: cnpg-system
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  storage:
+    size: 50Gi
+  enableSuperuserAccess: true
+  managed:
+    roles:
+      - name: harbor
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-harbor
+      - name: outline
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-outline
+      - name: backstage
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-backstage
+    services:
+      additional:
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: "feather-core-cluster-pg-rw-external"
+              annotations:
+                io.cilium/lb-ipam-ips: 10.200.90.3
+            spec:
+              type: LoadBalancer
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: s3-store
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: s3-store
+spec:
+  configuration:
+    destinationPath: s3://feather-core-cluster-pg-backup/backups
+    # MariaDB uses endpoint without scheme; CNPG expects full URL
+    endpointURL: http://s3.onelite.feather:7480
+    s3Credentials:
+      accessKeyId:
+        name: cnpg-backup
+        key: access-key-id
+      secretAccessKey:
+        name: cnpg-backup
+        key: secret-access-key
+    wal:
+      compression: gzip
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Backup
+metadata:
+  name: backup-to-minio
+  namespace: cnpg-system
+spec:
+  cluster:
+    name: feather-core-cluster-pg
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
