@@ -6,7 +6,7 @@ resources:
   - minio
   - harbor
   - outline
-  - loki
+#  - loki
   - node-red
   - shlink
   - grafana
@@ -14,8 +14,8 @@ resources:
 #  - pushgateway
   - otis
   - vulpes-backend
-  - alloy
-  - bluemap
+#  - alloy
+#  - bluemap
   - postgresql
   - mariadb-galera
 #  - action-runner-controller
