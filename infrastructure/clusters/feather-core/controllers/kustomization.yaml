@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - ingress-nginx
   - redis
-  - ../../../../infrastructure/base/controllers/spegel
   - ../../../../infrastructure/base/controllers/mariadb-operator
