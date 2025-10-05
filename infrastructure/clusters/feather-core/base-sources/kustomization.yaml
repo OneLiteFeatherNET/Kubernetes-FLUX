@@ -12,3 +12,4 @@ resources:
   - jetstack.yml
   - bitnami.yml
   - spegel.yaml
+  - harbor.yml
