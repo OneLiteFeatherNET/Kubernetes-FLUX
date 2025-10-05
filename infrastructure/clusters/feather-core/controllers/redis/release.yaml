@@ -33,7 +33,7 @@ spec:
       ##
       security:
         ## @param global.security.allowInsecureImages Allows skipping image verification
-        allowInsecureImages: false
+        allowInsecureImages: true
       redis:
         password: ""
       ## Compatibility adaptations for Kubernetes platforms
@@ -120,7 +120,7 @@ spec:
     ##
     image:
       registry: docker.io
-      repository: bitnami/redis
+      repository: bitnamilegacy/redis
       tag: 7.4.2-debian-12-r4
       digest: ""
       ## Specify a imagePullPolicy
@@ -1178,7 +1178,7 @@ spec:
       ## IMPORTANT: this will disable the master and replicas services and
       ## create a single Redis&reg; service exposing both the Redis and Sentinel ports
       ##
-      enabled: false
+      enabled: true
       ## Bitnami Redis&reg; Sentinel image version
       ## ref: https://hub.docker.com/r/bitnami/redis-sentinel/tags/
       ## @param sentinel.image.registry [default: REGISTRY_NAME] Redis&reg; Sentinel image registry
@@ -1191,7 +1191,7 @@ spec:
       ##
       image:
         registry: docker.io
-        repository: bitnami/redis-sentinel
+        repository: bitnamilegacy/redis-sentinel
         tag: 7.4.2-debian-12-r4
         digest: ""
         ## Specify a imagePullPolicy
@@ -1792,7 +1792,7 @@ spec:
       ##
       image:
         registry: docker.io
-        repository: bitnami/redis-exporter
+        repository: bitnamilegacy/redis-exporter
         tag: 1.67.0-debian-12-r9
         digest: ""
         pullPolicy: IfNotPresent
