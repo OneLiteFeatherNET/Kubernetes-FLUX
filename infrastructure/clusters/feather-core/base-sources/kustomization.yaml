@@ -11,3 +11,4 @@ resources:
   - smallstep.yml
   - jetstack.yml
   - bitnami.yml
+  - spegel.yaml
