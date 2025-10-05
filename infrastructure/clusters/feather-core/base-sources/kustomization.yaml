@@ -10,3 +10,4 @@ resources:
   - reposilite.yml
   - smallstep.yml
   - jetstack.yml
+  - bitnami.yml
