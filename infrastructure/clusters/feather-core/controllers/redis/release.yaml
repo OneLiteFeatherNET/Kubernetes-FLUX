@@ -1489,7 +1489,7 @@ spec:
         ## @param sentinel.service.annotations Additional custom annotations for Redis&reg; Sentinel service
         ##
         annotations:
-          "lbipam.cilium.io/ips": "10.200.32.5"
+          "lbipam.cilium.io/ips": "10.200.90.5"
           "lbipam.cilium.io/sharing-key": "redis"
         ## @param sentinel.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
         ## If "ClientIP", consecutive client requests will be directed to the same Pod
