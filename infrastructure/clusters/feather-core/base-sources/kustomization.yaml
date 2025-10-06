@@ -10,3 +10,6 @@ resources:
   - reposilite.yml
   - smallstep.yml
   - jetstack.yml
+  - bitnami.yml
+  - spegel.yaml
+  - harbor.yml

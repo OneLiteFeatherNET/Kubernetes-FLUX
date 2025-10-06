@@ -1178,7 +1178,7 @@ spec:
       ## IMPORTANT: this will disable the master and replicas services and
       ## create a single Redis&reg; service exposing both the Redis and Sentinel ports
       ##
-      enabled: false
+      enabled: true
       ## Bitnami Redis&reg; Sentinel image version
       ## ref: https://hub.docker.com/r/bitnami/redis-sentinel/tags/
       ## @param sentinel.image.registry [default: REGISTRY_NAME] Redis&reg; Sentinel image registry
@@ -1489,7 +1489,7 @@ spec:
         ## @param sentinel.service.annotations Additional custom annotations for Redis&reg; Sentinel service
         ##
         annotations:
-          "lbipam.cilium.io/ips": "10.200.32.5"
+          "lbipam.cilium.io/ips": "10.200.90.5"
           "lbipam.cilium.io/sharing-key": "redis"
         ## @param sentinel.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
         ## If "ClientIP", consecutive client requests will be directed to the same Pod
@@ -1792,7 +1792,7 @@ spec:
       ##
       image:
         registry: docker.io
-        repository: bitnami/redis-exporter
+        repository: bitnamilegacy/redis-exporter
         tag: 1.67.0-debian-12-r9
         digest: ""
         pullPolicy: IfNotPresent

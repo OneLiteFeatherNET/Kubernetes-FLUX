@@ -8,6 +8,22 @@ spec:
     spec:
       version: ">=1.3.20"
   values:
+    ## Readiness and liveness probes
+    probes:
+      port: 8080 # The port Reposilite is running on inside the pod.
+      scheme: "HTTP" # Scheme to use in GET requests.
+      readiness:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 1
+      liveness:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 2
+        successThreshold: 1
+        failureThreshold: 3
     persistence:
       enabled: false
     rollingUpdate:
@@ -18,11 +34,11 @@ spec:
         cpu: 600m
         memory: 256Mi
       limits:
-        cpu: 1
-        memory: 1024Mi
+        cpu: 2
+        memory: 2Gi
     autoscaling:
       enabled: true
-      minReplicas: 2
+      minReplicas: 3
       maxReplicas: 5
       metrics:
         - type: Resource
@@ -55,19 +71,15 @@ spec:
     ingress:
       enabled: true
       annotations:
-        cert-manager.io/cluster-issuer: step-ca
+        cert-manager.io/cluster-issuer: letsencrypt-prod
         ingress.kubernetes.io/proxy-body-size: "2G"
         nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       hosts:
-        - host: reposilite.apps.onelite.feather
-          paths:
-            - path: /
-              pathType: Prefix
         - host: repo.onelitefeather.dev
           paths:
             - path: /
               pathType: Prefix
       tls:
-        - secretName: reposilite-apps-onelite-feather-tls
+        - secretName: repo-onelitefeather-dev-tls
           hosts:
-            - reposilite.apps.onelite.feather
+            - repo.onelitefeather.dev

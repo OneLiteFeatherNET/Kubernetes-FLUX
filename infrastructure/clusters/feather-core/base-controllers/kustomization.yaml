@@ -5,3 +5,4 @@ resources:
   - step-certificates
   - cnpg-operator
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
+  - ../../../../infrastructure/base/controllers/spegel

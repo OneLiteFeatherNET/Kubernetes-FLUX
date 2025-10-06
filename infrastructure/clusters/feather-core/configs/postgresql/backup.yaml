@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Backup
+metadata:
+  name: backup-to-minio
+  namespace: cnpg-system
+spec:
+  cluster:
+    name: feather-core-cluster-pg
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io

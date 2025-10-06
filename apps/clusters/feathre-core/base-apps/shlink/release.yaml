@@ -1,0 +1,77 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: shlink
+  namespace: shlink
+spec:
+  values:
+    replicaCount: 3
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/limit-rps: "5"
+        nginx.ingress.kubernetes.io/limit-connections: "4"
+      hosts:
+        - host: shlink.onelitefeather.dev
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+        - host: 1lf.link
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: shlink-onelitefeather-dev-tls
+          hosts:
+            - shlink.onelitefeather.dev
+        - secretName: 1lf-link-tls
+          hosts:
+            - 1lf.link
+    livenessProbe:
+      httpGet:
+        path: /rest/health
+        port: http
+    readinessProbe:
+      httpGet:
+        path: /rest/health
+        port: http
+    service:
+      port: 8080
+    podAnnotations:
+      prometheus.io/scrape: "false"
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 200m
+        memory: .5Gi
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 95
+      # targetMemoryUtilizationPercentage: 80
+    shlink:
+      database:
+        adapter: maria
+        host: mariadb.database.entenhausen.onelite.feather
+        port: 3306
+        user: shlink
+        secretName: 'shlink-secret'
+        database: shlink
+      general:
+        defaultDomain: '1lf.link'
+        httpsEnabled: true
+        # GEOLITE_LICENSE_KEY as KEY
+        goliteLicenseKey: ''
+        secretName: 'shlink-secret'
+        timezone: 'Europe/Helsinki'
+      realtime:
+        redis:
+          servers: ''
+          # REDIS_SERVERS as KEY
+          secretName: 'shlink-secret'
+          enabled: true

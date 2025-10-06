@@ -1,0 +1,13 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: feather-core-cluster-pg-pooler-rw
+  namespace: cnpg-system
+spec:
+  cluster:
+    name: feather-core-cluster-pg
+  type: rw
+  instances: 2
+  pgbouncer:
+    poolMode: session
+    parameters: {}
