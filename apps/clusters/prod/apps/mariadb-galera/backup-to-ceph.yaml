@@ -1,0 +1,44 @@
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: PhysicalBackup
+metadata:
+  name: mariadb-galera-backup-ceph
+  namespace: mariadb-galera
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  schedule:
+    cron: "0 */6 * * *"
+    suspend: false
+    immediate: true
+  maxRetention: 720h # 30 days
+  compression: bzip2
+  storage:
+    s3:
+      bucket: mariadb-galera-backup
+      prefix: backups
+      endpoint: s3.onelite.feather:7480
+      accessKeyIdSecretKeyRef:
+        name: mariadb
+        key: ceph-access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb
+        key: ceph-secret-access-key
+  # Define a PVC to use as staging area for keeping the backups while they are being processed.
+  stagingStorage:
+    persistentVolumeClaim:
+      resources:
+        requests:
+          storage: 50Gi
+      accessModes:
+        - ReadWriteOnce
+  timeout: 1h
+  #  podAffinity: true
+  #  serviceAccountName: backup
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi

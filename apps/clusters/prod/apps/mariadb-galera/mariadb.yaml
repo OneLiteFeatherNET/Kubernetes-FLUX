@@ -8,6 +8,15 @@ spec:
   replicas: 5
   galera:
     enabled: true
+    recovery:
+      enabled: true
+      minClusterSize: 1
+      clusterMonitorInterval: 10s
+      clusterHealthyTimeout: 30s
+      clusterBootstrapTimeout: 10m
+      podRecoveryTimeout: 10m
+      podSyncTimeout: 10m
+      forceClusterBootstrapInPod: mariadb-galera-0
   myCnf: |
     [mariadb]
     bind-address=*
@@ -57,50 +66,6 @@ spec:
     enabled: false
 ---
 apiVersion: k8s.mariadb.com/v1alpha1
-kind: PhysicalBackup
-metadata:
-  name: mariadb-galera-backup
-  namespace: mariadb-galera
-spec:
-  mariaDbRef:
-    name: mariadb-galera
-  schedule:
-    cron: "0 */6 * * *"
-    suspend: false
-    immediate: true
-  maxRetention: 720h # 30 days
-  compression: bzip2
-  storage:
-    s3:
-      bucket: mariadb-galera-backup
-      prefix: backups
-      endpoint: minio.minio.svc.cluster.local:9000
-      accessKeyIdSecretKeyRef:
-        name: mariadb
-        key: access-key-id
-      secretAccessKeySecretKeyRef:
-        name: mariadb
-        key: secret-access-key
-  # Define a PVC to use as staging area for keeping the backups while they are being processed.
-  stagingStorage:
-    persistentVolumeClaim:
-      resources:
-        requests:
-          storage: 50Gi
-      accessModes:
-        - ReadWriteOnce
-  timeout: 1h
-#  podAffinity: true
-#  serviceAccountName: backup
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 300m
-      memory: 512Mi
----
-apiVersion: k8s.mariadb.com/v1alpha1
 kind: MaxScale
 metadata:
   name: maxscale-galera
@@ -124,4 +89,4 @@ spec:
         io.cilium/lb-ipam-ips: 10.200.32.7
 
   metrics:
-    enabled: true
+    enabled: false

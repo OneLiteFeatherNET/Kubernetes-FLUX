@@ -10,6 +10,8 @@ resources:
   - databases
   - grants
   - passwords
+  - backup-to-ceph.yaml
+  - backup-to-s3.yaml
 
 secretGenerator:
   - name: mariadb
