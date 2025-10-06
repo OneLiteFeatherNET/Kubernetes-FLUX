@@ -9,6 +9,6 @@ patches:
   - path: release.yaml
 
 secretGenerator:
-  - name: outline-secret
-    envs:
-      - outline.env
+  - name: outline-env
+    files:
+      - .env=outline.sops.env

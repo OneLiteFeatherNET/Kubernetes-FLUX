@@ -11,6 +11,16 @@ spec:
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: "0.87.3"
+    volumes:
+     - name: outline-env-file
+       secret:
+         secretName: outline-env
+         optional: false
+    volumeMounts:
+    - name: outline-env-file
+      mountPath: "/opt/outline/.env"
+      readOnly: true
+
     replicaCount: 1
     ingress:
       enabled: true
@@ -38,107 +48,4 @@ spec:
       httpGet:
         path: /_health
         port: 3000
-    outline:
-      # Generic Outline environment variables
-      general:
-        nodeEnv: production
-        url: "https://outline.onelitefeather.dev"
-        cdnUrl: ""
-        forceHttps: true
-        enableUpdates: true
-        webConcurrency: 5
-        maxImportSize: "5120000"
-        utilsSecret: ""
-        secretKey: ""
-        sslKey: ""
-        sslCert: ""
-        defaultLanguage: en_US
-        dropboxKey: ""
-        logLevel: verbose
-        existingSecret: "outline-secret"
-      rateLimiter:
-        enabled: false
-        requests: 1000
-        durationWindow: 60
-      sentry:
-        dsn: ""
-        environment: ""
-        existingSecret: ""
-      notion:
-        clientId: ""
-        clientSecret: ""
-        existingSecret: ""
-      database:
-        url: ""
-        connectionPoolMin: 5
-        connectionPoolMax: 15
-        pgSslMode: disable
-        existingSecret: "outline-secret"
-      slackChannel:
-        verificationToken: ""
-        appId: ""
-        messageActions: true
-        existingSecret: ""
-      redis:
-        url: ""
-        existingSecret: "outline-secret"
-      auth:
-        slack:
-          clientId: ""
-          clientSecret: ""
-          existingSecret: ""
-        google:
-          clientId: ""
-          clientSecret: ""
-          existingSecret: ""
-        azure:
-          clientId: "4ac7a2a9-4812-4745-b90b-71f0723d706e"
-          clientSecret: ""
-          resourceAppId: "00000003-0000-0000-c000-000000000000"
-          existingSecret: "outline-secret"
-        github:
-          clientId: ""
-          clientSecret: ""
-          appName: ""
-          appId: ""
-          appPrivateKey: ""
-          existingSecret: ""
-        discord:
-          clientId: ""
-          clientSecret: ""
-          serverId: ""
-          serverRoles: ""
-          existingSecret: ""
-        oidc:
-          clientId: ""
-          clientSecret: ""
-          redirectUri: ""
-          tokenUri: ""
-          userInfoUri: ""
-          logoutUri: ""
-          usernameClaim: "preferred_username"
-          scopes: "openid profile email"
-          displayName: "OIDC"
-          existingSecret: ""
-      fileStorage:
-        type: s3
-        uploadMaxSize: "26214400"
-        local:
-          rootDir: /var/lib/outline/data
-        s3:
-          region: "us-west-rack2"
-          uploadBucketUrl: "http://s3.onelite.feather:7480"
-          uploadBucketName: "outline"
-          forcePathStyle: true
-          acl: private
-          existingSecret: "outline-secret"
-      smtp:
-        host: ""
-        port: 587
-        username: ""
-        password: ""
-        fromEmail: ""
-        replyToEmail: ""
-        tlsCipher: ""
-        secure: true
-        existingSecret: ""
+
