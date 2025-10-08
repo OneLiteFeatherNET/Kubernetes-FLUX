@@ -13,3 +13,4 @@ resources:
   - bitnami.yml
   - spegel.yaml
   - harbor.yml
+  - checkmk.yml
