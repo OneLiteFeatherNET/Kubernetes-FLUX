@@ -6,7 +6,6 @@ resources:
   - ../../../../infrastructure/base/controllers/ingress-nginx
   - ../../../../infrastructure/base/controllers/cert-manager
   - ../../../../infrastructure/base/controllers/step-certificates
-#  - ../../../../infrastructure/base/controllers/checkmk
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
   - ../../../../infrastructure/base/controllers/mariadb-operator
   - ../../../../infrastructure/base/controllers/crossplane
@@ -17,6 +16,4 @@ patches:
   - path: cert-manager/release.yaml
   - path: step-certificates/release.yaml
   - path: ingress-nginx/release.yaml
-#  - path: checkmk/release.yaml
   - path: crossplane/release.yaml
-#  - path: cnpg-operator/release.yaml
