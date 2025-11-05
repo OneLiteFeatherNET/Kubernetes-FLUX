@@ -6,5 +6,32 @@ metadata:
 spec:
   chart:
     spec:
-      version: "=1.16.4"
-  values: {}
+      version: "=0.39.0"
+  values:
+    frontend:
+      replicaCount: 3
+    common:
+      secretKey:
+        createSecret: true
+    ingress:
+      enabled: true
+      ingressClassName: "nginx"
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        ingress.kubernetes.io/proxy-body-size: "5G"
+        nginx.ingress.kubernetes.io/proxy-body-size: "5G"
+      hostname: dependency-track.onelitefeather.dev
+      tls:
+        - secretName: dependency-track-onelitefeather-dev-tls
+          hosts:
+            - dependency-track.onelitefeather.dev
+    apiServer:
+      deploymentType: Deployment
+      extraEnv:
+       - name: "ALPINE_DATABASE_PASSWORD"
+         valueFrom:
+           secretKeyRef:
+             key: db-password
+             name: dependencytrack-secrets
+       - name: ALPINE_DATABASE_MODE
+         value: "external"

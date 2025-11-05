@@ -4,7 +4,7 @@ namespace: dependency-track
 generatorOptions:
   disableNameSuffixHash: true
 resources:
-  - ../../../../../apps/base/harbor/
+  - ../../../../../apps/base/dependency-track
 patches:
   - path: release.yaml
 
