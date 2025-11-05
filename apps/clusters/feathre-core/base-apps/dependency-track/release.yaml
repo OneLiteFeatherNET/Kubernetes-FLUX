@@ -1,8 +1,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-    name: dependency-track
-    namespace: dependency-track
+  name: dependency-track
+  namespace: dependency-track
 spec:
   chart:
     spec:
@@ -28,10 +28,19 @@ spec:
     apiServer:
       deploymentType: Deployment
       extraEnv:
-       - name: "ALPINE_DATABASE_PASSWORD"
-         valueFrom:
-           secretKeyRef:
-             key: db-password
-             name: dependencytrack-secrets
-       - name: ALPINE_DATABASE_MODE
-         value: "external"
+        - name: "ALPINE_DATABASE_USERNAME"
+          valueFrom:
+            secretKeyRef:
+              key: db-username
+              name: dependency-track-env
+        - name: "ALPINE_DATABASE_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              key: db-password
+              name: dependency-track-env
+        - name: ALPINE_DATABASE_DRIVER
+          value: "org.postgresql.Driver"
+        - name: ALPINE_DATABASE_MODE
+          value: "external"
+        - name: ALPINE_DATABASE_URL
+          value: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432/dependencytrack"
