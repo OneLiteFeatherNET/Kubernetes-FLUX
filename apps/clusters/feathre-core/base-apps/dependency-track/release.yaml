@@ -43,4 +43,4 @@ spec:
         - name: ALPINE_DATABASE_MODE
           value: "external"
         - name: ALPINE_DATABASE_URL
-          value: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432/dependencytrack"
+          value: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432/dependency-track"
