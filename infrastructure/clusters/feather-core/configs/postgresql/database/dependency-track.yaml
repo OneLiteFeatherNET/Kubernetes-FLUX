@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: dependency-track
+spec:
+  name: dependency-track
+  owner: dependency-track
+  cluster:
+    name: feather-core-cluster-pg

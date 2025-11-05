@@ -12,6 +12,7 @@ resources:
   - database/harbor.yaml
   - database/outline.yaml
   - database/backstage.yaml
+  - database/dependency-track.yaml
 
 secretGenerator:
   - name: cnpg-backup
@@ -35,3 +36,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/backstage.sops.env
+  - name: role-dependency-track
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/dependency-track.sops.env
