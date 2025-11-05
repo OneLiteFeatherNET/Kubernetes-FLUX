@@ -8,6 +8,7 @@ spec:
     spec:
       version: "=0.39.0"
   values:
+
     frontend:
       replicaCount: 3
     common:
@@ -26,7 +27,8 @@ spec:
           hosts:
             - dependency-track.onelitefeather.dev
     apiServer:
-      deploymentType: Deployment
+      persistentVolume:
+        enabled: true
       extraEnv:
         - name: "ALPINE_DATABASE_USERNAME"
           valueFrom:
