@@ -7,3 +7,4 @@ resources:
   - harbor
   - node-red
   - outline
+  - dependency-track
