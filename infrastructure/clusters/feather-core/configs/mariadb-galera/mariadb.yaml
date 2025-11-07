@@ -8,6 +8,15 @@ spec:
   replicas: 3
   galera:
     enabled: true
+    recovery:
+        enabled: true
+        minClusterSize: 1
+        clusterMonitorInterval: 10s
+        clusterHealthyTimeout: 30s
+        clusterBootstrapTimeout: 10m
+        podRecoveryTimeout: 10m
+        podSyncTimeout: 10m
+        forceClusterBootstrapInPod: mariadb-galera-0
   myCnf: |
     [mariadb]
     bind-address=*
