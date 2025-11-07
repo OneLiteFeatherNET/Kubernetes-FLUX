@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: uptime-kuma
+  namespace: uptime-kuma
+spec:
+  releaseName: uptime-kuma
+  chart:
+    spec:
+      chart: uptime-kuma
+      sourceRef:
+        kind: HelmRepository
+        name: uptime-kuma-chart
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  # https://github.com/dirsigler/uptime-kuma-helm/blob/main/charts/uptime-kuma/values.yaml
+  values: {}

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: uptime-kuma
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/uptime-kuma
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: uptime-kuma-env
+    envs:
+      - uptime-kuma.env
