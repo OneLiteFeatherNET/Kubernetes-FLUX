@@ -57,7 +57,7 @@ spec:
     shlink:
       database:
         adapter: maria
-        host: mariadb.database.entenhausen.onelite.feather
+        host: mariadb.database.service.onelite.feather
         port: 3306
         user: shlink
         secretName: 'shlink-secret'
