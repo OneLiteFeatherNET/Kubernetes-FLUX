@@ -7,9 +7,11 @@ resources:
   - namespace.yaml
   - mariadb.yaml
   - users
+  - phsysical-backup.yaml
   - databases
   - grants
   - passwords
+  - maxscale.yaml
 
 secretGenerator:
   - name: mariadb

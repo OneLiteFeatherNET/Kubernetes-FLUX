@@ -1,0 +1,25 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: MaxScale
+metadata:
+  name: maxscale-galera
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  replicas: 2
+
+  kubernetesService:
+    type: LoadBalancer
+    externalTrafficPolicy: Local
+    metadata:
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.90.4
+
+  guiKubernetesService:
+    type: LoadBalancer
+    externalTrafficPolicy: Local
+    metadata:
+      annotations:
+        io.cilium/lb-ipam-ips: 10.200.90.7
+
+  metrics:
+    enabled: true
