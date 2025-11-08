@@ -11,15 +11,28 @@ spec:
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: "0.87.3"
-    volumes:
-     - name: outline-env-file
-       secret:
-         secretName: outline-env
-         optional: false
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    securityContext:
+      readOnlyRootFilesystem: false
+      runAsUser: 1000
     volumeMounts:
-    - name: outline-env-file
-      mountPath: "/opt/outline/.env"
-      readOnly: true
+      - mountPath: /opt/outline/.env
+        name: outline-env-file
+        readOnly: true
+        subPath: .env
+    volumes:
+      - name: outline-env-file
+        secret:
+          items:
+            - key: .env
+              path: .env
+          secretName: outline-env
 
     replicaCount: 1
     ingress:
