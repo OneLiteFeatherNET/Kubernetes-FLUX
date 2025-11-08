@@ -57,7 +57,7 @@ spec:
     shlink:
       database:
         adapter: maria
-        host: mariadb.database.service.onelite.feather
+        host: maxscale-galera.mariadb-galera.svc.cluster.local
         port: 3306
         user: shlink
         secretName: 'shlink-secret'
