@@ -3,17 +3,21 @@ kind: MariaDB
 metadata:
   name: mariadb-galera
   namespace: mariadb-galera
+  annotations:
+    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
   image: "mariadb:11.4"
   replicas: 3
+  startupProbe:
+    failureThreshold: 60
+    periodSeconds: 10
   galera:
     enabled: true
     recovery:
         enabled: true
         minClusterSize: 1
-        clusterMonitorInterval: 10s
-        clusterHealthyTimeout: 30s
-        clusterBootstrapTimeout: 10m
+        clusterHealthyTimeout: 10m
+        clusterBootstrapTimeout: 20m
         podRecoveryTimeout: 10m
         podSyncTimeout: 10m
         forceClusterBootstrapInPod: mariadb-galera-0
@@ -33,11 +37,13 @@ spec:
   # When draining Nodes, make sure that you have at least 2 Pods available.
   podDisruptionBudget:
     maxUnavailable: 66%
+  maxScaleRef:
+    name: maxscale-galera
   bootstrapFrom:
     backupRef:
       name: mariadb-galera-backup
       kind: PhysicalBackup
-    targetRecoveryTime: 2025-10-23T06:00:00Z
+    targetRecoveryTime: 2025-11-07T11:55:00Z
 
   # Ensure that the Pods are not preempted by Kubernetes to make room for new scheduled Pods.
   priorityClassName: system-node-critical
