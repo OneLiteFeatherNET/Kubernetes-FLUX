@@ -9,6 +9,6 @@ patches:
   - path: release.yaml
 
 secretGenerator:
-  - name: uptime-kuma-env
+  - name: uptime-kuma-mariadb
     envs:
-      - uptime-kuma.env
+      - uptime-kuma.sops.env

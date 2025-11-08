@@ -1,11 +1,71 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: dependency-track
-  namespace: dependency-track
+  name: uptime-kuma
+  namespace: uptime-kuma
 spec:
   chart:
     spec:
       version: "=2.22.0"
   values:
-    {}
+    ingress:
+      enabled: true
+      extraLabels:
+        { }
+      # vhost: uptime-kuma.company.corp
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/limit-rps: "5"
+        nginx.ingress.kubernetes.io/limit-connections: "4"
+        nginx.ingress.kubernetes.io/server-snippets: |
+          location / {
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_http_version 1.1;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header Host $host;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header   Upgrade $http_upgrade;
+            proxy_cache_bypass $http_upgrade;
+          }
+      hosts:
+        - host: status.onelitefeather.net
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+
+      tls:
+        - secretName: status-onelitefeather-net-tls
+          hosts:
+           - status.onelitefeather.net
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    volume:
+      enabled: false
+    podEnv:
+      - name: UPTIME_KUMA_DB_TYPE
+        value: "mariadb"
+      - name: UPTIME_KUMA_DB_HOSTNAME
+        value: "maxscale-galera.mariadb-galera.svc.cluster.local"
+      - name: UPTIME_KUMA_DB_PORT
+        value: "3306"
+      - name: UPTIME_KUMA_DB_NAME
+        value: "uptime-kuma"
+      - name: UPTIME_KUMA_DB_USERNAME
+        value: "uptime-kuma"
+      - name: UPTIME_KUMA_DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: "uptime-kuma-mariadb"
+            key: "mariadb-password"

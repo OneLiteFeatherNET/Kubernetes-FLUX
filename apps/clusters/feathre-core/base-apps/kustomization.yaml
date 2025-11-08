@@ -8,3 +8,4 @@ resources:
   - node-red
   - outline
   - dependency-track
+  - uptime-kuma
