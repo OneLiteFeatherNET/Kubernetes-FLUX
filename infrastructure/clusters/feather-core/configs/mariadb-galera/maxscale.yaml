@@ -2,6 +2,7 @@ apiVersion: k8s.mariadb.com/v1alpha1
 kind: MaxScale
 metadata:
   name: maxscale-galera
+  namespace: mariadb-galera
 spec:
   mariaDbRef:
     name: mariadb-galera
