@@ -12,3 +12,6 @@ secretGenerator:
   - name: user-discordbot-secret
     envs:
       - discordbot.sops.env
+  - name: uptime-kuma-secret
+    envs:
+      - uptime-kuma.sops.env

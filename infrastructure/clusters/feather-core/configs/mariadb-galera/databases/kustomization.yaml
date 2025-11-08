@@ -6,3 +6,4 @@ generatorOptions:
 resources:
   - plotsquared.yaml
   - discordbot.yaml
+  - uptime-kuma.yaml
