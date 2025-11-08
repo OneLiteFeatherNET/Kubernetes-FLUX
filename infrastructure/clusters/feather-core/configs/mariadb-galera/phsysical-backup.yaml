@@ -36,8 +36,8 @@ spec:
   #  serviceAccountName: backup
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 4
+      memory: 256Mi
     limits:
-      cpu: 300m
+      cpu: 4
       memory: 512Mi

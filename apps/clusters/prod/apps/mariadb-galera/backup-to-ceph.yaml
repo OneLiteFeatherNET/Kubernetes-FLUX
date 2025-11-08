@@ -4,6 +4,8 @@ kind: PhysicalBackup
 metadata:
   name: mariadb-galera-backup-ceph
   namespace: mariadb-galera
+  annotations:
+    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
   mariaDbRef:
     name: mariadb-galera
@@ -27,6 +29,7 @@ spec:
   # Define a PVC to use as staging area for keeping the backups while they are being processed.
   stagingStorage:
     persistentVolumeClaim:
+      storageClassName: proxmox-csi-local-zfs
       resources:
         requests:
           storage: 50Gi
@@ -37,8 +40,8 @@ spec:
   #  serviceAccountName: backup
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 4
+      memory: 256Mi
     limits:
-      cpu: 300m
+      cpu: 4
       memory: 512Mi
