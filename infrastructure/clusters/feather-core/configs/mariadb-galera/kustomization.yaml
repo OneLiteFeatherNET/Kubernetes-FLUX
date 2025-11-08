@@ -8,6 +8,7 @@ resources:
   - mariadb.yaml
   - users
   - phsysical-backup.yaml
+  - phsysical-backup-entenhausen.yaml
   - databases
   - grants
   - passwords

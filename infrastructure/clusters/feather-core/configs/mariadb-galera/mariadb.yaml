@@ -41,7 +41,7 @@ spec:
     name: maxscale-galera
   bootstrapFrom:
     backupRef:
-      name: mariadb-galera-backup
+      name: mariadb-galera-backup-entenhausen
       kind: PhysicalBackup
     targetRecoveryTime: 2025-11-08T12:46:41Z
 
