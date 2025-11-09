@@ -4,9 +4,11 @@ namespace: cert-manager
 generatorOptions:
   disableNameSuffixHash: true
 resources:
-  - issuers.yml
-
+  - acme-le-dns-cf-issuer.yaml
+  - acme-le-http-issuer.yaml
+  - acme-le-http-staging-issuer.yaml
+  - acme-olf-http-issuer.yaml
 secretGenerator:
   - name: cloudflare-api-token
     envs:
-      - cloudflare-api-token.env
+      - cloudflare-api-token.sops.env
