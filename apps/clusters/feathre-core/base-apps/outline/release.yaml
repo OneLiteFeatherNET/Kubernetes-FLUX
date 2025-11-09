@@ -39,7 +39,6 @@ spec:
       enabled: true
       className: "nginx"
       annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
         ingress.kubernetes.io/proxy-body-size: "5G"
         nginx.ingress.kubernetes.io/proxy-body-size: "5G"
       hosts:
@@ -48,7 +47,7 @@ spec:
             - path: /
               pathType: ImplementationSpecific
       tls:
-        - secretName: outline-onelitefeather-dev-tls
+        - secretName: cf-origin-tls
           hosts:
             - outline.onelitefeather.dev
     livenessProbe:

@@ -12,3 +12,8 @@ secretGenerator:
   - name: outline-env
     files:
       - .env=outline.sops.env
+  - name: cf-origin-tls
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=cf-origin-tls.sops.crt
+      - tls.key=cf-origin-tls.sops.key
