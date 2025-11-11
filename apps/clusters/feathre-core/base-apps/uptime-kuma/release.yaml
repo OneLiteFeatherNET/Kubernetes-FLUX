@@ -19,9 +19,6 @@ spec:
         { }
       # vhost: uptime-kuma.company.corp
       annotations:
-        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-        cert-manager.io/cluster-issuer: letsencrypt-prod
         nginx.ingress.kubernetes.io/limit-rps: "5"
         nginx.ingress.kubernetes.io/limit-connections: "4"
         nginx.ingress.kubernetes.io/server-snippets: |
@@ -45,7 +42,7 @@ spec:
               pathType: ImplementationSpecific
 
       tls:
-        - secretName: status-onelitefeather-net-tls
+        - secretName: cf-origin-tls
           hosts:
            - status.onelitefeather.net
 
