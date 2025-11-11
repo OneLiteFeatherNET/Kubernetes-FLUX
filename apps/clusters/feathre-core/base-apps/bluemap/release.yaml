@@ -56,17 +56,13 @@ spec:
             key: core.conf
     ingress:
       enabled: true
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "2G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
       hosts:
-        - host: bluemap.apps.onelitefeather.dev
+        - host: bluemap.onelitefeather.dev
           paths:
             - path: /
               pathType: Prefix
       tls:
-        - secretName: bluemap-apps-onelitefeather-dev-tls
+        - secretName: cf-origin-tls
           hosts:
-            - bluemap.apps.onelitefeather.dev
+            - bluemap.onelitefeather.dev
 

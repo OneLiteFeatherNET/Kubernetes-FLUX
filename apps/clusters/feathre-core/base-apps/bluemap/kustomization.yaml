@@ -22,4 +22,9 @@ configMapGenerator:
 secretGenerator:
   - name: s3-conf
     files:
-      - s3.conf
+      - s3.sops.conf
+  - name: cf-origin-tls
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=cf-origin-tls.sops.crt
+      - tls.key=cf-origin-tls.sops.key
