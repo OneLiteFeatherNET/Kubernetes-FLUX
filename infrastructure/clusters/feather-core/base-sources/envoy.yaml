@@ -1,0 +1,21 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: envoyproxy
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://docker.io/envoyproxy/gateway-helm
+  ref:
+    semver: "=1.6.0"
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: envoyproxy-crds
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://docker.io/envoyproxy/gateway-crds-helm
+  ref:
+    semver: "=1.6.0"

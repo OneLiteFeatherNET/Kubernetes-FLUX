@@ -16,3 +16,4 @@ resources:
   - checkmk.yml
   - dependency-track.yml
   - dirsigler.yml
+  - envoy.yaml
