@@ -1,9 +1,0 @@
-# kubernetes/cilium/ip-pool.yaml
-apiVersion: cilium.io/v2alpha1
-kind: CiliumLoadBalancerIPPool
-metadata:
-  name: ip-pool
-spec:
-  blocks:
-    - start: 10.200.32.1
-      stop: 10.200.32.254
