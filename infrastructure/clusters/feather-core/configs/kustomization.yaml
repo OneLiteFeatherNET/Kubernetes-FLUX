@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - postgresql
   - mariadb-galera
-  - gateway
+#  - gateway
