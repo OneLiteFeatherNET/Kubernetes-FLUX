@@ -68,9 +68,20 @@ spec:
   tls:
     - hosts:
         - s3.onelitefeather.net
+        - '*.s3.onelitefeather.net'
       secretName: s3-onelitefeather-net-tls
   rules:
     - host: s3.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ceph-rgw-external
+                port:
+                  number: 7480
+    - host: '*.s3.onelitefeather.net'
       http:
         paths:
           - path: /
