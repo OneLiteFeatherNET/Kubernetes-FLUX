@@ -231,10 +231,10 @@ spec:
           bucket: harbor
           #accesskey: awsaccesskey
           #secretkey: awssecretkey
-          regionendpoint: http://s3.onelite.feather:7480
+          regionendpoint: https://s3.onelitefeather.net
           #encrypt: false
           #keyid: mykeyid
-          secure: false
+          secure: true
           #skipverify: false
           v4auth: true
           #chunksize: "5242880"

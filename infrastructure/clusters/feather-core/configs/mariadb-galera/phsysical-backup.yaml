@@ -16,7 +16,9 @@ spec:
     s3:
       bucket: mariadb-galera-backup
       prefix: feather-core-backups
-      endpoint: s3.onelite.feather:7480
+      endpoint: s3.onelitefeather.net
+      tls:
+        enabled: true
       accessKeyIdSecretKeyRef:
         name: mariadb
         key: access-key-id
