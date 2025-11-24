@@ -12,6 +12,12 @@ spec:
     frontend:
       replicaCount: 3
       extraEnv:
+        - name: API_BASE_URL
+          value: "https://dependency-track.onelitefeather.dev"
+        - name: OIDC_LOGIN_BUTTON_TEXT
+          value: "Azure AD"
+        - name: LOGGING_LEVEL
+          value: "WARN"
         - name: ALPINE_OIDC_ISSUER
           valueFrom:
             secretKeyRef:
@@ -22,16 +28,6 @@ spec:
             secretKeyRef:
               key: oidc-client-id
               name: dependency-track-env
-        - name: ALPINE_OIDC_ENABLED
-          value: "true"
-        - name: ALPINE_OIDC_USERNAME_CLAIM
-          value: "email"
-        - name: ALPINE_OIDC_USER_PROVISIONING
-          value: "true"
-        - name: ALPINE_OIDC_TEAMS_CLAIM
-          value: "groups"
-        - name: ALPINE_OIDC_TEAM_SYNCHRONIZATION
-          value: "true"
     common:
       secretKey:
         createSecret: true
@@ -64,11 +60,11 @@ spec:
         - name: ALPINE_OIDC_ENABLED
           value: "true"
         - name: ALPINE_OIDC_USERNAME_CLAIM
-          value: "email"
+          value: name
         - name: ALPINE_OIDC_USER_PROVISIONING
           value: "true"
         - name: ALPINE_OIDC_TEAMS_CLAIM
-          value: "groups"
+          value: groups
         - name: ALPINE_OIDC_TEAM_SYNCHRONIZATION
           value: "true"
         - name: "ALPINE_DATABASE_USERNAME"
