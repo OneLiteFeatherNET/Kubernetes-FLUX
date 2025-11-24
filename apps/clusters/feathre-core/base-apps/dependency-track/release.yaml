@@ -60,7 +60,7 @@ spec:
         - name: ALPINE_OIDC_ENABLED
           value: "true"
         - name: ALPINE_OIDC_USERNAME_CLAIM
-          value: name
+          value: email
         - name: ALPINE_OIDC_USER_PROVISIONING
           value: "true"
         - name: ALPINE_OIDC_TEAMS_CLAIM
