@@ -11,6 +11,27 @@ spec:
 
     frontend:
       replicaCount: 3
+      extraEnv:
+        - name: ALPINE_OIDC_ISSUER
+          valueFrom:
+            secretKeyRef:
+              key: oidc-issuer
+              name: dependency-track-env
+        - name: ALPINE_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: oidc-client-id
+              name: dependency-track-env
+        - name: ALPINE_OIDC_ENABLED
+          value: "true"
+        - name: ALPINE_OIDC_USERNAME_CLAIM
+          value: "email"
+        - name: ALPINE_OIDC_USER_PROVISIONING
+          value: "true"
+        - name: ALPINE_OIDC_TEAMS_CLAIM
+          value: "groups"
+        - name: ALPINE_OIDC_TEAM_SYNCHRONIZATION
+          value: "true"
     common:
       secretKey:
         createSecret: true
