@@ -17,3 +17,4 @@ resources:
   - dependency-track.yml
   - dirsigler.yml
   - envoy.yaml
+  - ansible.yml
