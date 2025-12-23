@@ -86,6 +86,7 @@ spec:
               url: $${JDBC_URL}
               username: $${DB_USER}
               password: $${DB_PASS}
+              driver-class-name: org.postgresql.Driver
               schema-generate: NONE
               maximumPoolSize: 20
               minimumIdle: 4
