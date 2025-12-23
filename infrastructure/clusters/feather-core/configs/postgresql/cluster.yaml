@@ -16,6 +16,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-harbor
+      - name: otis
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-otis
       - name: outline
         login: true
         ensure: present

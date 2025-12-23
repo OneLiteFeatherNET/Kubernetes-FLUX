@@ -11,6 +11,7 @@ resources:
   - pooler-ro.yaml
   - database/harbor.yaml
   - database/outline.yaml
+  - database/otis.yaml
   - database/backstage.yaml
   - database/dependency-track.yaml
 
@@ -18,6 +19,12 @@ secretGenerator:
   - name: cnpg-backup
     envs:
       - s3-backup.env
+  - name: role-otis
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/otis.sops.env
   - name: role-outline
     options:
       labels:
