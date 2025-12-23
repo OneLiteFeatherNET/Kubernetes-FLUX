@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: otis
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/otis/
+  - harbor-pull.sops.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: otis-app-db
+    envs:
+      - otis.sops.env
