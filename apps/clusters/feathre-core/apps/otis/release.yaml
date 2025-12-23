@@ -1,14 +1,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: outline
-  namespace: outline
+  name: otis
+  namespace: otis
 spec:
 values:
   image:
     repository: harbor.onelitefeather.dev/otis/otis
     pullPolicy: IfNotPresent
-    tag: "1.10.9"
+    tag: "1.11.6"
   imagePullSecrets:
     - name: harbor-pull
   service:
