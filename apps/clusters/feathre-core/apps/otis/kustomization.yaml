@@ -5,11 +5,14 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/otis/
-  - harbor-pull.sops.yaml
 patches:
   - path: release.yaml
 
 secretGenerator:
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json
   - name: otis-app-db
     envs:
       - otis.sops.env

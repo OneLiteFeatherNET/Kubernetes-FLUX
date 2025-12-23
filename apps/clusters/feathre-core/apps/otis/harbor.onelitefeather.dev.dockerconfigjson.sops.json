@@ -1,0 +1,21 @@
+{
+	"auths": {
+		"harbor.onelitefeather.dev": {
+			"username": "ENC[AES256_GCM,data:c9MO8W0gP7qhNrUs5etfahXCL73m,iv:ZvRAzVO4JqlUCLeIXQbXM02AmikCEG8jLcDThfgHcLc=,tag:VmptMY3y+Rpn1Wzx/ZeC7g==,type:str]",
+			"password": "ENC[AES256_GCM,data:Oig2qWtI+gw2XAOebju7Ee8SYyUPvpi2e9AeV05teRs=,iv:k2I+5wWvLFf7pGpZ5VjGOZayiDJGbhQgVs73ggIoNu8=,tag:EX6PiIIUWAgaWW7hWlHBzg==,type:str]"
+		}
+	},
+	"sops": {
+		"lastmodified": "2025-12-23T13:28:37Z",
+		"mac": "ENC[AES256_GCM,data:2RU8rBSdaYR+RyU+p0ATfZh8V9ROsE3fW3un7ZoRZPWtknIcxzs+Ch2oQw1cQ7qnDv0EVDwTR+/cuT3YtauO4tbBOacokzQixuiZjftdqjXTnyeuGBjhjWzV4+VpVUbeCBfWbQvOobcqAJYY3Q03yXS5iJt9fO8Pd8IyDIETOFg=,iv:Ghnl9pkqEtE6zx19sSjfXdiT8ZPmSTGpGFJR6f3llQM=,tag:UwxUi/+rIoZyOA7hFcRVcw==,type:str]",
+		"pgp": [
+			{
+				"created_at": "2025-12-23T13:28:37Z",
+				"enc": "-----BEGIN PGP MESSAGE-----\n\nhQIMAwWbRp0WX+I4ARAArURWC7tRZO36TBL2jtwYNt1y6aXsFh43tyc45AxH9b3g\nH4Nq5OddMNQrXH4tmrpxQTZvXNHFsRN17dYqPS+wnGE6pjQQmcMFwYZMtq03RanN\n6AHPzv9U2+SMkDjVPwDJm07mYpXQFDoR23pybWHGdQKpJZ0LUdytkFrnODs0Yv/5\nNJFjwFBWvpCnke5S+AkS6EYSD/wY5vLEtv7UwT1kIjmGBIfz/xxF/wWe0ZQ1mO4q\nFM5SP+iVUeuPXlsDQcyAfpH+SQnRvPtHyyWRHhmfh8MxyBjYqeXO2A6NQd1ktU6+\nIiLIb9YhL6De/1/BDNXwQkaUPwvhTcsaJ6X3+LJ4BD7tqvWwJqu3hyiggtFfgyMT\nvqx9S47EK75S5/S5nLn4ng96vX0iOsHoH3sRzwVm3ZXMaxN5J63sy4xJ5OCM6K/s\n9A3kh22j10A/hXKaReYJXeuC4HaXg7wxbifJFRuGBMYmaDBxshelfGj0b3yaS3Ar\nIMzya9DZqMPYibFdNRN1sMqm2LH6nOwmwi+cx3eE3aSoeP5nFGPI5AIBjajPbz8S\nqoH/m5OW6D6nXAri4qGEL0jVT5ufD9FJx8LZngBvTziu+GPAjeqoFYxN0jxsIrN/\n3AXjObbYtqAbjS+3zaTkXuQM2U1/8MygROJGQp3xrw5uRYcUaTIImLiV/CmO4W3U\naAEJAhBX2PiUdx3Sggtpnj+pGv5pTHhbZKRjZCz5F0ywhEC/B5hX83vucE0cs5fb\n0DJaVFo9oAGznfWr8+zshA2fdy9/plqsXCcfLWXwsWEo0fw4xN0tW1MzVhn+Sp+h\nr6h9Lwg0S85v\n=LBXZ\n-----END PGP MESSAGE-----",
+				"fp": "0231831CB40B8E587B7353CBA3AF727721205A62"
+			}
+		],
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.11.0"
+	}
+}

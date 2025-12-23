@@ -4,6 +4,8 @@ creation_rules:
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: .*.sops.env
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
+    path_regex: .*.sops.json
+  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: .*.sops.ya?ml
   - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
     path_regex: .*.sops.conf
