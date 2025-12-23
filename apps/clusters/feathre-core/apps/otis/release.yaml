@@ -71,7 +71,7 @@ values:
             properties:
               hibernate:
                 hbm2ddl.auto: none
-                dialect: org.hibernate.dialect.MariaDBDialect
+                dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: false
                 show_sql: false
                 jdbc.lob.non_contextual_creation: true
@@ -79,14 +79,14 @@ values:
                 jdbc.batch_size: 50
                 order_inserts: true
                 order_updates: true
+                jdbc.batch_versioned_data: true
         datasources:
           default:
-            dialect: MYSQL
+            dialect: POSTGRES
             url: $${JDBC_URL}
             username: $${DB_USER}
             password: $${DB_PASS}
             schema-generate: NONE
-            dialect: MYSQL
             maximumPoolSize: 20
             minimumIdle: 4
             autoCommit: false
