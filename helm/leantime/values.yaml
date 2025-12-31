@@ -41,7 +41,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ingress:
   enabled: false
@@ -99,6 +99,11 @@ volumeMounts: []
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true
+envFrom: []
+# - secretRef:
+#     name: mysecret
+# - configMapRef:
+#     name: myconfigmap
 
 nodeSelector: {}
 
