@@ -27,12 +27,12 @@ spec:
         ingress.kubernetes.io/proxy-body-size: "5G"
         nginx.ingress.kubernetes.io/proxy-body-size: "5G"
       hosts:
-        - host: leantime.onelitefeather.dev
+        - host: leantime.onelitefeather.net
           paths:
             - path: /
               pathType: ImplementationSpecific
       tls:
         - secretName: cf-origin-tls
           hosts:
-            - leantime.onelitefeather.dev
+            - leantime.onelitefeather.net
 
