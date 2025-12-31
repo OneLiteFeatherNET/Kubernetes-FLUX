@@ -10,7 +10,8 @@ patches:
 
 secretGenerator:
   - name: leantime-env
-    files:
+    type: Opaque
+    envs:
       - leantime.sops.env
   - name: cf-origin-tls
     type: kubernetes.io/tls
