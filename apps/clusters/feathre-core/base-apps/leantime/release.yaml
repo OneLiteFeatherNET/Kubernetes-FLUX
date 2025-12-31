@@ -1,0 +1,38 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: leantime
+  namespace: leantime
+spec:
+  values:
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    securityContext:
+      readOnlyRootFilesystem: false
+      runAsUser: 1000
+    envFrom:
+      - secretRef:
+          name: leantime-env
+
+    replicaCount: 1
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations:
+        ingress.kubernetes.io/proxy-body-size: "5G"
+        nginx.ingress.kubernetes.io/proxy-body-size: "5G"
+      hosts:
+        - host: leantime.onelitefeather.dev
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: cf-origin-tls
+          hosts:
+            - leantime.onelitefeather.dev
+
