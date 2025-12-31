@@ -15,6 +15,6 @@ secretGenerator:
   - name: uptime-kuma-secret
     envs:
       - uptime-kuma.sops.env
-  - name: leantime-kuma-secret
+  - name: user-leantime-secret
     envs:
       - leantime.sops.env
