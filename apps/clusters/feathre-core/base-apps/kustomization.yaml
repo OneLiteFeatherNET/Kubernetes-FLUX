@@ -9,3 +9,4 @@ resources:
   - outline
   - dependency-track
   - uptime-kuma
+  - leantime

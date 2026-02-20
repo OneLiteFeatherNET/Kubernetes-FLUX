@@ -1,0 +1,19 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+  name: leantime-user-grant
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  privileges:
+    - "ALL PRIVILEGES"
+  database: "leantime"
+  table: "*"
+  username: "leantime"
+  grantOption: false
+  host: "%"
+  # Delete the resource in the database whenever the CR gets deleted.
+  # Alternatively, you can specify Skip in order to omit deletion.
+  cleanupPolicy: Delete
+  requeueInterval: 10h
+  retryInterval: 30s

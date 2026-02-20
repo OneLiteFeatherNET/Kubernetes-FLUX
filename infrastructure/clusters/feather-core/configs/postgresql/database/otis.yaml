@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: otis
+spec:
+  name: otis
+  owner: otis
+  cluster:
+    name: feather-core-cluster-pg
