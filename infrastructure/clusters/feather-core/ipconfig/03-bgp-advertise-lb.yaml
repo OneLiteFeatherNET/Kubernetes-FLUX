@@ -2,6 +2,8 @@ apiVersion: cilium.io/v2
 kind: CiliumBGPAdvertisement
 metadata:
   name: advertise-lb
+  labels:
+    advertise: "bgp"
 spec:
   advertisements:
     - advertisementType: Service
