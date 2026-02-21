@@ -1,0 +1,7 @@
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: advertise-podcidr
+spec:
+  advertisements:
+    - advertisementType: PodCIDR
