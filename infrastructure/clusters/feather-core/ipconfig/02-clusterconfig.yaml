@@ -15,3 +15,21 @@ spec:
           peerAddress: 10.200.3.1
           peerConfigRef:
             name: "cilium-peer"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
+metadata:
+  name: bgp-fr01
+spec:
+  nodeSelector:
+    matchLabels:
+      topology.kubernetes.io/zone: "fr01"
+  bgpInstances:
+    - name: "fr01-64606"
+      localASN: 64606
+      peers:
+        - name: "pfsense-fr01"
+          peerASN: 64501
+          peerAddress: 192.168.68.5
+          peerConfigRef:
+            name: "cilium-peer"
