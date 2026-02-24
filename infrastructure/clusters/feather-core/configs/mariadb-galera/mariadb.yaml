@@ -6,7 +6,7 @@ metadata:
 #  annotations:
 #    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
-  image: "mariadb:11.8s.5"
+  image: "mariadb:11.8.5"
   replicas: 3
   startupProbe:
     failureThreshold: 60
