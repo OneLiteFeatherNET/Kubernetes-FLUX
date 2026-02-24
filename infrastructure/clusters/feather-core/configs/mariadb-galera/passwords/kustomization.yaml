@@ -18,3 +18,6 @@ secretGenerator:
   - name: user-leantime-secret
     envs:
       - leantime.sops.env
+  - name: user-reposilite-secret
+    envs:
+      - reposilite.sops.env

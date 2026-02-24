@@ -8,3 +8,4 @@ resources:
   - discordbot.yaml
   - uptime-kuma.yaml
   - leantime.yaml
+  - reposilite.yaml
