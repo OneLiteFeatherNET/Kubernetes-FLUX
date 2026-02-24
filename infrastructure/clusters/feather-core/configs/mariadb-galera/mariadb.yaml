@@ -24,12 +24,6 @@ spec:
     replicaThreads: 4
   tls:
     enabled: true
-    serverCertIssuerRef:
-      name: step-ca
-      kind: ClusterIssuer
-    clientCertIssuerRef:
-      name: step-ca
-      kind: ClusterIssuer
   myCnf: |
     [mariadb]
     bind-address=*

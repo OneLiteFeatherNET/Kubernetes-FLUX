@@ -9,12 +9,6 @@ spec:
   replicas: 2
   tls:
     enabled: true
-    serverCertIssuerRef:
-      name: step-ca
-      kind: ClusterIssuer
-    clientCertIssuerRef:
-      name: step-ca
-      kind: ClusterIssuer
   monitor:
     name: mariadb-monitor
     module: galeramon
