@@ -30,7 +30,7 @@ spec:
     persistentVolumeClaim:
       resources:
         requests:
-          storage: 50Gi
+          storage: 75Gi
       accessModes:
         - ReadWriteOnce
   timeout: 1h
