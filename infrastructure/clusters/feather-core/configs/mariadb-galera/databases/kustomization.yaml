@@ -11,3 +11,4 @@ resources:
   - reposilite.yaml
   - shlink.yaml
   - cloudnet.yaml
+  - luckperms.yaml

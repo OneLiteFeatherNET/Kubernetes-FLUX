@@ -27,3 +27,6 @@ secretGenerator:
   - name: user-cloudnet-secret
     envs:
       - cloudnet.sops.env
+  - name: user-luckperms-secret
+    envs:
+      - luckperms.sops.env
