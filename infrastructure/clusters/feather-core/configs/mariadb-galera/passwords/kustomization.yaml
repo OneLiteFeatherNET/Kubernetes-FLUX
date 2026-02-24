@@ -24,3 +24,6 @@ secretGenerator:
   - name: user-shlink-secret
     envs:
       - shlink.sops.env
+  - name: user-cloudnet-secret
+    envs:
+      - cloudnet.sops.env

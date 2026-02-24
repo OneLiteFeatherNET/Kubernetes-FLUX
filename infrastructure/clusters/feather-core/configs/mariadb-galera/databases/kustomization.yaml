@@ -10,3 +10,4 @@ resources:
   - leantime.yaml
   - reposilite.yaml
   - shlink.yaml
+  - cloudnet.yaml
