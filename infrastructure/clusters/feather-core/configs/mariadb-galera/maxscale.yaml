@@ -7,8 +7,6 @@ spec:
   mariaDbRef:
     name: mariadb-galera
   replicas: 2
-  tls:
-    enabled: true
   monitor:
     name: mariadb-monitor
     module: galeramon
