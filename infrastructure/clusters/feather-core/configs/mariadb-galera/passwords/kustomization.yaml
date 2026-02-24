@@ -36,3 +36,6 @@ secretGenerator:
   - name: user-stardust-secret
     envs:
       - stardust.sops.env
+  - name: user-playerkits-secret
+    envs:
+      - playerkits.sops.env
