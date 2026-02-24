@@ -9,3 +9,4 @@ resources:
   - uptime-kuma.yaml
   - leantime.yaml
   - reposilite.yaml
+  - shlink.yaml

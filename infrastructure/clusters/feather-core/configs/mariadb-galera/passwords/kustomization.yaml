@@ -21,3 +21,6 @@ secretGenerator:
   - name: user-reposilite-secret
     envs:
       - reposilite.sops.env
+  - name: user-shlink-secret
+    envs:
+      - shlink.sops.env
