@@ -7,6 +7,29 @@ spec:
   mariaDbRef:
     name: mariadb-galera
   replicas: 2
+  tls:
+    enabled: true
+    serverCertIssuerRef:
+      name: step-ca
+      kind: ClusterIssuer
+    clientCertIssuerRef:
+      name: step-ca
+      kind: ClusterIssuer
+  monitor:
+    name: mariadb-monitor
+    module: galeramon
+    interval: 2s
+    cooperativeMonitoring: majority_of_all
+    params:
+      disable_master_failback: "false"
+      available_when_donor: "false"
+      disable_master_role_setting: "false"   
+
+  config:
+    sync:
+      database: mysql
+      interval: 5s
+      timeout: 10s
 
   kubernetesService:
     type: LoadBalancer

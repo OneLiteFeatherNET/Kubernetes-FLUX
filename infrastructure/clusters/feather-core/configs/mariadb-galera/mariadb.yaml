@@ -6,7 +6,7 @@ metadata:
 #  annotations:
 #    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
-  image: "mariadb:11.4"
+  image: "mariadb:11.8s.5"
   replicas: 3
   startupProbe:
     failureThreshold: 60
@@ -14,12 +14,22 @@ spec:
   galera:
     enabled: true
     recovery:
-        enabled: true
-        minClusterSize: 1
-        clusterHealthyTimeout: 10m
-        clusterBootstrapTimeout: 20m
-        podRecoveryTimeout: 10m
-        podSyncTimeout: 10m
+      enabled: true
+      minClusterSize: 1
+      clusterHealthyTimeout: 10m
+      clusterBootstrapTimeout: 20m
+      podRecoveryTimeout: 10m
+      podSyncTimeout: 10m
+    availableWhenDonor: true
+    replicaThreads: 4
+  tls:
+    enabled: true
+    serverCertIssuerRef:
+      name: step-ca
+      kind: ClusterIssuer
+    clientCertIssuerRef:
+      name: step-ca
+      kind: ClusterIssuer
   myCnf: |
     [mariadb]
     bind-address=*
@@ -28,14 +38,14 @@ spec:
     default_storage_engine=InnoDB
     binlog_format=row
     innodb_autoinc_lock_mode=2
-    innodb_buffer_pool_size=3200MB
+    innodb_buffer_pool_size=512MB
     max_allowed_packet=1GB
     # Schedule Pods in different Nodes to achieve real HA.
   affinity:
     antiAffinityEnabled: true
   # When draining Nodes, make sure that you have at least 2 Pods available.
   podDisruptionBudget:
-    maxUnavailable: 66%
+    maxUnavailable: 33%
   maxScaleRef:
     name: maxscale-galera
 
@@ -44,8 +54,8 @@ spec:
   # Configure enough compute resources. This is just an example, take a look at your historic compute metrics to estimate.
   resources:
     requests:
-      cpu: 1
-      memory: 4Gi
+      cpu: 500m
+      memory: 1Gi
     limits:
       memory: 4Gi
 
