@@ -33,3 +33,6 @@ secretGenerator:
   - name: user-coreprotect-secret
     envs:
       - coreprotect.sops.env
+  - name: user-stardust-secret
+    envs:
+      - stardust.sops.env

@@ -13,3 +13,4 @@ resources:
   - cloudnet.yaml
   - luckperms.yaml
   - coreprotect.yaml
+  - stardust.yaml
