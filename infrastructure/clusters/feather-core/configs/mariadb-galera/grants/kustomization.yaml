@@ -12,3 +12,4 @@ resources:
   - shlink.yaml
   - cloudnet.yaml
   - luckperms.yaml
+  - coreprotect.yaml

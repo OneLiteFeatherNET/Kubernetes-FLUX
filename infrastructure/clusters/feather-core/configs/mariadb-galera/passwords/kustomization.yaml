@@ -30,3 +30,6 @@ secretGenerator:
   - name: user-luckperms-secret
     envs:
       - luckperms.sops.env
+  - name: user-coreprotect-secret
+    envs:
+      - coreprotect.sops.env
