@@ -11,4 +11,4 @@ patches:
 secretGenerator:
   - name: reposilite-secrets
     envs:
-      - reposilite.env
+      - reposilite.sops.env
