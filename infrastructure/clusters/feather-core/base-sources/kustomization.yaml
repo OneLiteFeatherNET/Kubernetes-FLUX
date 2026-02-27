@@ -18,3 +18,4 @@ resources:
   - dirsigler.yml
   - envoy.yaml
   - ansible.yml
+  - prometehus-stack.yaml
