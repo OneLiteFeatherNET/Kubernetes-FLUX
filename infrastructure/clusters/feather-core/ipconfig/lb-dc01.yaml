@@ -1,8 +1,0 @@
-apiVersion: cilium.io/v2
-kind: CiliumLoadBalancerIPPool
-metadata:
-  name: lb-dc01
-spec:
-  blocks:
-    - start: 10.210.90.1
-      stop: 10.210.90.15
