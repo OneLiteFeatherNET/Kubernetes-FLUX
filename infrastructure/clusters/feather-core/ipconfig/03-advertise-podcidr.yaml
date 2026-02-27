@@ -5,5 +5,5 @@ metadata:
   labels:
     advertise: "bgp"
 spec:
-  advertisements:
-    - advertisementType: PodCIDR
+  advertisements: []
+#    - advertisementType: PodCIDR
