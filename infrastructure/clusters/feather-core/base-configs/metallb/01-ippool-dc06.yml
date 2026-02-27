@@ -1,0 +1,8 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: lb-dc06
+  namespace: metallb-system
+spec:
+  addresses:
+  - 10.200.90.1-10.200.90.15

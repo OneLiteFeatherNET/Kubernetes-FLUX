@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ../../../../infrastructure/base/configs/cert-manager
   - s3-proxy.yaml
+  - metallb

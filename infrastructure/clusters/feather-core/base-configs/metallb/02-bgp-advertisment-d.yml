@@ -1,0 +1,11 @@
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: local
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - lb-dc06
+  aggregationLength: 32
+  localPref: 100
+  communities: []

@@ -1,0 +1,13 @@
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: fr01-peer
+  namespace: metallb-system
+spec:
+  myASN: 64606
+  peerASN: 64501
+  peerAddress: 192.168.68.5
+  peerPort: 180
+  nodeSelectors:
+  - matchLabels:
+      topology.kubernetes.io/zone: "fr01"
