@@ -93,13 +93,13 @@ spec:
                 memory: ENC[AES256_GCM,data:BFm8e5A=,iv:WfzKIEy1MU0tiCogvi3++o0JzbF65xnH3bjS50Bt624=,tag:x/Eg0wK9OPRcDvWyXVu57Q==,type:str]
         service:
             annotations:
-                io.cilium/lb-ipam-ips: ENC[AES256_GCM,data:vwMwVdoCYgqzzj3U,iv:w4olCbCqjc97N+VUq9hyz8sOACSTeTWhwBlLyrGEsmM=,tag:4GMGaoCS/k/2HyYq0ucW4g==,type:str]
+                metallb.io/loadBalancerIPs: ENC[AES256_GCM,data:maVnkClxdGHR3bTW,iv:S0cZ1ohYpw+jxtTz19w3aiFjNd4Xv94V7S83ZaRIatY=,tag:H2NSsFmMZLoBJVXyLrpjJg==,type:str]
             externalTrafficPolicy: ENC[AES256_GCM,data:avFzxvM=,iv:bAzrkBl06CRfdrWUE4NET3dfTYeGXizDV90iuWYI0Ag=,tag:u4VxpQcZ44IIFwNrPLMkqQ==,type:str]
             targetPort: ENC[AES256_GCM,data:FjYpQA==,iv:AKVH1nWp+ZWQzLmzTFPvXdnZVhxJn+PYMN85pp0+4XY=,tag:6Nc9+mSF4nst1QHvJ4/W8Q==,type:int]
             type: ENC[AES256_GCM,data:UHVQwJ8O1agKDl9z,iv:EX7T3ZpX9CRahlZAvMsfgAtzVcNftSL+ybavDXUCX+Y=,tag:6FGZ8o8sjyM1qf9VDLKF6w==,type:str]
 sops:
-    lastmodified: "2025-09-28T18:55:44Z"
-    mac: ENC[AES256_GCM,data:n/zVb4f1eQjWKZncgl5ku5HkpGoqZ6pwOU/eM6k5I4SzfIkaFKYS5nkUJPy7pQfkrVIe9lSuDVVE1mBkJCByNHn5XMLpFW+tZxuKLBcB2j3fiN06p6tFplIJ8owTR4d+QF/cu8douDQiC/Qpuh7eaMxr7od+EdY0lQBCgb9MTZA=,iv:h4altMyv+Grhe9BcGwJVbosVpLkuoc5Fik1FZofJT74=,tag:IvkkvjN9QKK6FPvNLN+Yeg==,type:str]
+    lastmodified: "2026-02-27T13:44:45Z"
+    mac: ENC[AES256_GCM,data:536pey45gebPcjuK8LE9NMKJEukPz/Vph0wRwgS/MOv7Tz2YDXhs+HNn5i+f8LDg8yVI2Voj6AXSvd+vpUQiJwhjfLAcCmaRR+4y2hfIVKPy6lyK0fYNt3H5rwVetpTb0PhTmMroUp0dYcZ8PiJDXlefcfiYWeRavXZHnCxhuKU=,iv:SOFh9cbPdOreYSTtkO6WOoDx6QRrVMGRiG8WpZah5oY=,tag:USBJjfgw4I2vDv2Y5TocKg==,type:str]
     pgp:
         - created_at: "2025-09-28T18:32:22Z"
           enc: |-
@@ -122,4 +122,4 @@ sops:
             -----END PGP MESSAGE-----
           fp: 0231831CB40B8E587B7353CBA3AF727721205A62
     unencrypted_suffix: _unencrypted
-    version: 3.10.2
+    version: 3.11.0
