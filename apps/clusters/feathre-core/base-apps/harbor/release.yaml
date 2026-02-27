@@ -103,7 +103,7 @@ spec:
           httpsPort: 443
         # Annotations on the loadBalancer service
         annotations:
-          "lbipam.cilium.io/ips": "10.200.90.6"
+          "metallb.io/loadBalancerIPs": "10.200.90.6"
         # loadBalancer-specific labels
         labels: { }
         sourceRanges: [ ]

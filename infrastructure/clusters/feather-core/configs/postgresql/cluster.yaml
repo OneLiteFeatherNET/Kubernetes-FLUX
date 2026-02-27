@@ -43,7 +43,7 @@ spec:
             metadata:
               name: "feather-core-cluster-pg-rw-external"
               annotations:
-                io.cilium/lb-ipam-ips: 10.200.90.3
+                metallb.io/loadBalancerIPs: 10.200.90.3
             spec:
               type: LoadBalancer
   plugins:
@@ -51,4 +51,3 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: s3-store
----

@@ -28,14 +28,14 @@ spec:
     externalTrafficPolicy: Local
     metadata:
       annotations:
-        io.cilium/lb-ipam-ips: 10.200.90.4
+        metallb.io/loadBalancerIPs: 10.200.90.4
 
   guiKubernetesService:
     type: LoadBalancer
     externalTrafficPolicy: Local
     metadata:
       annotations:
-        io.cilium/lb-ipam-ips: 10.200.90.7
+        metallb.io/loadBalancerIPs: 10.200.90.7
 
   metrics:
     enabled: false

@@ -17,7 +17,7 @@ spec:
         labels:
           onelite.feather/bgp: "announce"
         annotations:
-          io.cilium/lb-ipam-ips: "10.200.90.1"
+          metallb.io/loadBalancerIPs: "10.200.90.1"
       admissionWebhooks:
         timeoutSeconds: 30
       allowSnippetAnnotations: true
