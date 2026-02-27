@@ -4,7 +4,6 @@ resources:
   - cert-manager
   - step-certificates
   - cnpg-operator
-  - checkmk
   - ../../../../infrastructure/base/controllers/spegel
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
 #  - ../../../../infrastructure/base/controllers/envoy-crds
