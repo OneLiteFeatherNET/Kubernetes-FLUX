@@ -4,6 +4,7 @@ resources:
   - cert-manager
   - step-certificates
   - cnpg-operator
+  - kube-prometheus-stack
   - metallb
   - ../../../../infrastructure/base/controllers/spegel
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds

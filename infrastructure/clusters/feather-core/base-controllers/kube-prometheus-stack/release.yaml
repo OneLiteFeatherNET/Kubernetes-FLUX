@@ -1,0 +1,38 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  values:
+    fullnameOverride: kube-prometheus-stack
+    grafana:
+      enabled: false
+    alertmanager:
+      alertmanagerSpec:
+        replicas: 2
+        podAntiAffinity: hard
+        storage:
+          volumeClaimTemplate:
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 10Gi
+              storageClassName: rook-external-rbd
+    prometheus:
+      prometheusSpec:
+        replicas: 2
+        podAntiAffinity: hard
+        externalLabels:
+          cluster: feather-core
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 50Gi
+              storageClassName: rook-external-rbd
