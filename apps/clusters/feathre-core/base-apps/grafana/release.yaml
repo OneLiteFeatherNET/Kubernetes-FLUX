@@ -76,7 +76,7 @@ spec:
       datasources.yaml:
         apiVersion: 1
         datasources:
-          - name: Prometheus
+          - name: Mimir
             uid: mimir
             type: prometheus
             access: proxy
@@ -86,7 +86,7 @@ spec:
             jsonData:
               httpMethod: POST
               timeInterval: 30s
-          - name: Prometheus Local
+          - name: Prometheus
             uid: prometheus
             type: prometheus
             access: proxy
@@ -153,32 +153,32 @@ spec:
         kubernetes-dashboard:
           gnetId: 22523
           revision: 2
-          datasource: Prometheus
+          datasource: Mimir
         kubernetes-cluster:
           gnetId: 7249
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         kube-state-metrics:
           gnetId: 21742
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         persistent-volumes:
           gnetId: 15600
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         node-exporter-full:
           gnetId: 1860
           revision: 41
-          datasource: Prometheus
+          datasource: Mimir
       controllers:
         ingress-nginx:
           gnetId: 9614
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         cert-manager:
           gnetId: 20340
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         flux2:
           gnetId: 16714
           revision: 1
@@ -187,32 +187,36 @@ spec:
         prometheus-overview:
           gnetId: 3662
           revision: 2
-          datasource: Prometheus
+          datasource: Mimir
         loki-metrics:
           gnetId: 17781
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         loki-quick-search:
           gnetId: 12019
           revision: 2
           datasource:
             - name: DS_PROMETHEUS
-              value: Prometheus
+              value: Mimir
             - name: DS_LOKI
               value: Loki
       databases:
         cloudnative-pg:
           url: https://raw.githubusercontent.com/cloudnative-pg/grafana-dashboards/refs/heads/main/charts/cluster/grafana-dashboard.json
-          datasource: Prometheus
+          datasource: Mimir
         mariadb-galera:
           gnetId: 13106
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         redis-exporter:
           gnetId: 14091
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
       applications:
+        harbor-official:
+          gnetId: 15792
+          revision: 1
+          datasource: Prometheus
         harbor-overview:
           gnetId: 19716
           revision: 1
