@@ -36,6 +36,21 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 3000
 
+metrics:
+  enabled: false
+  path: /metrics
+  port: http
+  scheme: http
+  serviceMonitor:
+    enabled: false
+    namespace: ""
+    additionalLabels: {}
+    annotations: {}
+    interval: ""
+    scrapeTimeout: ""
+    relabelings: []
+    metricRelabelings: []
+
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
   # Specifies whether a service account should be created
@@ -116,4 +131,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-

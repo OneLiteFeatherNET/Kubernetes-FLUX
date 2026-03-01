@@ -13,6 +13,11 @@ spec:
       - name: harbor-pull
     service:
       port: 8080
+    metrics:
+      enabled: true
+      path: /prometheus
+      serviceMonitor:
+        enabled: true
     ingress:
       enabled: true
       className: nginx
@@ -120,4 +125,3 @@ spec:
       path: /health
       initialDelaySeconds: 15
       periodSeconds: 10
-

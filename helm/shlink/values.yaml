@@ -68,6 +68,21 @@ service:
   type: ClusterIP
   port: 8080
 
+metrics:
+  enabled: false
+  path: /metrics
+  port: http
+  scheme: http
+  serviceMonitor:
+    enabled: false
+    namespace: ""
+    additionalLabels: {}
+    annotations: {}
+    interval: ""
+    scrapeTimeout: ""
+    relabelings: []
+    metricRelabelings: []
+
 ingress:
   enabled: false
   className: ""
