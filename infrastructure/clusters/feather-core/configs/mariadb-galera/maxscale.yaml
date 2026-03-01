@@ -5,6 +5,10 @@ metadata:
   namespace: mariadb-galera
 spec:
   podSecurityContext:
+    fsGroup: 996
+    runAsGroup: 996
+    runAsNonRoot: true
+    runAsUser: 996
     seccompProfile:
       type: RuntimeDefault
   securityContext:
