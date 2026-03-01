@@ -9,35 +9,12 @@ spec:
     grafana:
       enabled: false
     alertmanager:
-      alertmanagerSpec:
-        replicas: 2
-        podAntiAffinity: hard
-        storage:
-          volumeClaimTemplate:
-            spec:
-              accessModes:
-                - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 10Gi
-              storageClassName: rook-external-rbd
+      enabled: false
     prometheus:
+      agentMode: true
       ingress:
-        enabled: true
-        ingressClassName: nginx
-        annotations:
-          cert-manager.io/cluster-issuer: step-ca
-        hosts:
-          - prometheus.apps.onelite.feather
-        paths:
-          - /
-        pathType: Prefix
-        tls:
-          - secretName: prometheus-apps-onelite-feather-tls
-            hosts:
-              - prometheus.apps.onelite.feather
+        enabled: false
       prometheusSpec:
-        externalUrl: https://prometheus.apps.onelite.feather
         replicas: 2
         replicaExternalLabelName: __replica__
         podAntiAffinity: hard
@@ -47,7 +24,6 @@ spec:
         serviceMonitorSelectorNilUsesHelmValues: false
         externalLabels:
           cluster: feather-core
-        retention: 3d
         remoteWrite:
           - url: http://mimir-gateway.grafana.svc.cluster.local/api/v1/push
             sendExemplars: true
@@ -56,12 +32,3 @@ spec:
               minShards: 4
               maxShards: 20
               maxSamplesPerSend: 5000
-        storageSpec:
-          volumeClaimTemplate:
-            spec:
-              accessModes:
-                - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 50Gi
-              storageClassName: rook-external-rbd

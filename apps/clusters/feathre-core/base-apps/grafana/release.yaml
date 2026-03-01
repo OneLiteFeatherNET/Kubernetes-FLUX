@@ -86,16 +86,6 @@ spec:
             jsonData:
               httpMethod: POST
               timeInterval: 30s
-          - name: Prometheus
-            uid: prometheus
-            type: prometheus
-            access: proxy
-            url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
-            isDefault: false
-            editable: false
-            jsonData:
-              httpMethod: POST
-              timeInterval: 30s
           - name: Loki
             uid: loki
             type: loki
@@ -182,7 +172,7 @@ spec:
         flux2:
           gnetId: 16714
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
       observability:
         prometheus-overview:
           gnetId: 3662
@@ -216,11 +206,11 @@ spec:
         harbor-official:
           gnetId: 15792
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
         harbor-overview:
           gnetId: 19716
           revision: 1
-          datasource: Prometheus
+          datasource: Mimir
     resources:
       requests:
         cpu: 250m
