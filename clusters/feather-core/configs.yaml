@@ -5,10 +5,11 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
+    - name: base-configs
     - name: controllers
-  interval: 10s
-  retryInterval: 10s
-  timeout: 5m
+  interval: 1m0s
+  retryInterval: 30s
+  timeout: 10m0s
   sourceRef:
     kind: GitRepository
     name: flux-system

@@ -4,15 +4,15 @@ metadata:
   name: base-sources
   namespace: flux-system
 spec:
-  interval: 10s
-  retryInterval: 10s
-  timeout: 5m
+  interval: 1m0s
+  retryInterval: 30s
+  timeout: 1m0s
   sourceRef:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/clusters/feather-core/base-sources
   prune: true
-  wait: true
+  wait: false
   decryption:
     provider: sops
     secretRef:
