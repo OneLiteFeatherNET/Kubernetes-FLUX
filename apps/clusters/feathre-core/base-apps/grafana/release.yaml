@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  valuesFrom:
+    - kind: Secret
+      name: grafana-admin
+      valuesKey: adminUser
+      targetPath: adminUser
+    - kind: Secret
+      name: grafana-admin
+      valuesKey: adminPassword
+      targetPath: adminPassword
+  values:
+    persistence:
+      enabled: true
+      storageClassName: rook-external-rbd
+      accessModes:
+        - ReadWriteOnce
+      size: 10Gi
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: step-ca
+      hosts:
+        - grafana.apps.onelite.feather
+      tls:
+        - secretName: grafana-apps-onelite-feather-tls
+          hosts:
+            - grafana.apps.onelite.feather
+    grafana.ini:
+      server:
+        domain: grafana.apps.onelite.feather
+        root_url: https://grafana.apps.onelite.feather
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            uid: prometheus
+            type: prometheus
+            access: proxy
+            url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+            isDefault: true
+            editable: false
+            jsonData:
+              httpMethod: POST
+              timeInterval: 30s
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1
+        memory: 1Gi

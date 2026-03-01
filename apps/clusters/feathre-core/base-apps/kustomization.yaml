@@ -10,3 +10,4 @@ resources:
   - dependency-track
   - uptime-kuma
   - leantime
+  - grafana
