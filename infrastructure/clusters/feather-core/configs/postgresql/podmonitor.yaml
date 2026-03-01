@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: feather-core-cluster-pg
+spec:
+  selector:
+    matchLabels:
+      cnpg.io/cluster: feather-core-cluster-pg
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s
+      scrapeTimeout: 10s
