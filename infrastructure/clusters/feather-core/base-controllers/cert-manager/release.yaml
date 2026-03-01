@@ -12,6 +12,10 @@ spec:
       enabled: true
     global:
        priorityClassName: system-cluster-critical
+    prometheus:
+      enabled: true
+      podmonitor:
+        enabled: true
     strategy:
       type: RollingUpdate
       rollingUpdate:
@@ -40,4 +44,3 @@ spec:
         requests:
           cpu: "30m"
           memory: "50Mi"
-
