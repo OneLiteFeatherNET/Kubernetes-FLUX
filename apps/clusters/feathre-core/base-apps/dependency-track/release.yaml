@@ -49,6 +49,10 @@ spec:
       persistentVolume:
         enabled: true
       extraEnv:
+        - name: EXTRA_JAVA_OPTIONS
+          value: "-DdependencyTrack.logging.level=WARN"
+        - name: LOGGING_CONFIG_PATH
+          value: "logback-json.xml"
         - name: ALPINE_OIDC_ISSUER
           valueFrom:
             secretKeyRef:

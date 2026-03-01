@@ -362,7 +362,7 @@ spec:
       type: RollingUpdate
 
     # debug, info, warning, error or fatal
-    logLevel: info
+    logLevel: warning
 
     # The name of the secret which contains key named "ca.crt". Setting this enables the
     # download link on portal to download the CA certificate when the certificate isn't

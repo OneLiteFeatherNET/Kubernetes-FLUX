@@ -75,10 +75,11 @@ spec:
                 enabled: true
           logger:
             levels:
+              root: WARN
               "org.hibernate.SQL": WARN
               "org.hibernate.type.descriptor.sql": WARN
-              "org.hibernate.orm.connections.pooling": INFO
-              "com.zaxxer.hikari": INFO
+              "org.hibernate.orm.connections.pooling": WARN
+              "com.zaxxer.hikari": WARN
           jpa:
             default:
               properties:
