@@ -12,3 +12,6 @@ secretGenerator:
   - name: grafana-admin
     envs:
       - grafana.sops.env
+  - name: grafana-postgresql
+    envs:
+      - grafana-postgresql.sops.env
