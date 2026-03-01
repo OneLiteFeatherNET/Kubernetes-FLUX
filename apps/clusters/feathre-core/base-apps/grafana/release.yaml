@@ -98,16 +98,48 @@ spec:
       dashboardproviders.yaml:
         apiVersion: 1
         providers:
-          - name: default
+          - name: kubernetes
             orgId: 1
-            folder: ""
+            folder: Kubernetes
             type: file
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/default
+              path: /var/lib/grafana/dashboards/kubernetes
+          - name: controllers
+            orgId: 1
+            folder: Controllers
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/controllers
+          - name: observability
+            orgId: 1
+            folder: Observability
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/observability
+          - name: databases
+            orgId: 1
+            folder: Databases
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/databases
+          - name: applications
+            orgId: 1
+            folder: Applications
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/applications
     dashboards:
-      default:
+      kubernetes:
         kubernetes-dashboard:
           gnetId: 22523
           revision: 2
@@ -128,6 +160,7 @@ spec:
           gnetId: 1860
           revision: 41
           datasource: Prometheus
+      controllers:
         ingress-nginx:
           gnetId: 9614
           revision: 1
@@ -140,9 +173,14 @@ spec:
           gnetId: 16714
           revision: 1
           datasource: Prometheus
+      observability:
         prometheus-overview:
           gnetId: 3662
           revision: 2
+          datasource: Prometheus
+        loki-metrics:
+          gnetId: 17781
+          revision: 1
           datasource: Prometheus
         loki-quick-search:
           gnetId: 12019
@@ -152,6 +190,7 @@ spec:
               value: Prometheus
             - name: DS_LOKI
               value: Loki
+      databases:
         cloudnative-pg:
           url: https://raw.githubusercontent.com/cloudnative-pg/grafana-dashboards/refs/heads/main/charts/cluster/grafana-dashboard.json
           datasource: Prometheus
@@ -163,6 +202,7 @@ spec:
           gnetId: 14091
           revision: 1
           datasource: Prometheus
+      applications:
         harbor-overview:
           gnetId: 19716
           revision: 1
