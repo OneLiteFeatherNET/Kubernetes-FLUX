@@ -22,7 +22,22 @@ spec:
                   storage: 10Gi
               storageClassName: rook-external-rbd
     prometheus:
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: step-ca
+        hosts:
+          - prometheus.apps.onelite.feather
+        paths:
+          - /
+        pathType: Prefix
+        tls:
+          - secretName: prometheus-apps-onelite-feather-tls
+            hosts:
+              - prometheus.apps.onelite.feather
       prometheusSpec:
+        externalUrl: https://prometheus.apps.onelite.feather
         replicas: 2
         podAntiAffinity: hard
         podMonitorNamespaceSelector: {}
