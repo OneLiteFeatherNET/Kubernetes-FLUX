@@ -4,6 +4,14 @@ metadata:
   name: maxscale-galera
   namespace: mariadb-galera
 spec:
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
   mariaDbRef:
     name: mariadb-galera
   replicas: 2
