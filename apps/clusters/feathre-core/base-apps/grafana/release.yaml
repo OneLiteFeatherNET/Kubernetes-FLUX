@@ -203,14 +203,693 @@ spec:
           revision: 1
           datasource: Mimir
       applications:
-        harbor-official:
-          gnetId: 15792
-          revision: 1
-          datasource: Mimir
-        harbor-overview:
-          gnetId: 19716
-          revision: 1
-          datasource: Mimir
+        harbor:
+          json: |
+            {
+              "annotations": {
+                "list": [
+                  {
+                    "builtIn": 1,
+                    "datasource": {
+                      "type": "grafana",
+                      "uid": "-- Grafana --"
+                    },
+                    "enable": true,
+                    "hide": true,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                  }
+                ]
+              },
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "graphTooltip": 0,
+              "links": [],
+              "liveNow": false,
+              "panels": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [
+                        {
+                          "options": {
+                            "0": {
+                              "color": "red",
+                              "index": 0,
+                              "text": "Down"
+                            },
+                            "1": {
+                              "color": "green",
+                              "index": 1,
+                              "text": "Up"
+                            }
+                          },
+                          "type": "value"
+                        }
+                      ],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "red",
+                            "value": null
+                          },
+                          {
+                            "color": "green",
+                            "value": 1
+                          }
+                        ]
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "id": 1,
+                  "options": {
+                    "colorMode": "background",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "textMode": "auto"
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "max(harbor_health)",
+                      "legendFormat": "",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Harbor Health",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": null
+                          }
+                        ]
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 6,
+                    "y": 0
+                  },
+                  "id": 2,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(harbor_project_total)",
+                      "legendFormat": "",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Total Projects",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "value"
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": null
+                          }
+                        ]
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 12,
+                    "y": 0
+                  },
+                  "id": 3,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(harbor_project_repo_total)",
+                      "legendFormat": "",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Total Repositories",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "value"
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": null
+                          }
+                        ]
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 18,
+                    "y": 0
+                  },
+                  "id": 4,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(harbor_project_quota_usage_byte)",
+                      "legendFormat": "",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Storage Used",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [
+                        {
+                          "options": {
+                            "0": {
+                              "color": "red",
+                              "index": 0,
+                              "text": "Down"
+                            },
+                            "1": {
+                              "color": "green",
+                              "index": 1,
+                              "text": "Up"
+                            }
+                          },
+                          "type": "value"
+                        }
+                      ],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "red",
+                            "value": null
+                          },
+                          {
+                            "color": "green",
+                            "value": 1
+                          }
+                        ]
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 0,
+                    "y": 6
+                  },
+                  "id": 5,
+                  "options": {
+                    "colorMode": "background",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "textMode": "name"
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "harbor_up",
+                      "legendFormat": "{{component}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Component Status",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 10,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": null
+                          },
+                          {
+                            "color": "red",
+                            "value": 0.5
+                          }
+                        ]
+                      },
+                      "unit": "reqps"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 8,
+                    "y": 6
+                  },
+                  "id": 6,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "multi",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum by (operation) (rate(harbor_core_http_request_total[5m]))",
+                      "legendFormat": "{{operation}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "API Requests by Operation",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 10,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": null
+                          }
+                        ]
+                      },
+                      "unit": "s"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 16,
+                    "y": 6
+                  },
+                  "id": 7,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "multi",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "avg by (operation) (harbor_core_http_request_duration_seconds{quantile=\"0.95\"})",
+                      "legendFormat": "{{operation}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "API p95 Duration",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                          "type": "auto"
+                        },
+                        "inspect": false
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": null
+                          }
+                        ]
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 10,
+                    "w": 12,
+                    "x": 0,
+                    "y": 14
+                  },
+                  "id": 8,
+                  "options": {
+                    "cellHeight": "sm",
+                    "footer": {
+                      "enablePagination": true,
+                      "fields": "",
+                      "reducer": [
+                        "sum"
+                      ],
+                      "show": false
+                    },
+                    "showHeader": true
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "topk(10, harbor_project_quota_usage_byte)",
+                      "format": "table",
+                      "instant": true,
+                      "legendFormat": "{{project_name}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Top Projects by Storage",
+                  "transformations": [
+                    {
+                      "id": "labelsToFields",
+                      "options": {
+                        "mode": "columns"
+                      }
+                    }
+                  ],
+                  "type": "table"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                          "type": "auto"
+                        },
+                        "inspect": false
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": null
+                          }
+                        ]
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 10,
+                    "w": 12,
+                    "x": 12,
+                    "y": 14
+                  },
+                  "id": 9,
+                  "options": {
+                    "cellHeight": "sm",
+                    "footer": {
+                      "enablePagination": true,
+                      "fields": "",
+                      "reducer": [
+                        "sum"
+                      ],
+                      "show": false
+                    },
+                    "showHeader": true
+                  },
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum by (project_name) (harbor_project_repo_total)",
+                      "format": "table",
+                      "instant": true,
+                      "legendFormat": "{{project_name}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Repositories by Project",
+                  "transformations": [
+                    {
+                      "id": "labelsToFields",
+                      "options": {
+                        "mode": "columns"
+                      }
+                    }
+                  ],
+                  "type": "table"
+                }
+              ],
+              "refresh": "1m",
+              "schemaVersion": 39,
+              "style": "dark",
+              "tags": [
+                "harbor"
+              ],
+              "templating": {
+                "list": []
+              },
+              "time": {
+                "from": "now-24h",
+                "to": "now"
+              },
+              "timepicker": {},
+              "timezone": "",
+              "title": "Harbor Overview",
+              "uid": "harbor-overview-native",
+              "version": 1,
+              "weekStart": ""
+            }
     resources:
       requests:
         cpu: 250m
