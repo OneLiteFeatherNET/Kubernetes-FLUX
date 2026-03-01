@@ -77,11 +77,21 @@ spec:
         apiVersion: 1
         datasources:
           - name: Prometheus
+            uid: mimir
+            type: prometheus
+            access: proxy
+            url: http://mimir-gateway.grafana.svc.cluster.local/prometheus
+            isDefault: true
+            editable: false
+            jsonData:
+              httpMethod: POST
+              timeInterval: 30s
+          - name: Prometheus Local
             uid: prometheus
             type: prometheus
             access: proxy
             url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
-            isDefault: true
+            isDefault: false
             editable: false
             jsonData:
               httpMethod: POST
