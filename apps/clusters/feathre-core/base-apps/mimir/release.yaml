@@ -7,6 +7,8 @@ spec:
   values:
     minio:
       enabled: false
+    kafka:
+      enabled: false
     global:
       extraEnvFrom:
         - secretRef:
@@ -14,6 +16,10 @@ spec:
     mimir:
       structuredConfig:
         multitenancy_enabled: false
+        ingest_storage:
+          enabled: false
+        ingester:
+          push_grpc_method_enabled: true
         limits:
           accept_ha_samples: true
           ha_cluster_label: cluster
