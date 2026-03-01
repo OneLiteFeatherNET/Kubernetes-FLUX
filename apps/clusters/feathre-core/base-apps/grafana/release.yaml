@@ -100,29 +100,49 @@ spec:
         providers:
           - name: default
             orgId: 1
-            folder: Operations
+            folder: ""
             type: file
             disableDeletion: false
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
-          - name: databases
-            orgId: 1
-            folder: Databases
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/databases
     dashboards:
       default:
-        prometheus-stats:
-          gnetId: 2
+        kubernetes-dashboard:
+          gnetId: 22523
           revision: 2
           datasource: Prometheus
         kubernetes-cluster:
           gnetId: 7249
           revision: 1
+          datasource: Prometheus
+        kube-state-metrics:
+          gnetId: 21742
+          revision: 1
+          datasource: Prometheus
+        persistent-volumes:
+          gnetId: 15600
+          revision: 1
+          datasource: Prometheus
+        node-exporter-full:
+          gnetId: 1860
+          revision: 41
+          datasource: Prometheus
+        ingress-nginx:
+          gnetId: 9614
+          revision: 1
+          datasource: Prometheus
+        cert-manager:
+          gnetId: 20340
+          revision: 1
+          datasource: Prometheus
+        flux2:
+          gnetId: 16714
+          revision: 1
+          datasource: Prometheus
+        prometheus-overview:
+          gnetId: 3662
+          revision: 2
           datasource: Prometheus
         loki-quick-search:
           gnetId: 12019
@@ -132,9 +152,20 @@ spec:
               value: Prometheus
             - name: DS_LOKI
               value: Loki
-      databases:
         cloudnative-pg:
           url: https://raw.githubusercontent.com/cloudnative-pg/grafana-dashboards/refs/heads/main/charts/cluster/grafana-dashboard.json
+          datasource: Prometheus
+        mariadb-galera:
+          gnetId: 13106
+          revision: 1
+          datasource: Prometheus
+        redis-exporter:
+          gnetId: 14091
+          revision: 1
+          datasource: Prometheus
+        harbor-overview:
+          gnetId: 19716
+          revision: 1
           datasource: Prometheus
     resources:
       requests:
