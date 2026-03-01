@@ -36,6 +36,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-backstage
+      - name: grafana
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-grafana
     services:
       additional:
         - selectorType: rw

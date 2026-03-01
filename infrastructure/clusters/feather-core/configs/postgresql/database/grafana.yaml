@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: grafana
+spec:
+  name: grafana
+  owner: grafana
+  cluster:
+    name: feather-core-cluster-pg

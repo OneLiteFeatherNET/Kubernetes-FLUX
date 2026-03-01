@@ -15,6 +15,7 @@ resources:
   - database/otis.yaml
   - database/backstage.yaml
   - database/dependency-track.yaml
+  - database/grafana.yaml
 
 secretGenerator:
   - name: cnpg-backup
@@ -50,3 +51,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/dependency-track.sops.env
+  - name: role-grafana
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/grafana.sops.env
