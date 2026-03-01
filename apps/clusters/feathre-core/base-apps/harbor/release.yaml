@@ -400,7 +400,7 @@ spec:
     # uaaSecretName:
 
     metrics:
-      enabled: false
+      enabled: true
       core:
         path: /metrics
         port: 8001
@@ -418,7 +418,7 @@ spec:
       ## https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md
       ##
       serviceMonitor:
-        enabled: false
+        enabled: true
         additionalLabels: { }
         # Scrape interval. If not set, the Prometheus default scrape interval is used.
         interval: ""

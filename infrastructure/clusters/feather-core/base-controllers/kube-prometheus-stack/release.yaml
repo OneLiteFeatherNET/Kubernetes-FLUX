@@ -25,6 +25,10 @@ spec:
       prometheusSpec:
         replicas: 2
         podAntiAffinity: hard
+        podMonitorNamespaceSelector: {}
+        podMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorNamespaceSelector: {}
+        serviceMonitorSelectorNilUsesHelmValues: false
         externalLabels:
           cluster: feather-core
         storageSpec:

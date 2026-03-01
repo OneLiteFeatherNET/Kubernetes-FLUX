@@ -23,6 +23,8 @@ spec:
       allowSnippetAnnotations: true
       metrics:
         enabled: true
+        serviceMonitor:
+          enabled: true
       podAnnotations:
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -50,4 +52,3 @@ spec:
         use-gzip: "true"
         brotli-level: "6"
         use-http2: "true"
-
