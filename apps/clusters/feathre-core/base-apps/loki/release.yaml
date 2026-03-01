@@ -58,6 +58,12 @@ spec:
         storageClass: rook-external-rbd
         accessModes:
           - ReadWriteOnce
+    write:
+      replicas: 0
+    read:
+      replicas: 0
+    backend:
+      replicas: 0
     lokiCanary:
       enabled: true
       kind: DaemonSet
