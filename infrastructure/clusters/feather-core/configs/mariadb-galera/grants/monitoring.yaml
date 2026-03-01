@@ -1,0 +1,19 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+  name: monitoring-user-grant
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  privileges:
+    - "PROCESS"
+    - "REPLICATION CLIENT"
+    - "SELECT"
+  database: "*"
+  table: "*"
+  username: "monitoring"
+  grantOption: false
+  host: "%"
+  cleanupPolicy: Delete
+  requeueInterval: 10h
+  retryInterval: 30s

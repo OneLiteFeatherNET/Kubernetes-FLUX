@@ -39,3 +39,6 @@ secretGenerator:
   - name: user-playerkits-secret
     envs:
       - playerkits.sops.env
+  - name: user-monitoring-secret
+    envs:
+      - monitoring.sops.env

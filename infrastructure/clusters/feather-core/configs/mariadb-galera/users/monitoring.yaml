@@ -1,0 +1,15 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: User
+metadata:
+  name: monitoring
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  passwordSecretKeyRef:
+    name: user-monitoring-secret
+    key: password
+  maxUserConnections: 10
+  host: "%"
+  cleanupPolicy: Delete
+  requeueInterval: 10h
+  retryInterval: 30s
