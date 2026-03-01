@@ -8,6 +8,11 @@ spec:
     deploymentMode: SingleBinary
     loki:
       auth_enabled: false
+      storage:
+        type: filesystem
+        filesystem:
+          chunks_directory: /var/loki/chunks
+          rules_directory: /var/loki/rules
       commonConfig:
         replication_factor: 1
       schemaConfig:
