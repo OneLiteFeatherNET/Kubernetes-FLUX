@@ -11,3 +11,5 @@ resources:
   - uptime-kuma
   - leantime
   - grafana
+  - loki
+  - alloy
