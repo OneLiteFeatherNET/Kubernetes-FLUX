@@ -19,3 +19,4 @@ resources:
   - envoy.yaml
   - ansible.yml
   - prometheus-stack.yaml
+  - grafana.yml
