@@ -12,6 +12,9 @@ secretGenerator:
   - name: uptime-kuma-mariadb
     envs:
       - uptime-kuma.sops.env
+  - name: uptime-kuma-metrics-auth
+    envs:
+      - uptime-kuma-metrics.sops.env
   - name: cf-origin-tls
     type: kubernetes.io/tls
     files:
