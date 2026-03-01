@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: grafana
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/mimir
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: mimir-s3
+    envs:
+      - mimir-s3.sops.env
+  - name: mimir-ingress-auth
+    files:
+      - auth=mimir-ingress-auth.sops.conf

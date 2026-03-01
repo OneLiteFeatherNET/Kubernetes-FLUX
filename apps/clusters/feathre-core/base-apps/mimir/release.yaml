@@ -1,0 +1,126 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mimir
+  namespace: grafana
+spec:
+  values:
+    minio:
+      enabled: false
+    global:
+      extraEnvFrom:
+        - secretRef:
+            name: mimir-s3
+    mimir:
+      structuredConfig:
+        multitenancy_enabled: false
+        limits:
+          accept_ha_samples: true
+          ha_cluster_label: cluster
+          ha_replica_label: __replica__
+          compactor_blocks_retention_period: 365d
+        common:
+          storage:
+            backend: s3
+            s3:
+              endpoint: s3.onelitefeather.net
+              region: us-west-1
+              access_key_id: ${AWS_ACCESS_KEY_ID}
+              secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+              insecure: false
+        blocks_storage:
+          backend: s3
+          s3:
+            bucket_name: mimir-blocks
+            endpoint: s3.onelitefeather.net
+            region: us-west-1
+            access_key_id: ${AWS_ACCESS_KEY_ID}
+            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            insecure: false
+          tsdb:
+            dir: /data/tsdb
+        alertmanager_storage:
+          backend: s3
+          s3:
+            bucket_name: mimir-alertmanager
+            endpoint: s3.onelitefeather.net
+            region: us-west-1
+            access_key_id: ${AWS_ACCESS_KEY_ID}
+            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            insecure: false
+        ruler_storage:
+          backend: s3
+          s3:
+            bucket_name: mimir-ruler
+            endpoint: s3.onelitefeather.net
+            region: us-west-1
+            access_key_id: ${AWS_ACCESS_KEY_ID}
+            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            insecure: false
+        distributor:
+          ha_tracker:
+            enable_ha_tracker: true
+            kvstore:
+              store: memberlist
+    gateway:
+      enabled: true
+      replicas: 2
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: step-ca
+          nginx.ingress.kubernetes.io/auth-type: basic
+          nginx.ingress.kubernetes.io/auth-secret: mimir-ingress-auth
+          nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - Mimir Remote Write"
+        hosts:
+          - host: mimir.apps.onelite.feather
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: mimir-apps-onelite-feather-tls
+            hosts:
+              - mimir.apps.onelite.feather
+      podDisruptionBudget:
+        maxUnavailable: 1
+    alertmanager:
+      replicas: 2
+      persistentVolume:
+        enabled: true
+        storageClass: rook-external-rbd
+        size: 10Gi
+    distributor:
+      replicas: 2
+    ingester:
+      replicas: 3
+      persistentVolume:
+        enabled: true
+        storageClass: rook-external-rbd
+        size: 20Gi
+      zoneAwareReplication:
+        enabled: false
+    querier:
+      replicas: 2
+    query_frontend:
+      replicas: 2
+    query_scheduler:
+      replicas: 2
+    ruler:
+      replicas: 1
+    store_gateway:
+      replicas: 2
+      persistentVolume:
+        enabled: true
+        storageClass: rook-external-rbd
+        size: 10Gi
+      zoneAwareReplication:
+        enabled: false
+    compactor:
+      persistentVolume:
+        enabled: true
+        storageClass: rook-external-rbd
+        size: 10Gi
+    metaMonitoring:
+      serviceMonitor:
+        enabled: true

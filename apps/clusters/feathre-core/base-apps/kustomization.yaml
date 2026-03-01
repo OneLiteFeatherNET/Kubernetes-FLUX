@@ -10,6 +10,7 @@ resources:
   - dependency-track
   - uptime-kuma
   - leantime
+  - mimir
   - grafana
   - loki
   - alloy

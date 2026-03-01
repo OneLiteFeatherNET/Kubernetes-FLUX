@@ -1,0 +1,35 @@
+prometheus.scrape "minecraft_exporters" {
+  targets = [
+    {
+      "__address__" = "mc-proxy-01.internal:9225",
+      "job"         = "minecraft",
+      "instance"    = "mc-proxy-01",
+      "role"        = "proxy",
+    },
+    {
+      "__address__" = "mc-survival-01.internal:9225",
+      "job"         = "minecraft",
+      "instance"    = "mc-survival-01",
+      "role"        = "paper",
+    },
+  ]
+
+  forward_to      = [prometheus.remote_write.mimir.receiver]
+  scrape_interval = "15s"
+}
+
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = "https://mimir.apps.onelite.feather/api/v1/push"
+
+    basic_auth {
+      username = env("MIMIR_REMOTE_WRITE_USER")
+      password = env("MIMIR_REMOTE_WRITE_PASSWORD")
+    }
+  }
+
+  external_labels = {
+    cluster = "minecraft",
+    source  = "minecraft",
+  }
+}

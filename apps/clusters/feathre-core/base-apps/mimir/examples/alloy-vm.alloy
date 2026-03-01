@@ -1,0 +1,23 @@
+prometheus.exporter.unix "node" {}
+
+prometheus.scrape "node_exporter" {
+  targets    = prometheus.exporter.unix.node.targets
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  scrape_interval = "15s"
+}
+
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = "https://mimir.apps.onelite.feather/api/v1/push"
+
+    basic_auth {
+      username = env("MIMIR_REMOTE_WRITE_USER")
+      password = env("MIMIR_REMOTE_WRITE_PASSWORD")
+    }
+  }
+
+  external_labels = {
+    cluster = "vm-estate",
+    source  = "vm",
+  }
+}
