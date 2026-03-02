@@ -7,14 +7,14 @@ metadata:
 #    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
   image: "mariadb:11.8.5"
-  podSecurityContext:
-    seccompProfile:
-      type: RuntimeDefault
-  securityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
+#  podSecurityContext:
+#    seccompProfile:
+#      type: RuntimeDefault
+#  securityContext:
+#    allowPrivilegeEscalation: false
+#    capabilities:
+#      drop:
+#        - ALL
   replicas: 5
   startupProbe:
     failureThreshold: 60
