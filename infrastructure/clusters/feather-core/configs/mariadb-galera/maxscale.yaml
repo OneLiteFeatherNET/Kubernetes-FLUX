@@ -4,18 +4,18 @@ metadata:
   name: maxscale-galera
   namespace: mariadb-galera
 spec:
-  podSecurityContext:
-    fsGroup: 996
-    runAsGroup: 996
-    runAsNonRoot: true
-    runAsUser: 996
-    seccompProfile:
-      type: RuntimeDefault
-  securityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
+#  podSecurityContext:
+#    fsGroup: 996
+#    runAsGroup: 996
+#    runAsNonRoot: true
+#    runAsUser: 996
+#    seccompProfile:
+#      type: RuntimeDefault
+#  securityContext:
+#    allowPrivilegeEscalation: false
+#    capabilities:
+#      drop:
+#        - ALL
   mariaDbRef:
     name: mariadb-galera
   replicas: 2
