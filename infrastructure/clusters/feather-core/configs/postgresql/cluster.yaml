@@ -7,7 +7,7 @@ spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:17
   storage:
-    size: 50Gi
+    size: 75Gi
   enableSuperuserAccess: true
   managed:
     roles:
