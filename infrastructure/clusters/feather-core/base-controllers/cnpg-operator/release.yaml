@@ -11,3 +11,4 @@ spec:
     config:
       data:
         CNPG_INCLUDE_PLUGINS: "barman-cloud.cloudnative-pg.io"
+        INCLUDE_PLUGINS: "barman-cloud.cloudnative-pg.io"
