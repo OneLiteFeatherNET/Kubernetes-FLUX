@@ -9,5 +9,5 @@ spec:
       version: "=0.26.0"
   values:
     config:
-        data:
-          CNPG_INCLUDE_PLUGINS: "barman-cloud.cloudnative-pg.io"
+      data:
+        CNPG_INCLUDE_PLUGINS: "barman-cloud.cloudnative-pg.io"
