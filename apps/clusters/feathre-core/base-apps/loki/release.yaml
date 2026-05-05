@@ -45,6 +45,15 @@ spec:
               period: 24h
     singleBinary:
       replicas: 1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/region
+                    operator: In
+                    values:
+                      - fi-helsinki
       resources:
         requests:
           cpu: 250m
@@ -65,6 +74,16 @@ spec:
     backend:
       replicas: 0
     gateway:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: topology.kubernetes.io/region
+                    operator: In
+                    values:
+                      - fi-helsinki
       ingress:
         enabled: true
         ingressClassName: nginx
