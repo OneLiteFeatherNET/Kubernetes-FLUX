@@ -11,6 +11,16 @@ spec:
 
     frontend:
       replicaCount: 3
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: topology.kubernetes.io/region
+                    operator: In
+                    values:
+                      - fr-rosenau
       extraEnv:
         - name: API_BASE_URL
           value: "https://dependency-track.onelitefeather.dev"
