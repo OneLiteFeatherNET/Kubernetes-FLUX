@@ -9,6 +9,16 @@ spec:
   storage:
     size: 75Gi
   enableSuperuserAccess: true
+  affinity:
+    nodeSelector:
+      topology.kubernetes.io/region: fi-helsinki
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            cnpg.io/cluster: feather-core-cluster-pg
   managed:
     roles:
       - name: harbor
