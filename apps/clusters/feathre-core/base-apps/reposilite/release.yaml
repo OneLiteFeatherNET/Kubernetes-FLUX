@@ -36,6 +36,16 @@ spec:
       limits:
         cpu: 2
         memory: 2Gi
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
     autoscaling:
       enabled: true
       minReplicas: 3
