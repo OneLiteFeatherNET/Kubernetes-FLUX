@@ -1,20 +1,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: configs
+  name: rook
   namespace: flux-system
 spec:
   dependsOn:
     - name: base-configs
     - name: controllers
-    - name: rook
   interval: 1m0s
   retryInterval: 30s
-  timeout: 10m0s
+  timeout: 5m0s
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/clusters/feather-core/configs
+  path: ./infrastructure/clusters/feather-core/rook
   prune: true
   wait: true
   decryption:
