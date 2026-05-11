@@ -8,6 +8,15 @@ spec:
     spec:
       version: ">=1.14.4"
   values:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
     crds:
       enabled: true
     global:
