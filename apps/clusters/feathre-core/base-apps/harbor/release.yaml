@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: "=1.16.4"
+      version: "=1.19.1"
   values:
     expose:
       # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
@@ -495,7 +495,7 @@ spec:
     nginx:
       image:
         repository: goharbor/nginx-photon
-        tag: dev
+        tag: v2.15.0
       # set the service account to be used, default if left empty
       serviceAccountName: ""
       # mount the service account token
@@ -526,7 +526,7 @@ spec:
     portal:
       image:
         repository: goharbor/harbor-portal
-        tag: dev
+        tag: v2.15.0
       # set the service account to be used, default if left empty
       serviceAccountName: ""
       # mount the service account token
@@ -566,7 +566,7 @@ spec:
     core:
       image:
         repository: goharbor/harbor-core
-        tag: dev
+        tag: v2.15.0
       # set the service account to be used, default if left empty
       serviceAccountName: ""
       # mount the service account token
@@ -655,7 +655,7 @@ spec:
     jobservice:
       image:
         repository: goharbor/harbor-jobservice
-        tag: dev
+        tag: v2.15.0
       # set the service account to be used, default if left empty
       serviceAccountName: ""
       # mount the service account token
@@ -718,7 +718,7 @@ spec:
       registry:
         image:
           repository: goharbor/registry-photon
-          tag: dev
+          tag: v2.15.0
         # resources:
         #  requests:
         #    memory: 256Mi
@@ -727,7 +727,7 @@ spec:
       controller:
         image:
           repository: goharbor/harbor-registryctl
-          tag: dev
+          tag: v2.15.0
         # resources:
         #  requests:
         #    memory: 256Mi
@@ -808,7 +808,7 @@ spec:
         # repository the repository for Trivy adapter image
         repository: goharbor/trivy-adapter-photon
         # tag the tag for Trivy adapter image
-        tag: dev
+        tag: v2.15.0
       # set the service account to be used, default if left empty
       serviceAccountName: ""
       # mount the service account token
@@ -901,7 +901,7 @@ spec:
       internal:
         image:
           repository: goharbor/harbor-db
-          tag: dev
+          tag: v2.15.0
         # set the service account to be used, default if left empty
         serviceAccountName: ""
         # mount the service account token
@@ -981,7 +981,7 @@ spec:
       internal:
         image:
           repository: goharbor/redis-photon
-          tag: dev
+          tag: v2.15.0
         # set the service account to be used, default if left empty
         serviceAccountName: ""
         # mount the service account token
@@ -1051,7 +1051,7 @@ spec:
     exporter:
       image:
         repository: goharbor/harbor-exporter
-        tag: dev
+        tag: v2.15.0
       serviceAccountName: ""
       # mount the service account token
       automountServiceAccountToken: false
