@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: "=1.19.1"
+      version: "=1.19.0"
   values:
     expose:
       # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
