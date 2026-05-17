@@ -74,6 +74,8 @@ spec:
               value: {{ .Values.shlink.database.name | quote }}
             - name: DB_USER
               value: {{ .Values.shlink.database.user | quote }}
+            - name: LOGS_FORMAT
+              value: {{ .Values.shlink.logs.format | quote }}
             - name: DB_PASSWORD
               {{- if .Values.shlink.database.secretName }}
               valueFrom:

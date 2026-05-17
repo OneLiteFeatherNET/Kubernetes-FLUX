@@ -15,6 +15,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 shlink:
+  logs:
+    format: "json"
   database:
     # Supported Type: mysql, maria, postgres, mssql
     driver: 'maria'
