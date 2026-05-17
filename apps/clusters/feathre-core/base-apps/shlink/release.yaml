@@ -14,6 +14,11 @@ spec:
                     operator: In
                     values:
                       - fr-rosenau
+    image:
+      repository: shlinkio/shlink
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "5.0.2"
     replicaCount: 3
     ingress:
       enabled: true
