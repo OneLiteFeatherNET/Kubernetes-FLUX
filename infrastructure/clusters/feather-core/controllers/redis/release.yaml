@@ -153,9 +153,11 @@ spec:
       ##
       enabled: true
       ## @param auth.sentinel Enable authentication on sentinels too
-      ## Disabled: Predis (shlink) cannot authenticate to Sentinel, so
-      ## master discovery failed. Data-node AUTH (auth.enabled) stays on.
-      sentinel: false
+      ## MUST stay true: Bitnami's bootstrap scripts query the Sentinel
+      ## with auth; disabling it makes them parse "NOAUTH" as the master
+      ## address (replicaof NOAUTH -> crash loop). shlink/Predis Sentinel
+      ## auth must be solved differently (separate sentinel password).
+      sentinel: true
       ## @param auth.password Redis&reg; password
       ## Defaults to a random 10-character alphanumeric string if not set
       ##
