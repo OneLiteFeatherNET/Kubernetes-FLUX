@@ -113,6 +113,18 @@ spec:
             key: REDIS_SERVERS
       - name: REDIS_SENTINEL_SERVICE
         value: "mymaster"
+      # shlink >=4.6.0 (PR #2501): authenticates the Sentinel
+      # connection (and data nodes) with this password. In Sentinel
+      # mode credentials must NOT be embedded in the REDIS_SERVERS
+      # URI - shlink-secret.REDIS_SERVERS must be a plain
+      # tcp://redis.redis.svc.cluster.local:26379 and the password
+      # comes from here. Bitnami uses the same password for the
+      # Sentinel requirepass and the data nodes.
+      - name: REDIS_SERVERS_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: shlink-secret
+            key: REDIS_SERVERS_PASSWORD
       - name: REDIS_PUB_SUB_ENABLED
         value: "true"
       - name: SKIP_INITIAL_GEOLITE_DOWNLOAD
