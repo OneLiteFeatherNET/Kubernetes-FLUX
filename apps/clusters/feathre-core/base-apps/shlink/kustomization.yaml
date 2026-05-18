@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/shlink/
   - backendtrafficpolicy.yaml
+  - redis.yaml
 patches:
   - path: release.yaml
 
