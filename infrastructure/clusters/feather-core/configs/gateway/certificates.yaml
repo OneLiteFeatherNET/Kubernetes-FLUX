@@ -1,0 +1,70 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-onelitefeather-dev
+  namespace: envoy
+spec:
+  secretName: wildcard-onelitefeather-dev-tls
+  issuerRef:
+    name: letsencrypt-prod-dns
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - "*.onelitefeather.dev"
+    - "onelitefeather.dev"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-onelitefeather-net
+  namespace: envoy
+spec:
+  secretName: wildcard-onelitefeather-net-tls
+  issuerRef:
+    name: letsencrypt-prod-dns
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - "*.onelitefeather.net"
+    - "onelitefeather.net"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: s3-onelitefeather-net
+  namespace: envoy
+spec:
+  secretName: s3-onelitefeather-net-tls
+  issuerRef:
+    name: letsencrypt-prod-dns
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - "s3.onelitefeather.net"
+    - "*.s3.onelitefeather.net"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: onelitefeather-1lf-link
+  namespace: envoy
+spec:
+  secretName: 1lf-link-tls
+  issuerRef:
+    name: letsencrypt-prod-dns
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - "1lf.link"
