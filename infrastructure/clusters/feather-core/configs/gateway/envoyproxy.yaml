@@ -14,3 +14,16 @@ spec:
           metallb.io/loadBalancerIPs: "10.200.90.1"
         labels:
           onelite.feather/bgp: "announce"
+      # HA data plane (parity with the replaced ingress-nginx DaemonSet)
+      envoyDeployment:
+        replicas: 3
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: envoy
+      envoyPDB:
+        minAvailable: 2
