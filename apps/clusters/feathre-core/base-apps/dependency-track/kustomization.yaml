@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/dependency-track
+  - httproute.yaml
 patches:
   - path: release.yaml
 

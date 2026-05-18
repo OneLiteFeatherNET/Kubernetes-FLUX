@@ -41,18 +41,10 @@ spec:
     common:
       secretKey:
         createSecret: true
+    # Chart 0.39.0 has NO httpRoute support (only top-level ingress).
+    # Routing is done by a standalone HTTPRoute (httproute.yaml).
     ingress:
       enabled: false
-    httpRoute:
-      enabled: true
-      hostnames:
-        - dependency-track.onelitefeather.dev
-      parentRefs:
-        - name: eg
-          namespace: envoy
-          sectionName: https
-          group: gateway.networking.k8s.io
-          kind: Gateway
     apiServer:
       serviceMonitor:
         enabled: true
