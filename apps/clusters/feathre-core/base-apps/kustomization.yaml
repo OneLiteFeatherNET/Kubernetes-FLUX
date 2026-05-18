@@ -10,9 +10,9 @@ resources:
   - dependency-track
   - uptime-kuma
   - leantime
-  - mimir
   - grafana
-  # loki is managed by a dedicated wait:false Kustomization
-  # (clusters/feather-core/loki.yaml) so its Ceph-RGW S3 quota
-  # issue does not block base-apps -> apps.
+  # loki + mimir (later tempo) are managed by the dedicated
+  # wait:false monitoring Kustomization
+  # (clusters/feather-core/monitoring.yaml) so their external
+  # Ceph-RGW S3 backend does not block base-apps -> apps.
   - alloy
