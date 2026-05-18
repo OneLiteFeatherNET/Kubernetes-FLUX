@@ -161,3 +161,26 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Generic extra secret files, mounted read-only at /secrets
+secrets:
+  enabled: false
+  files: {}
+  # Example:
+  # files:
+  #   my-extra.json: |-
+  #     {
+  #       "key": "value"
+  #     }
+
+# Extra environment variables appended to the container
+env: []
+# - name: SOME_VAR
+#   value: "some-value"
+
+# Extra envFrom sources (configMapRef / secretRef)
+envFrom: []
+# - secretRef:
+#     name: my-secret
+# - configMapRef:
+#     name: my-configmap
