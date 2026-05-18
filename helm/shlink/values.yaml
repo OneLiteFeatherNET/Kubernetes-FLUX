@@ -40,6 +40,10 @@ shlink:
       # REDIS_SERVERS as KEY
       secretName: ''
       enabled: true
+      # Set to the Redis Sentinel master set name to make shlink
+      # resolve the current master via Sentinel (REDIS_SERVERS must
+      # then point at the Sentinel endpoint(s), port 26379).
+      sentinelService: ''
 
 serviceAccount:
   # Specifies whether a service account should be created
