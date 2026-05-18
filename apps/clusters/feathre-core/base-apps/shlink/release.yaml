@@ -115,3 +115,5 @@ spec:
         value: "mymaster"
       - name: REDIS_PUB_SUB_ENABLED
         value: "true"
+      - name: SKIP_INITIAL_GEOLITE_DOWNLOAD
+        value: "true"
