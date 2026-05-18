@@ -7,7 +7,7 @@ spec:
   interval: 5m
   url: oci://docker.io/envoyproxy/gateway-helm
   ref:
-    semver: "=1.6.0"
+    semver: ">=1.7.0 <1.8.0"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -18,4 +18,4 @@ spec:
   interval: 5m
   url: oci://docker.io/envoyproxy/gateway-crds-helm
   ref:
-    semver: "=1.6.0"
+    semver: ">=1.7.0 <1.8.0"
