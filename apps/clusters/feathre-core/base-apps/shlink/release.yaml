@@ -106,19 +106,23 @@ spec:
             key: GEOLITE_LICENSE_KEY
       - name: REDIS_PUB_SUB_ENABLED
         value: "true"
+      # IMPORTANT: list ALL Bitnami sentinel nodes (port 26379).
+      # shlink-common (RedisFactory::resolveServers) collapses a
+      # single REDIS_SERVERS entry to a non-list, which disables
+      # Predis sentinel mode -> commands hit the sentinel directly
+      # ("unknown command 'EVALSHA'"). With >=2 entries Predis enters
+      # sentinel replication and resolves the master correctly.
+      # Hostnames are not secret; the data-node password comes from
+      # REDIS_SERVERS_PASSWORD. Sentinel URIs carry no password
+      # because redis is deployed with auth.sentinel: false.
+      - name: REDIS_SERVERS
+        value: "tcp://redis-node-0.redis-headless.redis.svc.cluster.local:26379,tcp://redis-node-1.redis-headless.redis.svc.cluster.local:26379,tcp://redis-node-2.redis-headless.redis.svc.cluster.local:26379"
+      - name: REDIS_SENTINEL_SERVICE
+        value: "mymaster"
       - name: REDIS_SERVERS_PASSWORD
         valueFrom:
           secretKeyRef:
             name: shlink-secret
             key: REDIS_SERVERS_PASSWORD
-      - name: REDIS_SERVERS
-        valueFrom:
-          secretKeyRef:
-            name: shlink-secret
-            key: REDIS_SERVERS
-      - name: REDIS_SENTINEL_SERVICE
-        value: "mymaster"
-      - name: REDIS_PUB_SUB_ENABLED
-        value: "true"
       - name: SKIP_INITIAL_GEOLITE_DOWNLOAD
         value: "true"
