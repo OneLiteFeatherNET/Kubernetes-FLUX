@@ -113,3 +113,5 @@ spec:
             key: REDIS_SERVERS
       - name: REDIS_SENTINEL_SERVICE
         value: "mymaster"
+      - name: REDIS_PUB_SUB_ENABLED
+        value: "true"
