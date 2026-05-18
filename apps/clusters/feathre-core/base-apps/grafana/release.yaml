@@ -42,16 +42,7 @@ spec:
     persistence:
       enabled: false
     ingress:
-      enabled: true
-      ingressClassName: nginx
-      annotations:
-        cert-manager.io/cluster-issuer: step-ca
-      hosts:
-        - grafana.apps.onelite.feather
-      tls:
-        - secretName: grafana-apps-onelite-feather-tls
-          hosts:
-            - grafana.apps.onelite.feather
+      enabled: false
     env:
       GF_DATABASE_TYPE: postgres
       GF_DATABASE_HOST: feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432

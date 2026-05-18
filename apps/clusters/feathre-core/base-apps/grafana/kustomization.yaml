@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/grafana
+  - httproute.yaml
 patches:
   - path: release.yaml
 

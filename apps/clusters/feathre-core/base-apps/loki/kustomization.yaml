@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/loki
+  - httproute.yaml
 patches:
   - path: release.yaml
 
@@ -12,6 +13,3 @@ secretGenerator:
   - name: loki-s3
     envs:
       - loki-s3.sops.env
-  - name: loki-ingress-auth
-    files:
-      - auth=loki-ingress-auth.sops.conf

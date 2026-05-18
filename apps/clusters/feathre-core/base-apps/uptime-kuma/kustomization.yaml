@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/uptime-kuma
+  - httproute.yaml
 patches:
   - path: release.yaml
 
