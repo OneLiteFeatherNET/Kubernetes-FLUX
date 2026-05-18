@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/reposilite/
+  - httproute.yaml
 patches:
   - path: release.yaml
 

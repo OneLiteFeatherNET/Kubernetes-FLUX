@@ -3,8 +3,7 @@ kind: Kustomization
 resources:
   - gateway-class.yaml
   - certificates.yaml
-  # gateway.yaml is intentionally deferred to the nginx->Envoy cutover:
-  # creating the Gateway provisions an Envoy data-plane LoadBalancer
-  # (MetalLB IP) and must land together with the ingress-nginx removal
-  # to avoid a 10.200.90.1 conflict (hard cutover).
-  # - gateway.yaml
+  - internal-certificates.yaml
+  - envoyproxy.yaml
+  - gateway.yaml
+  - redirect-route.yaml

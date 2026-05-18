@@ -46,20 +46,20 @@ spec:
 
     replicaCount: 1
     ingress:
+      enabled: false
+    httpRoute:
       enabled: true
-      className: "nginx"
-      annotations:
-        ingress.kubernetes.io/proxy-body-size: "5G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "5G"
-      hosts:
-        - host: outline.onelitefeather.dev
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-      tls:
-        - secretName: cf-origin-tls
-          hosts:
-            - outline.onelitefeather.dev
+      parentRefs:
+        - name: eg
+          namespace: envoy
+          sectionName: https
+      hostnames:
+        - outline.onelitefeather.dev
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
     livenessProbe:
       initialDelaySeconds: 60
       httpGet:

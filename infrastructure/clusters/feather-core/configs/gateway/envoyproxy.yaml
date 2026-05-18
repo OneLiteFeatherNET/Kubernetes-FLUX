@@ -1,0 +1,16 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: eg-proxy
+  namespace: envoy
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        # Drop-in: take over the ingress-nginx LoadBalancer IP + BGP label
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.io/loadBalancerIPs: "10.200.90.1"
+        labels:
+          onelite.feather/bgp: "announce"

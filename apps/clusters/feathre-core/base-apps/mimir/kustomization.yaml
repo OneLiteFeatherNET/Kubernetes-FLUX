@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/mimir
+  - httproute.yaml
 patches:
   - path: release.yaml
 
@@ -12,6 +13,3 @@ secretGenerator:
   - name: mimir-s3
     envs:
       - mimir-s3.sops.env
-  - name: mimir-ingress-auth
-    files:
-      - auth=mimir-ingress-auth.sops.conf

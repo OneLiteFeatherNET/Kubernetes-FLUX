@@ -79,17 +79,4 @@ spec:
             name: reposilite-secrets
             key: DATABASE
     ingress:
-      enabled: true
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "2G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "2G"
-      hosts:
-        - host: repo.onelitefeather.dev
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - secretName: repo-onelitefeather-dev-tls
-          hosts:
-            - repo.onelitefeather.dev
+      enabled: false

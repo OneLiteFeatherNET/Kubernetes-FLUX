@@ -9,16 +9,25 @@ spec:
       version: "=1.19.0"
   values:
     expose:
-      # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
-      # and fill the information in the corresponding section
-      type: ingress
+      # Exposed via Kubernetes Gateway API (Envoy Gateway) HTTPRoute
+      type: route
+      route:
+        hosts:
+          - harbor.onelitefeather.dev
+        parentRefs:
+          - name: eg
+            namespace: envoy
+            sectionName: https
+            group: gateway.networking.k8s.io
+            kind: Gateway
       tls:
         # Enable TLS or not.
         # Delete the "ssl-redirect" annotations in "expose.ingress.annotations" when TLS is disabled and "expose.type" is "ingress"
         # Note: if the "expose.type" is "ingress" and TLS is disabled,
         # the port must be included in the command when pulling/pushing images.
         # Refer to https://github.com/goharbor/harbor/issues/5291 for details.
-        enabled: true
+        # TLS is terminated at the Envoy Gateway, not by Harbor.
+        enabled: false
         # The source of the tls certificate. Set as "auto", "secret"
         # or "none" and fill the information in the corresponding section
         # 1) auto: generate the tls certificate automatically

@@ -82,22 +82,7 @@ spec:
                     values:
                       - fr-rosenau
       ingress:
-        enabled: true
-        ingressClassName: nginx
-        annotations:
-          cert-manager.io/cluster-issuer: step-ca
-          nginx.ingress.kubernetes.io/auth-type: basic
-          nginx.ingress.kubernetes.io/auth-secret: mimir-ingress-auth
-          nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - Mimir Remote Write"
-        hosts:
-          - host: mimir.apps.onelite.feather
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - secretName: mimir-apps-onelite-feather-tls
-            hosts:
-              - mimir.apps.onelite.feather
+        enabled: false
       podDisruptionBudget:
         maxUnavailable: 1
     alertmanager:

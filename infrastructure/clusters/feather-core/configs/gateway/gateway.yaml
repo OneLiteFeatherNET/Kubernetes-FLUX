@@ -2,9 +2,42 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: eg
+  namespace: envoy
 spec:
   gatewayClassName: eg
   listeners:
     - name: http
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          # Public domains - cert-manager DNS01 wildcards (prestaged)
+          - kind: Secret
+            name: wildcard-onelitefeather-dev-tls
+          - kind: Secret
+            name: wildcard-onelitefeather-net-tls
+          - kind: Secret
+            name: s3-onelitefeather-net-tls
+          - kind: Secret
+            name: 1lf-link-tls
+          # Internal hosts - step-ca via HTTP01-over-Gateway (issued at cutover)
+          - kind: Secret
+            name: grafana-apps-onelite-feather-tls
+          - kind: Secret
+            name: loki-apps-onelite-feather-tls
+          - kind: Secret
+            name: mimir-apps-onelite-feather-tls
+          - kind: Secret
+            name: node-red-apps-onelite-feather-tls
+          - kind: Secret
+            name: otis-apps-onelite-feather-tls
