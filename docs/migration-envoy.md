@@ -11,6 +11,13 @@ Ersatz ist **Envoy Gateway** mit der Kubernetes **Gateway API** — Envoy Gatewa
 v1.6.0 inkl. CRDs, `GatewayClass eg` und ein HTTPRoute-Template
 (`helm/metabase`) sind im Repo bereits vorhanden, nur deaktiviert.
 
+**Ziel: Drop-in-Replacement.** Envoy übernimmt dieselbe LoadBalancer-IP
+`10.200.90.1`, dieselben Hostnamen, dieselbe TLS-Gültigkeit und dasselbe
+Verhalten (Body-Size, Basic-Auth, CORS, Rate-Limits, SSL-Redirect). Von außen
+ändert sich nichts. **Harter Cutover**: ingress-nginx wird im selben Change-Set
+entfernt, in dem Envoy `10.200.90.1` erhält — kein Parallelbetrieb, keine
+Test-IP. Rollback erfolgt per `git revert` des Change-Sets.
+
 ## Architektur-Entscheidungen
 
 | Thema | Entscheidung |
@@ -21,9 +28,9 @@ v1.6.0 inkl. CRDs, `GatewayClass eg` und ein HTTPRoute-Template
 | TLS öffentliche Domains | Wildcard-`Certificate` via `letsencrypt-prod-dns` (Cloudflare DNS01): `*.onelitefeather.dev`, `*.onelitefeather.net`, `*.s3.onelitefeather.net` |
 | TLS interne Domains | `*.apps.onelite.feather` via `step-ca` ACME, Solver = `gatewayHTTPRoute`; cert-manager Feature-Gate `ExperimentalGatewayAPISupport=true` |
 | cert-manager ↔ Gateway | explizite `Certificate`-Ressourcen im `envoy`-NS (kein ingress-shim) |
-| MetalLB Parallelbetrieb | Envoy temporär `10.200.90.8`; Cutover auf `10.200.90.1` in Phase 4 |
+| MetalLB | Envoy direkt auf `10.200.90.1`; ingress-nginx im selben Change-Set entfernt (harter Cutover) |
 | Basic-Auth (Loki/Mimir) | nginx htpasswd-Secret → Envoy `SecurityPolicy.basicAuth` (Secret mit `.htpasswd`-Key, Format wird angepasst) |
-| Rollback | je Phase ein Commit; ingress-nginx bleibt bis Phase 4 parallel aktiv |
+| Rollback | `git revert` des Change-Sets + Flux-Reconcile (kurze Downtime möglich, kein App-für-App-Fallback) |
 
 ## Chart-Strategie-Matrix
 
@@ -50,7 +57,7 @@ v1.6.0 inkl. CRDs, `GatewayClass eg` und ein HTTPRoute-Template
 | `infrastructure/clusters/feather-core/base-controllers/kustomization.yaml` | `envoy-crds` einkommentieren (Z. 11) — CRDs vor Controller |
 | `infrastructure/clusters/feather-core/configs/kustomization.yaml` | `- gateway` einkommentieren |
 | `.../configs/gateway/gateway.yaml` | HTTP-Listener (Port 80, Redirect→HTTPS), HTTPS-Listener (443) je Hostname-Gruppe mit `certificateRefs` auf Wildcard-Secrets, `allowedRoutes.namespaces.from: All` |
-| `.../configs/gateway/envoyproxy.yaml` (neu) | `EnvoyProxy`-CR: LB-Service `metallb.io/loadBalancerIPs: 10.200.90.8`, Label `onelite.feather/bgp: announce`, `externalTrafficPolicy: Local` |
+| `.../configs/gateway/envoyproxy.yaml` (neu) | `EnvoyProxy`-CR: LB-Service `metallb.io/loadBalancerIPs: 10.200.90.1`, Label `onelite.feather/bgp: announce`, `externalTrafficPolicy: Local` (übernimmt 1:1 die ingress-nginx-Service-Config) |
 | `.../configs/gateway/certificates.yaml` (neu) | `Certificate` (Wildcards) im NS `envoy`, Issuer `letsencrypt-prod-dns`; intern `*.apps.onelite.feather` via `step-ca` |
 | `.../configs/gateway/client-traffic-policy.yaml` (neu) | `ClientTrafficPolicy`: XFF/Client-IP (Ersatz `enable-real-ip`/`use-forwarded-headers`), Default-Body-Size |
 | `.../configs/gateway/kustomization.yaml` | neue Ressourcen, `namespace: envoy` |
@@ -112,11 +119,14 @@ entfernen; HTTPRoute (Hosts `s3.onelitefeather.net` + `*.s3.onelitefeather.net`)
 `https://outline.onelitefeather.dev`, Methods/Headers/Credentials wie bisher);
 `ClientTrafficPolicy` body unlimited + buffering off.
 
-## Phase 4 — NGINX-Abbau & Cutover
+## Phase 4 — NGINX-Abbau (gleicher Change-Set, harter Cutover)
+
+ingress-nginx wird im selben Change-Set entfernt, in dem Envoy `10.200.90.1`
+übernimmt. Damit es keinen MetalLB-IP-Konflikt gibt, MUSS die nginx-Entfernung
+gemeinsam mit Phase 1–3 reconcilen (ein zusammenhängender Merge).
 
 | Datei | Änderung |
 |---|---|
-| `.../configs/gateway/envoyproxy.yaml` | LB-IP `10.200.90.8` → `10.200.90.1` |
 | `infrastructure/clusters/feather-core/controllers/kustomization.yaml` | `- ingress-nginx` entfernen |
 | `infrastructure/clusters/feather-core/controllers/ingress-nginx/` | Verzeichnis löschen |
 | `infrastructure/base/controllers/ingress-nginx/` | Verzeichnis löschen |
@@ -131,4 +141,7 @@ entfernen; HTTPRoute (Hosts `s3.onelitefeather.net` + `*.s3.onelitefeather.net`)
 - **step-ca HTTP01 via Gateway**: braucht funktionierendes Gateway + Feature-Gate.
 - **Service-Namen** der Standalone-HTTPRoutes sind chart-deterministisch, müssen
   aber bei Major-Chart-Upgrades nachgezogen werden.
-- **Cutover** `.1`: kurzer Reconnect der LB-IP; ingress-nginx vorher entfernen.
+- **MetalLB-IP-Konflikt**: Envoy und ingress-nginx dürfen nie gleichzeitig
+  `10.200.90.1` anfordern → nginx-Entfernung und Envoy-IP-Zuweisung müssen im
+  selben Reconcile passieren (harter Cutover, kurzer LB-Reconnect).
+- **Rollback** = `git revert` des Change-Sets; kein App-für-App-Zurückschalten.
