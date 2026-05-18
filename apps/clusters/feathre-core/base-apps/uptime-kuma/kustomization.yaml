@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/uptime-kuma
   - httproute.yaml
+  - backendtrafficpolicy.yaml
 patches:
   - path: release.yaml
 

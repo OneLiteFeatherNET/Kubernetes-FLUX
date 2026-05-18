@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/shlink/
+  - backendtrafficpolicy.yaml
 patches:
   - path: release.yaml
 
