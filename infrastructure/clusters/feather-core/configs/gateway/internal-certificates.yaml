@@ -1,0 +1,84 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: grafana-apps-onelite-feather-tls
+  issuerRef:
+    name: step-ca
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - grafana.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: loki-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: loki-apps-onelite-feather-tls
+  issuerRef:
+    name: step-ca
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - loki.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mimir-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: mimir-apps-onelite-feather-tls
+  issuerRef:
+    name: step-ca
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - mimir.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: node-red-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: node-red-apps-onelite-feather-tls
+  issuerRef:
+    name: step-ca
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - node-red.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: otis-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: otis-apps-onelite-feather-tls
+  issuerRef:
+    name: step-ca
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - otis.apps.onelite.feather

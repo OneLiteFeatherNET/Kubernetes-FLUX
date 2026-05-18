@@ -18,6 +18,7 @@ spec:
                   operator: In
                   values:
                     - fr-rosenau
+    featureGates: "ExperimentalGatewayAPISupport=true"
     crds:
       enabled: true
     global:
