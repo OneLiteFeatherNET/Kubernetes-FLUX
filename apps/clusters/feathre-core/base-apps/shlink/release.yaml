@@ -71,30 +71,43 @@ spec:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 95
       # targetMemoryUtilizationPercentage: 80
-    shlink:
-      database:
-        adapter: maria
-        host: maxscale-galera.mariadb-galera.svc.cluster.local
-        port: 3306
-        user: shlink
-        secretName: 'shlink-secret'
-        database: shlink
-      general:
-        defaultDomain: '1lf.link'
-        httpsEnabled: true
-        # GEOLITE_LICENSE_KEY as KEY
-        goliteLicenseKey: ''
-        secretName: 'shlink-secret'
-        timezone: 'Europe/Helsinki'
-      realtime:
-        redis:
-          servers: ''
-          # REDIS_SERVERS as KEY
-          secretName: 'shlink-secret'
-          enabled: true
-          # Redis is Bitnami replication + Sentinel (masterSet
-          # "mymaster"). shlink must resolve the master via Sentinel,
-          # otherwise lock writes hit a read-only replica (READONLY).
-          # NOTE: the shlink-secret REDIS_SERVERS value must point at
-          # the Sentinel endpoint tcp://redis.redis.svc.cluster.local:26379
-          sentinelService: mymaster
+    # All shlink config is passed generically via env (chart is now
+    # fully generic; no bespoke .Values.shlink.*).
+    env:
+      - name: DEFAULT_DOMAIN
+        value: "1lf.link"
+      - name: IS_HTTPS_ENABLED
+        value: "true"
+      - name: TIMEZONE
+        value: "Europe/Helsinki"
+      - name: LOGS_FORMAT
+        value: "json"
+      - name: DB_DRIVER
+        value: "maria"
+      - name: DB_HOST
+        value: "maxscale-galera.mariadb-galera.svc.cluster.local"
+      - name: DB_NAME
+        value: "shlink"
+      - name: DB_USER
+        value: "shlink"
+      - name: DB_PORT
+        value: "3306"
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: shlink-secret
+            key: DB_PASSWORD
+      - name: GEOLITE_LICENSE_KEY
+        valueFrom:
+          secretKeyRef:
+            name: shlink-secret
+            key: GEOLITE_LICENSE_KEY
+      - name: REDIS_PUB_SUB_ENABLED
+        value: "true"
+      - name: REDIS_SERVERS
+        valueFrom:
+          secretKeyRef:
+            name: shlink-secret
+            key: REDIS_SERVERS
+      - name: REDIS_SENTINEL_SERVICE
+        value: "mymaster"

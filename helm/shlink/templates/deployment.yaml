@@ -13,9 +13,14 @@ spec:
       {{- include "shlink.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- if or .Values.podAnnotations (and .Values.secrets.enabled .Values.secrets.files) }}
       annotations:
+        {{- if and .Values.secrets.enabled .Values.secrets.files }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         {{- include "shlink.labels" . | nindent 8 }}
@@ -46,65 +51,35 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
+          {{- if or .Values.volumeMounts (and .Values.secrets.enabled .Values.secrets.files) }}
           volumeMounts:
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- if and .Values.secrets.enabled .Values.secrets.files }}
+            - name: secrets
+              mountPath: /secrets
+              readOnly: true
+            {{- end }}
+          {{- end }}
+          {{- with .Values.env }}
+          env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          env:
-            - name: DEFAULT_DOMAIN
-              value: {{ .Values.shlink.general.defaultDomain | quote }}
-            - name: IS_HTTPS_ENABLED
-              value: {{ .Values.shlink.general.httpsEnabled | quote }}
-            - name: GEOLITE_LICENSE_KEY
-              {{- if .Values.shlink.general.secretName }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.shlink.general.secretName | quote }}
-                  key: GEOLITE_LICENSE_KEY
-              {{- else }}
-              value: {{ .Values.shlink.general.goliteLicenseKey | quote }}
-              {{- end }}
-            - name: TIMEZONE
-              value: {{ .Values.shlink.general.timezone | quote }}
-            - name: DB_DRIVER
-              value: {{ .Values.shlink.database.driver | quote }}
-            - name: DB_HOST
-              value: {{ .Values.shlink.database.host | quote }}
-            - name: DB_NAME
-              value: {{ .Values.shlink.database.name | quote }}
-            - name: DB_USER
-              value: {{ .Values.shlink.database.user | quote }}
-            - name: LOGS_FORMAT
-              value: {{ .Values.shlink.logs.format | quote }}
-            - name: DB_PASSWORD
-              {{- if .Values.shlink.database.secretName }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.shlink.database.secretName | quote }}
-                  key: DB_PASSWORD
-              {{- else }}
-              value: {{ .Values.shlink.database.password | quote }}
-              {{- end }}
-            - name: DB_PORT
-              value: {{ .Values.shlink.database.port | quote }}
-            - name: REDIS_PUB_SUB_ENABLED
-              value: {{ .Values.shlink.realtime.redis.enabled | quote }}
-            - name: REDIS_SERVERS
-              {{- if .Values.shlink.realtime.redis.secretName }}
-              valueFrom:
-                  secretKeyRef:
-                    name: {{ .Values.shlink.realtime.redis.secretName | quote }}
-                    key: REDIS_SERVERS
-              {{- else }}
-              value: {{ .Values.shlink.realtime.redis.servers | quote }}
-              {{- end }}
-            {{- with .Values.shlink.realtime.redis.sentinelService }}
-            - name: REDIS_SENTINEL_SERVICE
-              value: {{ . | quote }}
-            {{- end }}
-      {{- with .Values.volumes }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- if or .Values.volumes (and .Values.secrets.enabled .Values.secrets.files) }}
       volumes:
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if and .Values.secrets.enabled .Values.secrets.files }}
+        - name: secrets
+          secret:
+            secretName: {{ include "shlink.fullname" . }}-secrets
+        {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
