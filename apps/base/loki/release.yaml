@@ -14,7 +14,13 @@ spec:
         namespace: flux-system
   install:
     remediation:
-      retries: 0
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  # Loki SingleBinary + chunk/result caches need more than the
+  # default 5m; the cutover upgrade timed out at ~5m12s.
+  timeout: 20m0s
   interval: 1m0s
   # Default values
   # https://github.com/grafana/helm-charts/blob/main/charts/loki-stack/values.yaml
