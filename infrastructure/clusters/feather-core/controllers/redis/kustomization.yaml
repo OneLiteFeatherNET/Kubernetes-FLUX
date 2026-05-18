@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../base/controllers/redis
+  - redis-master-proxy.yaml
 patches:
   - path: release.yaml
 

@@ -104,21 +104,18 @@ spec:
           secretKeyRef:
             name: shlink-secret
             key: GEOLITE_LICENSE_KEY
+      # Plain Redis via the HAProxy redis-master-proxy (always routes
+      # to the current Sentinel master). NOT sentinel mode -> no
+      # REDIS_SENTINEL_SERVICE; the password must be embedded in the
+      # REDIS_SERVERS URI (shlink ignores REDIS_SERVERS_PASSWORD when
+      # no sentinel service is set). shlink-secret.REDIS_SERVERS must be
+      # tcp://:<redis-password>@redis-master-proxy.redis.svc.cluster.local:6379
       - name: REDIS_PUB_SUB_ENABLED
         value: "true"
-      - name: REDIS_SERVERS_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: shlink-secret
-            key: REDIS_SERVERS_PASSWORD
       - name: REDIS_SERVERS
         valueFrom:
           secretKeyRef:
             name: shlink-secret
             key: REDIS_SERVERS
-      - name: REDIS_SENTINEL_SERVICE
-        value: "mymaster"
-      - name: REDIS_PUB_SUB_ENABLED
-        value: "true"
       - name: SKIP_INITIAL_GEOLITE_DOWNLOAD
         value: "true"
