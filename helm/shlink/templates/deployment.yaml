@@ -98,6 +98,10 @@ spec:
               {{- else }}
               value: {{ .Values.shlink.realtime.redis.servers | quote }}
               {{- end }}
+            {{- with .Values.shlink.realtime.redis.sentinelService }}
+            - name: REDIS_SENTINEL_SERVICE
+              value: {{ . | quote }}
+            {{- end }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

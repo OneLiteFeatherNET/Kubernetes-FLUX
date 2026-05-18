@@ -92,3 +92,9 @@ spec:
           # REDIS_SERVERS as KEY
           secretName: 'shlink-secret'
           enabled: true
+          # Redis is Bitnami replication + Sentinel (masterSet
+          # "mymaster"). shlink must resolve the master via Sentinel,
+          # otherwise lock writes hit a read-only replica (READONLY).
+          # NOTE: the shlink-secret REDIS_SERVERS value must point at
+          # the Sentinel endpoint tcp://redis.redis.svc.cluster.local:26379
+          sentinelService: mymaster
