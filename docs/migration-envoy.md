@@ -50,7 +50,7 @@ Test-IP. Rollback erfolgt per `git revert` des Change-Sets.
 | outline | repo `helm/outline` | nein | httproute-Template ergänzen + Values |
 | shlink | repo `helm/shlink` | nein | httproute-Template ergänzen + Values |
 | otis | repo `helm/micronaut` | nein | httproute-Template ergänzen + Values |
-| bluemap | themeinerlp `=1.0.5` | zu prüfen | vsl. Standalone-HTTPRoute; TLS `cf-origin-tls` (kein cert-manager) |
+| bluemap | themeinerlp `=1.0.5` | nein (nur ingress) | Standalone-HTTPRoute; TLS `cf-origin-tls` (kein cert-manager) |
 | s3-proxy | reines Manifest | – | Ingress → HTTPRoute + SecurityPolicy + ClientTrafficPolicy |
 
 ## Host → Domain → Issuer (Live-Stand, maßgeblich)
@@ -158,12 +158,13 @@ gemeinsam mit Phase 1–3 reconcilen (ein zusammenhängender Merge).
 | `infrastructure/clusters/feather-core/base-sources/nginx.yml` | löschen (+ aus base-sources kustomization entfernen) |
 | grafana `release.yaml` | Dashboard `controllers.ingress-nginx` (gnetId 9614) durch Envoy-Gateway-Dashboard ersetzen |
 
-## Offene Klärung
+## Geklärt
 
-- **bluemap**: `themeinerlp`-Chart `=1.0.5` auf nativen httpRoute-Support prüfen;
-  `cf-origin-tls`-Secret muss dem Gateway-Listener verfügbar gemacht werden
-  (ReferenceGrant aus NS `bluemap` oder Secret-Kopie nach NS `envoy`).
-- **1lf.link**: Domain in Cloudflare verwaltet? (DNS01-Voraussetzung für eigenes Cert).
+- **1lf.link**: in Cloudflare verwaltet (Link-Shortener, läuft in k8s) → eigenes
+  `Certificate` via `letsencrypt-prod-dns` (DNS01) machbar.
+- **bluemap**: `themeinerlp`-Chart `=1.0.5` hat kein httpRoute (nur ingress) →
+  Standalone-HTTPRoute-Manifest. `cf-origin-tls`-Secret bleibt; wird dem
+  Gateway-Listener via ReferenceGrant (NS `bluemap` → `envoy`) verfügbar gemacht.
 
 ## Risiken
 
