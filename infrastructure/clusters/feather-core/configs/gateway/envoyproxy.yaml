@@ -7,8 +7,13 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
+      # Run the Envoy data plane as a DaemonSet (one pod per node) -
+      # parity with the replaced ingress-nginx DaemonSet. With
+      # externalTrafficPolicy: Local + MetalLB BGP this makes every
+      # node announce 10.200.90.1, so the external reverse-proxy path
+      # reaches the gateway on any node (and client source IP is kept).
+      envoyDaemonSet: {}
       envoyService:
-        # Drop-in: take over the ingress-nginx LoadBalancer IP + BGP label
         externalTrafficPolicy: Local
         annotations:
           metallb.io/loadBalancerIPs: "10.200.90.1"
