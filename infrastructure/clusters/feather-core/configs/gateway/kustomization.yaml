@@ -3,7 +3,11 @@ kind: Kustomization
 resources:
   - gateway-class.yaml
   - certificates.yaml
-  - internal-certificates.yaml
+  # internal-certificates.yaml is intentionally NOT applied here: the
+  # configs Kustomization has wait:true, so failing step-ca HTTP01
+  # certs would block configs -> base-apps -> apps (whole cutover).
+  # Internal-host certs are handled by a separate non-blocking
+  # Kustomization once the ACME-over-Gateway path is fixed.
   - envoyproxy.yaml
   - gateway.yaml
   - redirect-route.yaml
