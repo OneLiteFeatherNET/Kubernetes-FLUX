@@ -3,11 +3,10 @@ kind: Kustomization
 resources:
   - gateway-class.yaml
   - certificates.yaml
-  # internal-certificates.yaml is intentionally NOT applied here: the
-  # configs Kustomization has wait:true, so failing step-ca HTTP01
-  # certs would block configs -> base-apps -> apps (whole cutover).
-  # Internal-host certs are handled by a separate non-blocking
-  # Kustomization once the ACME-over-Gateway path is fixed.
+  # Internal-host (*.apps.onelite.feather) step-ca certs are managed
+  # by the separate wait:false `internal-certs` Kustomization
+  # (clusters/feather-core/internal-certs.yaml) so async step-ca
+  # issuance never blocks the configs Kustomization (wait:true).
   - envoyproxy.yaml
   - gateway.yaml
   - redirect-route.yaml
