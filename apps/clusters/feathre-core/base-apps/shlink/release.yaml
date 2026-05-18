@@ -92,6 +92,8 @@ spec:
         value: "shlink"
       - name: DB_PORT
         value: "3306"
+      - name: SHELL_VERBOSITY
+        value: "3"
       - name: DB_PASSWORD
         valueFrom:
           secretKeyRef:
