@@ -26,6 +26,8 @@ Test-IP. Rollback erfolgt per `git revert` des Change-Sets.
 | Routing | Gateway API (`Gateway` + `HTTPRoute`), kein `kind: Ingress` mehr |
 | Zentrales Gateway | `eg` im Namespace `envoy`, `allowedRoutes.namespaces.from: All` |
 | TLS öffentliche Domains | Wildcard-`Certificate` via `letsencrypt-prod-dns` (Cloudflare DNS01): `*.onelitefeather.dev`, `*.onelitefeather.net`, `*.s3.onelitefeather.net` |
+| TLS Apex `1lf.link` | eigenes `Certificate` (Apex, kein Wildcard-Match) via `letsencrypt-prod-dns` |
+| TLS `bluemap` | **kein cert-manager** — bestehendes Secret `cf-origin-tls` (Cloudflare Origin CA) bleibt; Gateway-Listener referenziert es (ggf. ReferenceGrant nach NS `envoy`) |
 | TLS interne Domains | `*.apps.onelite.feather` via `step-ca` ACME, Solver = `gatewayHTTPRoute`; cert-manager Feature-Gate `ExperimentalGatewayAPISupport=true` |
 | cert-manager ↔ Gateway | explizite `Certificate`-Ressourcen im `envoy`-NS (kein ingress-shim) |
 | MetalLB | Envoy direkt auf `10.200.90.1`; ingress-nginx im selben Change-Set entfernt (harter Cutover) |
@@ -48,7 +50,27 @@ Test-IP. Rollback erfolgt per `git revert` des Change-Sets.
 | outline | repo `helm/outline` | nein | httproute-Template ergänzen + Values |
 | shlink | repo `helm/shlink` | nein | httproute-Template ergänzen + Values |
 | otis | repo `helm/micronaut` | nein | httproute-Template ergänzen + Values |
+| bluemap | themeinerlp `=1.0.5` | zu prüfen | vsl. Standalone-HTTPRoute; TLS `cf-origin-tls` (kein cert-manager) |
 | s3-proxy | reines Manifest | – | Ingress → HTTPRoute + SecurityPolicy + ClientTrafficPolicy |
+
+## Host → Domain → Issuer (Live-Stand, maßgeblich)
+
+| App | Host(s) | TLS-Quelle |
+|---|---|---|
+| grafana | grafana.apps.onelite.feather | step-ca (intern, HTTP01-via-Gateway) |
+| loki | loki.apps.onelite.feather | step-ca |
+| mimir | mimir.apps.onelite.feather | step-ca |
+| node-red | node-red.apps.onelite.feather | step-ca |
+| otis | otis.apps.onelite.feather | step-ca |
+| bluemap | bluemap.onelitefeather.dev | `cf-origin-tls` (Cloudflare Origin, bestehend) |
+| dependency-track | dependency-track.onelitefeather.dev | Wildcard `*.onelitefeather.dev` (DNS01) |
+| harbor | harbor.onelitefeather.dev | Wildcard `*.onelitefeather.dev` |
+| outline | outline.onelitefeather.dev | Wildcard `*.onelitefeather.dev` |
+| reposilite | repo.onelitefeather.dev | Wildcard `*.onelitefeather.dev` |
+| shlink | shlink.onelitefeather.dev, **1lf.link** | Wildcard `*.onelitefeather.dev` + eigenes Cert `1lf.link` |
+| leantime | leantime.onelitefeather.net | Wildcard `*.onelitefeather.net` (DNS01) |
+| uptime-kuma | status.onelitefeather.net | Wildcard `*.onelitefeather.net` |
+| s3-proxy | s3.onelitefeather.net, *.s3.onelitefeather.net | Wildcard `*.s3.onelitefeather.net` + `s3.onelitefeather.net` |
 
 ## Phase 1 — Fundament (Gateway, CRDs, MetalLB, TLS-Listener)
 
@@ -83,7 +105,7 @@ Reihenfolge: 3a unkritisch → 3b größere Uploads → 3c kritisch.
 |---|---|
 | grafana | `ingress.enabled: false`; `httpRoute.enabled: true`, parentRef Gateway `eg`/`envoy`, host `grafana.apps.onelite.feather` |
 | loki | `gateway.ingress.enabled: false`; `gateway.httpRoute.enabled: true`, host `loki.apps.onelite.feather` |
-| mimir | `*.ingress.enabled: false`; `gateway.httpRoute.enabled: true`, host `mimir-gateway.apps.onelite.feather` |
+| mimir | `*.ingress.enabled: false`; `gateway.httpRoute.enabled: true`, host `mimir.apps.onelite.feather` |
 | harbor | `expose.type: ingress` → `route`; `expose.route` host `harbor.onelitefeather.dev`; `externalURL` unverändert |
 | dependency-track | `ingress.enabled: false`; `httpRoute.enabled: true` |
 
@@ -96,9 +118,12 @@ in `helm/leantime`, `helm/outline`, `helm/shlink`, `helm/micronaut`; jeweils
 
 ### Standalone-HTTPRoute-Manifest
 
-node-red, reposilite, uptime-kuma: `ingress.enabled: false` in Values; neue
-`httproute.yaml` neben `release.yaml`, in App-`kustomization.yaml` aufnehmen.
-uptime-kuma server-snippet: Inhalt prüfen, Gateway-Äquivalent oder Verzicht.
+node-red, reposilite, uptime-kuma, bluemap: `ingress.enabled: false` in Values;
+neue `httproute.yaml` neben `release.yaml`, in App-`kustomization.yaml` aufnehmen.
+- node-red: Host `node-red.apps.onelite.feather` (intern, step-ca)
+- reposilite: Host `repo.onelitefeather.dev`
+- uptime-kuma: Host `status.onelitefeather.net`; server-snippet-Inhalt prüfen, Gateway-Äquivalent oder Verzicht
+- bluemap: Host `bluemap.onelitefeather.dev`; TLS bleibt `cf-origin-tls` (kein cert-manager); Chart-Version `themeinerlp =1.0.5` — httproute-Support noch zu prüfen, sonst Standalone
 
 ### Policies (Ersatz für nginx-Annotationen)
 
@@ -132,6 +157,13 @@ gemeinsam mit Phase 1–3 reconcilen (ein zusammenhängender Merge).
 | `infrastructure/base/controllers/ingress-nginx/` | Verzeichnis löschen |
 | `infrastructure/clusters/feather-core/base-sources/nginx.yml` | löschen (+ aus base-sources kustomization entfernen) |
 | grafana `release.yaml` | Dashboard `controllers.ingress-nginx` (gnetId 9614) durch Envoy-Gateway-Dashboard ersetzen |
+
+## Offene Klärung
+
+- **bluemap**: `themeinerlp`-Chart `=1.0.5` auf nativen httpRoute-Support prüfen;
+  `cf-origin-tls`-Secret muss dem Gateway-Listener verfügbar gemacht werden
+  (ReferenceGrant aus NS `bluemap` oder Secret-Kopie nach NS `envoy`).
+- **1lf.link**: Domain in Cloudflare verwaltet? (DNS01-Voraussetzung für eigenes Cert).
 
 ## Risiken
 
