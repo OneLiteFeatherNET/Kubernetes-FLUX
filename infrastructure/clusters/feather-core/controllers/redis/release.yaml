@@ -153,8 +153,9 @@ spec:
       ##
       enabled: true
       ## @param auth.sentinel Enable authentication on sentinels too
-      ##
-      sentinel: true
+      ## Disabled: Predis (shlink) cannot authenticate to Sentinel, so
+      ## master discovery failed. Data-node AUTH (auth.enabled) stays on.
+      sentinel: false
       ## @param auth.password Redis&reg; password
       ## Defaults to a random 10-character alphanumeric string if not set
       ##
