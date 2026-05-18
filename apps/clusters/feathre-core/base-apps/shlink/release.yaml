@@ -21,28 +21,21 @@ spec:
       tag: "5.0.2"
     replicaCount: 3
     ingress:
+      enabled: false
+    httpRoute:
       enabled: true
-      className: "nginx"
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        nginx.ingress.kubernetes.io/limit-rps: "5"
-        nginx.ingress.kubernetes.io/limit-connections: "4"
-      hosts:
-        - host: shlink.onelitefeather.dev
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-        - host: 1lf.link
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-      tls:
-        - secretName: shlink-onelitefeather-dev-tls
-          hosts:
-            - shlink.onelitefeather.dev
-        - secretName: 1lf-link-tls
-          hosts:
-            - 1lf.link
+      parentRefs:
+        - name: eg
+          namespace: envoy
+          sectionName: https
+      hostnames:
+        - shlink.onelitefeather.dev
+        - 1lf.link
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
     livenessProbe:
       httpGet:
         path: /rest/health
