@@ -42,17 +42,17 @@ spec:
       secretKey:
         createSecret: true
     ingress:
+      enabled: false
+    httpRoute:
       enabled: true
-      ingressClassName: "nginx"
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        ingress.kubernetes.io/proxy-body-size: "5G"
-        nginx.ingress.kubernetes.io/proxy-body-size: "5G"
-      hostname: dependency-track.onelitefeather.dev
-      tls:
-        - secretName: dependency-track-onelitefeather-dev-tls
-          hosts:
-            - dependency-track.onelitefeather.dev
+      hostnames:
+        - dependency-track.onelitefeather.dev
+      parentRefs:
+        - name: eg
+          namespace: envoy
+          sectionName: https
+          group: gateway.networking.k8s.io
+          kind: Gateway
     apiServer:
       serviceMonitor:
         enabled: true
