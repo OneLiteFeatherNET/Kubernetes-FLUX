@@ -21,12 +21,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          # Only secrets that actually exist may be listed: a missing
-          # certificateRef makes the whole HTTPS listener
-          # ResolvedRefs=False (PartiallyInvalidCertificateRef) and
-          # breaks TLS for ALL hosts (incl. s3/public). The internal
-          # *.apps.onelite.feather step-ca secrets are added back here
-          # once they are actually issued.
+          # Public domains (cert-manager DNS01 wildcards, always present)
           - kind: Secret
             name: wildcard-onelitefeather-dev-tls
           - kind: Secret
@@ -35,3 +30,18 @@ spec:
             name: s3-onelitefeather-net-tls
           - kind: Secret
             name: 1lf-link-tls
+          # Internal *.apps.onelite.feather (step-ca, issued async by
+          # the wait:false internal-certs Kustomization via
+          # HTTP01-over-Gateway). Until issued, Envoy reports
+          # PartiallyInvalidCertificateRef but still serves the valid
+          # public certs - only these internal hosts lack TLS briefly.
+          - kind: Secret
+            name: grafana-apps-onelite-feather-tls
+          - kind: Secret
+            name: loki-apps-onelite-feather-tls
+          - kind: Secret
+            name: mimir-apps-onelite-feather-tls
+          - kind: Secret
+            name: node-red-apps-onelite-feather-tls
+          - kind: Secret
+            name: otis-apps-onelite-feather-tls

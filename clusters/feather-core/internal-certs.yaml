@@ -1,0 +1,23 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: internal-certs
+  namespace: flux-system
+spec:
+  dependsOn:
+    # Needs the Gateway live: step-ca HTTP01 is solved over the
+    # Gateway (gatewayHTTPRoute solver).
+    - name: configs
+  interval: 1m0s
+  retryInterval: 30s
+  timeout: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/clusters/feather-core/internal-certs
+  prune: true
+  # wait:false on purpose: internal *.apps.onelite.feather step-ca
+  # certs issue asynchronously via HTTP01-over-Gateway. Health-gating
+  # here must NOT block anything - a slow/failed internal cert only
+  # delays TLS for those internal-only hosts.
+  wait: false
