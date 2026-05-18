@@ -21,7 +21,12 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          # Public domains - cert-manager DNS01 wildcards (prestaged)
+          # Only secrets that actually exist may be listed: a missing
+          # certificateRef makes the whole HTTPS listener
+          # ResolvedRefs=False (PartiallyInvalidCertificateRef) and
+          # breaks TLS for ALL hosts (incl. s3/public). The internal
+          # *.apps.onelite.feather step-ca secrets are added back here
+          # once they are actually issued.
           - kind: Secret
             name: wildcard-onelitefeather-dev-tls
           - kind: Secret
@@ -30,14 +35,3 @@ spec:
             name: s3-onelitefeather-net-tls
           - kind: Secret
             name: 1lf-link-tls
-          # Internal hosts - step-ca via HTTP01-over-Gateway (issued at cutover)
-          - kind: Secret
-            name: grafana-apps-onelite-feather-tls
-          - kind: Secret
-            name: loki-apps-onelite-feather-tls
-          - kind: Secret
-            name: mimir-apps-onelite-feather-tls
-          - kind: Secret
-            name: node-red-apps-onelite-feather-tls
-          - kind: Secret
-            name: otis-apps-onelite-feather-tls
