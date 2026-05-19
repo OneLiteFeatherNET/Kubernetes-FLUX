@@ -9,4 +9,3 @@ resources:
   - ../../../../infrastructure/base/controllers/spegel
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
   - ../../../../infrastructure/base/controllers/envoy-crds
-  - ../../../../infrastructure/base/controllers/step-issuer

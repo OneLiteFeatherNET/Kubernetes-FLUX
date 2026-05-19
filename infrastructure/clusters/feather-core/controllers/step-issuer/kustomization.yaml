@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: step-issuer
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../base/controllers/step-issuer
+secretGenerator:
+  # Consumed by the StepClusterIssuer (passwordRef -> this secret in
+  # the step-issuer namespace). sops-decrypted by the `controllers`
+  # Flux Kustomization.
+  - name: step-issuer-provisioner-password
+    envs:
+      - step-issuer.sops.env
