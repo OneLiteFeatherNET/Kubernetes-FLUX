@@ -6,8 +6,9 @@ metadata:
 spec:
   secretName: grafana-apps-onelite-feather-tls
   issuerRef:
-    name: step-ca
-    kind: ClusterIssuer
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
   privateKey:
     algorithm: RSA
     size: 2048
@@ -23,8 +24,9 @@ metadata:
 spec:
   secretName: loki-apps-onelite-feather-tls
   issuerRef:
-    name: step-ca
-    kind: ClusterIssuer
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
   privateKey:
     algorithm: RSA
     size: 2048
@@ -40,8 +42,9 @@ metadata:
 spec:
   secretName: mimir-apps-onelite-feather-tls
   issuerRef:
-    name: step-ca
-    kind: ClusterIssuer
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
   privateKey:
     algorithm: RSA
     size: 2048
@@ -57,8 +60,9 @@ metadata:
 spec:
   secretName: node-red-apps-onelite-feather-tls
   issuerRef:
-    name: step-ca
-    kind: ClusterIssuer
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
   privateKey:
     algorithm: RSA
     size: 2048
@@ -74,8 +78,9 @@ metadata:
 spec:
   secretName: otis-apps-onelite-feather-tls
   issuerRef:
-    name: step-ca
-    kind: ClusterIssuer
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
   privateKey:
     algorithm: RSA
     size: 2048
