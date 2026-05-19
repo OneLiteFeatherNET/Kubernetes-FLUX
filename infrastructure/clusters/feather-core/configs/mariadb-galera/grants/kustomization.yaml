@@ -16,3 +16,4 @@ resources:
   - stardust.yaml
   - playerkits.yaml
   - monitoring.yaml
+  - semaphore.yaml

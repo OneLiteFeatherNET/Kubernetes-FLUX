@@ -42,3 +42,6 @@ secretGenerator:
   - name: user-monitoring-secret
     envs:
       - monitoring.sops.env
+  - name: user-semaphore-secret
+    envs:
+      - semaphore.sops.env

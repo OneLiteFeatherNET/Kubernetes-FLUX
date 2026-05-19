@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: semaphore
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/semaphore/
+  - httproute.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: semaphore-secrets
+    type: Opaque
+    envs:
+      - semaphore.sops.env
