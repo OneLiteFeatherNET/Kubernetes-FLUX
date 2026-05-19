@@ -1,28 +1,13 @@
-# Issues internal *.apps.onelite.feather certs directly from step-ca
-# via its JWK provisioner API - NO ACME, NO HTTP01, NO Gateway.
-#
-# ADMIN / step-ca side (cannot be derived here):
-#   1. Get the JWK provisioner name + kid:
-#        step ca provisioner list | jq -r '.[] | select(.type=="JWK") | "\(.name) \(.key.kid)"'
-#      Put them into spec.provisioner.name / spec.provisioner.kid below.
-#   2. Create the provisioner password secret via sops (NOT in chat):
-#        kubectl create secret generic step-issuer-provisioner-password \
-#          -n step-issuer --from-literal=password='<provisioner-password>'
-#      (or the sops-managed equivalent in the repo).
-# Until 1+2 are done the StepClusterIssuer stays NotReady; this is a
-# wait:false Kustomization so nothing else is blocked.
 apiVersion: certmanager.step.sm/v1beta1
 kind: StepClusterIssuer
 metadata:
   name: step-ca-issuer
 spec:
   url: https://step-ca-step-certificates.step-ca.svc.cluster.local
-  # step-ca root CA (same value as the former ACME ClusterIssuer)
   caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJ3akNDQVdtZ0F3SUJBZ0lRWXhJamVLc1BhUHdWR01mVUgrK0ZsREFLQmdncWhrak9QUVFEQWpCQU1Sb3cKR0FZRFZRUUtFeEZQYm1WTWFYUmxSbVZoZEdobGNpQkRRVEVpTUNBR0ExVUVBeE1aVDI1bFRHbDBaVVpsWVhSbwpaWElnUTBFZ1VtOXZkQ0JEUVRBZUZ3MHlOVEF6TVRVeU1ESXlNVFphRncwek5UQXpNVE15TURJeU1UWmFNRUF4CkdqQVlCZ05WQkFvVEVVOXVaVXhwZEdWR1pXRjBhR1Z5SUVOQk1TSXdJQVlEVlFRREV4bFBibVZNYVhSbFJtVmgKZEdobGNpQkRRU0JTYjI5MElFTkJNRmt3RXdZSEtvWkl6ajBDQVFZSUtvWkl6ajBEQVFjRFFnQUVtb3VUeXlPcgprQkdxc2NwcnpXeHBDTmxpalRxTjlxNGFzVVBMQkpzdWVGdjhtTmpPVXJaMStnTWJNODY5TUN4S3p2aEZXelFoCndEUys3d3FVdG9jRkRxTkZNRU13RGdZRFZSMFBBUUgvQkFRREFnRUdNQklHQTFVZEV3RUIvd1FJTUFZQkFmOEMKQVFFd0hRWURWUjBPQkJZRUZHZzVnOEpqQUZqcEhjTkRWNEVYdkNmMWovK3RNQW9HQ0NxR1NNNDlCQU1DQTBjQQpNRVFDSUNtbTFPYXRUWDVlcFQzK3BrTnQvR0xNdDBzQXdUVElkSVZFMmFnRG5vcjRBaUFWTXpGam5jcVdGMmxECjJoajhGQUk3VzFYNzhGMTRPQ2dGaXJLZC9HZzhOdz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
   provisioner:
-    # REPLACE with the step-ca JWK provisioner name + kid (see header)
-    name: REPLACE_WITH_STEP_CA_JWK_PROVISIONER_NAME
-    kid: REPLACE_WITH_STEP_CA_JWK_KID
+    name: admin@onelitefeather.net
+    kid: OiMo753Qm59HojYUS-ba3w7OdmYnsDsfClv7PR3dh_A
     passwordRef:
       name: step-issuer-provisioner-password
       namespace: step-issuer
