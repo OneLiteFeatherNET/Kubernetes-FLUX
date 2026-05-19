@@ -5,8 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    # Needs cert-manager + step-issuer (StepClusterIssuer CRD/controller)
-    - name: base-controllers
+    # step-issuer (StepClusterIssuer CRD/controller) is applied by the
+    # `controllers` Kustomization; it in turn dependsOn base-controllers
+    # (cert-manager), so ordering is cert-manager -> step-issuer -> here.
+    - name: controllers
   interval: 1m0s
   retryInterval: 30s
   timeout: 10m0s
