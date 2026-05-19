@@ -5,9 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    # Needs the Gateway live: step-ca HTTP01 is solved over the
-    # Gateway (gatewayHTTPRoute solver).
-    - name: configs
+    # Needs cert-manager + step-issuer (StepClusterIssuer CRD/controller)
+    - name: base-controllers
   interval: 1m0s
   retryInterval: 30s
   timeout: 10m0s
@@ -16,8 +15,8 @@ spec:
     name: flux-system
   path: ./infrastructure/clusters/feather-core/internal-certs
   prune: true
-  # wait:false on purpose: internal *.apps.onelite.feather step-ca
-  # certs issue asynchronously via HTTP01-over-Gateway. Health-gating
-  # here must NOT block anything - a slow/failed internal cert only
-  # delays TLS for those internal-only hosts.
+  # wait:false: internal *.apps.onelite.feather certs issue directly
+  # via step-issuer/step-ca. Health-gating here must NOT block
+  # anything - a not-yet-configured StepClusterIssuer only delays TLS
+  # for those internal-only hosts.
   wait: false

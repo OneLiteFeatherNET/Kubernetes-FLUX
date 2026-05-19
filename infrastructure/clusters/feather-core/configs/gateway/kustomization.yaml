@@ -3,10 +3,11 @@ kind: Kustomization
 resources:
   - gateway-class.yaml
   - certificates.yaml
-  # Internal-host (*.apps.onelite.feather) step-ca certs are managed
-  # by the separate wait:false `internal-certs` Kustomization
-  # (clusters/feather-core/internal-certs.yaml) so async step-ca
-  # issuance never blocks the configs Kustomization (wait:true).
+  # Internal *.apps.onelite.feather certs are issued via
+  # step-issuer/step-ca (StepClusterIssuer) by the separate
+  # wait:false `internal-certs` Kustomization
+  # (clusters/feather-core/internal-certs.yaml) - not here, so it
+  # never blocks the configs Kustomization (wait:true).
   - envoyproxy.yaml
   - gateway.yaml
   - redirect-route.yaml

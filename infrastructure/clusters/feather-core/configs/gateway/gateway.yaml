@@ -30,11 +30,11 @@ spec:
             name: s3-onelitefeather-net-tls
           - kind: Secret
             name: 1lf-link-tls
-          # Internal *.apps.onelite.feather (step-ca, issued async by
-          # the wait:false internal-certs Kustomization via
-          # HTTP01-over-Gateway). Until issued, Envoy reports
-          # PartiallyInvalidCertificateRef but still serves the valid
-          # public certs - only these internal hosts lack TLS briefly.
+          # Internal *.apps.onelite.feather - issued directly by
+          # step-issuer/step-ca (StepClusterIssuer) via the wait:false
+          # internal-certs Kustomization. Until issued, Envoy reports
+          # PartiallyInvalidCertificateRef but keeps serving the valid
+          # public certs; only these internal hosts lack TLS briefly.
           - kind: Secret
             name: grafana-apps-onelite-feather-tls
           - kind: Secret
