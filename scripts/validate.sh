@@ -29,8 +29,10 @@ SCHEMA_LOCATIONS=(
   -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
 )
 
+# -strict intentionally omitted: community CRD schemas (datreeio catalog)
+# lag upstream and frequently flag valid fields (e.g. CNPG
+# spec.affinity.topologySpreadConstraints) as additionalProperties.
 KUBECONFORM_COMMON=(
-  -strict
   -ignore-missing-schemas
   -kubernetes-version "${KUBERNETES_VERSION}"
   -skip Secret
