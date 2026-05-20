@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: semaphore
+  namespace: semaphore
+spec:
+  chart:
+    spec:
+      version: "*"
+  values:
+    replicaCount: 1
+    ingress:
+      enabled: false
+    service:
+      type: ClusterIP
+      port: 3000
+    # PVC holds the inventory workdir, SSH keys and tmp playbooks.
+    # The application state lives in the external MariaDB Galera cluster.
+    persistence:
+      enabled: true
+      storageClass: proxmox-csi
+      size: 2Gi
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    # Non-secret configuration. Semaphore reads native SEMAPHORE_* env vars.
+    # NOTE: confirm the chart's env keys with
+    #   helm show values semaphoreui/semaphore
+    # (extraEnv / extraEnvFrom is the documented injection point).
+    extraEnv:
+      - name: SEMAPHORE_DB_DIALECT
+        value: "mysql"
+      - name: SEMAPHORE_DB_HOST
+        value: "maxscale-galera.mariadb-galera.svc.cluster.local"
+      - name: SEMAPHORE_DB_PORT
+        value: "3306"
+      - name: SEMAPHORE_DB
+        value: "semaphore"
+      - name: SEMAPHORE_DB_USER
+        value: "semaphore"
+      - name: SEMAPHORE_ADMIN
+        value: "admin"
+      - name: SEMAPHORE_ADMIN_NAME
+        value: "Admin"
+      - name: SEMAPHORE_ADMIN_EMAIL
+        value: "admin@onelitefeather.net"
+      - name: SEMAPHORE_PLAYBOOK_PATH
+        value: "/tmp/semaphore/"
+      - name: TZ
+        value: "Europe/Berlin"
+    # Secret values: DB password, admin password, access key encryption.
+    extraEnvFrom:
+      - secretRef:
+          name: semaphore-secrets

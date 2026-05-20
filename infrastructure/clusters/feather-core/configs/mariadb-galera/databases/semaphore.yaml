@@ -1,0 +1,12 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Database
+metadata:
+  name: semaphore
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  characterSet: utf8mb4
+  collate: utf8mb4_general_ci
+  cleanupPolicy: Delete
+  requeueInterval: 10h
+  retryInterval: 30s

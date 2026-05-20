@@ -11,6 +11,7 @@ resources:
   - uptime-kuma
   - leantime
   - grafana
+  - semaphore
   # loki + mimir (later tempo) are managed by the dedicated
   # wait:false monitoring Kustomization
   # (clusters/feather-core/monitoring.yaml) so their external
