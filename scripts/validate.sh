@@ -22,22 +22,17 @@ kustomize version
 kubeconform -v
 echo "::endgroup::"
 
-# Schema locations: upstream Kubernetes + the community CRD catalog so that
-# Flux, cert-manager, Envoy Gateway, step-issuer, CNPG, etc. resolve.
-SCHEMA_LOCATIONS=(
-  -schema-location default
-  -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
-)
-
-# -strict intentionally omitted: community CRD schemas (datreeio catalog)
-# lag upstream and frequently flag valid fields (e.g. CNPG
-# spec.affinity.topologySpreadConstraints) as additionalProperties.
+# Only the upstream Kubernetes schemas. Community CRD catalogs (datreeio)
+# lag upstream and bake additionalProperties:false into every schema, so
+# valid CRD fields like CNPG spec.affinity.topologySpreadConstraints fail
+# regardless of -strict. -ignore-missing-schemas means CRDs are skipped
+# rather than rejected; core resources are still strictly validated.
 KUBECONFORM_COMMON=(
   -ignore-missing-schemas
   -kubernetes-version "${KUBERNETES_VERSION}"
   -skip Secret
   -summary
-  "${SCHEMA_LOCATIONS[@]}"
+  -schema-location default
 )
 
 rc=0
@@ -74,14 +69,72 @@ print("\n".join(seen))
 PY
 )
 
+# Mirror the repo into a tmp dir and strip sops-encrypted patch
+# references from every kustomization.yaml. Flux decrypts these at apply
+# time via the cluster's sops-gpg key; CI has no key and the encrypted
+# YAML is not parseable by kustomize. Stripping the patch entry lets us
+# still validate the rest of the overlay (siblings, base resources).
+# Encrypted secretGenerator inputs (*.sops.env) are fine: kustomize
+# reads them as opaque bytes and the resulting Secrets are skipped by
+# kubeconform anyway.
+SANITIZED="$(mktemp -d)"
+trap 'rm -rf "${BIN_DIR}" "${SANITIZED}"' EXIT
+cp -a . "${SANITIZED}/repo"
+SANITIZED_REPO="${SANITIZED}/repo"
+
+python3 - "${SANITIZED_REPO}" <<'PY'
+import os, sys, yaml
+root = sys.argv[1]
+stripped = 0
+for dirpath, _dirs, files in os.walk(root):
+    if "kustomization.yaml" not in files and "kustomization.yml" not in files:
+        continue
+    name = "kustomization.yaml" if "kustomization.yaml" in files else "kustomization.yml"
+    full = os.path.join(dirpath, name)
+    with open(full) as fh:
+        doc = yaml.safe_load(fh)
+    if not isinstance(doc, dict):
+        continue
+    changed = False
+
+    def is_sops(p):
+        return isinstance(p, str) and (p.endswith(".sops.yaml") or p.endswith(".sops.yml"))
+
+    patches = doc.get("patches")
+    if isinstance(patches, list):
+        kept = [e for e in patches if not (isinstance(e, dict) and is_sops(e.get("path")))]
+        if len(kept) != len(patches):
+            doc["patches"] = kept
+            changed = True
+    legacy = doc.get("patchesStrategicMerge")
+    if isinstance(legacy, list):
+        kept = [p for p in legacy if not is_sops(p)]
+        if len(kept) != len(legacy):
+            doc["patchesStrategicMerge"] = kept
+            changed = True
+    resources = doc.get("resources")
+    if isinstance(resources, list):
+        kept = [r for r in resources if not is_sops(r)]
+        if len(kept) != len(resources):
+            doc["resources"] = kept
+            changed = True
+
+    if changed:
+        with open(full, "w") as fh:
+            yaml.safe_dump(doc, fh, sort_keys=False)
+        stripped += 1
+        print(f"sanitized {os.path.relpath(full, root)}", file=sys.stderr)
+print(f"stripped sops patches from {stripped} kustomization.yaml file(s)", file=sys.stderr)
+PY
+
 for p in "${PATHS[@]}"; do
-  dir="${p#./}"
+  dir="${SANITIZED_REPO}/${p#./}"
   if [[ ! -d "${dir}" ]]; then
     echo "::error::Flux path not found: ${p}"
     rc=1
     continue
   fi
-  echo "::group::kustomize build ${dir}"
+  echo "::group::kustomize build ${p}"
   if ! kustomize build --load-restrictor=LoadRestrictionsNone "${dir}" \
     | kubeconform "${KUBECONFORM_COMMON[@]}"; then
     rc=1
