@@ -1,0 +1,32 @@
+name: flux-validate
+
+# Render every Flux Kustomization with kustomize and schema-check the
+# output with kubeconform so broken manifests never reach the cluster.
+on:
+  pull_request:
+    paths:
+      - 'clusters/**'
+      - 'infrastructure/**'
+      - 'apps/**'
+      - 'helm/**'
+      - 'scripts/validate.sh'
+      - '.github/workflows/flux-validate.yaml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: kustomize build + kubeconform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+      - name: Validate Flux manifests
+        run: ./scripts/validate.sh

@@ -1,14 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-metadata:
-  name: internal-certs
-  namespace: envoy
+# No namespace transformer on purpose: StepClusterIssuer is
+# cluster-scoped and the Certificates carry an explicit
+# namespace: envoy. The provisioner-password Secret lives with the
+# step-issuer controller overlay (namespace step-issuer).
 resources:
   - stepclusterissuer.yaml
   - internal-certificates.yaml
-generatorOptions:
-  disableNameSuffixHash: true
-secretGenerator:
-  - name: step-issuer-provisioner-password
-    envs:
-      - step-issuer.sops.env
