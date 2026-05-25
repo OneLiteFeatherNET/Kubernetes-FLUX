@@ -45,6 +45,14 @@ spec:
     # Schedule Pods in different Nodes to achieve real HA.
   affinity:
     antiAffinityEnabled: true
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/region
+                operator: In
+                values:
+                  - fi-helsinki
   # When draining Nodes, make sure that you have at least 2 Pods available.
   podDisruptionBudget:
     maxUnavailable: 33%
