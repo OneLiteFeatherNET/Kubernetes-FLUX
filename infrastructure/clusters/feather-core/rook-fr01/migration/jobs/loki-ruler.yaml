@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rclone-loki-ruler
+  namespace: rook-ceph-fr01
+  labels:
+    app.kubernetes.io/part-of: s3-migration
+spec:
+  ttlSecondsAfterFinished: 86400
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: rclone
+          image: rclone/rclone:latest
+          command:
+            - rclone
+            - sync
+            - src:loki-ruler
+            - dst:loki-ruler
+            - --stats=30s
+            - --transfers=8
+            - --checkers=16
+            - --s3-force-path-style
+            - --create-empty-src-dirs
+            - --log-level=INFO
+          env:
+            - name: RCLONE_CONFIG_SRC_TYPE
+              value: s3
+            - name: RCLONE_CONFIG_SRC_PROVIDER
+              value: Ceph
+            - name: RCLONE_CONFIG_SRC_ENDPOINT
+              value: https://s3.onelitefeather.net
+            - name: RCLONE_CONFIG_SRC_ENV_AUTH
+              value: "false"
+            - name: RCLONE_CONFIG_SRC_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rclone-creds-loki
+                  key: SRC_ACCESS_KEY
+            - name: RCLONE_CONFIG_SRC_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rclone-creds-loki
+                  key: SRC_SECRET_KEY
+            - name: RCLONE_CONFIG_DST_TYPE
+              value: s3
+            - name: RCLONE_CONFIG_DST_PROVIDER
+              value: Ceph
+            - name: RCLONE_CONFIG_DST_ENDPOINT
+              value: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+            - name: RCLONE_CONFIG_DST_ENV_AUTH
+              value: "false"
+            - name: RCLONE_CONFIG_DST_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rclone-creds-loki
+                  key: DST_ACCESS_KEY
+            - name: RCLONE_CONFIG_DST_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rclone-creds-loki
+                  key: DST_SECRET_KEY
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 1
+              memory: 512Mi
