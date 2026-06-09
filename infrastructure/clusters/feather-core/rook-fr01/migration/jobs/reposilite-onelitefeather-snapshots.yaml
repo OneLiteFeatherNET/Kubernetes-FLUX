@@ -31,7 +31,7 @@ spec:
             - name: RCLONE_CONFIG_SRC_PROVIDER
               value: Ceph
             - name: RCLONE_CONFIG_SRC_ENDPOINT
-              value: https://s3.onelitefeather.net
+              value: http://10.200.1.2:7480
             - name: RCLONE_CONFIG_SRC_ENV_AUTH
               value: "false"
             - name: RCLONE_CONFIG_SRC_ACCESS_KEY_ID

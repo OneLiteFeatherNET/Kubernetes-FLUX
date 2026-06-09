@@ -1,0 +1,9 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ceph-bucket-fr01
+provisioner: rook-ceph.ceph.rook.io/bucket
+parameters:
+  objectStoreName: feather-s3
+  objectStoreNamespace: rook-ceph-fr01
+reclaimPolicy: Retain

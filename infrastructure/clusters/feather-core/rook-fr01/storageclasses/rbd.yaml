@@ -1,4 +1,3 @@
----
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -29,35 +28,3 @@ allowedTopologies:
       - key: topology.kubernetes.io/region
         values:
           - fr-rosenau
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: ceph-cephfs-fr01
-provisioner: rook-ceph.cephfs.csi.ceph.com
-parameters:
-  clusterID: rook-ceph-fr01
-  fsName: feather-cephfs
-  pool: feather-cephfs-data0
-  mounter: fuse
-  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
-  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph-fr01
-  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
-  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph-fr01
-  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
-  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph-fr01
-reclaimPolicy: Retain
-allowVolumeExpansion: true
-volumeBindingMode: WaitForFirstConsumer
-mountOptions:
-  - noatime
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: ceph-bucket-fr01
-provisioner: rook-ceph.ceph.rook.io/bucket
-parameters:
-  objectStoreName: feather-s3
-  objectStoreNamespace: rook-ceph-fr01
-reclaimPolicy: Retain
