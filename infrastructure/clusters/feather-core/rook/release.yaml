@@ -54,6 +54,16 @@ spec:
       enableCephfsDriver: true
       enableGrpcMetrics: false
       enableCSIHostNetwork: true
+      rbdPluginTolerations:
+        - key: node-role.feather/storage
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      cephFSPluginTolerations:
+        - key: node-role.feather/storage
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
       csiRBDProvisionerResource: |
         - name : csi-provisioner
           resource:
