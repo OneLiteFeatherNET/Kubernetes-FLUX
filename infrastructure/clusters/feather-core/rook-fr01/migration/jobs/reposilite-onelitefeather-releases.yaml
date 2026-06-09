@@ -25,6 +25,7 @@ spec:
             - --s3-force-path-style
             - --create-empty-src-dirs
             - --log-level=INFO
+            - --ignore-errors
           env:
             - name: RCLONE_CONFIG_SRC_TYPE
               value: s3
