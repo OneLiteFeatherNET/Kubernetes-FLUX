@@ -15,17 +15,18 @@ spec:
         - name: rclone
           image: rclone/rclone:latest
           command:
-            - rclone
-            - sync
-            - src:reposilite-onelitefeather-releases
-            - dst:reposilite-onelitefeather-releases
-            - --stats=30s
-            - --transfers=8
-            - --checkers=16
-            - --s3-force-path-style
-            - --create-empty-src-dirs
-            - --log-level=INFO
-            - --ignore-errors
+            - sh
+            - -c
+            - >-
+              rclone sync src:reposilite-onelitefeather-releases dst:reposilite-onelitefeather-releases
+              --stats=30s
+              --transfers=8
+              --checkers=16
+              --s3-force-path-style
+              --create-empty-src-dirs
+              --log-level=INFO
+              --ignore-errors;
+              exit 0
           env:
             - name: RCLONE_CONFIG_SRC_TYPE
               value: s3
