@@ -14,5 +14,10 @@ spec:
   interval: 1m0s
   timeout: 5m
   values:
+    tolerations:
+      - key: node-role.feather/storage
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
     spegel:
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
