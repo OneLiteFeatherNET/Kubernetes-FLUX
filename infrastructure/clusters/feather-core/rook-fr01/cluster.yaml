@@ -84,10 +84,10 @@ spec:
         memory: 1Gi
     osd:
       limits:
-        memory: 4Gi
+        memory: 2Gi
       requests:
         cpu: 200m
-        memory: 4Gi
+        memory: 2Gi
     mgr-sidecar:
       limits:
         memory: 100Mi
@@ -117,4 +117,4 @@ spec:
       osd_max_backfills: "1"
       osd_recovery_max_active: "2"
       osd_recovery_op_priority: "1"
-      osd_memory_target: "3221225472"
+      osd_memory_target: "2147483648"
