@@ -5,10 +5,14 @@ metadata:
   namespace: rook-ceph
 spec:
   releaseName: rook-ceph
-  chartRef:
-    kind: OCIRepository
-    name: rook-ceph
-    namespace: flux-system
+  chart:
+    spec:
+      chart: rook-ceph
+      version: ">=1.18.0 <1.19.0"
+      sourceRef:
+        kind: HelmRepository
+        name: rook-ceph
+        namespace: flux-system
   install:
     remediation:
       retries: 3
