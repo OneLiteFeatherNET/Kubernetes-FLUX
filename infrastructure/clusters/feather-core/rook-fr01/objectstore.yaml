@@ -39,10 +39,6 @@ spec:
       requests:
         cpu: 100m
         memory: 1Gi
-  healthCheck:
-    bucket:
-      disabled: false
-      interval: 60s
 ---
 apiVersion: ceph.rook.io/v1
 kind: CephObjectStoreUser
@@ -54,7 +50,7 @@ spec:
   displayName: loki
   capabilities:
     bucket: "*"
-    object: "*"
+    user: "*"
 ---
 apiVersion: ceph.rook.io/v1
 kind: CephObjectStoreUser
@@ -66,7 +62,7 @@ spec:
   displayName: harbor
   capabilities:
     bucket: "*"
-    object: "*"
+    user: "*"
 ---
 apiVersion: ceph.rook.io/v1
 kind: CephObjectStoreUser
@@ -78,4 +74,4 @@ spec:
   displayName: velero
   capabilities:
     bucket: "*"
-    object: "*"
+    user: "*"
