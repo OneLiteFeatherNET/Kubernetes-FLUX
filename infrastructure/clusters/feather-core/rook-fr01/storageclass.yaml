@@ -39,6 +39,7 @@ parameters:
   clusterID: rook-ceph-fr01
   fsName: feather-cephfs
   pool: feather-cephfs-data0
+  mounter: fuse
   csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
   csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph-fr01
   csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
