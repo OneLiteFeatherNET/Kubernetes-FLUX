@@ -1,0 +1,8 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: reposilite-onelitefeather-releases
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: reposilite-onelitefeather-releases
+  storageClassName: ceph-bucket-fr01

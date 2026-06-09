@@ -1,0 +1,11 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: velero
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: velero
+  capabilities:
+    bucket: "*"
+    user: "*"

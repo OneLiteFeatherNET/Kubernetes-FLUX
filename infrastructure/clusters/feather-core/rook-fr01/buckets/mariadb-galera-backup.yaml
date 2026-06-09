@@ -1,0 +1,8 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: mariadb-galera-backup
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: mariadb-galera-backup
+  storageClassName: ceph-bucket-fr01

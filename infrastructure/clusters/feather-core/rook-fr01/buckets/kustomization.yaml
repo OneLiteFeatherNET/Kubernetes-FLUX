@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rook-ceph-fr01
+resources:
+  - feather-core-cluster-pg-backup.yaml
+  - mariadb-galera-backup.yaml
+  - bluemap0.yaml
+  - reposilite-onelitefeather-proxy.yaml
+  - reposilite-onelitefeather-releases.yaml
+  - reposilite-onelitefeather-snapshots.yaml
+  - harbor.yaml
+  - loki-chunks.yaml
+  - loki-ruler.yaml
+  - outline.yaml
+  - mimir-alertmanager.yaml
+  - mimir-blocks.yaml
+  - mimir-ruler.yaml

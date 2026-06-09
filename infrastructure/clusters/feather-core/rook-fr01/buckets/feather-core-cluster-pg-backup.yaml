@@ -1,0 +1,8 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: feather-core-cluster-pg-backup
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: feather-core-cluster-pg-backup
+  storageClassName: ceph-bucket-fr01

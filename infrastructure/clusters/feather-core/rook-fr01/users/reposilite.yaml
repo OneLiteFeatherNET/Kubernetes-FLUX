@@ -1,0 +1,11 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: reposilite
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: reposilite
+  capabilities:
+    bucket: "*"
+    user: "*"

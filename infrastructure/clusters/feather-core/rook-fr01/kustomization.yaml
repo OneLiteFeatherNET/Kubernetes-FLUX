@@ -8,3 +8,5 @@ resources:
   - objectstore.yaml
   - filesystem.yaml
   - storageclass.yaml
+  - users
+  - buckets
