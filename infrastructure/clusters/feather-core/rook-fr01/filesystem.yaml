@@ -1,0 +1,48 @@
+---
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystem
+metadata:
+  name: feather-cephfs
+  namespace: rook-ceph-fr01
+spec:
+  metadataPool:
+    replicated:
+      size: 3
+  dataPools:
+    - name: data0
+      replicated:
+        size: 3
+  preserveFilesystemOnDelete: false
+  metadataServer:
+    activeCount: 1
+    activeStandby: true
+    placement:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.feather/workload-class
+                  operator: In
+                  values:
+                    - storage
+      tolerations:
+        - key: node-role.feather/storage
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+---
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystemSubVolumeGroup
+metadata:
+  name: feather-cephfs
+  namespace: rook-ceph-fr01
+spec:
+  filesystemName: feather-cephfs
+  pinning:
+    distributed: 1

@@ -6,4 +6,5 @@ resources:
   - cluster.yaml
   - blockpool.yaml
   - objectstore.yaml
+  - filesystem.yaml
   - storageclass.yaml
