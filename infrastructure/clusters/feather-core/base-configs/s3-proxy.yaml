@@ -1,61 +1,8 @@
-# Namespace
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: storage-proxy
----
-apiVersion: v1
-kind: Endpoints
-metadata:
-  name: ceph-rgw-external
-  namespace: storage-proxy
-subsets:
-  - addresses:
-      - ip: 10.200.1.2
-      - ip: 10.200.1.3
-      - ip: 10.200.1.4
-      - ip: 10.200.1.5
-    ports:
-      - port: 7480
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: ceph-rgw-external
-  namespace: storage-proxy
-  labels:
-    kubernetes.io/service-name: ceph-rgw-external
-ports:
-  - name: http
-    port: 7480
-addressType: IPv4
-endpoints:
-  - addresses:
-    - "10.200.1.2"
-    - "10.200.1.3"
-    - "10.200.1.4"
-    - "10.200.1.5"
-    conditions:
-      ready: true
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ceph-rgw-external
-  namespace: storage-proxy
-spec:
-  type: ClusterIP
-  ports:
-    - name: http
-      port: 7480
-      targetPort: 7480
-  clusterIP: None
----
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: rgw-external-proxy
-  namespace: storage-proxy
+  namespace: rook-ceph-fr01
 spec:
   parentRefs:
     - name: eg
@@ -70,14 +17,14 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: ceph-rgw-external
-          port: 7480
+        - name: rook-ceph-rgw-feather-s3
+          port: 80
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
   name: rgw-external-proxy-cors
-  namespace: storage-proxy
+  namespace: rook-ceph-fr01
 spec:
   targetRefs:
     - group: gateway.networking.k8s.io
