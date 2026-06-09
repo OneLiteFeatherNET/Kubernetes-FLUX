@@ -5,8 +5,7 @@ metadata:
 spec:
   configuration:
     destinationPath: s3://feather-core-cluster-pg-backup/backups
-    # MariaDB uses endpoint without scheme; CNPG expects full URL
-    endpointURL: https://s3.onelitefeather.net
+    endpointURL: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
     s3Credentials:
       accessKeyId:
         name: cnpg-backup

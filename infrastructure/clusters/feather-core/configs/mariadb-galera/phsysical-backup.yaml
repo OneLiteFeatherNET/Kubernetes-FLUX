@@ -16,9 +16,9 @@ spec:
     s3:
       bucket: mariadb-galera-backup
       prefix: feather-core-backups
-      endpoint: s3.onelitefeather.net
+      endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
       tls:
-        enabled: true
+        enabled: false
       accessKeyIdSecretKeyRef:
         name: mariadb
         key: access-key-id
