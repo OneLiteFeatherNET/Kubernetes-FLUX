@@ -25,6 +25,12 @@ spec:
   monitoring:
     enabled: true
   network:
+    provider: host
+    addressRanges:
+      public:
+        - "192.168.15.0/24"
+      cluster:
+        - "10.10.10.0/24"
     connections:
       requireMsgr2: true
   crashCollector:
