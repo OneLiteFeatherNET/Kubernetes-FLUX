@@ -122,6 +122,16 @@ rules:
     resources: [persistentvolumeclaims]
     verbs: [delete]
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rook-ceph-monitoring
+  namespace: rook-ceph-fr01
+rules:
+  - apiGroups: [monitoring.coreos.com]
+    resources: [servicemonitors, prometheusrules]
+    verbs: [get, list, watch, create, update, delete, patch]
+---
 # RoleBindings — operator SA (rook-ceph namespace) gets cluster-mgmt access here
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -205,4 +215,45 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: rook-ceph-purge-osd
+    namespace: rook-ceph-fr01
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rook-ceph-monitoring
+  namespace: rook-ceph-fr01
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-monitoring
+subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: rook-ceph
+---
+# ClusterRoleBindings for cluster-scoped access (nodes, etc.)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rook-ceph-osd-fr01
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-osd
+subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-osd
+    namespace: rook-ceph-fr01
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rook-ceph-mgr-cluster-fr01
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-mgr-cluster
+subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-mgr
     namespace: rook-ceph-fr01
