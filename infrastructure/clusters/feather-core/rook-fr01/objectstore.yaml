@@ -1,0 +1,81 @@
+---
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStore
+metadata:
+  name: feather-s3
+  namespace: rook-ceph-fr01
+spec:
+  metadataPool:
+    failureDomain: host
+    replicated:
+      size: 3
+      requireSafeReplicaSize: true
+  dataPool:
+    failureDomain: host
+    replicated:
+      size: 3
+      requireSafeReplicaSize: true
+  preservePoolsOnDelete: true
+  gateway:
+    port: 80
+    instances: 2
+    placement:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.feather/workload-class
+                  operator: In
+                  values:
+                    - storage
+      tolerations:
+        - key: node-role.feather/storage
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+    resources:
+      limits:
+        memory: 2Gi
+      requests:
+        cpu: 100m
+        memory: 1Gi
+  healthCheck:
+    bucket:
+      disabled: false
+      interval: 60s
+---
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: loki
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: loki
+  capabilities:
+    bucket: "*"
+    object: "*"
+---
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: harbor
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: harbor
+  capabilities:
+    bucket: "*"
+    object: "*"
+---
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: velero
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: velero
+  capabilities:
+    bucket: "*"
+    object: "*"

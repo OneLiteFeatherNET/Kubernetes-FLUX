@@ -1,0 +1,120 @@
+apiVersion: ceph.rook.io/v1
+kind: CephCluster
+metadata:
+  name: rook-ceph-fr01
+  namespace: rook-ceph-fr01
+spec:
+  cephVersion:
+    image: quay.io/ceph/ceph:v19.2.3
+    allowUnsupported: false
+  dataDirHostPath: /var/lib/rook
+  skipUpgradeChecks: false
+  continueUpgradeAfterChecksEvenIfNotHealthy: false
+  mon:
+    count: 3
+    allowMultiplePerNode: false
+  mgr:
+    count: 2
+    allowMultiplePerNode: false
+    modules:
+      - name: pg_autoscaler
+        enabled: true
+  dashboard:
+    enabled: true
+    ssl: false
+  monitoring:
+    enabled: true
+  network:
+    connections:
+      requireMsgr2: true
+  crashCollector:
+    disable: false
+  logCollector:
+    enabled: true
+    periodicity: daily
+    maxLogSize: 500M
+  cleanupPolicy:
+    confirmation: ""
+    sanitizeDisks:
+      method: quick
+      dataSource: zero
+      iteration: 1
+    allowUninstallWithVolumes: false
+  storage:
+    useAllNodes: false
+    useAllDevices: false
+    deviceFilter: "^sd[b-e]$"
+    nodes:
+      - name: fr01-str-01
+      - name: fr01-str-02
+      - name: fr01-str-03
+    config:
+      osdsPerDevice: "1"
+  placement:
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.feather/workload-class
+                  operator: In
+                  values:
+                    - storage
+      tolerations:
+        - key: node-role.feather/storage
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+  disruptionManagement:
+    managePodBudgets: true
+    osdMaintenanceTimeout: 30
+    pgHealthCheckTimeout: 0
+  resources:
+    mgr:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+    mon:
+      limits:
+        memory: 2Gi
+      requests:
+        cpu: 100m
+        memory: 1Gi
+    osd:
+      limits:
+        memory: 4Gi
+      requests:
+        cpu: 200m
+        memory: 4Gi
+    mgr-sidecar:
+      limits:
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 40Mi
+    crashcollector:
+      limits:
+        memory: 60Mi
+      requests:
+        cpu: 15m
+        memory: 60Mi
+    logcollector:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+    cleanup:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 100Mi
+  configOverride: |
+    [osd]
+    osd_max_backfills = 1
+    osd_recovery_max_active = 2
+    osd_recovery_op_priority = 1
+    osd_memory_target = 3221225472

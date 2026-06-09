@@ -1,22 +1,21 @@
+# PGP recipients for SOPS encryption.
+# To grant a new team member access:
+#   1. Ask them to run: gpg --full-generate-key
+#   2. Get their fingerprint: gpg --list-keys --fingerprint <email>
+#   3. Import their public key: gpg --import <their-key.pub>
+#   4. Add their fingerprint (without spaces) to the pgp field below, comma-separated
+#   5. Re-encrypt all affected files: sops updatekeys <file>
+#
+# Current recipients:
+#   - TheMeinerLP: 0231831CB40B8E587B7353CBA3AF727721205A62
+#   - <member>:    <FINGERPRINT>
+
 creation_rules:
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .*.env
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .*.sops.env
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .*.sops.json
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .*.sops.ya?ml
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .*.sops.conf
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .*.sops.crt
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .*.sops.key
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: .dockerconfigjson
-  - path_regex: .*.yaml
+  - path_regex: .*\.(env|sops\.env|sops\.json|sops\.ya?ml|sops\.conf|sops\.crt|sops\.key|dockerconfigjson|s3\.conf)$
+    pgp: >-
+      0231831CB40B8E587B7353CBA3AF727721205A62
+
+  - path_regex: .*\.yaml$
     encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca|root_ca|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
-    pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-  - pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-    path_regex: s3.conf
+    pgp: >-
+      0231831CB40B8E587B7353CBA3AF727721205A62
