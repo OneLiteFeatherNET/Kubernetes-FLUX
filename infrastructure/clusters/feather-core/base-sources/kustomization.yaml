@@ -19,3 +19,4 @@ resources:
   - ansible.yml
   - prometheus-stack.yaml
   - grafana.yml
+  - rook.yaml
