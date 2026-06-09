@@ -28,7 +28,6 @@ resources:
   - jobs/reposilite-onelitefeather-releases.yaml
   - jobs/reposilite-onelitefeather-snapshots.yaml
   - jobs/harbor.yaml
-  - jobs/loki-chunks.yaml
   - jobs/loki-ruler.yaml
   - jobs/outline.yaml
   - jobs/mimir-alertmanager.yaml
