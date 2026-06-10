@@ -14,24 +14,6 @@ spec:
     nodeSelector:
       topology.kubernetes.io/zone: fr01
     podAntiAffinityType: preferred
-  bootstrap:
-    recovery:
-      source: feather-core-prod-backup
-      recoveryTarget:
-        targetTime: "2026-06-10 09:41:00.000000+00"
-  externalClusters:
-    - name: feather-core-prod-backup
-      barmanObjectStore:
-        destinationPath: s3://feather-core-cluster-pg-backup/backups
-        endpointURL: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
-        serverName: feather-core-cluster-pg
-        s3Credentials:
-          accessKeyId:
-            name: cnpg-backup
-            key: access-key-id
-          secretAccessKey:
-            name: cnpg-backup
-            key: secret-access-key
   managed:
     roles:
       - name: harbor
