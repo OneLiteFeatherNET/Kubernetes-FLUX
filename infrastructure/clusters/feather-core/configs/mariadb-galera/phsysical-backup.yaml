@@ -28,17 +28,18 @@ spec:
   # Define a PVC to use as staging area for keeping the backups while they are being processed.
   stagingStorage:
     persistentVolumeClaim:
+      storageClassName: ceph-cephfs-fr01
       resources:
         requests:
           storage: 75Gi
       accessModes:
         - ReadWriteOnce
-  timeout: 1h
+  timeout: 2h
   #  podAffinity: true
   #  serviceAccountName: backup
   resources:
     requests:
-      cpu: 2
+      cpu: 500m
       memory: 256Mi
     limits:
       cpu: 2
