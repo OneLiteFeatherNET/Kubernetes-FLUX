@@ -77,10 +77,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fr-rosenau
+                      - fr01
       ingress:
         enabled: false
       podDisruptionBudget:
@@ -92,13 +92,13 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fi-helsinki
+                      - fr01
       persistentVolume:
         enabled: true
-        storageClass: rook-external-rbd
+        storageClass: ceph-rbd-fr01
         size: 10Gi
     ingester:
       replicas: 3
@@ -107,13 +107,13 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fi-helsinki
+                      - fr01
       persistentVolume:
         enabled: true
-        storageClass: rook-external-rbd
+        storageClass: ceph-rbd-fr01
         size: 20Gi
       zoneAwareReplication:
         enabled: false
@@ -125,10 +125,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fr-rosenau
+                      - fr01
     query_frontend:
       replicas: 2
       affinity:
@@ -137,10 +137,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fr-rosenau
+                      - fr01
     query_scheduler:
       replicas: 2
       affinity:
@@ -149,10 +149,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fr-rosenau
+                      - fr01
     ruler:
       replicas: 1
       affinity:
@@ -161,10 +161,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fr-rosenau
+                      - fr01
     overrides_exporter:
       affinity:
         nodeAffinity:
@@ -172,10 +172,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fr-rosenau
+                      - fr01
     rollout_operator:
       affinity:
         nodeAffinity:
@@ -183,10 +183,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fr-rosenau
+                      - fr01
     distributor:
       replicas: 2
       affinity:
@@ -194,25 +194,25 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fi-helsinki
+                      - fr01
     store_gateway:
       replicas: 2
       persistentVolume:
         enabled: true
-        storageClass: rook-external-rbd
+        storageClass: ceph-rbd-fr01
         size: 10Gi
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fi-helsinki
+                      - fr01
       zoneAwareReplication:
         enabled: false
     compactor:
@@ -221,13 +221,13 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fi-helsinki
+                      - fr01
       persistentVolume:
         enabled: true
-        storageClass: rook-external-rbd
+        storageClass: ceph-rbd-fr01
         size: 10Gi
     metaMonitoring:
       serviceMonitor:

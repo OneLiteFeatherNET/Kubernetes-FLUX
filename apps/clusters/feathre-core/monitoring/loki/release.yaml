@@ -62,10 +62,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fi-helsinki
+                      - fr01
       resources:
         requests:
           cpu: 250m
@@ -76,7 +76,7 @@ spec:
       persistence:
         enabled: true
         size: 20Gi
-        storageClass: rook-external-rbd
+        storageClass: ceph-rbd-fr01
         accessModes:
           - ReadWriteOnce
     write:
@@ -92,10 +92,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: topology.kubernetes.io/region
+                  - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - fi-helsinki
+                      - fr01
       ingress:
         enabled: false
     lokiCanary:
