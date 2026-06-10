@@ -82,6 +82,21 @@ spec:
           storage: 50Gi
       storageClassName: ceph-rbd-fr01
 
+  bootstrapFrom:
+    backupContentType: Physical
+    s3:
+      bucket: mariadb-galera-backup
+      prefix: feather-core-backups
+      endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+      tls:
+        enabled: false
+      accessKeyIdSecretKeyRef:
+        name: mariadb
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb
+        key: secret-access-key
+
   rootPasswordSecretKeyRef:
     name: mariadb
     key: password
