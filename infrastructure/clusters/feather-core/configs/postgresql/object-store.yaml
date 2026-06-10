@@ -4,7 +4,7 @@ metadata:
   name: s3-store
 spec:
   configuration:
-    destinationPath: s3://feather-core-cluster-pg-backup/backups
+    destinationPath: s3://feather-core-cluster-pg-backup/backups-fr01
     endpointURL: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
     s3Credentials:
       accessKeyId:
