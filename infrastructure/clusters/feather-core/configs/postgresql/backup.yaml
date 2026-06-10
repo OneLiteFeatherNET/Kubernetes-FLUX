@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Backup
 metadata:
-  name: backup-to-minio
+  name: backup-20260610
   namespace: cnpg-system
 spec:
   cluster:
