@@ -4,18 +4,21 @@ kind: Namespace
 metadata:
   name: storage-proxy
 ---
-apiVersion: v1
-kind: Service
+# ReferenceGrant: allows HTTPRoute in storage-proxy to use service in rook-ceph-fr01
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
 metadata:
-  name: ceph-rgw-external
-  namespace: storage-proxy
+  name: allow-s3-proxy
+  namespace: rook-ceph-fr01
 spec:
-  type: ExternalName
-  externalName: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc.cluster.local
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: storage-proxy
+  to:
+    - group: ""
+      kind: Service
+      name: rook-ceph-rgw-feather-s3
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -36,7 +39,8 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: ceph-rgw-external
+        - name: rook-ceph-rgw-feather-s3
+          namespace: rook-ceph-fr01
           port: 80
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
