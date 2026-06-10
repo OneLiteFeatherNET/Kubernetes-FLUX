@@ -49,10 +49,10 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: topology.kubernetes.io/region
+              - key: topology.kubernetes.io/zone
                 operator: In
                 values:
-                  - fi-helsinki
+                  - fr01
   # When draining Nodes, make sure that you have at least 2 Pods available.
   podDisruptionBudget:
     maxUnavailable: 33%
@@ -73,14 +73,29 @@ spec:
     resizeInUseVolumes: true
     waitForVolumeResize: true
     size: 50Gi
-    storageClassName: rook-external-rbd
+    storageClassName: ceph-rbd-fr01
     volumeClaimTemplate:
       accessModes:
         - ReadWriteOnce
       resources:
         requests:
           storage: 50Gi
-      storageClassName: rook-external-rbd
+      storageClassName: ceph-rbd-fr01
+
+  bootstrapFrom:
+    backupContentType: Physical
+    s3:
+      bucket: mariadb-galera-backup
+      prefix: feather-core-backups
+      endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+      tls:
+        enabled: false
+      accessKeyIdSecretKeyRef:
+        name: mariadb
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb
+        key: secret-access-key
 
   rootPasswordSecretKeyRef:
     name: mariadb
