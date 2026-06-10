@@ -16,6 +16,13 @@ spec:
       size: 3
       requireSafeReplicaSize: true
   preservePoolsOnDelete: true
+  hosting:
+    advertiseEndpoint:
+      dnsName: s3.onelitefeather.net
+      port: 443
+      useTls: true
+    dnsNames:
+      - s3.onelitefeather.net
   gateway:
     port: 80
     instances: 2
