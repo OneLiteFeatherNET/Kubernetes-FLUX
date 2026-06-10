@@ -6,7 +6,7 @@ metadata:
 spec:
   myASN: 64606
   peerASN: 64501
-  peerAddress: 192.168.68.5
+  peerAddress: 192.168.15.1
   peerPort: 179
   nodeSelectors:
   - matchLabels:
