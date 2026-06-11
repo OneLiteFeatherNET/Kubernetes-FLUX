@@ -35,14 +35,30 @@ spec:
   myCnf: |
     [mariadb]
     bind-address=*
-    max_connections=100000
-    max_user_connections=100000
     default_storage_engine=InnoDB
     binlog_format=row
     innodb_autoinc_lock_mode=2
-    innodb_buffer_pool_size=512MB
-    max_allowed_packet=1GB
-    # Schedule Pods in different Nodes to achieve real HA.
+
+    # === Constraint: I/O path ===
+    innodb_buffer_pool_size=5G
+    innodb_buffer_pool_size_max=8G        # read-only at runtime, set generously now!
+    innodb_buffer_pool_dump_at_shutdown=1 # dump page numbers on shutdown
+    innodb_buffer_pool_load_at_startup=1  # warm up the buffer pool after pod restarts
+    innodb_flush_log_at_trx_commit=2      # safe with Galera (cluster guarantees consistency)
+    innodb_flush_method=O_DIRECT          # skip double-buffering through the OS page cache
+    innodb_log_file_size=1G               # ~1/4 of buffer pool, fewer checkpoints, less disk I/O
+    innodb_log_buffer_size=64M            # less disk I/O for larger transactions
+
+    # === Cleanup (subordination, step 3) ===
+    max_connections=500                    # instead of 100000
+    max_allowed_packet=256M               # instead of 1GB
+    tmp_table_size=64M
+    max_heap_table_size=64M
+
+    # === Diagnostics at the constraint ===
+    slow_query_log=1
+    long_query_time=1                     # log everything slower than 1s
+    log_slow_verbosity=query_plan,explain
   affinity:
     antiAffinityEnabled: true
     nodeAffinity:
@@ -64,10 +80,10 @@ spec:
   # Configure enough compute resources. This is just an example, take a look at your historic compute metrics to estimate.
   resources:
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: "2"
+      memory: 8Gi
     limits:
-      memory: 4Gi
+      memory: 8Gi
 
   storage:
     resizeInUseVolumes: true
