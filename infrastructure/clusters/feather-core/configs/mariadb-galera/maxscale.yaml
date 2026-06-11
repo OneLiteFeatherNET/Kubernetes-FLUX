@@ -4,21 +4,10 @@ metadata:
   name: maxscale-galera
   namespace: mariadb-galera
 spec:
-#  podSecurityContext:
-#    fsGroup: 996
-#    runAsGroup: 996
-#    runAsNonRoot: true
-#    runAsUser: 996
-#    seccompProfile:
-#      type: RuntimeDefault
-#  securityContext:
-#    allowPrivilegeEscalation: false
-#    capabilities:
-#      drop:
-#        - ALL
   mariaDbRef:
     name: mariadb-galera
   replicas: 2
+
   monitor:
     name: mariadb-monitor
     module: galeramon
@@ -27,7 +16,29 @@ spec:
     params:
       disable_master_failback: "false"
       available_when_donor: "false"
-      disable_master_role_setting: "false"   
+      disable_master_role_setting: "false"
+
+  services:
+    - name: rw-router
+      router: readwritesplit
+      listener:
+        port: 3306
+      params:
+        # === Failover resilience (the important part) ===
+        transaction_replay: "true"            # replay interrupted transactions on the new primary
+        transaction_replay_timeout: "30s"     # give up replaying after 30s
+        master_reconnection: "true"           # migrate session to new primary instead of killing it
+        master_failure_mode: "fail_on_write"  # keep read-only sessions alive when primary is down
+        delayed_retry: "true"                 # queue queries briefly while no primary is available
+        delayed_retry_timeout: "10s"
+
+        # === Connection hygiene ===
+        connection_keepalive: "240s"          # ping idle backend connections (align with Hikari maxLifetime!)
+        prune_sescmd_history: "true"          # cap session command history memory
+
+        # === Routing quality ===
+        slave_selection_criteria: "ADAPTIVE_ROUTING"  # route reads by measured response time
+        master_accept_reads: "true"           # primary may serve reads too (sane for 3-node Galera)
 
   config:
     sync:
