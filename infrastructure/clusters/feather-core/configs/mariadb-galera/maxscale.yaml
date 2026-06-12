@@ -8,6 +8,13 @@ spec:
     name: mariadb-galera
   replicas: 2
 
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+
   monitor:
     name: mariadb-monitor
     module: galeramon
