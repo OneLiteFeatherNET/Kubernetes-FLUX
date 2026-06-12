@@ -392,7 +392,7 @@ spec:
       minReadySeconds: 0
       ## @param master.priorityClassName Redis&reg; master pods' priorityClassName
       ##
-      priorityClassName: ""
+      priorityClassName: "feather-high"
       ## @param master.automountServiceAccountToken Mount Service Account token in pod
       ##
       automountServiceAccountToken: false
@@ -874,7 +874,7 @@ spec:
       minReadySeconds: 0
       ## @param replica.priorityClassName Redis&reg; replicas pods' priorityClassName
       ##
-      priorityClassName: ""
+      priorityClassName: "feather-high"
       ## @param replica.podManagementPolicy podManagementPolicy to manage scaling operation of %%MAIN_CONTAINER_NAME%% pods
       ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
       ##
