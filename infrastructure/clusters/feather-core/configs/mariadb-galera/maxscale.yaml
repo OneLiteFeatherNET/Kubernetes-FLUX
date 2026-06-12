@@ -6,7 +6,11 @@ metadata:
 spec:
   mariaDbRef:
     name: mariadb-galera
-  replicas: 2
+  # TEMPORARY: 1 replica. The hard antiAffinityEnabled rule (immutable) cannot
+  # place a 2nd MaxScale pod — only 4 workload nodes for 3 MariaDB + 2 MaxScale
+  # mutually-anti-affine pods, so the 2nd stays Pending and stalls configs.
+  # Restore replicas: 2 together with a soft affinity via CR recreation later.
+  replicas: 1
   # NOTE: spec.priorityClassName is immutable on MaxScale (webhook-enforced);
   # cannot be set on the existing CR without recreating it. Left unset.
 
