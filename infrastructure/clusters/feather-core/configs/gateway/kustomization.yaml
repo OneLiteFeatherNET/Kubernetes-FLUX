@@ -11,3 +11,5 @@ resources:
   - envoyproxy.yaml
   - gateway.yaml
   - redirect-route.yaml
+  - podmonitor.yaml
+  - servicemonitor.yaml

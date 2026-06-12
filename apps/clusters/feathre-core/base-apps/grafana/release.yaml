@@ -139,6 +139,14 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/applications
+          - name: storage
+            orgId: 1
+            folder: Storage
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/storage
     dashboards:
       kubernetes:
         kubernetes-dashboard:
@@ -1154,6 +1162,14 @@ spec:
         flux-control-plane:
           url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/control-plane.json
           datasource: Mimir
+        envoy-gateway-overview:
+          gnetId: 24460
+          revision: 1
+          datasource: Mimir
+        envoy-proxy:
+          gnetId: 21329
+          revision: 1
+          datasource: Mimir
       observability:
         prometheus-overview:
           gnetId: 3662
@@ -1182,6 +1198,19 @@ spec:
         redis-exporter:
           gnetId: 14091
           revision: 1
+          datasource: Mimir
+      storage:
+        ceph-cluster:
+          gnetId: 2842
+          revision: 18
+          datasource: Mimir
+        ceph-osd:
+          gnetId: 5336
+          revision: 9
+          datasource: Mimir
+        ceph-pools:
+          gnetId: 5342
+          revision: 9
           datasource: Mimir
       applications:
         harbor:
