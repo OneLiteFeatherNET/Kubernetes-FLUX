@@ -2,3 +2,40 @@ namespace: metallb-system
 
 resources:
   - github.com/metallb/metallb/config/native?ref=v0.15.3
+
+# Upstream MetalLB manifests ship no resource requests/limits, leaving the
+# controller and speakers BestEffort (first to be evicted — would drop BGP
+# announcements). Inject modest requests + memory limits.
+patches:
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: controller
+      spec:
+        template:
+          spec:
+            containers:
+              - name: controller
+                resources:
+                  requests:
+                    cpu: 25m
+                    memory: 64Mi
+                  limits:
+                    memory: 128Mi
+  - patch: |
+      apiVersion: apps/v1
+      kind: DaemonSet
+      metadata:
+        name: speaker
+      spec:
+        template:
+          spec:
+            containers:
+              - name: speaker
+                resources:
+                  requests:
+                    cpu: 25m
+                    memory: 64Mi
+                  limits:
+                    memory: 128Mi

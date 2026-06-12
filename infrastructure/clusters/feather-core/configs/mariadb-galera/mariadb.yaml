@@ -123,6 +123,13 @@ spec:
 #        metallb.io/loadBalancerIPs: 10.200.32.4
   metrics:
     enabled: true
+    exporter:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
     serviceMonitor:
       prometheusRelease: kube-prometheus-stack
       jobLabel: mariadb-galera
