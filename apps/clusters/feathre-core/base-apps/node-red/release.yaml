@@ -11,5 +11,8 @@ spec:
     priorityClassName: feather-low
     persistence:
       enabled: true
+      # Pin to the existing PVC capacity; the chart default is smaller and a
+      # PVC cannot shrink, which made every helm upgrade fail.
+      size: 10Gi
     ingress:
       enabled: false
