@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/dependency-track
   - httproute.yaml
+  - pdb.yaml
 patches:
   - path: release.yaml
 

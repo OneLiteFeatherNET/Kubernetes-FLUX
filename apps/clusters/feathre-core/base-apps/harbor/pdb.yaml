@@ -1,0 +1,51 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: harbor-core
+  namespace: harbor
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: harbor
+      component: core
+      release: harbor
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: harbor-registry
+  namespace: harbor
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: harbor
+      component: registry
+      release: harbor
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: harbor-jobservice
+  namespace: harbor
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: harbor
+      component: jobservice
+      release: harbor
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: harbor-portal
+  namespace: harbor
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: harbor
+      component: portal
+      release: harbor

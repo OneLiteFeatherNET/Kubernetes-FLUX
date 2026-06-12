@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/harbor/
+  - pdb.yaml
 patches:
   - path: release.yaml
 
