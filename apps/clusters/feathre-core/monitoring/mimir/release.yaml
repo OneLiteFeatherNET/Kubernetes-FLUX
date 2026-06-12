@@ -27,7 +27,10 @@ spec:
           compactor_blocks_retention_period: 365d
           # Default 150k was exhausted (new series silently rejected with
           # err-mimir-max-series-per-user), blocking envoy metrics ingestion.
-          max_global_series_per_user: 300000
+          # 400k covers the in-memory head (stale series linger up to 2h
+          # after compaction) on top of ~275k active series; the apiserver
+          # bucket drops in kube-prometheus-stack bring actives down again.
+          max_global_series_per_user: 400000
         common:
           storage:
             backend: s3
@@ -128,10 +131,10 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 1Gi
+          memory: 1536Mi
         limits:
           cpu: "2"
-          memory: 1536Mi
+          memory: 2560Mi
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

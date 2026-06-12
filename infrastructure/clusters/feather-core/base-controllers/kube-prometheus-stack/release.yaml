@@ -39,6 +39,15 @@ spec:
               minShards: 4
               maxShards: 20
               maxSamplesPerSend: 5000
+    # Apiserver duration-histogram buckets alone were ~127k of ~275k active
+    # series and pushed Mimir into its per-tenant series limit; the
+    # _sum/_count series survive, so rates and averages still work.
+    kubeApiServer:
+      serviceMonitor:
+        metricRelabelings:
+          - action: drop
+            sourceLabels: [__name__]
+            regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
     prometheusOperator:
       resources:
         requests:
