@@ -29,40 +29,46 @@ spec:
           storage:
             backend: s3
             s3:
-              endpoint: s3.onelitefeather.net
+              # Internal RGW service (path-style, http) — decoupled from the
+              # external s3.onelitefeather.net ingress path.
+              endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
               region: us-west-1
               access_key_id: ${AWS_ACCESS_KEY_ID}
               secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-              insecure: false
+              insecure: true
+              bucket_lookup_type: path
         blocks_storage:
           backend: s3
           s3:
             bucket_name: mimir-blocks
-            endpoint: s3.onelitefeather.net
+            endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
             access_key_id: ${AWS_ACCESS_KEY_ID}
             secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-            insecure: false
+            insecure: true
+            bucket_lookup_type: path
           tsdb:
             dir: /data/tsdb
         alertmanager_storage:
           backend: s3
           s3:
             bucket_name: mimir-alertmanager
-            endpoint: s3.onelitefeather.net
+            endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
             access_key_id: ${AWS_ACCESS_KEY_ID}
             secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-            insecure: false
+            insecure: true
+            bucket_lookup_type: path
         ruler_storage:
           backend: s3
           s3:
             bucket_name: mimir-ruler
-            endpoint: s3.onelitefeather.net
+            endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
             access_key_id: ${AWS_ACCESS_KEY_ID}
             secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-            insecure: false
+            insecure: true
+            bucket_lookup_type: path
         distributor:
           ha_tracker:
             enable_ha_tracker: true
