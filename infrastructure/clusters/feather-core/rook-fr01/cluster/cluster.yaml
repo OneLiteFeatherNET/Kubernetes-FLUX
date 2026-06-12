@@ -124,3 +124,7 @@ spec:
       osd_recovery_max_active: "2"
       osd_recovery_op_priority: "1"
       osd_memory_target: "2147483648"
+    # Disable RGW debug logging (default 1/5) to cut log-collector volume.
+    # client.rgw inherits to all rgw daemons (e.g. client.rgw.feather-s3.a).
+    client.rgw:
+      debug_rgw: "0/0"
