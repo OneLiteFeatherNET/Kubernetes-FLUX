@@ -5,6 +5,7 @@ metadata:
   namespace: otis
 spec:
   values:
+    priorityClassName: feather-standard
     image:
       repository: harbor.onelitefeather.dev/otis/otis
       pullPolicy: IfNotPresent

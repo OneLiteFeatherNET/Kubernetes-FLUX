@@ -5,6 +5,7 @@ metadata:
   namespace: leantime
 spec:
   values:
+    priorityClassName: feather-standard
     resources:
       limits:
         cpu: 2

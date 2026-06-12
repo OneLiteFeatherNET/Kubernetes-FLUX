@@ -5,6 +5,7 @@ metadata:
   namespace: shlink
 spec:
   values:
+    priorityClassName: feather-standard
     affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

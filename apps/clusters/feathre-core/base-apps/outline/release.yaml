@@ -5,6 +5,7 @@ metadata:
   namespace: outline
 spec:
   values:
+    priorityClassName: feather-standard
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:

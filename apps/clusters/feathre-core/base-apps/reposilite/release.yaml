@@ -8,6 +8,7 @@ spec:
     spec:
       version: ">=1.3.20"
   values:
+    priorityClassName: feather-standard
     ## Readiness and liveness probes
     probes:
       port: 8080 # The port Reposilite is running on inside the pod.
