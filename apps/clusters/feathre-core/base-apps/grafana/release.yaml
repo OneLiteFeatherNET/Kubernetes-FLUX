@@ -4,6 +4,16 @@ metadata:
   name: grafana
   namespace: grafana
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: grafana
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-high
   valuesFrom:
     - kind: Secret
       name: grafana-admin

@@ -13,6 +13,7 @@ spec:
     parameters: {}
   template:
     spec:
+      priorityClassName: feather-high
       containers:
         - name: pgbouncer
           resources:

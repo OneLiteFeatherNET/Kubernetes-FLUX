@@ -4,6 +4,23 @@ metadata:
   name: mimir
   namespace: grafana
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              labelSelector: app.kubernetes.io/instance=mimir
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-high
+          - target:
+              kind: StatefulSet
+              labelSelector: app.kubernetes.io/instance=mimir
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-high
   values:
     minio:
       enabled: false

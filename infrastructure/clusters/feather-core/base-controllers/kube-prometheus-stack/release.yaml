@@ -16,6 +16,7 @@ spec:
         enabled: false
       prometheusSpec:
         replicas: 2
+        priorityClassName: feather-high
         resources:
           requests:
             cpu: 250m

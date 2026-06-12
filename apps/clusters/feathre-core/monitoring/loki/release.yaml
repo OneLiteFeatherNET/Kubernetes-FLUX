@@ -4,6 +4,23 @@ metadata:
   name: loki
   namespace: grafana
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: StatefulSet
+              labelSelector: app.kubernetes.io/instance=loki
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-high
+          - target:
+              kind: Deployment
+              labelSelector: app.kubernetes.io/instance=loki
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-high
   valuesFrom:
     - kind: Secret
       name: loki-s3
