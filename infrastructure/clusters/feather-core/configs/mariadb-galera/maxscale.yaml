@@ -7,7 +7,8 @@ spec:
   mariaDbRef:
     name: mariadb-galera
   replicas: 2
-  priorityClassName: feather-platform
+  # NOTE: spec.priorityClassName is immutable on MaxScale (webhook-enforced);
+  # cannot be set on the existing CR without recreating it. Left unset.
 
   resources:
     requests:
