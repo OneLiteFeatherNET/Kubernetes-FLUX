@@ -4,8 +4,17 @@ metadata:
   name: leantime
   namespace: leantime
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: leantime
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
-    priorityClassName: feather-standard
     resources:
       limits:
         cpu: 2

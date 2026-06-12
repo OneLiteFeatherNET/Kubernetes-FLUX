@@ -7,8 +7,17 @@ spec:
   chart:
     spec:
       version: ">=1.3.20"
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: reposilite
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
-    priorityClassName: feather-standard
     ## Readiness and liveness probes
     probes:
       port: 8080 # The port Reposilite is running on inside the pod.

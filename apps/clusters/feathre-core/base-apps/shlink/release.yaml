@@ -4,8 +4,17 @@ metadata:
   name: shlink
   namespace: shlink
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: shlink
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
-    priorityClassName: feather-standard
     affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

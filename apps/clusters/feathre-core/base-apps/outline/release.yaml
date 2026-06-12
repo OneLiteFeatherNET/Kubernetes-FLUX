@@ -4,8 +4,17 @@ metadata:
   name: outline
   namespace: outline
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: outline
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
-    priorityClassName: feather-standard
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
