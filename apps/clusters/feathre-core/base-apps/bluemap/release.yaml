@@ -11,8 +11,18 @@ spec:
     remediation:
       retries: 0
   interval: 1m0s
+  # bluemap's chart has no priorityClassName value; inject it post-render.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: bluemap
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-low
   values:
-    priorityClassName: feather-low
     resources:
       limits:
         cpu: 2000m
