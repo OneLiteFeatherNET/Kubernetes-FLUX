@@ -1,15 +1,25 @@
-# Cluster priority tiers for workload hardening.
-# Sit below the built-in system-cluster-critical (2000000000) /
-# system-node-critical (2000001000), which stay reserved for kube-system and
-# MariaDB Galera. Higher value preempts lower under resource pressure.
+# Cluster priority tiers for workload hardening (5 levels).
+# All sit below the built-in system-cluster-critical (2000000000) /
+# system-node-critical (2000001000), which stay reserved for kube-system.
+# Higher value wins: under resource pressure the scheduler preempts and the
+# kubelet evicts lower-priority pods first.
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: feather-critical
+value: 1000000000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: "Storage layer (Ceph OSD/mon/mgr) — underpins every PVC; eviction means data unavailability."
+---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
   name: feather-platform
-value: 1000000000
+value: 900000000
 globalDefault: false
 preemptionPolicy: PreemptLowerPriority
-description: "Foundational platform: storage (Ceph), databases, ingress (Envoy), CA."
+description: "Stateful core: databases (Postgres, MariaDB/MaxScale), ingress (Envoy), CA (step-ca)."
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
@@ -18,7 +28,7 @@ metadata:
 value: 100000
 globalDefault: false
 preemptionPolicy: PreemptLowerPriority
-description: "Important services: monitoring, container registry, redis, connection poolers."
+description: "Observability & shared services: monitoring, container registry (Harbor), Redis, connection poolers."
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
@@ -27,7 +37,7 @@ metadata:
 value: 1000
 globalDefault: false
 preemptionPolicy: PreemptLowerPriority
-description: "Standard applications (outline, leantime, reposilite, dependency-track, etc.)."
+description: "Standard applications (outline, leantime, reposilite, dependency-track, shlink, otis)."
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
