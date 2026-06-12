@@ -4,3 +4,21 @@ resources:
   - ../../../../base/controllers/cnpg-operator
 patches:
   - path: release.yaml
+  # barman-cloud plugin (upstream manifest) ships no resources -> BestEffort.
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: barman-cloud
+        namespace: cnpg-system
+      spec:
+        template:
+          spec:
+            containers:
+              - name: barman-cloud
+                resources:
+                  requests:
+                    cpu: 25m
+                    memory: 64Mi
+                  limits:
+                    memory: 128Mi
