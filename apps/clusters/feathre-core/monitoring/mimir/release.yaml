@@ -25,6 +25,9 @@ spec:
           ha_cluster_label: cluster
           ha_replica_label: __replica__
           compactor_blocks_retention_period: 365d
+          # Default 150k was exhausted (new series silently rejected with
+          # err-mimir-max-series-per-user), blocking envoy metrics ingestion.
+          max_global_series_per_user: 300000
         common:
           storage:
             backend: s3
