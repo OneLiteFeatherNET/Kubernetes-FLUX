@@ -105,9 +105,10 @@ spec:
             externalTrafficPolicy: ENC[AES256_GCM,data:uWf4Mbk=,iv:Zt79bRTbgQF/VX+RpwLOpTtvSSa4TK9ZI8U7pzRI9kA=,tag:w3DS5Mfy11ApulmwDjs3OA==,type:str]
             targetPort: ENC[AES256_GCM,data:7IyTLQ==,iv:sAdXK9zbmRzHqyAIjQbU2zvuD1RA784KiNxgVkMAqeg=,tag:MuB8mPipEVXLwHh1v0StqA==,type:int]
             type: ENC[AES256_GCM,data:LIHIqImsN6Ol6u+h,iv:V6um23rXo4ozaJfFI8xqZehH7yazCM4MAEvv9HlMWQk=,tag:fTiSetiZVYMKDzkYnqRJzw==,type:str]
+        priorityClassName: ENC[AES256_GCM,data:huNmuTBIaXIOuo6ZHSVnww==,iv:pT5rREiyONRQ6HXhPLSAt5DaHHkty75KnXdYD0CFfRY=,tag:YXJ0bkDFtdBY6258z5lG8g==,type:str]
 sops:
-    lastmodified: "2026-06-10T20:19:09Z"
-    mac: ENC[AES256_GCM,data:wyLHGWrqP8SSbUPsp0KFLzF7DOPiuFAXm7aB0yRbZuqooHjztg3eXsxtZVMzL2qPd/WXnStChLDHENMTyv47DlddntdwzIf3SBZpIlOdU3W8bJNzPLB9YVImQ1Lk/dEMW71P1+A+1dkbDWK7tLQ12Twdf8aFdBWhdu58TABqPCo=,iv:oBpR6T5vAaG17vYV/PxxcB9FJUOa6Zv+Yf4OP+md+3I=,tag:s/Fjj3snZI+t3LuW1NBFtQ==,type:str]
+    lastmodified: "2026-06-12T14:32:47Z"
+    mac: ENC[AES256_GCM,data:DKraDcHejbuBZrD1vqOB7E5fiQG243cvD/ZMN84hE0RKHYlGaM4V+OWzVda/5MfsWev6IUj9TcqsR7Ve0zATNvViLnns+Vu90UCvxY3iTK9u2qCny6QU64g6dDZyh9sZz21S/S/taw4+PsNzD20Z32t3+1k/yTVx1/pTXK5h/M8=,iv:44RNVI8hGxWj4ZHGATSwswlBMvQ1PU2ll2nehNmENaM=,tag:QglXQHBI57bqHtUnFe88MA==,type:str]
     pgp:
         - created_at: "2026-06-10T20:19:09Z"
           enc: |-
