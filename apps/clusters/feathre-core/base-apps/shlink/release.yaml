@@ -77,7 +77,7 @@ spec:
         memory: .5Gi
     autoscaling:
       enabled: true
-      minReplicas: 1
+      minReplicas: 3
       maxReplicas: 3
       targetCPUUtilizationPercentage: 95
       # targetMemoryUtilizationPercentage: 80

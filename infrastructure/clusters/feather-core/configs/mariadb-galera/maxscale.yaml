@@ -17,6 +17,11 @@ spec:
     limits:
       memory: 256Mi
 
+  # Spread the 2 MaxScale replicas across nodes (both were landing on the
+  # same node); the operator adds pod anti-affinity per replica.
+  affinity:
+    antiAffinityEnabled: true
+
   monitor:
     name: mariadb-monitor
     module: galeramon
