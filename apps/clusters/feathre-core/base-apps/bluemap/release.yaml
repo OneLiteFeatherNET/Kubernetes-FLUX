@@ -12,6 +12,7 @@ spec:
       retries: 0
   interval: 1m0s
   values:
+    priorityClassName: feather-low
     resources:
       limits:
         cpu: 2000m

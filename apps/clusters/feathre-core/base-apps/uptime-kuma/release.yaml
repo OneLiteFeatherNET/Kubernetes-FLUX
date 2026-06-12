@@ -17,6 +17,7 @@ spec:
       valuesKey: password
       targetPath: serviceMonitor.basicAuth.password
   values:
+    priorityClassName: feather-low
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
