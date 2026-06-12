@@ -8,6 +8,12 @@ spec:
     spec:
       version: "=0.27.1"
   values:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
     config:
       data:
         CNPG_INCLUDE_PLUGINS: "barman-cloud.cloudnative-pg.io"

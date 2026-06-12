@@ -12,7 +12,14 @@ spec:
       # externalTrafficPolicy: Local + MetalLB BGP this makes every
       # node announce 10.200.90.1, so the external reverse-proxy path
       # reaches the gateway on any node (and client source IP is kept).
-      envoyDaemonSet: {}
+      envoyDaemonSet:
+        container:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 768Mi
       envoyService:
         externalTrafficPolicy: Local
         annotations:

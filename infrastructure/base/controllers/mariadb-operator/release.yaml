@@ -18,9 +18,21 @@ spec:
   # Default values
   #
   values:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
     metrics:
       enabled: false
     webhook:
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
       cert:
         certManager:
           enabled: true
