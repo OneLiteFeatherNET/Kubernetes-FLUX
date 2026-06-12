@@ -16,6 +16,12 @@ spec:
         enabled: false
       prometheusSpec:
         replicas: 2
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1536Mi
+          limits:
+            memory: 2560Mi
         replicaExternalLabelName: __replica__
         podAntiAffinity: hard
         podMonitorNamespaceSelector: {}
@@ -32,3 +38,31 @@ spec:
               minShards: 4
               maxShards: 20
               maxSamplesPerSend: 5000
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+      prometheusConfigReloader:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+    kube-state-metrics:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    prometheus-node-exporter:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
