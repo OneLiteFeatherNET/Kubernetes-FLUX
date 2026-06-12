@@ -69,14 +69,15 @@ spec:
     ingress:
       enabled: false
     apiServer:
-      # Chart default over-reserves 2cpu/5Gi (request) for ~1.1Gi real usage;
-      # right-size the request but keep a generous 4Gi limit for BOM-import spikes.
+      # DT enforces a hard minimum of 4GB JVM heap at startup. The heap is
+      # ~80% of the memory limit (MaxRAMPercentage), so the limit must be >=5Gi;
+      # use 6Gi for headroom (~4.8GB heap). Do NOT lower below 5Gi or it crashes.
       resources:
         requests:
           cpu: 500m
-          memory: 1536Mi
-        limits:
           memory: 4Gi
+        limits:
+          memory: 6Gi
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
