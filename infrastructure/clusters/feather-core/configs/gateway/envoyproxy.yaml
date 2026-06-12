@@ -13,6 +13,8 @@ spec:
       # node announce 10.200.90.1, so the external reverse-proxy path
       # reaches the gateway on any node (and client source IP is kept).
       envoyDaemonSet:
+        pod:
+          priorityClassName: feather-platform
         container:
           resources:
             requests:

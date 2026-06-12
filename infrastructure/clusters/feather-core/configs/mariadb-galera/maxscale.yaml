@@ -7,6 +7,7 @@ spec:
   mariaDbRef:
     name: mariadb-galera
   replicas: 2
+  priorityClassName: feather-platform
 
   resources:
     requests:
