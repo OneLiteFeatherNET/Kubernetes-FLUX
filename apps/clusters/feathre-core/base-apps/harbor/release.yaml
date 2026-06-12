@@ -542,10 +542,12 @@ spec:
       automountServiceAccountToken: false
       replicas: 2
       revisionHistoryLimit: 10
-      # resources:
-      #  requests:
-      #    memory: 256Mi
-      #    cpu: 100m
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
       extraEnvVars: [ ]
       nodeSelector: { }
       tolerations: [ ]
@@ -586,10 +588,12 @@ spec:
       startupProbe:
         enabled: true
         initialDelaySeconds: 10
-      # resources:
-      #  requests:
-      #    memory: 256Mi
-      #    cpu: 100m
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
       extraEnvVars: [ ]
       nodeSelector: { }
       tolerations: [ ]
@@ -671,10 +675,12 @@ spec:
       automountServiceAccountToken: false
       replicas: 2
       revisionHistoryLimit: 10
-      # resources:
-      #   requests:
-      #     memory: 256Mi
-      #     cpu: 100m
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
       extraEnvVars: [ ]
       nodeSelector: { }
       tolerations: [ ]
@@ -728,19 +734,23 @@ spec:
         image:
           repository: goharbor/registry-photon
           tag: v2.15.0
-        # resources:
-        #  requests:
-        #    memory: 256Mi
-        #    cpu: 100m
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
         extraEnvVars: [ ]
       controller:
         image:
           repository: goharbor/harbor-registryctl
           tag: v2.15.0
-        # resources:
-        #  requests:
-        #    memory: 256Mi
-        #    cpu: 100m
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
         extraEnvVars: [ ]
       # set the service account to be used, default if left empty
       serviceAccountName: ""
@@ -1059,10 +1069,12 @@ spec:
       automountServiceAccountToken: false
       replicas: 2
       revisionHistoryLimit: 10
-      # resources:
-      #  requests:
-      #    memory: 256Mi
-      #    cpu: 100m
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
       extraEnvVars: [ ]
       podAnnotations: { }
       ## Additional deployment labels
