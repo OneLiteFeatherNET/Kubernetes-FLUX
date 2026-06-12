@@ -17,10 +17,22 @@ spec:
     limits:
       memory: 256Mi
 
-  # Spread the 2 MaxScale replicas across nodes (both were landing on the
-  # same node); the operator adds pod anti-affinity per replica.
+  # Spread the 2 MaxScale replicas across nodes, but only against each other
+  # (preferred/soft) — NOT against MariaDB, since there aren't enough nodes to
+  # keep MaxScale and MariaDB fully separated. antiAffinityEnabled would make
+  # it a hard rule against both maxscale + mariadb, which over-constrains.
   affinity:
-    antiAffinityEnabled: true
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                    - maxscale-galera
+            topologyKey: kubernetes.io/hostname
 
   monitor:
     name: mariadb-monitor

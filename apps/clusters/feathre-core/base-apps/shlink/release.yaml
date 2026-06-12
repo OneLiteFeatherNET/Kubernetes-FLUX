@@ -24,6 +24,14 @@ spec:
                     operator: In
                     values:
                       - fr-rosenau
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: shlink
+                topologyKey: kubernetes.io/hostname
     image:
       repository: shlinkio/shlink
       pullPolicy: IfNotPresent

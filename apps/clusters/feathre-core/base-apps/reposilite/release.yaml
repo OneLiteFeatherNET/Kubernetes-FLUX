@@ -56,6 +56,14 @@ spec:
                   operator: In
                   values:
                     - fr-rosenau
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: reposilite
+              topologyKey: kubernetes.io/hostname
     autoscaling:
       enabled: true
       minReplicas: 3
