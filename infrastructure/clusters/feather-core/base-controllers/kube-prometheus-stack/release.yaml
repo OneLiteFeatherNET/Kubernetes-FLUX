@@ -21,6 +21,7 @@ spec:
             cpu: 250m
             memory: 1536Mi
           limits:
+            cpu: "2"
             memory: 2560Mi
         replicaExternalLabelName: __replica__
         podAntiAffinity: hard

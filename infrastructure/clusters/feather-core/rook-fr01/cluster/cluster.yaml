@@ -78,42 +78,49 @@ spec:
   resources:
     mgr:
       limits:
+        cpu: "1"
         memory: 1Gi
       requests:
         cpu: 100m
         memory: 512Mi
     mon:
       limits:
+        cpu: "1"
         memory: 2Gi
       requests:
         cpu: 100m
         memory: 1Gi
     osd:
       limits:
-        memory: 2Gi
+        cpu: "2"
+        memory: 6Gi
       requests:
         cpu: 200m
-        memory: 2Gi
+        memory: 4Gi
     mgr-sidecar:
       limits:
+        cpu: 200m
         memory: 100Mi
       requests:
         cpu: 100m
         memory: 40Mi
     crashcollector:
       limits:
+        cpu: 100m
         memory: 60Mi
       requests:
         cpu: 15m
         memory: 60Mi
     logcollector:
       limits:
+        cpu: 500m
         memory: 1Gi
       requests:
         cpu: 100m
         memory: 100Mi
     cleanup:
       limits:
+        cpu: "1"
         memory: 1Gi
       requests:
         cpu: 500m
@@ -123,7 +130,7 @@ spec:
       osd_max_backfills: "1"
       osd_recovery_max_active: "2"
       osd_recovery_op_priority: "1"
-      osd_memory_target: "2147483648"
+      osd_memory_target: "4294967296"
     # Disable RGW debug logging (default 1/5) to cut log-collector volume.
     # client.rgw inherits to all rgw daemons (e.g. client.rgw.feather-s3.a).
     client.rgw:
