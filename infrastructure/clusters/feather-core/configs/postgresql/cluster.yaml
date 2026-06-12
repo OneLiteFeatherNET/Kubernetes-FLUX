@@ -9,6 +9,14 @@ spec:
   storage:
     size: 75Gi
     storageClass: ceph-rbd-fr01
+  # Memory request==limit for OOM safety (real usage ~420Mi); CPU request only
+  # (no CPU limit to avoid throttling the DB).
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      memory: 1Gi
   enableSuperuserAccess: true
   affinity:
     nodeSelector:
