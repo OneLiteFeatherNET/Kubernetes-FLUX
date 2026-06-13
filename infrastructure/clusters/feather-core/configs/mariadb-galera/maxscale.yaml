@@ -6,13 +6,13 @@ metadata:
 spec:
   mariaDbRef:
     name: mariadb-galera
-  # TEMPORARY: 1 replica. The hard antiAffinityEnabled rule (immutable) cannot
-  # place a 2nd MaxScale pod — only 4 workload nodes for 3 MariaDB + 2 MaxScale
-  # mutually-anti-affine pods, so the 2nd stays Pending and stalls configs.
-  # Restore replicas: 2 together with a soft affinity via CR recreation later.
-  replicas: 1
-  # NOTE: spec.priorityClassName is immutable on MaxScale (webhook-enforced);
-  # cannot be set on the existing CR without recreating it. Left unset.
+  # 2 replicas for node-level redundancy (HA): if one node fails, the other
+  # MaxScale pod keeps serving the rw-router VIP.
+  replicas: 2
+  # Stateful core tier (databases / MariaDB / MaxScale) per the cluster
+  # priority-class scheme. Immutable on MaxScale, so it is only applied on a
+  # fresh CR — see the recreation note below.
+  priorityClassName: feather-platform
 
   resources:
     requests:
@@ -21,12 +21,30 @@ spec:
     limits:
       memory: 256Mi
 
-  # NOTE: spec.affinity.antiAffinityEnabled is immutable (webhook-enforced).
-  # It currently produces a HARD anti-affinity against BOTH maxscale and
-  # mariadb pods, which over-constrains scheduling (too few nodes). Switching
-  # to a soft, maxscale-only rule requires RECREATING the MaxScale CR.
+  # Spread the 2 MaxScale replicas across nodes, but only against each other
+  # (preferred/soft) — NOT against MariaDB, since there aren't enough nodes to
+  # keep MaxScale and MariaDB fully separated. antiAffinityEnabled would make
+  # it a HARD rule against both maxscale + mariadb, over-constraining the 4
+  # DB-eligible workers (3 MariaDB already occupy 3 of them) and leaving the
+  # 2nd MaxScale pod Pending.
+  #
+  # IMPORTANT: spec.affinity.antiAffinityEnabled is immutable (webhook-enforced).
+  # Going from antiAffinityEnabled:true to this soft rule — and setting
+  # priorityClassName above — requires RECREATING the MaxScale CR:
+  #   kubectl delete maxscale maxscale-galera -n mariadb-galera
+  # Flux then re-applies this manifest fresh (brief rw-router VIP blip).
   affinity:
-    antiAffinityEnabled: true
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                    - maxscale-galera
+            topologyKey: kubernetes.io/hostname
 
   monitor:
     name: mariadb-monitor
