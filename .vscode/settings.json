@@ -1,0 +1,10 @@
+{
+  // Native SOPS editing via the signageos.signageos-vscode-sops extension.
+  // Files matching a path_regex in .sops.yaml are auto-decrypted on open and
+  // re-encrypted on save. .conf files have no recognized format, so SOPS uses
+  // the binary store (JSON wrapper with a "data" key) — which is exactly how
+  // s3.sops.conf and the *-ingress-auth.sops.conf files are stored.
+  "sops.enable": true,
+  "sops.configPath": ".sops.yaml",
+  "sops.creationEnabled": true
+}
