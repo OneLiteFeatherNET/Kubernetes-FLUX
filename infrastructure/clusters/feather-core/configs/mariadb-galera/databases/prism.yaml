@@ -1,7 +1,7 @@
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: Database
 metadata:
-  name: stardust
+  name: prism
 spec:
   mariaDbRef:
     name: mariadb-galera
