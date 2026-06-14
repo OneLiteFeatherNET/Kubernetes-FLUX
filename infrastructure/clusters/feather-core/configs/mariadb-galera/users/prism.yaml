@@ -1,0 +1,46 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: User
+metadata:
+    name: prism
+spec:
+    # If you want the user to be created with a different name than the resource name
+    # name: user-custom
+    mariaDbRef:
+        name: mariadb-galera
+    passwordSecretKeyRef:
+        name: user-prism-secret
+        key: password
+    # This field defaults to 10
+    maxUserConnections: 20
+    host: '%'
+    # Delete the resource in the database whenever the CR gets deleted.
+    # Alternatively, you can specify Skip in order to omit deletion.
+    cleanupPolicy: Delete
+    requeueInterval: 10h
+    retryInterval: 30s
+sops:
+    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca|root_ca|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
+    lastmodified: "2026-06-14T16:42:08Z"
+    mac: ENC[AES256_GCM,data:g2JZTKUXReAS28CXiXMf3leLUbDO1QpCAS1ngt7nfv1W8gTUGxilq+TA64+jQ0so7sFuvAmBjMhV87SvH6AAPolYVnAHDTaz0BP/c0NMD1mqdnP8C/tfp4E6R+xJq6jzZ8Ht39fYNugvgRucOlKifeutfuEeoWvhZH4bY5syp+M=,iv:od7YhNsDKlskcOPTf3+Y37/GJSSYoV/YAXDwgkEViSQ=,tag:Z020PykLuv3W7k52Zsj8Hw==,type:str]
+    pgp:
+        - created_at: "2026-06-14T16:42:08Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAwWbRp0WX+I4AQ//QcmvJVhwWJ/OlgusAdU+yWAMJ2zEDk1EQwog7Z1y3Z5W
+            DgPaO2qhHVwu8ILghORhHr+K0YFd5dJErjYH86GhyqUmT+nmwnOX+H4ixmKq83h5
+            /DPi8JkPBfS3maHtvmWVthes565q9rjJ+TYGZRLLQNYw1hY0OnT8GAtqLo6EvTDH
+            gC2KseggBk43HwGEUal9dUxTORZigdpbhDSJzOlRlEMFMjR/M6Awyr0Gm8I1gnNb
+            EXlItasAD/tYZDfGfo+3TiHhTte4BrBBsJyvgj4bKcrXbSVRPa14bJ5sfZ7nNeAs
+            cvNi6ESyGYbduOyw4I0cjeNVFfjA9tDGXZDtRdKe8tDNLxAvqnmULzfoVzPctkkj
+            YUKW9rihgHyF0FGbOW0kBV81OIWYHLFK5dxWzGesOwjOxSg/QaSnAZ8aIOZDXpxi
+            BCsxEDi+RnzQoyDzoQnzqizemNpj4orBaGHL56WZmfK5dvOXIAoY2SWawqNaTqTm
+            StIz2fXxGe/i1oNYyWU4LVIe9EaQuDWYmRbmW3b5Cp1tRfpSsfLkyisNjgfD190u
+            qsfiFZUDNSuKugjuPd3MY3vUQevxSwFpUNzAKF6paRNUIMFlCeM4BTB0VMaT9Xdv
+            Nez6YbJ3FxsuUXFqp2JcX9o+tTzy0gZlvuCKyyDYFga+4l2Ukts85iW+M5L18I7S
+            XgGZyylubIalyrs0t3VySPmP/U78D6/bxfIcb5LIlmNvIQS5B+w8dDWhlRrMb4KB
+            UpyQmT+tO4UNESCoBl2y164ERjXcY8c1tVA/tWmGPSYRa9Bp/NpFyjtb1Wr/PlM=
+            =cFjG
+            -----END PGP MESSAGE-----
+          fp: 0231831CB40B8E587B7353CBA3AF727721205A62
+    version: 3.13.1

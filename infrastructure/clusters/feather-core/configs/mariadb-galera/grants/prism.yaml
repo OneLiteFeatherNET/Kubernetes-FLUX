@@ -1,0 +1,45 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+    name: prism-user-grant
+spec:
+    mariaDbRef:
+        name: mariadb-galera
+    privileges:
+        - ALL PRIVILEGES
+    database: prism
+    table: '*'
+    username: prism
+    grantOption: false
+    host: '%'
+    # Delete the resource in the database whenever the CR gets deleted.
+    # Alternatively, you can specify Skip in order to omit deletion.
+    cleanupPolicy: Delete
+    requeueInterval: 10h
+    retryInterval: 30s
+sops:
+    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca|root_ca|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
+    lastmodified: "2026-06-14T16:43:54Z"
+    mac: ENC[AES256_GCM,data:SXqonMdq947XBMDuHc9Qqytq8fFFboVKuZjaT960MwRMkfKM+tpO9buU0gBJ+4kM6SesaZSDglOQkJ3G653KmdOP2FfnRsHJEW8GDPWSdNYc6z3XnIt04eJ72f/re8VumZ6iS3dndD0GiCDUYw7nqkV02FJHH3wfGygoWLPRp0w=,iv:Fa4JHo1rCicByH4jj8gRkzAgQfjGkOcakIz+TQw5ZrM=,tag:C6iTxjrdgt4LVSQvM/aNNA==,type:str]
+    pgp:
+        - created_at: "2026-06-14T16:43:54Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAwWbRp0WX+I4AQ/+JrwKWNSoNxBAWW4Zt7VvLjBobWX2kUI0fyqERQX4Qtnz
+            BlvZBPTstoHPJgdzVs1QeJc9B2VMKiQ2Ii4f+JhdwZNfSvswl9OiC5LW1dZg5lyl
+            go4PaSQYlkB5hhMiyzIR+4VwGnwccW5ELhmKse3pjKBgOt418qy0a2hjFpndTsab
+            7YnIP/MH4dN9ldN5UUmn70Rqz4Jmsfcyj27f8egxNfnrhK4M6vA187sBi/HHdt/m
+            gq6Fev0UscQ2RbNLOFWryYBE6OtNntxYXPBvKqPe/sE+o04Ufe2XX6OOaR4zwAsy
+            0vKHCYzTTJO/sYI9xpjAkjQVmUFk63IfKVTG9LVlLatQWNkcg2FP+oVrjCkeDMLZ
+            3aktamlIoLIEY2pghOFh6e/N68ofbxl8QT2rDxkIIqBc+MMpQb6oGwLkAd+c5cKZ
+            W7MYCKcKPMzMfUcg7KDetUeMo/NjKAKpVhjbHja2XHQpu9raxne00qHQknsJ2HBe
+            SjMqgzOO4bkPAv7Fj5Ld04ZlfJQPFEx0vJzSiqGBw76kD4Q45B7rdpMCBdUt2q/B
+            zeeJvS6kM++SsZAVoq761R16kBl/yfc8upjRi5MOfO9MeAI5AAXRFXf8NTyx1tre
+            v1vfmUi3ckX0bmmcCZTEHTX6bhwP8s8OTkKkI+vKMA//SJnwURRk7sL77jJ93MLS
+            XgH6xpGNbG9VgBuPHoBthRI3fz/ccrlDhZxnsjtumGWRftsUEqtq4imbgR2lnyz9
+            Wpnn0TY6W9HZ7Ju1D2Rrg1OOydU9OoHroS1tWREnW8MkNNg5hZ09sYpyh6ainmM=
+            =vpJn
+            -----END PGP MESSAGE-----
+          fp: 0231831CB40B8E587B7353CBA3AF727721205A62
+    version: 3.13.1

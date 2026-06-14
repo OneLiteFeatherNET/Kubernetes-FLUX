@@ -2,43 +2,71 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: mariadb-galera
 generatorOptions:
-  disableNameSuffixHash: true
+    disableNameSuffixHash: true
 resources: []
-
 secretGenerator:
-  - name: user-plotsquared-secret
-    envs:
-      - plotsquared.sops.env
-  - name: user-discordbot-secret
-    envs:
-      - discordbot.sops.env
-  - name: uptime-kuma-secret
-    envs:
-      - uptime-kuma.sops.env
-  - name: user-leantime-secret
-    envs:
-      - leantime.sops.env
-  - name: user-reposilite-secret
-    envs:
-      - reposilite.sops.env
-  - name: user-shlink-secret
-    envs:
-      - shlink.sops.env
-  - name: user-cloudnet-secret
-    envs:
-      - cloudnet.sops.env
-  - name: user-luckperms-secret
-    envs:
-      - luckperms.sops.env
-  - name: user-coreprotect-secret
-    envs:
-      - coreprotect.sops.env
-  - name: user-stardust-secret
-    envs:
-      - stardust.sops.env
-  - name: user-playerkits-secret
-    envs:
-      - playerkits.sops.env
-  - name: user-monitoring-secret
-    envs:
-      - monitoring.sops.env
+    - name: user-plotsquared-secret
+      envs:
+        - plotsquared.sops.env
+    - name: user-discordbot-secret
+      envs:
+        - discordbot.sops.env
+    - name: uptime-kuma-secret
+      envs:
+        - uptime-kuma.sops.env
+    - name: user-leantime-secret
+      envs:
+        - leantime.sops.env
+    - name: user-reposilite-secret
+      envs:
+        - reposilite.sops.env
+    - name: user-shlink-secret
+      envs:
+        - shlink.sops.env
+    - name: user-cloudnet-secret
+      envs:
+        - cloudnet.sops.env
+    - name: user-luckperms-secret
+      envs:
+        - luckperms.sops.env
+    - name: user-coreprotect-secret
+      envs:
+        - coreprotect.sops.env
+    - name: user-stardust-secret
+      envs:
+        - stardust.sops.env
+    - name: user-playerkits-secret
+      envs:
+        - playerkits.sops.env
+    - name: user-monitoring-secret
+      envs:
+        - monitoring.sops.env
+    - name: user-prism-secret
+      envs:
+        - prism.sops.env
+sops:
+    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca|root_ca|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
+    lastmodified: "2026-06-14T16:43:30Z"
+    mac: ENC[AES256_GCM,data:KvX4lufm4yu/OA76If9lYmTlyQeDDIBcAjBzSInPQJvZoAdkB0ePkNZWDjNdqYizlZtd8ajSeGURISBqKq1AQrZrKda0uiyFIEMQmKG+tn6SVZvxaa3w+lIKJYelDntRdEQ8UVBLnKQvQyWEZao467lLmI1Vq/XYQp4iwyHVaT8=,iv:YKyd7SPO96j48uasFggjoTkb/jEbndLitp0VtuEB+w4=,tag:wUa+/kKvMDIwB0j/zAaHhw==,type:str]
+    pgp:
+        - created_at: "2026-06-14T16:43:30Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAwWbRp0WX+I4ARAAsdTUFR69l24FtJSXE9wfqGmsreOzmctONzWfLjWkk6LT
+            vElplH8qO1RaxrqqTr9qhkCPv+13v7O4cu+nQIJ0RuSjxXboBJROKL2JPuUZXp7B
+            IiSn7pxGwSFyD9p24RISeDJRH5MIRz1vjtKAASx0ZPgZBNbgliqJd+wO5XSaUUKI
+            k08DKUxdIYAOcCM2wkVcgcLAYIB0WnysTWpTM56ZQjErEG3QnaNhkDww88LcMz2e
+            XqC4M36T7zt7AqvueWP7xncP0opJyr0DrRax9ok6PgVEpvAFtOZamegADHBN45Oj
+            4lP4x6gRVzivD+x72J1f2IlUdMNXILzdelLEAMnl4uT9L8yvhfyuiQWqztL6NYwH
+            uMHKSwEiRkEBUvHJVRdDTkFHKkf//24tnb1wa2IOYPR0J2vwRVg4Ge4/onetYpId
+            997VMa2PD8SufHq44zeOU0kQe1HGbKZdyeqc2J/5yxz98MzJM42rxw9yWgm7/FNm
+            ZdiFffFG5lzV7UKiPk0aPwQBhL8HciZgMXcLHcIMnyc6gv2ggo96Dzk6Q2N0UBDO
+            X1XGzeI6/HhSNqwP2pSq+AAgO8Zc4QzdBHlBNHSzfaWU3kooywhYYUC4epUlbXip
+            70ydBPnFc6Rd/Y/4toAzLYGspi7Ggus/iHJfonHbMvqK5eHDkfGUquZABX6865DS
+            XAGLzcoasyQsIZGEYItuZMryLHksi5LR+ZfWrZwo4ibnOSBs+vOOoGvMBOtIKYxt
+            cxhio4TODiRAMrChabZkNEgrr44MMbDu7fInIltfXfxSnkvE71/Rh/cWSAqr
+            =d4EK
+            -----END PGP MESSAGE-----
+          fp: 0231831CB40B8E587B7353CBA3AF727721205A62
+    version: 3.13.1

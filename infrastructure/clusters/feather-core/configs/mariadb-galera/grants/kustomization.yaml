@@ -2,17 +2,44 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: mariadb-galera
 generatorOptions:
-  disableNameSuffixHash: true
+    disableNameSuffixHash: true
 resources:
-  - plotsquared.yaml
-  - discordbot.yaml
-  - uptime-kuma.yaml
-  - leantime.yaml
-  - reposilite.yaml
-  - shlink.yaml
-  - cloudnet.yaml
-  - luckperms.yaml
-  - coreprotect.yaml
-  - stardust.yaml
-  - playerkits.yaml
-  - monitoring.yaml
+    - plotsquared.yaml
+    - discordbot.yaml
+    - uptime-kuma.yaml
+    - leantime.yaml
+    - reposilite.yaml
+    - shlink.yaml
+    - cloudnet.yaml
+    - luckperms.yaml
+    - coreprotect.yaml
+    - stardust.yaml
+    - playerkits.yaml
+    - monitoring.yaml
+    - prism.yaml
+sops:
+    encrypted_regex: ^(ca_password|provisioner_password|intermediate_ca|root_ca|intermediate_ca_key|root_ca_key|\.dockerconfigjson|sql\.php)$
+    lastmodified: "2026-06-14T16:43:59Z"
+    mac: ENC[AES256_GCM,data:V+hNh41u69//+Cm2Eo1eWOILfDnrbNXmXi3LZ3yKkirEdgbu+mk+es3wObln4X2dwe0VaGkhcQamkbilG1o//8e5GBRL4mWfBoGr1i2kIe5YsFzCdQGxjBgkuuOVvZErfRAzJMgWXNWMLpYjh4imUxalM1UT/IKAYfaB28eb10E=,iv:/Wk0p3QUjYZTuGeF3EPfocwk88ZvBRRYeOni8SRyPeE=,tag:jxN/JKDJHYVSO5FRkEN8lg==,type:str]
+    pgp:
+        - created_at: "2026-06-14T16:43:59Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAwWbRp0WX+I4AQ/+I1NuqBPlvCwr4dJVAHnFt5+nA5XoYkWwZ0yzlOtMGem8
+            Ab9auawMNiin44/MaI4RcZ3+ejWFeNjRI2dNEptxpKyDIjpF5Pdq/ktuuqPXAG8a
+            Wj1ag5brklmOYIcNGZTsbB/fCKY6+wu3WFUrN/mn45EVba5ariDNAXcyAGWbc5bh
+            ffmWHmXR16F78BSxPEdKmPB75SGiJ4y3j2Qzs/10KiclR3YLO2QMy67OuahEXF/T
+            ErTUJuvDKWQ/l77Jp2BPpksBqzpehlRydcaWBIREDXoTn3gu2TyywvrNk8Qf+AdD
+            I6F+e5DYQ94Vk6CLjbsPS+1O3B8t4oll+aP/VgB3CvEVUpZPhPnevCwgUoh3mnCT
+            uZScoKJGNlmZvBUf9slZQzID6rLpL4hjdvxSh7hhSZjwR0/s2MssCYAVL+uMxoKZ
+            ldch+hCs17nZEVyswN/Vv0dZZEpUISe7SqUMFqTNCxNPx0uB1u+FiLsWFJ0Py4rl
+            A6AQQKOTGqKwlOuRRJTvSSwI063KN4lHW+N8+a9WpoAwlVXEPV2jyWcACI9Cl5yK
+            LJ3sPL8FyR8iimqQBBsWfe8PMop//27afGJw81NJ0jSnp0VjgROdX5OVeM7D5Ra8
+            OpO+8DyTC+mCUM+LFTSaTno6dnJge3B7YNcIhyQjQWdkLpVDLUjUKBdE61TzILbS
+            XgG2q2Q3pRTRSEM1x6GlxggwXPiFXMLXRUg6qWg45nKOZfoj37gf656jGYdmKc0d
+            Oh4PlOBOyo+zE7k+SWlT15f5uN/pipx2nslpH7BRcbB+z8qk3q8a9S6cXjC8Jxo=
+            =Vqqa
+            -----END PGP MESSAGE-----
+          fp: 0231831CB40B8E587B7353CBA3AF727721205A62
+    version: 3.13.1
