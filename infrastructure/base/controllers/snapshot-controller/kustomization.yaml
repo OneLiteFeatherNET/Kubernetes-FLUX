@@ -6,5 +6,5 @@ resources:
   # the Rook RBD/CephFS CSI driver. Exactly one snapshot-controller per cluster;
   # the CRDs are required or the CSI snapshotter sidecar fails to list
   # volumesnapshotcontents. Bump ref together with the Rook CSI sidecar version.
-  - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=v8.2.1
-  - https://github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=v8.2.1
+  - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=v8.6.0
+  - https://github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=v8.6.0
