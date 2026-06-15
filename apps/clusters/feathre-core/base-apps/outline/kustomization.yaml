@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../../../apps/base/outline/
+  - ingress.yaml
 patches:
   - path: release.yaml
 

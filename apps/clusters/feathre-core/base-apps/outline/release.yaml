@@ -57,19 +57,9 @@ spec:
     replicaCount: 1
     ingress:
       enabled: false
+    # Exposed via Cloudflare Tunnel (see ingress.yaml); chart HTTPRoute off.
     httpRoute:
-      enabled: true
-      parentRefs:
-        - name: eg
-          namespace: envoy
-          sectionName: https
-      hostnames:
-        - outline.onelitefeather.dev
-      rules:
-        - matches:
-            - path:
-                type: PathPrefix
-                value: /
+      enabled: false
     livenessProbe:
       initialDelaySeconds: 60
       httpGet:
