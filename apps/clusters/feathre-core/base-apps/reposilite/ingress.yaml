@@ -8,9 +8,9 @@ metadata:
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    # Parallel/migration host — the Envoy HTTPRoute keeps serving
-    # repo.onelitefeather.dev until cutover.
-    - host: repo-cf.onelitefeather.dev
+    # Primary host — served through the Cloudflare Tunnel. The controller
+    # takes over the existing CNAME and flips it to proxied automatically.
+    - host: repo.onelitefeather.dev
       http:
         paths:
           - path: /
