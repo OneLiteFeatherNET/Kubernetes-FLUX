@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cloudflare-tunnel-ingress-controller
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../base/controllers/cloudflare-tunnel-ingress-controller
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: cloudflare-tunnel-credentials
+    envs:
+      - cloudflare-tunnel.sops.env
