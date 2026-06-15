@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dependency-track-cloudflare-tunnel
+  annotations:
+    # both frontend and api-server serve plain HTTP on 8080
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    # Mirrors the chart's ingress path split: /api and /health -> api-server,
+    # everything else -> frontend. The controller orders tunnel rules
+    # longest-path-first, so /api and /health match before /.
+    - host: dependency-track.onelitefeather.dev
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: dependency-track-api-server
+                port:
+                  number: 8080
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: dependency-track-api-server
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dependency-track-frontend
+                port:
+                  number: 8080
