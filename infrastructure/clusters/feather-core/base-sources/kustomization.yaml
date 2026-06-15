@@ -7,6 +7,7 @@ resources:
   - helmcharts.yml
   - node-red.yml
   - reposilite.yml
+  - strrl.yml
   - smallstep.yml
   - jetstack.yml
   - bitnami.yml
