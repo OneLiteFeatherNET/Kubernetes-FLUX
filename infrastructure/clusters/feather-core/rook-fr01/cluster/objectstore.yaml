@@ -17,10 +17,13 @@ spec:
       requireSafeReplicaSize: true
   preservePoolsOnDelete: true
   hosting:
-    advertiseEndpoint:
-      dnsName: s3.onelitefeather.net
-      port: 443
-      useTls: true
+    # advertiseEndpoint is used by the Rook operator for RGW admin-ops calls
+    # (user/bucket reconcile) and must be reachable from inside the cluster.
+    # The external name belongs in dnsNames only; omitting advertiseEndpoint
+    # makes Rook default to the internal RGW service. Setting it to the external
+    # s3.onelitefeather.net caused all CephObjectStoreUser reconciles to time out
+    # (no NAT hairpin to the public IP). Virtual-host-style still works via the
+    # Envoy gateway + s3-proxy HTTPRoute, driven by rgw_dns_name from dnsNames.
     dnsNames:
       - s3.onelitefeather.net
   gateway:
