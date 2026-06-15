@@ -40,20 +40,9 @@ spec:
     replicaCount: 3
     ingress:
       enabled: false
+    # Exposed via Cloudflare Tunnel (see ingress.yaml); chart HTTPRoute off.
     httpRoute:
-      enabled: true
-      parentRefs:
-        - name: eg
-          namespace: envoy
-          sectionName: https
-      hostnames:
-        - shlink.onelitefeather.dev
-        - 1lf.link
-      rules:
-        - matches:
-            - path:
-                type: PathPrefix
-                value: /
+      enabled: false
     livenessProbe:
       httpGet:
         path: /rest/health
