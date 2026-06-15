@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudflare-tunnel-ingress-controller
+  namespace: cloudflare-tunnel-ingress-controller
+spec:
+  releaseName: cloudflare-tunnel-ingress-controller
+  chart:
+    spec:
+      chart: cloudflare-tunnel-ingress-controller
+      sourceRef:
+        kind: HelmRepository
+        name: strrl
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  # https://github.com/STRRL/cloudflare-tunnel-ingress-controller/blob/main/helm/cloudflare-tunnel-ingress-controller/values.yaml
+  values: {}
