@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/reposilite/
   - httproute.yaml
+  - ingress.yaml
   - pdb.yaml
 patches:
   - path: release.yaml

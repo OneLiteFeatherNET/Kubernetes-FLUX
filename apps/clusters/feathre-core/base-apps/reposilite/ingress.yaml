@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: reposilite-cloudflare-tunnel
+  annotations:
+    # reposilite serves plain HTTP on 8080
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    # Parallel/migration host — the Envoy HTTPRoute keeps serving
+    # repo.onelitefeather.dev until cutover.
+    - host: repo-cf.onelitefeather.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: reposilite
+                port:
+                  number: 8080
