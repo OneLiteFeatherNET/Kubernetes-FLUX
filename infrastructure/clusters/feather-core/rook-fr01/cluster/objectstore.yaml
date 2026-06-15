@@ -24,8 +24,17 @@ spec:
     # s3.onelitefeather.net caused all CephObjectStoreUser reconciles to time out
     # (no NAT hairpin to the public IP). Virtual-host-style still works via the
     # Envoy gateway + s3-proxy HTTPRoute, driven by rgw_dns_name from dnsNames.
+    #
+    # A host must be listed here for RGW to treat it as PATH-STYLE; any host not
+    # in dnsNames (nor an internal RGW service name Rook adds automatically) is
+    # parsed as virtual-host-style with the whole hostname as the bucket name.
+    # Hence the path-style endpoints below must be present:
+    #   - s3-path.onelitefeather.net   external path-style via Cloudflare Tunnel
+    #   - s3.apps.onelite.feather      internal path-style via the Envoy gateway
     dnsNames:
       - s3.onelitefeather.net
+      - s3-path.onelitefeather.net
+      - s3.apps.onelite.feather
   gateway:
     port: 80
     instances: 2
