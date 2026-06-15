@@ -18,7 +18,16 @@ spec:
                   operator: In
                   values:
                     - fr-rosenau
-    featureGates: "ExperimentalGatewayAPISupport=true"
+    # cert-manager >=1.15 enables Gateway API via file-based config, NOT the
+    # old ExperimentalGatewayAPISupport feature gate (a no-op since 1.15, which
+    # left HTTP-01 gatewayHTTPRoute challenges failing with "gateway api is not
+    # enabled"). The Gateway API CRDs must exist before the controller starts
+    # (provided by the envoy-crds base controller); Helm rolls the controller on
+    # this config change so the startup check picks them up.
+    config:
+      apiVersion: controller.config.cert-manager.io/v1alpha1
+      kind: ControllerConfiguration
+      enableGatewayAPI: true
     crds:
       enabled: true
     global:
