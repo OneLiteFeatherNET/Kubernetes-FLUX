@@ -45,3 +45,5 @@ spec:
             name: node-red-apps-onelite-feather-tls
           - kind: Secret
             name: otis-apps-onelite-feather-tls
+          - kind: Secret
+            name: s3-apps-onelite-feather-tls
