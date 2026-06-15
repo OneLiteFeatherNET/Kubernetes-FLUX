@@ -7,3 +7,4 @@ resources:
   - storageclasses
   - users
   - buckets
+  - s3-external-tunnel.yaml
