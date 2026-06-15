@@ -12,3 +12,4 @@ resources:
   - leantime.yaml
   - outline.yaml
   - mimir.yaml
+  - reposilite-public.yaml

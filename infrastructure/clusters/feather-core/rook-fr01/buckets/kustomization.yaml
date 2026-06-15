@@ -15,3 +15,5 @@ resources:
   - mimir-alertmanager.yaml
   - mimir-blocks.yaml
   - mimir-ruler.yaml
+  - reposilite-releases.yaml
+  - reposilite-snapshots.yaml
