@@ -1,15 +1,21 @@
+{{- $root := . -}}
+{{- range $name, $component := .Values.components }}
+{{- if and $component.enabled (default $component.http $component.service) }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "outline.fullname" . }}
+  name: {{ include "outline.fullname" $root }}-{{ $name }}
   labels:
-    {{- include "outline.labels" . | nindent 4 }}
+    {{- include "outline.componentLabels" (dict "root" $root "component" $name) | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ $root.Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ $root.Values.service.port }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
-    {{- include "outline.selectorLabels" . | nindent 4 }}
+    {{- include "outline.componentSelectorLabels" (dict "root" $root "component" $name) | nindent 4 }}
+{{- end }}
+{{- end }}

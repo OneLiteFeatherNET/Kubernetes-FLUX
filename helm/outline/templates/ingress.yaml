@@ -1,8 +1,11 @@
 {{- if .Values.ingress.enabled -}}
+{{- $root := . -}}
+{{- $fullName := include "outline.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "outline.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "outline.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -25,19 +28,17 @@ spec:
   {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ . | quote }}
       http:
         paths:
-          {{- range .paths }}
+          {{- range $root.Values.routes }}
           - path: {{ .path }}
-            {{- with .pathType }}
-            pathType: {{ . }}
-            {{- end }}
+            pathType: {{ .pathType | default "Prefix" }}
             backend:
               service:
-                name: {{ include "outline.fullname" $ }}
+                name: {{ $fullName }}-{{ .component }}
                 port:
-                  number: {{ $.Values.service.port }}
+                  number: {{ $svcPort }}
           {{- end }}
     {{- end }}
 {{- end }}

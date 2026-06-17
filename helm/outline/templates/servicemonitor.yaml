@@ -21,7 +21,7 @@ spec:
       - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      {{- include "outline.selectorLabels" . | nindent 6 }}
+      {{- include "outline.componentSelectorLabels" (dict "root" . "component" .Values.metrics.component) | nindent 6 }}
   endpoints:
     - port: {{ .Values.metrics.port }}
       path: {{ .Values.metrics.path }}
