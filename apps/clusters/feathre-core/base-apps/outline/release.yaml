@@ -49,28 +49,30 @@ spec:
     httpRoute:
       enabled: false
 
-    # Outline services run as stateless Deployments. websockets (socket.io
-    # realtime) attaches to the web HTTP server and the browser connects to the
-    # app origin (there is no WEBSOCKETS_URL), so it must run inside the web
-    # component, not standalone. collaboration has its own URL/path and runs
-    # separately. The Cloudflare Tunnel Ingress (ingress.yaml) routes:
+    # Outline services run as stateless Deployments. websockets (socket.io) and
+    # worker do not behave correctly when run standalone (websockets attaches to
+    # the web HTTP server and has no WEBSOCKETS_URL; an isolated worker grows
+    # memory unbounded). Both run inside the web component, matching the proven
+    # all-in-one process model, now horizontally scaled via replicas.
+    # collaboration has its own URL/path and runs separately for independent
+    # scaling. The Cloudflare Tunnel Ingress (ingress.yaml) routes:
     #   /collaboration -> outline-collaboration
-    #   /              -> outline-web (serves the app, API and /realtime)
+    #   /              -> outline-web (app, API, /realtime; also runs the worker)
     # Multi-replica collaboration requires REDIS_COLLABORATION_URL in outline-env.
     components:
       web:
         enabled: true
-        services: "web,websockets"
+        services: "web,websockets,worker"
         http: true
         service: true
         replicaCount: 2
         resources:
           limits:
             cpu: 2
-            memory: 2Gi
+            memory: 3Gi
           requests:
             cpu: 1
-            memory: 1Gi
+            memory: 1500Mi
         livenessProbe:
           initialDelaySeconds: 60
           httpGet:
@@ -108,23 +110,6 @@ spec:
           requests:
             cpu: 500m
             memory: 1Gi
-        pdb:
-          enabled: true
-          minAvailable: 1
-        affinity: *regionAffinity
-
-      worker:
-        enabled: true
-        services: "worker"
-        http: false
-        replicaCount: 2
-        resources:
-          limits:
-            cpu: 1
-            memory: 1536Mi
-          requests:
-            cpu: 500m
-            memory: 768Mi
         pdb:
           enabled: true
           minAvailable: 1

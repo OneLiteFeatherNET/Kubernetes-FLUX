@@ -3,14 +3,14 @@
 # outage we run every service as its own stateless Deployment ("component").
 # Nothing here is a StatefulSet: all state lives in Postgres, Redis and S3.
 #
-#   web           -> app, API, /auth, /oauth, static AND websockets /realtime
+#   web           -> app, API, static, websockets /realtime AND worker jobs
 #   collaboration -> Hocuspocus realtime editing            (path /collaboration)
-#   worker        -> background job queues
 #   cron          -> scheduled job enqueuer (singleton)
 #
-# websockets (socket.io) attaches to the web HTTP server and the browser
-# connects to the app origin (there is no WEBSOCKETS_URL), so it runs inside
-# the web component via SERVICES="web,websockets" rather than standalone.
+# websockets (socket.io) and worker do not run correctly standalone (websockets
+# attaches to the web HTTP server and has no WEBSOCKETS_URL; an isolated worker
+# grows memory unbounded), so both run inside the web component via
+# SERVICES="web,websockets,worker". collaboration scales independently.
 # Each container only serves the routes of its own SERVICES, so the gateway
 # must route:
 #   /collaboration -> <release>-collaboration
@@ -55,10 +55,11 @@ extraEnv: []
 components:
   web:
     enabled: true
-    # websockets (socket.io /realtime) attaches to the web HTTP server and the
-    # browser connects to the app origin (no WEBSOCKETS_URL), so it runs here,
-    # not as a standalone component.
-    services: "web,websockets"
+    # websockets (socket.io /realtime) and worker do not run correctly
+    # standalone (websockets attaches to the web HTTP server with no
+    # WEBSOCKETS_URL; an isolated worker grows memory unbounded), so both run
+    # inside the web component.
+    services: "web,websockets,worker"
     http: true
     service: true
     replicaCount: 2
@@ -146,32 +147,6 @@ components:
           matchLabels:
             app.kubernetes.io/name: outline
             app.kubernetes.io/component: collaboration
-
-  worker:
-    enabled: true
-    services: "worker"
-    http: false
-    replicaCount: 2
-    resources:
-      limits:
-        cpu: 400m
-        memory: 600Mi
-      requests:
-        cpu: 200m
-        memory: 400Mi
-    autoscaling:
-      enabled: false
-    pdb:
-      enabled: true
-      minAvailable: 1
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/name: outline
-            app.kubernetes.io/component: worker
 
   cron:
     enabled: true
