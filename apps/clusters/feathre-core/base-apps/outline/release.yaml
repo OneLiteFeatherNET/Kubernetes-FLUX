@@ -19,6 +19,14 @@ spec:
     extraEnv:
       - name: WEB_CONCURRENCY
         value: "1"
+      # Postgres max_connections is 100 cluster-wide. With ~9 component pods a
+      # MIN=5/MAX=10 pool (from the .env) exhausts it. Keep a small pool per pod
+      # (9 pods x 3 = 27 max). The CNPG pooler is session-mode, so it would not
+      # multiplex these away.
+      - name: DATABASE_CONNECTION_POOL_MIN
+        value: "1"
+      - name: DATABASE_CONNECTION_POOL_MAX
+        value: "3"
     securityContext:
       readOnlyRootFilesystem: false
       runAsUser: 1000
