@@ -89,10 +89,10 @@ spec:
         resources:
           limits:
             cpu: 500m
-            memory: 512Mi
+            memory: 1536Mi
           requests:
             cpu: 200m
-            memory: 256Mi
+            memory: 768Mi
         pdb:
           enabled: true
           minAvailable: 1
@@ -107,10 +107,10 @@ spec:
         resources:
           limits:
             cpu: 1
-            memory: 1Gi
+            memory: 2Gi
           requests:
             cpu: 500m
-            memory: 512Mi
+            memory: 1Gi
         pdb:
           enabled: true
           minAvailable: 1
@@ -124,10 +124,10 @@ spec:
         resources:
           limits:
             cpu: 1
-            memory: 1Gi
+            memory: 1536Mi
           requests:
             cpu: 500m
-            memory: 512Mi
+            memory: 768Mi
         pdb:
           enabled: true
           minAvailable: 1
@@ -143,10 +143,10 @@ spec:
         resources:
           limits:
             cpu: 200m
-            memory: 256Mi
+            memory: 1Gi
           requests:
             cpu: 50m
-            memory: 128Mi
+            memory: 512Mi
         pdb:
           enabled: false
         affinity: *regionAffinity
