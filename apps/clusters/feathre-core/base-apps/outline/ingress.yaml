@@ -10,14 +10,6 @@ spec:
     - host: outline.onelitefeather.dev
       http:
         paths:
-          # socket.io realtime presence/notifications
-          - path: /realtime
-            pathType: Prefix
-            backend:
-              service:
-                name: outline-websockets
-                port:
-                  number: 3000
           # Hocuspocus realtime collaborative editing
           - path: /collaboration
             pathType: Prefix

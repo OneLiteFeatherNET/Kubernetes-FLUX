@@ -3,19 +3,20 @@
 # outage we run every service as its own stateless Deployment ("component").
 # Nothing here is a StatefulSet: all state lives in Postgres, Redis and S3.
 #
-#   web           -> serves the app, API, /auth, /oauth, static (path /)
-#   websockets    -> socket.io realtime presence/notifications (path /realtime)
+#   web           -> app, API, /auth, /oauth, static AND websockets /realtime
 #   collaboration -> Hocuspocus realtime editing            (path /collaboration)
 #   worker        -> background job queues
 #   cron          -> scheduled job enqueuer (singleton)
 #
-# Because each container only serves the routes of its own SERVICES, the three
-# HTTP components each get their own Service and the gateway must route:
-#   /realtime      -> <release>-websockets
+# websockets (socket.io) attaches to the web HTTP server and the browser
+# connects to the app origin (there is no WEBSOCKETS_URL), so it runs inside
+# the web component via SERVICES="web,websockets" rather than standalone.
+# Each container only serves the routes of its own SERVICES, so the gateway
+# must route:
 #   /collaboration -> <release>-collaboration
-#   /              -> <release>-web
+#   /              -> <release>-web   (also serves /realtime)
 #
-# Running collaboration and/or websockets with >1 replica requires Redis sync:
+# Running collaboration with >1 replica requires Redis sync:
 #   - websockets    uses REDIS_URL (socket.io adapter)            -- already set
 #   - collaboration needs REDIS_COLLABORATION_URL in the .env secret
 # See https://docs.getoutline.com/s/hosting/doc/horizontal-scaling-hkfU5Stao7
@@ -54,7 +55,10 @@ extraEnv: []
 components:
   web:
     enabled: true
-    services: "web"
+    # websockets (socket.io /realtime) attaches to the web HTTP server and the
+    # browser connects to the app origin (no WEBSOCKETS_URL), so it runs here,
+    # not as a standalone component.
+    services: "web,websockets"
     http: true
     service: true
     replicaCount: 2
@@ -96,51 +100,6 @@ components:
           matchLabels:
             app.kubernetes.io/name: outline
             app.kubernetes.io/component: web
-
-  websockets:
-    enabled: true
-    services: "websockets"
-    http: true
-    service: true
-    replicaCount: 2
-    strategy:
-      type: RollingUpdate
-      rollingUpdate:
-        maxUnavailable: 0
-        maxSurge: 1
-    resources:
-      limits:
-        cpu: 300m
-        memory: 400Mi
-      requests:
-        cpu: 100m
-        memory: 256Mi
-    livenessProbe:
-      initialDelaySeconds: 30
-      httpGet:
-        path: /_health
-        port: http
-    readinessProbe:
-      initialDelaySeconds: 30
-      httpGet:
-        path: /_health
-        port: http
-    autoscaling:
-      enabled: false
-      minReplicas: 2
-      maxReplicas: 4
-      targetCPUUtilizationPercentage: 80
-    pdb:
-      enabled: true
-      minAvailable: 1
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/name: outline
-            app.kubernetes.io/component: websockets
 
   collaboration:
     enabled: true
@@ -238,12 +197,10 @@ components:
 # real exposure is the external Cloudflare Tunnel Ingress). Each entry maps a
 # request path to the Service of a component.
 routes:
-  - path: /realtime
-    pathType: Prefix
-    component: websockets
   - path: /collaboration
     pathType: Prefix
     component: collaboration
+  # web also serves /realtime (socket.io) since it runs the websockets service.
   - path: /
     pathType: Prefix
     component: web

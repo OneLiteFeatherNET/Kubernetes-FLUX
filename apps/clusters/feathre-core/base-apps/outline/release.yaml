@@ -49,17 +49,18 @@ spec:
     httpRoute:
       enabled: false
 
-    # Every Outline service runs as its own stateless Deployment. web,
-    # websockets and collaboration each serve a distinct path and get their own
-    # Service; the Cloudflare Tunnel Ingress (ingress.yaml) routes:
-    #   /realtime      -> outline-websockets
+    # Outline services run as stateless Deployments. websockets (socket.io
+    # realtime) attaches to the web HTTP server and the browser connects to the
+    # app origin (there is no WEBSOCKETS_URL), so it must run inside the web
+    # component, not standalone. collaboration has its own URL/path and runs
+    # separately. The Cloudflare Tunnel Ingress (ingress.yaml) routes:
     #   /collaboration -> outline-collaboration
-    #   /              -> outline-web
+    #   /              -> outline-web (serves the app, API and /realtime)
     # Multi-replica collaboration requires REDIS_COLLABORATION_URL in outline-env.
     components:
       web:
         enabled: true
-        services: "web"
+        services: "web,websockets"
         http: true
         service: true
         replicaCount: 2
@@ -93,24 +94,6 @@ spec:
                       operator: In
                       values:
                         - fr-rosenau
-
-      websockets:
-        enabled: true
-        services: "websockets"
-        http: true
-        service: true
-        replicaCount: 2
-        resources:
-          limits:
-            cpu: 500m
-            memory: 1536Mi
-          requests:
-            cpu: 200m
-            memory: 768Mi
-        pdb:
-          enabled: true
-          minAvailable: 1
-        affinity: *regionAffinity
 
       collaboration:
         enabled: true
