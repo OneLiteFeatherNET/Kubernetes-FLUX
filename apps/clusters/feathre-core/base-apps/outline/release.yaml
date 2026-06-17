@@ -13,6 +13,12 @@ spec:
       tag: "1.7.1"
     # Applied to every component pod (replaces the former post-render patch).
     priorityClassName: feather-standard
+    # One Node process per pod — we scale horizontally via replicas, not via
+    # in-pod throng forks. Overrides WEB_CONCURRENCY from the .env secret and
+    # keeps per-component memory ~4x lower (the secret sets WEB_CONCURRENCY=4).
+    extraEnv:
+      - name: WEB_CONCURRENCY
+        value: "1"
     securityContext:
       readOnlyRootFilesystem: false
       runAsUser: 1000
