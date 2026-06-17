@@ -3,16 +3,16 @@
 # outage we run every service as its own stateless Deployment ("component").
 # Nothing here is a StatefulSet: all state lives in Postgres, Redis and S3.
 #
-#   web           -> app, API, static, websockets /realtime AND worker jobs
+#   web           -> app, API, static, websockets /realtime, worker AND cron
 #   collaboration -> Hocuspocus realtime editing            (path /collaboration)
-#   cron          -> scheduled job enqueuer (singleton)
 #
-# websockets (socket.io) and worker do not run correctly standalone (websockets
-# attaches to the web HTTP server and has no WEBSOCKETS_URL; an isolated worker
-# grows memory unbounded), so both run inside the web component via
-# SERVICES="web,websockets,worker". collaboration scales independently.
-# Each container only serves the routes of its own SERVICES, so the gateway
-# must route:
+# websockets (socket.io) and the BullMQ services (worker, cron) do not run
+# correctly standalone (websockets has no WEBSOCKETS_URL; an isolated
+# worker/cron grows memory unbounded), so they run inside the web component via
+# SERVICES="web,websockets,worker,cron". cron duplication across web replicas
+# is safe (BullMQ repeatable jobs are idempotent). collaboration scales
+# independently. Each container only serves the routes of its own SERVICES, so
+# the gateway must route:
 #   /collaboration -> <release>-collaboration
 #   /              -> <release>-web   (also serves /realtime)
 #
@@ -147,26 +147,6 @@ components:
           matchLabels:
             app.kubernetes.io/name: outline
             app.kubernetes.io/component: collaboration
-
-  cron:
-    enabled: true
-    services: "cron"
-    http: false
-    # Singleton: more than one cron scheduler would enqueue duplicate jobs.
-    replicaCount: 1
-    strategy:
-      type: Recreate
-    resources:
-      limits:
-        cpu: 100m
-        memory: 200Mi
-      requests:
-        cpu: 50m
-        memory: 128Mi
-    autoscaling:
-      enabled: false
-    pdb:
-      enabled: false
 
 # Path routing for the built-in chart ingress / httpRoute (both off here; the
 # real exposure is the external Cloudflare Tunnel Ingress). Each entry maps a
