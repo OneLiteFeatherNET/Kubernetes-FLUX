@@ -1,4 +1,5 @@
 {{- if .Values.httpRoute.enabled -}}
+{{- $root := . -}}
 {{- $fullName := include "outline.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 apiVersion: gateway.networking.k8s.io/v1
@@ -21,17 +22,13 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   rules:
-    {{- range .Values.httpRoute.rules }}
-    {{- with .matches }}
+    {{- range .Values.routes }}
     - matches:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .filters }}
-      filters:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
+        - path:
+            type: {{ if eq (.pathType | default "Prefix") "Exact" }}Exact{{ else }}PathPrefix{{ end }}
+            value: {{ .path }}
       backendRefs:
-        - name: {{ $fullName }}
+        - name: {{ $fullName }}-{{ .component }}
           port: {{ $svcPort }}
           weight: 1
     {{- end }}

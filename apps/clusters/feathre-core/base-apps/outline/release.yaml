@@ -4,40 +4,15 @@ metadata:
   name: outline
   namespace: outline
 spec:
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: outline
-            patch: |
-              - op: add
-                path: /spec/template/spec/priorityClassName
-                value: feather-standard
   values:
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: topology.kubernetes.io/region
-                  operator: In
-                  values:
-                    - fr-rosenau
     image:
       repository: docker.getoutline.com/outlinewiki/outline
       # This sets the pull policy for images.
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: "1.7.1"
-    resources:
-      limits:
-        cpu: 2
-        memory: 2Gi
-      requests:
-        cpu: 1
-        memory: 1Gi
+    # Applied to every component pod (replaces the former post-render patch).
+    priorityClassName: feather-standard
     securityContext:
       readOnlyRootFilesystem: false
       runAsUser: 1000
@@ -54,20 +29,124 @@ spec:
               path: .env
           secretName: outline-env
 
-    replicaCount: 1
     ingress:
       enabled: false
     # Exposed via Cloudflare Tunnel (see ingress.yaml); chart HTTPRoute off.
     httpRoute:
       enabled: false
-    livenessProbe:
-      initialDelaySeconds: 60
-      httpGet:
-        path: /_health
-        port: 3000
-    readinessProbe:
-      initialDelaySeconds: 60
-      httpGet:
-        path: /_health
-        port: 3000
 
+    # Every Outline service runs as its own stateless Deployment. web,
+    # websockets and collaboration each serve a distinct path and get their own
+    # Service; the Cloudflare Tunnel Ingress (ingress.yaml) routes:
+    #   /realtime      -> outline-websockets
+    #   /collaboration -> outline-collaboration
+    #   /              -> outline-web
+    # Multi-replica collaboration requires REDIS_COLLABORATION_URL in outline-env.
+    components:
+      web:
+        enabled: true
+        services: "web"
+        http: true
+        service: true
+        replicaCount: 2
+        resources:
+          limits:
+            cpu: 2
+            memory: 2Gi
+          requests:
+            cpu: 1
+            memory: 1Gi
+        livenessProbe:
+          initialDelaySeconds: 60
+          httpGet:
+            path: /_health
+            port: http
+        readinessProbe:
+          initialDelaySeconds: 60
+          httpGet:
+            path: /_health
+            port: http
+        pdb:
+          enabled: true
+          minAvailable: 1
+        affinity: &regionAffinity
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: topology.kubernetes.io/region
+                      operator: In
+                      values:
+                        - fr-rosenau
+
+      websockets:
+        enabled: true
+        services: "websockets"
+        http: true
+        service: true
+        replicaCount: 2
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi
+        pdb:
+          enabled: true
+          minAvailable: 1
+        affinity: *regionAffinity
+
+      collaboration:
+        enabled: true
+        services: "collaboration"
+        http: true
+        service: true
+        replicaCount: 2
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        pdb:
+          enabled: true
+          minAvailable: 1
+        affinity: *regionAffinity
+
+      worker:
+        enabled: true
+        services: "worker"
+        http: false
+        replicaCount: 2
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        pdb:
+          enabled: true
+          minAvailable: 1
+        affinity: *regionAffinity
+
+      cron:
+        enabled: true
+        services: "cron"
+        http: false
+        replicaCount: 1
+        strategy:
+          type: Recreate
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        pdb:
+          enabled: false
+        affinity: *regionAffinity

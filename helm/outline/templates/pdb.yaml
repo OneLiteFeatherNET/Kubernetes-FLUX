@@ -1,0 +1,22 @@
+{{- $root := . -}}
+{{- range $name, $component := .Values.components }}
+{{- if and $component.enabled $component.pdb $component.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "outline.fullname" $root }}-{{ $name }}
+  labels:
+    {{- include "outline.componentLabels" (dict "root" $root "component" $name) | nindent 4 }}
+spec:
+  {{- with $component.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with $component.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "outline.componentSelectorLabels" (dict "root" $root "component" $name) | nindent 6 }}
+{{- end }}
+{{- end }}

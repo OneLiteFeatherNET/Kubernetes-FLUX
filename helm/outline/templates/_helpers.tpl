@@ -51,6 +51,22 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Component selector labels. Call with a dict: (dict "root" $ "component" $name)
+*/}}
+{{- define "outline.componentSelectorLabels" -}}
+{{ include "outline.selectorLabels" .root }}
+app.kubernetes.io/component: {{ .component }}
+{{- end }}
+
+{{/*
+Component labels. Call with a dict: (dict "root" $ "component" $name)
+*/}}
+{{- define "outline.componentLabels" -}}
+{{ include "outline.labels" .root }}
+app.kubernetes.io/component: {{ .component }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "outline.serviceAccountName" -}}

@@ -1,4 +1,24 @@
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+# Outline ships as a single image whose sub-services are selected via the
+# SERVICES env var. To survive node failures and rolling updates without an
+# outage we run every service as its own stateless Deployment ("component").
+# Nothing here is a StatefulSet: all state lives in Postgres, Redis and S3.
+#
+#   web           -> serves the app, API, /auth, /oauth, static (path /)
+#   websockets    -> socket.io realtime presence/notifications (path /realtime)
+#   collaboration -> Hocuspocus realtime editing            (path /collaboration)
+#   worker        -> background job queues
+#   cron          -> scheduled job enqueuer (singleton)
+#
+# Because each container only serves the routes of its own SERVICES, the three
+# HTTP components each get their own Service and the gateway must route:
+#   /realtime      -> <release>-websockets
+#   /collaboration -> <release>-collaboration
+#   /              -> <release>-web
+#
+# Running collaboration and/or websockets with >1 replica requires Redis sync:
+#   - websockets    uses REDIS_URL (socket.io adapter)            -- already set
+#   - collaboration needs REDIS_COLLABORATION_URL in the .env secret
+# See https://docs.getoutline.com/s/hosting/doc/horizontal-scaling-hkfU5Stao7
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
@@ -14,17 +34,227 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-replicaCount: 3
+# Scheduling priority applied to every component pod.
+priorityClassName: ""
+
+# Extra env vars applied to every component (merged before each component's own extraEnv).
+# The SERVICES var is injected automatically per component and must not be set here.
+extraEnv: []
+# - name: FOO
+#   value: bar
+
+# Components are the per-service Deployments. Each runs the same image but a
+# different SERVICES subset. Disable a component by setting enabled: false.
+# Fields per component:
+#   services   (string)  -> value of the SERVICES env var (required)
+#   http       (bool)    -> exposes the container port + gets a Service
+#   service    (bool)    -> create a Service for this component (defaults to http)
+#   replicaCount, strategy, resources, livenessProbe, readinessProbe,
+#   autoscaling, pdb, nodeSelector, affinity, tolerations, topologySpreadConstraints
+components:
+  web:
+    enabled: true
+    services: "web"
+    http: true
+    service: true
+    replicaCount: 2
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    resources:
+      limits:
+        cpu: 400m
+        memory: 600Mi
+      requests:
+        cpu: 200m
+        memory: 400Mi
+    livenessProbe:
+      initialDelaySeconds: 60
+      httpGet:
+        path: /_health
+        port: http
+    readinessProbe:
+      initialDelaySeconds: 60
+      httpGet:
+        path: /_health
+        port: http
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 6
+      targetCPUUtilizationPercentage: 80
+    pdb:
+      enabled: true
+      minAvailable: 1
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: outline
+            app.kubernetes.io/component: web
+
+  websockets:
+    enabled: true
+    services: "websockets"
+    http: true
+    service: true
+    replicaCount: 2
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    resources:
+      limits:
+        cpu: 300m
+        memory: 400Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    livenessProbe:
+      initialDelaySeconds: 30
+      httpGet:
+        path: /_health
+        port: http
+    readinessProbe:
+      initialDelaySeconds: 30
+      httpGet:
+        path: /_health
+        port: http
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+    pdb:
+      enabled: true
+      minAvailable: 1
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: outline
+            app.kubernetes.io/component: websockets
+
+  collaboration:
+    enabled: true
+    services: "collaboration"
+    http: true
+    service: true
+    # >1 replica requires REDIS_COLLABORATION_URL in the .env secret.
+    replicaCount: 2
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    resources:
+      limits:
+        cpu: 400m
+        memory: 600Mi
+      requests:
+        cpu: 200m
+        memory: 400Mi
+    livenessProbe:
+      initialDelaySeconds: 30
+      httpGet:
+        path: /_health
+        port: http
+    readinessProbe:
+      initialDelaySeconds: 30
+      httpGet:
+        path: /_health
+        port: http
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+    pdb:
+      enabled: true
+      minAvailable: 1
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: outline
+            app.kubernetes.io/component: collaboration
+
+  worker:
+    enabled: true
+    services: "worker"
+    http: false
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 400m
+        memory: 600Mi
+      requests:
+        cpu: 200m
+        memory: 400Mi
+    autoscaling:
+      enabled: false
+    pdb:
+      enabled: true
+      minAvailable: 1
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: outline
+            app.kubernetes.io/component: worker
+
+  cron:
+    enabled: true
+    services: "cron"
+    http: false
+    # Singleton: more than one cron scheduler would enqueue duplicate jobs.
+    replicaCount: 1
+    strategy:
+      type: Recreate
+    resources:
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+    autoscaling:
+      enabled: false
+    pdb:
+      enabled: false
+
+# Path routing for the built-in chart ingress / httpRoute (both off here; the
+# real exposure is the external Cloudflare Tunnel Ingress). Each entry maps a
+# request path to the Service of a component.
+routes:
+  - path: /realtime
+    pathType: Prefix
+    component: websockets
+  - path: /collaboration
+    pathType: Prefix
+    component: collaboration
+  - path: /
+    pathType: Prefix
+    component: web
+
 ingress:
   enabled: false
   className: ""
   annotations: { }
   # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+    - chart-example.local
   tls: [ ]
   #  - secretName: chart-example-tls
   #    hosts:
@@ -38,11 +268,7 @@ httpRoute:
     sectionName: http
   hostnames:
   - chart-example.local
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
+
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
@@ -52,6 +278,8 @@ service:
 
 metrics:
   enabled: false
+  # Which component exposes /metrics (the web process).
+  component: web
   path: /metrics
   port: http
   scheme: http
@@ -95,38 +323,6 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-
-
-resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-   limits:
-     cpu: 400m
-     memory: 600Mi
-   requests:
-     cpu: 200m
-     memory: 400Mi
-
-# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  httpGet:
-    path: /_health
-    port: 3000
-readinessProbe:
-  httpGet:
-    path: /_health
-    port: 3000
-
-# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
@@ -145,3 +341,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Spread component pods across nodes/zones. Applied to every component unless
+# overridden per component (see each component above).
+topologySpreadConstraints: []
