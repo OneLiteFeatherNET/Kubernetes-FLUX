@@ -59,7 +59,7 @@ components:
     # standalone (websockets attaches to the web HTTP server with no
     # WEBSOCKETS_URL; an isolated worker grows memory unbounded), so both run
     # inside the web component.
-    services: "web,websockets,worker"
+    services: "web,websockets,worker,cron"
     http: true
     service: true
     replicaCount: 2
