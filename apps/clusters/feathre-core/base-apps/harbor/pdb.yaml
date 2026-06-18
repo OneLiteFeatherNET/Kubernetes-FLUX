@@ -49,3 +49,18 @@ spec:
       app: harbor
       component: portal
       release: harbor
+---
+# nginx is the single front service all Harbor traffic funnels through; keep at
+# least one pod up across voluntary disruptions (node drains) to avoid 504s.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: harbor-nginx
+  namespace: harbor
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: harbor
+      component: nginx
+      release: harbor
