@@ -521,15 +521,13 @@ spec:
       nodeSelector: { }
       tolerations: [ ]
       affinity: { }
-      # Spread the two nginx pods across nodes.
+      # Spread the two nginx pods across nodes. NOTE: the chart auto-injects the
+      # labelSelector for this constraint, so it must NOT be set here (duplicate
+      # key -> invalid YAML -> helm post-render failure).
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: harbor
-              component: nginx
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
