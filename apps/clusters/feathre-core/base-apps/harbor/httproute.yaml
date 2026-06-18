@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: harbor
+spec:
+  # Internal front door for the Harbor UI / manual access. Envoy terminates TLS
+  # (cert from step-issuer, see internal-certs) and forwards HTTP to the harbor
+  # nginx service, which handles all path routing. Image pulls use the public
+  # tunnel host instead (externalURL stays harbor.onelitefeather.dev).
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - harbor.apps.onelite.feather
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: harbor
+          port: 80

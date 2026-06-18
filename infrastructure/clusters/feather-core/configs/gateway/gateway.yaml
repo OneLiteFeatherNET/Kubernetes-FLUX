@@ -38,6 +38,8 @@ spec:
           - kind: Secret
             name: grafana-apps-onelite-feather-tls
           - kind: Secret
+            name: harbor-apps-onelite-feather-tls
+          - kind: Secret
             name: loki-apps-onelite-feather-tls
           - kind: Secret
             name: mimir-apps-onelite-feather-tls

@@ -9,17 +9,13 @@ spec:
       version: "=1.19.1"
   values:
     expose:
-      # Exposed via Kubernetes Gateway API (Envoy Gateway) HTTPRoute
-      type: route
-      route:
-        hosts:
-          - harbor.onelitefeather.dev
-        parentRefs:
-          - name: eg
-            namespace: envoy
-            sectionName: https
-            group: gateway.networking.k8s.io
-            kind: Gateway
+      # Single-endpoint exposure via the internal Harbor nginx proxy: the
+      # `harbor` ClusterIP service fronts nginx, which does all path routing
+      # (portal vs core vs /v2). Two front doors point at that one service:
+      #   - Envoy Gateway HTTPRoute   -> harbor.apps.onelite.feather (internal UI/manual, see httproute.yaml)
+      #   - cloudflare-tunnel Ingress -> harbor.onelitefeather.dev   (external push/pull, see ingress.yaml)
+      # TLS is terminated at Envoy / Cloudflare; nginx serves plain HTTP on :80.
+      type: clusterIP
       tls:
         # Enable TLS or not.
         # Delete the "ssl-redirect" annotations in "expose.ingress.annotations" when TLS is disabled and "expose.type" is "ingress"

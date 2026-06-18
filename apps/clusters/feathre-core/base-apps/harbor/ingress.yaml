@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: harbor-cloudflare-tunnel
+  annotations:
+    # Harbor nginx serves plain HTTP on :80; TLS is terminated by Cloudflare.
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    # External registry endpoint (push + pull), matches externalURL.
+    # NOTE: Cloudflare caps request bodies at 100MB, so pushes MUST use a
+    # chunked client. regctl chunks by default (BlobMax 4MB / BlobChunk 512KB)
+    # and is fine as long as blobChunk stays < 100MB. A plain `docker push`
+    # of a single >100MB layer will fail through the tunnel.
+    - host: harbor.onelitefeather.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: harbor
+                port:
+                  number: 80

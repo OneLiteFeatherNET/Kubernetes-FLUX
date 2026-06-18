@@ -6,6 +6,8 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/harbor/
   - pdb.yaml
+  - httproute.yaml
+  - ingress.yaml
 patches:
   - path: release.yaml
 
