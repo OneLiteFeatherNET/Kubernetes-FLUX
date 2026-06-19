@@ -18,7 +18,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/otis/otis
       pullPolicy: IfNotPresent
-      tag: "1.13.2"
+      tag: "1.13.4"
     imagePullSecrets:
       - name: harbor-pull
     service:
@@ -90,7 +90,6 @@ spec:
               properties:
                 hibernate:
                   hbm2ddl.auto: none
-                  dialect: org.hibernate.dialect.PostgreSQLDialect
                   format_sql: false
                   show_sql: false
                   jdbc.lob.non_contextual_creation: true
