@@ -236,10 +236,13 @@ spec:
           bucket: harbor
           #accesskey: awsaccesskey
           #secretkey: awssecretkey
-          regionendpoint: https://s3.onelitefeather.net
+          # Internal Ceph RGW service (in-cluster, plain HTTP). The public
+          # s3.onelitefeather.net endpoint (65.108.236.148) is unreachable from the
+          # registry pod and made every blob op time out with an s3aws 500.
+          regionendpoint: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
           #encrypt: false
           #keyid: mykeyid
-          secure: true
+          secure: false
           #skipverify: false
           v4auth: true
           #chunksize: "5242880"
