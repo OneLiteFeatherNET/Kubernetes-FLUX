@@ -17,4 +17,3 @@ resources:
   - mimir-ruler.yaml
   - reposilite-releases.yaml
   - reposilite-snapshots.yaml
-  - bakery.yaml
