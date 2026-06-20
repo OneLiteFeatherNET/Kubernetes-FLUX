@@ -1,0 +1,13 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: olf
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: olf
+  # Test user: no admin capabilities (a plain S3 user sees only its own buckets).
+  # Quota caps total usage and limits the user to a single bucket.
+  quotas:
+    maxBuckets: 1
+    maxSize: 1Ti
