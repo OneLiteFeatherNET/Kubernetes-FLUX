@@ -131,3 +131,7 @@ spec:
             key: REDIS_SERVERS_PASSWORD
       - name: SKIP_INITIAL_GEOLITE_DOWNLOAD
         value: "true"
+      - name: WEB_WORKER_NUM
+        value: "6"
+      - name: TASK_WORKER_NUM
+        value: "4"
