@@ -121,7 +121,9 @@ spec:
     envFrom:
       - secretRef:
           name: otis-app-db
-
+    env:
+      - name: LOG_JSON
+        value: "true"
     readinessProbe:
       path: /health
       initialDelaySeconds: 5
