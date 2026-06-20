@@ -1,0 +1,43 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: n8n-redis
+  namespace: n8n
+spec:
+  releaseName: n8n-redis
+  chartRef:
+    kind: OCIRepository
+    name: redis
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Dedicated single-master Redis for n8n's BullMQ queue. Standalone (no
+  # Sentinel): the n8n chart points at one host:port and would hit READONLY
+  # errors against a replica, so a single writable master is the correct
+  # topology here. See [[redis-sentinel-master-routing]].
+  values:
+    architecture: standalone
+    global:
+      security:
+        allowInsecureImages: true
+    auth:
+      enabled: true
+      existingSecret: n8n-redis
+      existingSecretPasswordKey: redis-password
+    master:
+      priorityClassName: feather-high
+      persistence:
+        enabled: true
+        storageClass: ceph-rbd-fr01
+        size: 8Gi
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi

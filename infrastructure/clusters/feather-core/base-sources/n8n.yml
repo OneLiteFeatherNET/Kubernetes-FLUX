@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: n8n
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://ghcr.io/n8n-io/n8n-helm-chart/n8n
+  ref:
+    semver: ">=1.10.0 <2.0.0"

@@ -16,6 +16,7 @@ resources:
   - database/backstage.yaml
   - database/dependency-track.yaml
   - database/grafana.yaml
+  - database/n8n.yaml
 
 secretGenerator:
   - name: cnpg-backup
@@ -57,3 +58,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/grafana.sops.env
+  - name: role-n8n
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/n8n.sops.env
