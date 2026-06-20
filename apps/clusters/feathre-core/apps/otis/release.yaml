@@ -16,9 +16,9 @@ spec:
                 value: feather-standard
   values:
     image:
-      repository: harbor.onelitefeather.dev/otis/otis
+      repository: harbor.onelitefeather.dev/onelitefeather/otis
       pullPolicy: IfNotPresent
-      tag: "1.13.5"
+      tag: "1.14.0"
     imagePullSecrets:
       - name: harbor-pull
     service:
