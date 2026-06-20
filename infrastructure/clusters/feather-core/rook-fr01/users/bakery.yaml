@@ -1,0 +1,14 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: bakery
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: bakery
+  # External party: deliberately NO capabilities. A plain S3 user (no admin-ops
+  # caps) can only see/access its own buckets — never the other tenants' data.
+  # Quota caps total usage and limits the user to a single bucket.
+  quotas:
+    maxBuckets: 1
+    maxSize: 1Ti
