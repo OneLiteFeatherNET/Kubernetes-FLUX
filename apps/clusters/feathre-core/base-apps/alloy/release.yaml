@@ -24,12 +24,53 @@ spec:
           discovery.relabel "pod_logs" {
             targets = discovery.kubernetes.pod.targets
 
+            // Opt-out: pods annotated with logs.onelitefeather.net/scrape="false"
+            // are dropped entirely. If the annotation is absent, the pod is scraped (default).
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_logs_onelitefeather_net_scrape"]
+              regex  = "false"
+              action = "drop"
+            }
+
+            // --- Identity labels (low cardinality, app.kubernetes.io/* standard) ---
             rule {
               source_labels = ["__meta_kubernetes_namespace"]
               action = "replace"
               target_label = "namespace"
             }
 
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              action = "replace"
+              target_label = "app"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component"]
+              action = "replace"
+              target_label = "component"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_part_of"]
+              action = "replace"
+              target_label = "part_of"
+            }
+
+            // --- Custom policy labels (onelitefeather.net) ---
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_logs_onelitefeather_net_tenant"]
+              action = "replace"
+              target_label = "tenant"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_onelitefeather_net_team"]
+              action = "replace"
+              target_label = "team"
+            }
+
+            // --- Identification (higher cardinality, but k8s standard) ---
             rule {
               source_labels = ["__meta_kubernetes_pod_name"]
               action = "replace"
@@ -42,12 +83,7 @@ spec:
               target_label = "container"
             }
 
-            rule {
-              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
-              action = "replace"
-              target_label = "app"
-            }
-
+            // job = namespace/container (unchanged, so existing queries keep working)
             rule {
               source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
               action = "replace"
