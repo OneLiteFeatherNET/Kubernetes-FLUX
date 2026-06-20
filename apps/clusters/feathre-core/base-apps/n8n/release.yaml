@@ -16,13 +16,17 @@ spec:
       workerReplicaCount: 2
       workerConcurrency: 10
 
-    # External Postgres on the shared CNPG cluster (session-mode pooler-rw,
-    # same endpoint every other app uses). DB + role provisioned via CNPG in
+    # External Postgres on the shared CNPG cluster. Connect to the primary
+    # -rw service directly, NOT the PgBouncer pooler: n8n sends
+    # statement_timeout as a libpq startup parameter, which PgBouncer rejects
+    # ("unsupported startup parameter: statement_timeout") unless it's in
+    # ignore_startup_parameters — and changing that on the shared pooler would
+    # affect every other app. DB + role provisioned via CNPG in
     # infrastructure/.../configs/postgresql.
     database:
       type: postgresdb
       useExternal: true
-      host: feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local
+      host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
       port: 5432
       database: n8n
       schema: public
