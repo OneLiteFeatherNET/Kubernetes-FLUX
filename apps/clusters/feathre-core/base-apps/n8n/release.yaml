@@ -1,0 +1,91 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  values:
+    image:
+      tag: "stable"
+
+    # Queue mode: 1 main (UI/API) + N workers (BullMQ executors).
+    # multiMain stays off — it requires an enterprise license.
+    replicaCount: 1
+    queueMode:
+      enabled: true
+      workerReplicaCount: 2
+      workerConcurrency: 10
+
+    # External Postgres on the shared CNPG cluster (session-mode pooler-rw,
+    # same endpoint every other app uses). DB + role provisioned via CNPG in
+    # infrastructure/.../configs/postgresql.
+    database:
+      type: postgresdb
+      useExternal: true
+      host: feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local
+      port: 5432
+      database: n8n
+      schema: public
+      user: n8n
+      passwordSecret:
+        name: n8n-db
+        key: password
+
+    # Dedicated single-master Redis (apps/base/n8n/redis.yaml).
+    redis:
+      enabled: true
+      useExternal: true
+      host: n8n-redis-master.n8n.svc.cluster.local
+      port: 6379
+      passwordSecret:
+        name: n8n-redis
+        key: redis-password
+
+    # N8N_ENCRYPTION_KEY / N8N_HOST / N8N_PORT / N8N_PROTOCOL come from the
+    # SOPS-encrypted n8n-secrets Secret (generated in kustomization.yaml).
+    secretRefs:
+      existingSecret: n8n-secrets
+
+    # Exposed internally via Envoy Gateway HTTPRoute (httproute.yaml); the
+    # chart Ingress stays off. webhook.url drives WEBHOOK_URL and
+    # N8N_EDITOR_BASE_URL so editor/webhook links use the public-facing host.
+    ingress:
+      enabled: false
+    webhook:
+      enabled: true
+      url: https://n8n.apps.onelite.feather
+
+    config:
+      timezone: Europe/Berlin
+      extraEnv:
+        # One reverse proxy (Envoy) sits in front; trust exactly one hop.
+        - name: N8N_PROXY_HOPS
+          value: "1"
+
+    # Region pin (matches the other stateful apps).
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
+
+    resources:
+      main:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: "1"
+          memory: 1Gi
+      worker:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: "1"
+          memory: 1Gi

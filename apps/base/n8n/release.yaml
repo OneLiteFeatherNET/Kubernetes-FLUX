@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  releaseName: n8n
+  chartRef:
+    kind: OCIRepository
+    name: n8n
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  # https://github.com/n8n-io/n8n-hosting/blob/main/charts/n8n/values.yaml
+  values: {}

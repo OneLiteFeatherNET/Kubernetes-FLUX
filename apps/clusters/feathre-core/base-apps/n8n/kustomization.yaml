@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: n8n
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/n8n/
+  - httproute.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  # Core n8n secret referenced via secretRefs.existingSecret. Must carry all
+  # four keys the chart reads (N8N_ENCRYPTION_KEY / N8N_HOST / N8N_PORT /
+  # N8N_PROTOCOL). Losing N8N_ENCRYPTION_KEY makes stored credentials
+  # undecryptable — keep it stable.
+  - name: n8n-secrets
+    envs:
+      - n8n-core.sops.env
+  # Postgres password — must match the CNPG role-n8n password.
+  - name: n8n-db
+    envs:
+      - n8n-db.sops.env
+  # Redis password — shared by the dedicated Redis (auth.existingSecret) and
+  # n8n's QUEUE_BULL_REDIS_PASSWORD. Key name is redis-password for both.
+  - name: n8n-redis
+    envs:
+      - n8n-redis.sops.env

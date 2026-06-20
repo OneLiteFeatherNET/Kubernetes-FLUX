@@ -56,6 +56,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-grafana
+      - name: n8n
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-n8n
     services:
       additional:
         - selectorType: rw

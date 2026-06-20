@@ -21,3 +21,4 @@ resources:
   - prometheus-stack.yaml
   - grafana.yml
   - rook.yaml
+  - n8n.yml
