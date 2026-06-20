@@ -1,0 +1,8 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: bakery
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: bakery
+  storageClassName: ceph-bucket-fr01
