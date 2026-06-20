@@ -121,7 +121,7 @@ spec:
       # REDIS_SERVERS_PASSWORD. Sentinel URIs carry no password
       # because redis is deployed with auth.sentinel: false.
       - name: REDIS_SERVERS
-        value: "tcp://redis-node-0.redis-headless.redis.svc.cluster.local:26379,tcp://redis-node-1.redis-headless.redis.svc.cluster.local:26379,tcp://redis-node-2.redis-headless.redis.svc.cluster.local:26379"
+        value: "tcp://redis-node-0.redis-headless.redis.svc.cluster.local:26379/6,tcp://redis-node-1.redis-headless.redis.svc.cluster.local:26379/6,tcp://redis-node-2.redis-headless.redis.svc.cluster.local:26379/6"
       - name: REDIS_SENTINEL_SERVICE
         value: "mymaster"
       - name: REDIS_SERVERS_PASSWORD
