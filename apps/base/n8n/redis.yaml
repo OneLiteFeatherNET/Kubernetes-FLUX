@@ -22,6 +22,15 @@ spec:
   # topology here. See [[redis-sentinel-master-routing]].
   values:
     architecture: standalone
+    # Bitnami removed the chart-default docker.io/bitnami/redis tags from
+    # Docker Hub (moved to the bitnamilegacy repo), so the 21.2.3 default
+    # 8.0.2-debian-12-r3 404s on pull. Pin to the same legacy image the
+    # shared cluster Redis uses. allowInsecureImages is required because
+    # overriding to a non-default repo trips Bitnami's image verification.
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/redis
+      tag: 7.4.2-debian-12-r4
     global:
       security:
         allowInsecureImages: true
