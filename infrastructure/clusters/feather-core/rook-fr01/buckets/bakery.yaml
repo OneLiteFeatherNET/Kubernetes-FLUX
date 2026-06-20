@@ -6,3 +6,9 @@ metadata:
 spec:
   bucketName: bakery
   storageClassName: ceph-bucket-fr01
+  # External party: the OBC provisions a dedicated RGW user scoped to ONLY this
+  # bucket (no admin caps), plus a per-bucket quota. The auto-generated Secret
+  # "bakery" (access/secret key) is what we hand to the external party.
+  additionalConfig:
+    # Hard size cap on the bucket; enforced by RGW as a bucket quota.
+    maxSize: "1Ti"
