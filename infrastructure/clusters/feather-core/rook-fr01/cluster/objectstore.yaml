@@ -37,7 +37,7 @@ spec:
       - s3.apps.onelite.feather
   gateway:
     port: 80
-    instances: 2
+    instances: 3
     placement:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
