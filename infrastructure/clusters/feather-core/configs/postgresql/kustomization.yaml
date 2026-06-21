@@ -13,6 +13,7 @@ resources:
   - database/harbor.yaml
   - database/outline.yaml
   - database/otis.yaml
+  - database/otis-dev.yaml
   - database/backstage.yaml
   - database/dependency-track.yaml
   - database/grafana.yaml
@@ -28,6 +29,12 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/otis.sops.env
+  - name: role-otis-dev
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/otis-dev.sops.env
   - name: role-outline
     options:
       labels:
