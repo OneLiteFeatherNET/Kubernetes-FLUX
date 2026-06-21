@@ -12,6 +12,7 @@ resources:
   - leantime
   - grafana
   - n8n
+  - ollama
   # loki + mimir (later tempo) are managed by the dedicated
   # wait:false monitoring Kustomization
   # (clusters/feather-core/monitoring.yaml) so their external

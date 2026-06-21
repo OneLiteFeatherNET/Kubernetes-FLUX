@@ -22,3 +22,4 @@ resources:
   - grafana.yml
   - rook.yaml
   - n8n.yml
+  - ollama.yml
