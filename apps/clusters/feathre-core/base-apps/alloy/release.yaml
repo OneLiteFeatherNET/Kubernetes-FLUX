@@ -57,6 +57,14 @@ spec:
               target_label = "part_of"
             }
 
+            // instance distinguishes Helm releases that share a chart name
+            // (e.g. the micronaut chart): app stays "micronaut", instance = release.
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_instance"]
+              action = "replace"
+              target_label = "instance"
+            }
+
             // --- Custom policy labels (onelitefeather.net) ---
             rule {
               source_labels = ["__meta_kubernetes_pod_label_logs_onelitefeather_net_tenant"]
@@ -68,6 +76,16 @@ spec:
               source_labels = ["__meta_kubernetes_pod_label_onelitefeather_net_team"]
               action = "replace"
               target_label = "team"
+            }
+
+            // Log-format opt-in: pods labeled logs.onelitefeather.net/format="json"
+            // get their JSON parsed in loki.process below (level -> label,
+            // logger -> structured metadata, embedded timestamp honoured).
+            // Absent -> label dropped -> stage.match skips them (plain-text default).
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_logs_onelitefeather_net_format"]
+              action = "replace"
+              target_label = "format"
             }
 
             // --- Identification (higher cardinality, but k8s standard) ---
@@ -102,6 +120,40 @@ spec:
             stage.static_labels {
               values = {
                 cluster = "feather-core",
+              }
+            }
+
+            // Only applied to streams that opted in via logs.onelitefeather.net/format="json".
+            // Plain-text apps fall through untouched (no parse-error spam, no wasted CPU).
+            stage.match {
+              selector = "{format=\"json\"}"
+
+              stage.json {
+                expressions = {
+                  level  = "level",
+                  logger = "logger",
+                  log_ts = "timestamp",
+                }
+              }
+
+              // Use the application's own timestamp instead of the ingest time.
+              stage.timestamp {
+                source = "log_ts"
+                format = "RFC3339Nano"
+              }
+
+              // level is low-cardinality -> a real index label for fast {level="ERROR"} filtering.
+              stage.labels {
+                values = {
+                  level = "level",
+                }
+              }
+
+              // logger is higher-cardinality -> structured metadata, not an index label.
+              stage.structured_metadata {
+                values = {
+                  logger = "logger",
+                }
               }
             }
 
