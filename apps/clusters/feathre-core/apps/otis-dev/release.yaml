@@ -23,9 +23,10 @@ spec:
     replicaCount: 1
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/otis
-      # Dev tag -- moving target, so always pull. Replace with the tag you deploy.
+      # latest is a moving tag -> always pull so each pod start picks up the
+      # newest dev build.
       pullPolicy: Always
-      tag: "dev"
+      tag: "latest"
     imagePullSecrets:
       - name: harbor-pull
     service:
