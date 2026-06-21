@@ -60,6 +60,11 @@ spec:
             netty:
               access-logger:
                 enabled: true
+                # Drop probe/metrics noise: kubelet hits /health every 5-10s and
+                # Prometheus scrapes /prometheus. Regexes match the request URI.
+                exclusions:
+                  - /health.*
+                  - /prometheus.*
       profiles:
         prod: |-
           router:
