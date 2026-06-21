@@ -12,11 +12,27 @@ spec:
         enabled: false
       models:
         # Pulled once at container startup, then cached on the PVC below.
-        # qwen2.5:3b-instruct is small enough for responsive CPU inference and
-        # strong at structured classification / JSON output (the n8n use case).
+        # gemma4:e4b (Apache 2.0, MoE ~4B active, 9.6Gi) beats qwen2.5:3b on
+        # structured extraction (correct enum/scale adherence) and is licensed
+        # for commercial use — the n8n forum-application classifier. CPU gen is
+        # ~5-6 tok/s; throughput is fine for low-volume async classification.
         # Swap/extend here; every entry adds to first-boot startup time.
         pull:
-          - qwen2.5:3b-instruct
+          - gemma4:e4b
+        # Keep the model resident from pod start. The cold load is brutal
+        # (~9.6Gi off Ceph-RBD = minutes), so we never want a request to pay it.
+        # Pairs with OLLAMA_KEEP_ALIVE=-1 below so it never unloads afterwards.
+        run:
+          - gemma4:e4b
+
+    # Keep models loaded forever once warm — combined with ollama.models.run
+    # above, the model loads at pod start and stays resident, so no request
+    # ever eats the multi-minute cold load. (Top-level chart value, sibling of
+    # `ollama`.) n8n must still pin num_ctx — a changed context size forces a
+    # full model reload (~30s).
+    extraEnv:
+      - name: OLLAMA_KEEP_ALIVE
+        value: "-1"
 
     # Persist model blobs so a pod restart does not re-download gigabytes.
     persistentVolume:
