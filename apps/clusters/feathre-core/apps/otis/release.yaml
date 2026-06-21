@@ -45,16 +45,21 @@ spec:
                 value: /
     profiles: [ "prod" ]
 
+    # Opt in to Alloy's JSON log pipeline (LOG_JSON=true emits structured logs).
+    # Alloy maps this to the "format" stream label -> level/logger/timestamp parsing.
+    podLabels:
+      logs.onelitefeather.net/format: json
+
     config:
       base: |-
         micronaut:
           application:
             name: Otis Backend
-            server:
-              port: 8080
+          server:
+            port: 8080
             netty:
               access-logger:
-                enabled: false
+                enabled: true
       profiles:
         prod: |-
           router:
@@ -81,6 +86,9 @@ spec:
           logger:
             levels:
               root: WARN
+              # Per-request access logs (micronaut.server.netty.access-logger).
+              # root is WARN, so the access logger must be raised explicitly.
+              HTTP_ACCESS_LOGGER: INFO
               "org.hibernate.SQL": WARN
               "org.hibernate.type.descriptor.sql": WARN
               "org.hibernate.orm.connections.pooling": WARN
