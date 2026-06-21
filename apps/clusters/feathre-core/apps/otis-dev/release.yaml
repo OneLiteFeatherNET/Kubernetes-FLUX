@@ -1,0 +1,154 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: otis-dev
+  namespace: otis-dev
+spec:
+  releaseName: otis-dev
+  interval: 1m0s
+  install:
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: ./helm/micronaut
+      sourceRef:
+        kind: GitRepository
+        name: helmcharts
+        namespace: flux-system
+  values:
+    # Single replica, no PDB -> dev is best-effort and yields to prod under
+    # pressure (no priorityClassName). Same logging/JSON setup as prod so the
+    # behaviour matches; only the DB, domain and image tag differ.
+    replicaCount: 1
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/otis
+      # Dev tag -- moving target, so always pull. Replace with the tag you deploy.
+      pullPolicy: Always
+      tag: "dev"
+    imagePullSecrets:
+      - name: harbor-pull
+    service:
+      port: 8080
+    metrics:
+      enabled: true
+      path: /prometheus
+      serviceMonitor:
+        enabled: true
+    ingress:
+      enabled: false
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: eg
+          namespace: envoy
+          sectionName: https
+      hostnames:
+        - otis-dev.apps.onelite.feather
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+    profiles: [ "prod" ]
+
+    # Opt in to Alloy's JSON log pipeline (LOG_JSON=true emits structured logs).
+    # Alloy maps this to the "format" stream label -> level/logger/timestamp parsing.
+    podLabels:
+      logs.onelitefeather.net/format: json
+
+    config:
+      base: |-
+        micronaut:
+          application:
+            name: Otis Backend
+          server:
+            port: 8080
+            netty:
+              access-logger:
+                enabled: true
+                # Drop probe/metrics noise: kubelet hits /health every 5-10s and
+                # Prometheus scrapes /prometheus. Regexes match the request URI.
+                exclusions:
+                  - /health.*
+                  - /prometheus.*
+      profiles:
+        prod: |-
+          router:
+            static-resources:
+              swagger:
+                paths: classpath:META-INF/swagger
+                mapping: /swagger/**
+              swagger-ui:
+                paths: classpath:META-INF/swagger/views/swagger-ui
+                mapping: /swagger-ui/**
+          endpoints:
+            health:
+              enabled: true
+              sensitive: false
+            metrics:
+              enabled: true
+              sensitive: true
+          micrometer:
+            metrics:
+              enabled: true
+            export:
+              prometheus:
+                enabled: true
+          logger:
+            levels:
+              root: WARN
+              # Per-request access logs (micronaut.server.netty.access-logger).
+              # root is WARN, so the access logger must be raised explicitly.
+              HTTP_ACCESS_LOGGER: INFO
+              "org.hibernate.SQL": WARN
+              "org.hibernate.type.descriptor.sql": WARN
+              "org.hibernate.orm.connections.pooling": WARN
+              "com.zaxxer.hikari": WARN
+          jpa:
+            default:
+              properties:
+                hibernate:
+                  hbm2ddl.auto: none
+                  format_sql: false
+                  show_sql: false
+                  jdbc.lob.non_contextual_creation: true
+                  connection.provider_disables_autocommit: true
+                  jdbc.batch_size: 50
+                  order_inserts: true
+                  order_updates: true
+                  jdbc.batch_versioned_data: true
+          datasources:
+            default:
+              dialect: POSTGRES
+              url: $${JDBC_URL}
+              username: $${DB_USER}
+              password: $${DB_PASS}
+              driver-class-name: org.postgresql.Driver
+              schema-generate: NONE
+              maximumPoolSize: 20
+              minimumIdle: 4
+              autoCommit: false
+              poolName: "HikariPool-Otis-Backend"
+              connectionTimeout: 10000
+              validationTimeout: 5000
+              idleTimeout: 600000
+              maxLifetime: 1700000
+              keepaliveTime: 300000
+              registerMbeans: true
+              leakDetectionThreshold: 20000
+              transactionIsolation: TRANSACTION_READ_COMMITTED
+    envFrom:
+      - secretRef:
+          name: otis-dev-app-db
+    env:
+      - name: LOG_JSON
+        value: "true"
+    readinessProbe:
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    livenessProbe:
+      path: /health
+      initialDelaySeconds: 15
+      periodSeconds: 10

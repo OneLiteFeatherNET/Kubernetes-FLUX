@@ -109,6 +109,24 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  name: otis-dev-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: otis-dev-apps-onelite-feather-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - otis-dev.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
   name: s3-apps-onelite-feather
   namespace: envoy
 spec:
