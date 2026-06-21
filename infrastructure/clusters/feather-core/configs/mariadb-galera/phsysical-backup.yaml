@@ -35,7 +35,10 @@ spec:
       accessModes:
         - ReadWriteOnce
   timeout: 2h
-  #  podAffinity: true
+  # Disabled: hard podAffinity pins the backup Pod onto the primary's Node
+  # (mariadb-galera-0 on a saturated general worker), leaving it Pending.
+  # The backup streams over the network, so co-location is not required.
+  podAffinity: false
   #  serviceAccountName: backup
   resources:
     requests:
