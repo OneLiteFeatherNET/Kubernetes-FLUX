@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ollama
+  namespace: ollama
+spec:
+  values:
+    # CPU-only inference. No GPU on these nodes, so keep the GPU integration
+    # off — this also pins the plain (non-rocm/non-cuda) image tag.
+    ollama:
+      gpu:
+        enabled: false
+      models:
+        # Pulled once at container startup, then cached on the PVC below.
+        # qwen2.5:3b-instruct is small enough for responsive CPU inference and
+        # strong at structured classification / JSON output (the n8n use case).
+        # Swap/extend here; every entry adds to first-boot startup time.
+        pull:
+          - qwen2.5:3b-instruct
+
+    # Persist model blobs so a pod restart does not re-download gigabytes.
+    persistentVolume:
+      enabled: true
+      size: 30Gi
+      storageClass: ceph-rbd-fr01
+
+    # CPU inference is compute-bound: more cores ≈ more tokens/sec. Memory must
+    # hold the model (~3-5Gi for a 3B Q4) plus the KV-cache headroom. Tune to
+    # the node's real core count. No CPU limit on purpose — a hard cap would
+    # throttle generation; requests + region pin keep scheduling sane.
+    resources:
+      requests:
+        cpu: "4"
+        memory: 8Gi
+      limits:
+        memory: 16Gi
+
+    # Region pin (matches the other stateful apps).
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
+
+    # No Ingress / HTTPRoute: Ollama ships NO authentication. It is reached
+    # cluster-internally at http://ollama.ollama.svc.cluster.local:11434 (e.g.
+    # by n8n). Do NOT expose this Service publicly without an auth proxy in
+    # front (Envoy + JWT/basic-auth/SecurityPolicy).
+    service:
+      type: ClusterIP
+      port: 11434
