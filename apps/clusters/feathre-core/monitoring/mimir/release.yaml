@@ -30,6 +30,9 @@ spec:
       extraEnvFrom:
         - secretRef:
             name: mimir-s3
+      # Pod labels for all chart-managed components (mimir-distributed v4.5+).
+      podLabels:
+        logs.onelitefeather.net/env: prod
     mimir:
       structuredConfig:
         multitenancy_enabled: false

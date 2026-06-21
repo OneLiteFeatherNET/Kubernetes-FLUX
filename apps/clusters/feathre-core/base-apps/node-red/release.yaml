@@ -8,6 +8,8 @@ spec:
     spec:
       version: "*"
   values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
     priorityClassName: feather-low
     persistence:
       enabled: true

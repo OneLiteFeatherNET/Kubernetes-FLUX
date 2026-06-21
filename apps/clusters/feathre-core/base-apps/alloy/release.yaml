@@ -7,6 +7,8 @@ spec:
   values:
     controller:
       type: daemonset
+      podLabels:
+        logs.onelitefeather.net/env: prod
     serviceMonitor:
       enabled: true
     alloy:
@@ -76,6 +78,15 @@ spec:
               source_labels = ["__meta_kubernetes_pod_label_onelitefeather_net_team"]
               action = "replace"
               target_label = "team"
+            }
+
+            // Environment (prod/dev). Set explicitly per app via the pod label
+            // logs.onelitefeather.net/env so prod and dev streams are separable
+            // in Loki/Grafana ({env="prod"} vs {env="dev"}).
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_logs_onelitefeather_net_env"]
+              action = "replace"
+              target_label = "env"
             }
 
             // Log-format opt-in: pods labeled logs.onelitefeather.net/format="json"

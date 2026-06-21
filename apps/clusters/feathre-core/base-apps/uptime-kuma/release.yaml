@@ -17,6 +17,8 @@ spec:
       valuesKey: password
       targetPath: serviceMonitor.basicAuth.password
   values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
     priorityClassName: feather-low
     affinity:
       nodeAffinity:

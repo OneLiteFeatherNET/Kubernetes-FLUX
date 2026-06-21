@@ -63,6 +63,8 @@ spec:
         failureThreshold: 5
     service:
       port: 8080
+    podLabels:
+      logs.onelitefeather.net/env: prod
     podAnnotations:
       prometheus.io/scrape: "false"
     resources:

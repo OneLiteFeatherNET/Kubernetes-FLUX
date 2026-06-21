@@ -5,6 +5,9 @@ metadata:
   namespace: outline
 spec:
   values:
+    # Applied to every component pod template (web, collaboration).
+    podLabels:
+      logs.onelitefeather.net/env: prod
     image:
       repository: docker.getoutline.com/outlinewiki/outline
       # This sets the pull policy for images.

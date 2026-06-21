@@ -24,6 +24,8 @@ spec:
       valuesKey: adminPassword
       targetPath: adminPassword
   values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
     replicas: 2
     headlessService: true
     useStatefulSet: false

@@ -57,6 +57,7 @@ spec:
     # Alloy maps this to the "format" stream label -> level/logger/timestamp parsing.
     podLabels:
       logs.onelitefeather.net/format: json
+      logs.onelitefeather.net/env: dev
 
     config:
       base: |-

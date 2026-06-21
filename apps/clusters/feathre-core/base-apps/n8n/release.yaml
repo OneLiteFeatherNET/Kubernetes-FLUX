@@ -5,6 +5,9 @@ metadata:
   namespace: n8n
 spec:
   values:
+    # Covers main, worker and webhook-processor pod templates.
+    podLabels:
+      logs.onelitefeather.net/env: prod
     image:
       tag: "stable"
 

@@ -534,7 +534,8 @@ spec:
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
       ## The priority class to run the pod as
       priorityClassName: feather-high
 
@@ -567,7 +568,8 @@ spec:
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
       ## Additional service annotations
       serviceAnnotations: { }
       ## The priority class to run the pod as
@@ -613,7 +615,8 @@ spec:
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
       ## Additional service annotations
       serviceAnnotations: { }
       ## The priority class to run the pod as
@@ -700,7 +703,8 @@ spec:
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
       ## The priority class to run the pod as
       priorityClassName: feather-high
       # containers to be run before the controller's container starts.
@@ -776,7 +780,8 @@ spec:
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
       ## The priority class to run the pod as
       priorityClassName: feather-high
       # containers to be run before the controller's container starts.
@@ -861,7 +866,8 @@ spec:
                       - fr01
       topologySpreadConstraints: [ ]
       podAnnotations: { }
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
       priorityClassName: feather-high
       initContainers: [ ]
       debugMode: false
@@ -990,7 +996,8 @@ spec:
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
 
     redis:
       # if external Redis is used, set "type" to "external"
@@ -1064,7 +1071,8 @@ spec:
       ## Additional deployment annotations
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
 
     exporter:
       image:
@@ -1084,7 +1092,8 @@ spec:
       extraEnvVars: [ ]
       podAnnotations: { }
       ## Additional deployment labels
-      podLabels: { }
+      podLabels:
+        logs.onelitefeather.net/env: prod
       nodeSelector: { }
       tolerations: [ ]
       affinity: { }

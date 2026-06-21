@@ -23,6 +23,8 @@ spec:
                 path: /spec/template/spec/priorityClassName
                 value: feather-low
   values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
     image:
       repository: ghcr.io/bluemap-minecraft/bluemap
       pullPolicy: IfNotPresent

@@ -5,6 +5,8 @@ metadata:
   namespace: ollama
 spec:
   values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
     # CPU-only inference. No GPU on these nodes, so keep the GPU integration
     # off — this also pins the plain (non-rocm/non-cuda) image tag.
     ollama:

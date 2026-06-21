@@ -87,6 +87,8 @@ spec:
               prefix: index_
               period: 24h
     singleBinary:
+      podLabels:
+        logs.onelitefeather.net/env: prod
       replicas: 1
       affinity:
         nodeAffinity:
@@ -117,6 +119,8 @@ spec:
     backend:
       replicas: 0
     gateway:
+      podLabels:
+        logs.onelitefeather.net/env: prod
       resources:
         requests:
           cpu: 10m
@@ -137,6 +141,8 @@ spec:
         enabled: false
     lokiCanary:
       enabled: true
+      podLabels:
+        logs.onelitefeather.net/env: prod
       kind: DaemonSet
       push: true
       labelname: pod

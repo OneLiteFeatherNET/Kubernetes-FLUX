@@ -18,6 +18,9 @@ spec:
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
   values:
+    deployment:
+      podLabels:
+        logs.onelitefeather.net/env: prod
     ## Readiness and liveness probes
     probes:
       port: 8080 # The port Reposilite is running on inside the pod.
