@@ -40,7 +40,7 @@ spec:
       serviceAccountName: {{- if .Values.serviceAccount.create }} {{ include "micronaut.fullname" . }} {{- else }} {{ default "default" .Values.serviceAccount.name }} {{- end }}
       {{- if .Values.securityContext.enabled }}
       securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
+        {{- omit .Values.securityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
       {{- with .Values.priorityClassName }}
       priorityClassName: {{ . }}
@@ -63,7 +63,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext:
-{{ toYaml .Values.containerSecurityContext | indent 12 }}
+            {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           ports:
             - name: http
