@@ -44,8 +44,10 @@ spec:
       whenUnsatisfiable: DoNotSchedule
       labelSelector:
         matchLabels:
-          app.kubernetes.io/name: dragonfly
-          app.kubernetes.io/instance: dragonfly
+          # Labels the dragonfly-operator actually sets on the pods. It does NOT
+          # set app.kubernetes.io/instance, so don't select on that (the whole
+          # constraint silently no-ops and pods co-locate). `app` == CR name.
+          app: dragonfly
 
   # --- Enable BEFORE promoting to production -------------------------------
   # priorityClassName: feather-high          # omitted in test to never preempt
