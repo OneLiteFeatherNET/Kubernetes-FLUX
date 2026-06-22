@@ -113,19 +113,15 @@ spec:
             key: GEOLITE_LICENSE_KEY
       - name: REDIS_PUB_SUB_ENABLED
         value: "true"
-      # IMPORTANT: list ALL Bitnami sentinel nodes (port 26379).
-      # shlink-common (RedisFactory::resolveServers) collapses a
-      # single REDIS_SERVERS entry to a non-list, which disables
-      # Predis sentinel mode -> commands hit the sentinel directly
-      # ("unknown command 'EVALSHA'"). With >=2 entries Predis enters
-      # sentinel replication and resolves the master correctly.
-      # Hostnames are not secret; the data-node password comes from
-      # REDIS_SERVERS_PASSWORD. Sentinel URIs carry no password
-      # because redis is deployed with auth.sentinel: false.
+      # Dragonfly cutover: single DIRECT connection. Dragonfly has no Sentinel;
+      # its operator keeps the `dragonfly` Service pointed at the current master,
+      # so a single REDIS_SERVERS entry with NO REDIS_SENTINEL_SERVICE is exactly
+      # right (Predis direct mode). DB 8 is shlink's dedicated database on the
+      # shared Dragonfly instance — see docs/dragonfly-redis-cutover.md.
+      # Password (data-node) still comes from REDIS_SERVERS_PASSWORD; it is the
+      # same value as before since Dragonfly reuses the central redis password.
       - name: REDIS_SERVERS
-        value: "tcp://redis-node-0.redis-headless.redis.svc.cluster.local:26379/6,tcp://redis-node-1.redis-headless.redis.svc.cluster.local:26379/6,tcp://redis-node-2.redis-headless.redis.svc.cluster.local:26379/6"
-      - name: REDIS_SENTINEL_SERVICE
-        value: "mymaster"
+        value: "tcp://dragonfly.dragonfly.svc.cluster.local:6379/8"
       - name: REDIS_SERVERS_PASSWORD
         valueFrom:
           secretKeyRef:
