@@ -31,7 +31,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/otis
       pullPolicy: IfNotPresent
-      tag: "1.15.0"
+      tag: "1.16.0"
     imagePullSecrets:
       - name: harbor-pull
     service:
