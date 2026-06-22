@@ -33,6 +33,12 @@ spec:
     # memory up together for production (rule: maxmemory >= threads * 256MiB).
     - "--proactor_threads=2"
     - "--maxmemory=1gb"
+    # Redis-compatible Lua semantics. BullMQ (outline's task queue) runs Lua
+    # scripts that access keys not declared in KEYS[]; Dragonfly rejects those by
+    # default ("script tried accessing undeclared key"). This flag restores
+    # Redis behaviour. Trade-off: each Lua script locks the whole store (fine at
+    # our scale). Alternative would be hashtag queue names + --lock_on_hashtags.
+    - "--default_lua_flags=allow-undeclared-keys"
     # NOTE: cache_mode is intentionally OFF -> behaves as a data store (keys are
     # not silently evicted), matching the current Redis (appendonly) semantics
     # that shlink pub/sub and outline queues rely on.
