@@ -10,7 +10,14 @@ spec:
   instances: 2
   pgbouncer:
     poolMode: session
-    parameters: {}
+    parameters:
+      # Default max_client_conn (100) was exhausted by Harbor's oversized pool,
+      # blocking new client connections (harbor + dependency-track share this rw
+      # pooler). Client conns are cheap in pgbouncer; raise the ceiling. Server
+      # conns stay bounded by default_pool_size per (user,db) pool — aligned to
+      # Harbor's maxOpenConns (25); a few pools * 25 stays well under PG's 200.
+      max_client_conn: "400"
+      default_pool_size: "25"
   template:
     spec:
       priorityClassName: feather-high
