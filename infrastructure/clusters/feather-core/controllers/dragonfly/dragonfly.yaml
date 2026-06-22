@@ -25,10 +25,14 @@ spec:
       cpu: 250m
       memory: 512Mi
     limits:
-      memory: 1Gi
+      memory: 1536Mi
   args:
-    # Keep headroom below the memory limit.
-    - "--maxmemory=768mb"
+    # Dragonfly otherwise auto-detects ALL host cores (32 here) and demands
+    # 256MiB RAM per thread -> 8GiB, far above our limit, so it refuses to boot.
+    # Pin the thread count for this small test instance; scale both threads and
+    # memory up together for production (rule: maxmemory >= threads * 256MiB).
+    - "--proactor_threads=2"
+    - "--maxmemory=1gb"
     # NOTE: cache_mode is intentionally OFF -> behaves as a data store (keys are
     # not silently evicted), matching the current Redis (appendonly) semantics
     # that shlink pub/sub and outline queues rely on.
