@@ -4,4 +4,3 @@ namespace: n8n
 resources:
   - namespace.yaml
   - release.yaml
-  - redis.yaml
