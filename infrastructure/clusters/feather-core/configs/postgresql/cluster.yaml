@@ -6,18 +6,27 @@ metadata:
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:17
+  postgresql:
+    parameters:
+      # Raised from the CNPG default (100): the shared cluster sits at saturation
+      # (large idle pools, esp. harbor ~26 + dependency-track ~23), which starves
+      # apps of connection slots during restart storms. Memory bumped in lockstep
+      # below (~5-10MB/backend). See the postgres-connection-saturation memory note;
+      # the proper fix is pooler adoption + trimming idle pools.
+      max_connections: "200"
   storage:
     size: 75Gi
     storageClass: ceph-rbd-fr01
-  # Memory request==limit for OOM safety (real usage ~420Mi); CPU request only
-  # (no CPU limit to avoid throttling the DB).
+  # Memory request==limit for OOM safety; raised 1Gi -> 2Gi to cover
+  # max_connections=200 (each backend ~5-10MB). CPU request only (no CPU limit
+  # to avoid throttling the DB).
   resources:
     requests:
       cpu: 250m
-      memory: 1Gi
+      memory: 2Gi
     limits:
       cpu: "2"
-      memory: 1Gi
+      memory: 2Gi
   enableSuperuserAccess: true
   priorityClassName: feather-platform
   affinity:
