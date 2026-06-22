@@ -38,12 +38,16 @@ spec:
         name: n8n-db
         key: password
 
-    # Dedicated single-master Redis (apps/base/n8n/redis.yaml).
+    # Shared Dragonfly instance (infrastructure/.../controllers/dragonfly),
+    # dedicated DB 11 for n8n's Bull queue (operator-managed master endpoint,
+    # no Sentinel). Password lives in the n8n-redis secret (now the Dragonfly
+    # password). See docs/dragonfly-redis-cutover.md.
     redis:
       enabled: true
       useExternal: true
-      host: n8n-redis-master.n8n.svc.cluster.local
+      host: dragonfly.dragonfly.svc.cluster.local
       port: 6379
+      database: 11
       passwordSecret:
         name: n8n-redis
         key: redis-password
