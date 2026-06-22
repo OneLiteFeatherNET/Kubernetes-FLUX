@@ -17,7 +17,11 @@ metadata:
   name: harbor-registry
   namespace: harbor
 spec:
-  maxUnavailable: 1
+  # The registry runs as a single replica (chunked uploads are session-bound to
+  # one pod). minAvailable: 1 keeps that pod up across voluntary disruptions, so
+  # node drains/updates don't silently take the registry down mid-push; draining
+  # its node needs a deliberate cordon/force.
+  minAvailable: 1
   selector:
     matchLabels:
       app: harbor

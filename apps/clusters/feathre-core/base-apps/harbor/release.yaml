@@ -766,7 +766,12 @@ spec:
       serviceAccountName: ""
       # mount the service account token
       automountServiceAccountToken: false
-      replicas: 2
+      # Single replica on purpose: chunked blob uploads are session-bound to one
+      # registry pod (POST starts the upload, PATCH chunks resume it). With >1
+      # replica the chunk PATCH can land on a different pod that doesn't know the
+      # upload session -> intermittent "failed to send blob (chunk) ... 404".
+      # The harbor-registry PDB (minAvailable: 1) keeps this single pod up.
+      replicas: 1
       revisionHistoryLimit: 10
       nodeSelector: { }
       tolerations: [ ]
