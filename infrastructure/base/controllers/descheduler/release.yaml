@@ -1,0 +1,97 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: descheduler
+  namespace: descheduler
+spec:
+  releaseName: descheduler
+  chart:
+    spec:
+      chart: descheduler
+      version: "0.36.0"
+      sourceRef:
+        kind: HelmRepository
+        name: descheduler
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  timeout: 5m
+  values:
+    # Run as a CronJob (no leader election / always-on pod needed).
+    kind: CronJob
+    schedule: "*/15 * * * *"
+    suspend: false
+
+    # The descheduler itself is a cluster maintenance component.
+    priorityClassName: system-cluster-critical
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
+
+    deschedulerPolicyAPIVersion: "descheduler/v1alpha2"
+    deschedulerPolicy:
+      profiles:
+        - name: default
+          pluginConfig:
+            - name: DefaultEvictor
+              args:
+                # Only evict a pod if it can actually be scheduled elsewhere.
+                # Prevents creating Pending pods on a tight cluster.
+                nodeFit: true
+                # Hard guard rail: only pods with a priority strictly below
+                # feather-high (100000) are ever eligible for eviction.
+                # This protects Ceph (feather-critical), databases/Envoy/step-ca
+                # (feather-platform), monitoring/Harbor/Redis (feather-high) and
+                # anything system-*-critical. Only feather-standard (1000),
+                # feather-low (-10) and unprioritized workloads get rebalanced.
+                priorityThreshold:
+                  name: feather-high
+                podProtections:
+                  # Built-in protections (PodsWithLocalStorage, SystemCriticalPods,
+                  # DaemonSetPods, FailedBarePods) stay enabled. Additionally never
+                  # evict pods backed by a PVC — stateful data safety.
+                  extraEnabled:
+                    - PodsWithPVC
+            # Collapse multiple replicas of the same owner off a single node.
+            - name: RemoveDuplicates
+            # Move pods back when they no longer satisfy required node affinity
+            # (e.g. node labels changed after a maintenance/reboot).
+            - name: RemovePodsViolatingNodeAffinity
+              args:
+                nodeAffinityType:
+                  - requiredDuringSchedulingIgnoredDuringExecution
+            # Re-spread pods that ended up violating inter-pod anti-affinity.
+            - name: RemovePodsViolatingInterPodAntiAffinity
+            # Re-spread pods that violate a DoNotSchedule topology spread
+            # constraint once spreading becomes possible again.
+            - name: RemovePodsViolatingTopologySpreadConstraint
+            # Bin-pack rebalancing: drain over-utilized nodes toward idle ones.
+            - name: LowNodeUtilization
+              args:
+                thresholds:
+                  cpu: 20
+                  memory: 20
+                  pods: 20
+                targetThresholds:
+                  cpu: 50
+                  memory: 50
+                  pods: 50
+          plugins:
+            balance:
+              enabled:
+                - RemoveDuplicates
+                - RemovePodsViolatingTopologySpreadConstraint
+                - LowNodeUtilization
+            deschedule:
+              enabled:
+                - RemovePodsViolatingNodeAffinity
+                - RemovePodsViolatingInterPodAntiAffinity

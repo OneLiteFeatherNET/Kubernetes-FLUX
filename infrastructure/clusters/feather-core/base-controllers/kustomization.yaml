@@ -11,3 +11,4 @@ resources:
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
   - ../../../../infrastructure/base/controllers/envoy-crds
   - ../../../../infrastructure/base/controllers/snapshot-controller
+  - ../../../../infrastructure/base/controllers/descheduler
