@@ -16,9 +16,20 @@ spec:
       name: uptime-kuma-metrics-auth
       valuesKey: password
       targetPath: serviceMonitor.basicAuth.password
+  # The dirsigler uptime-kuma chart copies podLabels into the Deployment
+  # selector (which is immutable), so adding the Loki env label via podLabels
+  # breaks upgrades. Inject it into the pod template only, via post-render.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: uptime-kuma
+            patch: |
+              - op: add
+                path: /spec/template/metadata/labels/logs.onelitefeather.net~1env
+                value: prod
   values:
-    podLabels:
-      logs.onelitefeather.net/env: prod
     priorityClassName: feather-low
     affinity:
       nodeAffinity:
