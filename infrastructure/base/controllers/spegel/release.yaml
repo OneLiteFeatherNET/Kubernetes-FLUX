@@ -21,3 +21,13 @@ spec:
         effect: NoSchedule
     spegel:
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
+    # Metrics scraping (Alloy discovers ServiceMonitors cluster-wide) + dashboard
+    # via the Grafana sidecar (same grafana_dashboard label as the Loki dashboards).
+    serviceMonitor:
+      enabled: true
+      interval: 60s
+    grafanaDashboard:
+      enabled: true
+      mode: Sidecar
+      labels:
+        grafana_dashboard: "1"
