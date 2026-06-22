@@ -113,20 +113,18 @@ spec:
             key: GEOLITE_LICENSE_KEY
       - name: REDIS_PUB_SUB_ENABLED
         value: "true"
-      # Dragonfly cutover: single DIRECT connection. Dragonfly has no Sentinel;
-      # its operator keeps the `dragonfly` Service pointed at the current master,
-      # so a single REDIS_SERVERS entry with NO REDIS_SENTINEL_SERVICE is exactly
-      # right (Predis direct mode). DB 8 is shlink's dedicated database on the
-      # shared Dragonfly instance — see docs/dragonfly-redis-cutover.md.
-      # Password (data-node) still comes from REDIS_SERVERS_PASSWORD; it is the
-      # same value as before since Dragonfly reuses the central redis password.
+      # Dragonfly cutover: single DIRECT connection (no Sentinel; the operator
+      # keeps the `dragonfly` Service pointed at the current master). IMPORTANT:
+      # in standalone mode shlink-common (RedisFactory::resolveOptions) ONLY
+      # applies REDIS_SERVERS_PASSWORD for sentinel; for a plain server the
+      # password MUST be embedded in the URI (tcp://:pass@host:port/db). The full
+      # URI (incl. password + DB 8) therefore comes from the secret so it stays
+      # out of git. See docs/dragonfly-redis-cutover.md.
       - name: REDIS_SERVERS
-        value: "tcp://dragonfly.dragonfly.svc.cluster.local:6379/8"
-      - name: REDIS_SERVERS_PASSWORD
         valueFrom:
           secretKeyRef:
             name: shlink-secret
-            key: REDIS_SERVERS_PASSWORD
+            key: REDIS_SERVERS
       - name: SKIP_INITIAL_GEOLITE_DOWNLOAD
         value: "true"
       - name: WEB_WORKER_NUM
