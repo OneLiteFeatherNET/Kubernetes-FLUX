@@ -55,7 +55,13 @@ spec:
             - path:
                 type: PathPrefix
                 value: /
-    profiles: [ "prod" ]
+    # "k8s" activates the Micronaut Kubernetes environment so the discovery
+    # client beans (micronaut-kubernetes-discovery-client) come up in-cluster.
+    profiles: [ "prod", "k8s" ]
+
+    # RBAC for in-namespace service discovery (read services/endpoints).
+    rbac:
+      create: true
 
     # Alloy log pipeline: JSON parsing + per-env stream label.
     podLabels:

@@ -56,7 +56,13 @@ spec:
             - path:
                 type: PathPrefix
                 value: /
-    profiles: [ "prod" ]
+    # "k8s" activates the Micronaut Kubernetes environment so the discovery
+    # client beans (micronaut-kubernetes-discovery-client) come up in-cluster.
+    profiles: [ "prod", "k8s" ]
+
+    # RBAC for in-namespace service discovery (read services/endpoints).
+    rbac:
+      create: true
 
     # Opt in to Alloy's JSON log pipeline (LOG_JSON=true emits structured logs).
     # Alloy maps this to the "format" stream label -> level/logger/timestamp parsing.
