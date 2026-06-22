@@ -23,10 +23,11 @@ spec:
     replicaCount: 1
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/vulpes-backend
-      # latest is a moving tag -> always pull so each pod start picks up the
-      # newest dev build.
-      pullPolicy: Always
-      tag: "latest"
+      # Pinned to an immutable version tag instead of "latest": Spegel caches
+      # mutable tags P2P, so "latest" kept resolving to a stale digest. Immutable
+      # tags resolve correctly -> bump this when a new dev build should roll.
+      pullPolicy: IfNotPresent
+      tag: "2.3.0"
     imagePullSecrets:
       - name: harbor-pull
     service:
