@@ -14,6 +14,8 @@ resources:
   - database/outline.yaml
   - database/otis.yaml
   - database/otis-dev.yaml
+  - database/vulpes.yaml
+  - database/vulpes-dev.yaml
   - database/backstage.yaml
   - database/dependency-track.yaml
   - database/grafana.yaml
@@ -35,6 +37,18 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/otis-dev.sops.env
+  - name: role-vulpes
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/vulpes.sops.env
+  - name: role-vulpes-dev
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/vulpes-dev.sops.env
   - name: role-outline
     options:
       labels:

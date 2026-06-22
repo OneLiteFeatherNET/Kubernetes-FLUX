@@ -41,6 +41,16 @@ spec:
         ensure: present
         passwordSecret:
           name: role-otis-dev
+      - name: vulpes
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-vulpes
+      - name: vulpes_dev
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-vulpes-dev
       - name: outline
         login: true
         ensure: present

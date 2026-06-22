@@ -50,6 +50,10 @@ spec:
           - kind: Secret
             name: otis-dev-apps-onelite-feather-tls
           - kind: Secret
+            name: vulpes-backend-apps-onelite-feather-tls
+          - kind: Secret
+            name: vulpes-backend-dev-apps-onelite-feather-tls
+          - kind: Secret
             name: s3-apps-onelite-feather-tls
           - kind: Secret
             name: n8n-apps-onelite-feather-tls

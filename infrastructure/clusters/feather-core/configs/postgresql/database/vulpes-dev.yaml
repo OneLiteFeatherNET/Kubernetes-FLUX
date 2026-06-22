@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: vulpes-dev
+spec:
+  name: vulpes_dev
+  owner: vulpes_dev
+  cluster:
+    name: feather-core-cluster-pg
