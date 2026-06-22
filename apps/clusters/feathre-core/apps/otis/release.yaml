@@ -156,6 +156,14 @@ spec:
         # MICRONAUT_ENVIRONMENTS disables auto-deduction). The chart requires one
         # config file per profile, so this file must exist.
         k8s: |-
+          # Disable the KubernetesHealthIndicator: the client-java bundled with
+          # micronaut-kubernetes 7.1.1 can't deserialize newer API-server pod
+          # fields (observedGeneration / PodReadyToStartContainers), so every
+          # /health probe logs an ERROR+WARN. Service discovery is unaffected.
+          endpoints:
+            health:
+              kubernetes:
+                enabled: false
           kubernetes:
             client:
               discovery:
