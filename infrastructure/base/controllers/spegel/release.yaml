@@ -21,6 +21,10 @@ spec:
         effect: NoSchedule
     spegel:
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
+      # Default 20ms is too tight for DHT lookups on busy (storage/Ceph) nodes,
+      # so their resolves time out and every pull falls back to upstream. 200ms
+      # matches the hosts.toml dial_timeout and gives the lookup room.
+      mirrorResolveTimeout: "200ms"
     # Metrics scraping (Alloy discovers ServiceMonitors cluster-wide) + dashboard
     # via the Grafana sidecar (same grafana_dashboard label as the Loki dashboards).
     serviceMonitor:
