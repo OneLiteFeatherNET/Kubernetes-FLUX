@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - envoy
   - redis
+  - dragonfly
   - step-issuer
   - ../../../../infrastructure/base/controllers/mariadb-operator

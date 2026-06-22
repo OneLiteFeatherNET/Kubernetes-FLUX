@@ -1,0 +1,64 @@
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: dragonfly
+  namespace: dragonfly
+spec:
+  # 1 master + 2 replicas. The operator runs its own replication + automatic
+  # failover (no Sentinel) and keeps the `dragonfly` Service pointed at the
+  # current master. Clients use a single stable endpoint:
+  #   dragonfly.dragonfly.svc.cluster.local:6379
+  replicas: 3
+
+  image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.39.0
+
+  # Password reused 1:1 from the existing Redis so app cutover is a host change
+  # only. Secret is provided via SOPS-encrypted dragonfly.env (see kustomization).
+  authentication:
+    passwordFromSecret:
+      name: dragonfly-auth
+      key: password
+
+  # Test-phase sizing. Dragonfly is multi-threaded and will use available cores.
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+  args:
+    # Keep headroom below the memory limit.
+    - "--maxmemory=768mb"
+    # NOTE: cache_mode is intentionally OFF -> behaves as a data store (keys are
+    # not silently evicted), matching the current Redis (appendonly) semantics
+    # that shlink pub/sub and outline queues rely on.
+
+  # One pod per host so a single node loss can never take down a majority.
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: dragonfly
+          app.kubernetes.io/instance: dragonfly
+
+  # --- Enable BEFORE promoting to production -------------------------------
+  # priorityClassName: feather-high          # omitted in test to never preempt
+  #                                          # existing tiered workloads
+  # snapshot:                                # durable point-in-time snapshots
+  #   cron: "0 */6 * * *"                    # (Dragonfly has no AOF; uses DFS)
+  #   persistentVolumeClaimSpec:
+  #     storageClassName: ceph-rbd-fr01      # zone-local -> also pin pods below
+  #     accessModes: [ReadWriteOnce]
+  #     resources:
+  #       requests:
+  #         storage: 8Gi
+  # affinity:                                # required once PVC is on ceph-rbd-fr01
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #         - matchExpressions:
+  #             - key: topology.kubernetes.io/zone
+  #               operator: In
+  #               values: [fr01]

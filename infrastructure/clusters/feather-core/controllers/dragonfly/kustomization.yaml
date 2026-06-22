@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dragonfly
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - namespace.yaml
+  - dragonfly.yaml
+
+# Password for the Dragonfly instance. Create + encrypt before committing:
+#   cd infrastructure/clusters/feather-core/controllers/dragonfly
+#   echo "password=$(sops -d ../redis/redis.env | sed -n 's/^redis-password=//p')" > dragonfly.env
+#   sops -e -i dragonfly.env
+secretGenerator:
+  - name: dragonfly-auth
+    envs:
+      - dragonfly.env

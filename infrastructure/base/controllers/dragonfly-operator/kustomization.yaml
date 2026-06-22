@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Dragonfly operator (pinned). Ships its own namespace
+# (dragonfly-operator-system), CRDs, RBAC and the controller Deployment.
+# Renovate can bump the pinned tag in this URL.
+resources:
+  - https://raw.githubusercontent.com/dragonflydb/dragonfly-operator/v1.6.1/manifests/dragonfly-operator.yaml

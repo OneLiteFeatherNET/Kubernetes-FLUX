@@ -12,3 +12,4 @@ resources:
   - ../../../../infrastructure/base/controllers/envoy-crds
   - ../../../../infrastructure/base/controllers/snapshot-controller
   - ../../../../infrastructure/base/controllers/descheduler
+  - ../../../../infrastructure/base/controllers/dragonfly-operator
