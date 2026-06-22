@@ -141,6 +141,15 @@ spec:
               registerMbeans: true
               leakDetectionThreshold: 20000
               transactionIsolation: TRANSACTION_READ_COMMITTED
+        # Loaded only in the Kubernetes (k8s) environment. k8s is listed in
+        # profiles so the micronaut-kubernetes discovery beans activate (explicit
+        # MICRONAUT_ENVIRONMENTS disables auto-deduction). The chart requires one
+        # config file per profile, so this file must exist.
+        k8s: |-
+          kubernetes:
+            client:
+              discovery:
+                mode: endpoint
     envFrom:
       - secretRef:
           name: vulpes-app-db
