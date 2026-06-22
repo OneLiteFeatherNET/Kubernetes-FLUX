@@ -138,10 +138,10 @@ spec:
       - name: LOG_JSON
         value: "true"
     readinessProbe:
-      path: /health
+      path: /health/readiness
       initialDelaySeconds: 5
       periodSeconds: 5
     livenessProbe:
-      path: /health
+      path: /health/liveness
       initialDelaySeconds: 15
       periodSeconds: 10
