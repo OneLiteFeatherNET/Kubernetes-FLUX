@@ -19,7 +19,9 @@ spec:
       name: dragonfly-auth
       key: password
 
-  # Test-phase sizing. Dragonfly is multi-threaded and will use available cores.
+  # Conservative sizing (works for the current 4 consumers). Dragonfly is
+  # multi-threaded; scale threads + memory up together if memory pressure shows
+  # (rule: maxmemory >= proactor_threads * 256MiB, kept below the memory limit).
   resources:
     requests:
       cpu: 250m
@@ -55,22 +57,31 @@ spec:
           # constraint silently no-ops and pods co-locate). `app` == CR name.
           app: dragonfly
 
-  # --- Enable BEFORE promoting to production -------------------------------
-  # priorityClassName: feather-high          # omitted in test to never preempt
-  #                                          # existing tiered workloads
-  # snapshot:                                # durable point-in-time snapshots
-  #   cron: "0 */6 * * *"                    # (Dragonfly has no AOF; uses DFS)
-  #   persistentVolumeClaimSpec:
-  #     storageClassName: ceph-rbd-fr01      # zone-local -> also pin pods below
-  #     accessModes: [ReadWriteOnce]
-  #     resources:
-  #       requests:
-  #         storage: 8Gi
-  # affinity:                                # required once PVC is on ceph-rbd-fr01
-  #   nodeAffinity:
-  #     requiredDuringSchedulingIgnoredDuringExecution:
-  #       nodeSelectorTerms:
-  #         - matchExpressions:
-  #             - key: topology.kubernetes.io/zone
-  #               operator: In
-  #               values: [fr01]
+  # Shared data service for shlink/outline/harbor/n8n -> high priority.
+  priorityClassName: feather-high
+
+  # Durable point-in-time snapshots (Dragonfly has no AOF; it uses DFS files).
+  # Each pod snapshots to its own ceph-rbd-fr01 PVC, so data survives a full
+  # restart instead of only living in memory + replication.
+  snapshot:
+    cron: "0 */6 * * *"
+    persistentVolumeClaimSpec:
+      storageClassName: ceph-rbd-fr01
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
+
+  # ceph-rbd-fr01 is zone-local; RBD can only attach within fr01, so pin the
+  # pods there. All current workers are fr01, so this is satisfiable, and it
+  # composes with the per-host topology spread above.
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - fr01
