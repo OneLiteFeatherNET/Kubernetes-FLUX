@@ -1042,7 +1042,10 @@ spec:
         # support redis, redis+sentinel
         # addr for redis: <host_redis>:<port_redis>
         # addr for redis+sentinel: <host_sentinel1>:<port_sentinel1>,<host_sentinel2>:<port_sentinel2>,<host_sentinel3>:<port_sentinel3>
-        addr: "redis.redis.svc.cluster.local:6379"
+        # Dragonfly cutover: direct connection (operator-managed master endpoint,
+        # no Sentinel -> sentinelMasterSet stays empty). Harbor keeps its DB block
+        # 0-7 (core MUST be 0) — see docs/dragonfly-redis-cutover.md.
+        addr: "dragonfly.dragonfly.svc.cluster.local:6379"
         # The name of the set of Redis instances to monitor, it must be set to support redis+sentinel
         sentinelMasterSet: ""
         # TLS configuration for redis connection
