@@ -9,8 +9,9 @@ metadata:
     metallb.io/loadBalancerIPs: "10.200.90.5"
 spec:
   type: LoadBalancer
-  # Pin a stable VIP from the metallb pool (no IP churn on recreate).
-  loadBalancerIP: 10.200.90.5
+  # IP is pinned via the metallb.io/loadBalancerIPs annotation above. Do NOT
+  # also set spec.loadBalancerIP — metallb rejects a service that has both
+  # ("service can not have both metallb.io/loadBalancerIPs and svc.Spec.LoadBalancerIP").
   # Master-only: the dragonfly-operator maintains `role: master` on exactly one
   # pod and moves the label to the new master on failover, so this LB always
   # points at the current write master (never a read-only replica).
