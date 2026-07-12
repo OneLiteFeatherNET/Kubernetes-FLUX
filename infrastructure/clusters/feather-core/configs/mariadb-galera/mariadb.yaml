@@ -32,6 +32,12 @@ spec:
 #      drop:
 #        - ALL
   replicas: 3
+  livenessProbe:
+    failureThreshold: 15
+    timeoutSeconds: 10
+  readinessProbe:
+    failureThreshold: 15
+    timeoutSeconds: 10
   startupProbe:
     failureThreshold: 60
     periodSeconds: 10
