@@ -1167,7 +1167,9 @@ spec:
         cert-manager:
           gnetId: 20340
           revision: 1
-          datasource: Mimir
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
         flux-cluster-stats:
           url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/cluster.json
           datasource: Mimir
