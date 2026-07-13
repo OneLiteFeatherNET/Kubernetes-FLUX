@@ -185,6 +185,14 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/storage
+          - name: minecraft
+            orgId: 1
+            folder: Minecraft
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/minecraft
     dashboards:
       kubernetes:
         kubernetes-dashboard:
@@ -5015,6 +5023,3317 @@ spec:
               "uid": "harbor-overview-native",
               "version": 1,
               "weekStart": ""
+            }
+      minecraft:
+        minecraft-detail:
+          json: |
+            {
+              "annotations": {
+                "list": [
+                  {
+                    "builtIn": 1,
+                    "datasource": "Mimir",
+                    "enable": true,
+                    "hide": true,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                  }
+                ]
+              },
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "graphTooltip": 0,
+              "id": 14,
+              "links": [
+                {
+                  "includeVars": true,
+                  "keepTime": true,
+                  "targetBlank": false,
+                  "title": "Fleet Overview",
+                  "type": "link",
+                  "url": "/d/minecraftotel-fleet/minecraftotel-fleet"
+                },
+                {
+                  "includeVars": true,
+                  "keepTime": true,
+                  "targetBlank": false,
+                  "title": "JVM Dashboard",
+                  "type": "link",
+                  "url": "/d/minecraftotel-jvm/minecraftotel-jvm"
+                }
+              ],
+              "panels": [
+                {
+                  "fieldConfig": {
+                    "defaults": {},
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "id": 999,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "### How to read this dashboard\n- **TPS** (Ticks Per Second) ranges **0–20**. **20** is best. Below **15** is urgent.\n- **MSPT** (Milliseconds Per Tick) is the inverse view of TPS: **50ms** is the tick budget for **20 TPS**.\n- If **MSPT p95 > 50ms**, the server cannot sustain 20 TPS.\n- Use the **heatmap** to spot spike patterns, then drill down by **world** and **entity_type**.",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "12.3.1",
+                  "title": "Read me first",
+                  "type": "text"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 4
+                  },
+                  "id": 1,
+                  "panels": [],
+                  "title": "Critical (KPI)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Server TPS (0–20). 20 TPS is ideal. Below 15 TPS requires urgent action.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 2,
+                      "mappings": [],
+                      "max": 20,
+                      "min": 0,
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "red",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 15
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 18
+                          },
+                          {
+                            "color": "green",
+                            "value": 19
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 0,
+                    "y": 5
+                  },
+                  "id": 2,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", window=\"1m\"})",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "TPS (1m)",
+                  "type": "stat"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "MSPT (milliseconds per tick). Tick budget is 50ms (20 TPS). Above 50ms means the server cannot sustain 20 TPS.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 1,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 45
+                          },
+                          {
+                            "color": "red",
+                            "value": 50
+                          }
+                        ]
+                      },
+                      "unit": "ms"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 6,
+                    "y": 5
+                  },
+                  "id": 3,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "MSPT p95",
+                  "type": "stat"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Online players (sum). Gives context for load and performance.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 0,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 12,
+                    "y": 5
+                  },
+                  "id": 4,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(minecraft_players_online_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Players Online",
+                  "type": "stat"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "95th percentile tick duration derived from the histogram. Useful to spot spikes and validate MSPT.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 1,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "ms"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 18,
+                    "y": 5
+                  },
+                  "id": 5,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "histogram_quantile(0.95, sum by (le) (rate(minecraft_tick_duration_milliseconds_bucket{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])))",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Tick p95 (Histogram)",
+                  "type": "stat"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 9
+                  },
+                  "id": 6,
+                  "panels": [],
+                  "title": "Abstract view (performance & load)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Server TPS (0–20). 20 TPS is ideal. Below 15 TPS requires urgent action.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 2,
+                      "mappings": [],
+                      "max": 20,
+                      "min": 0,
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 18
+                          },
+                          {
+                            "color": "red",
+                            "value": 15
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": [
+                      {
+                        "__systemRef": "hideSeriesFrom",
+                        "matcher": {
+                          "id": "byNames",
+                          "options": {
+                            "mode": "exclude",
+                            "names": [
+                              "5m"
+                            ],
+                            "prefix": "All except:",
+                            "readOnly": true
+                          }
+                        },
+                        "properties": [
+                          {
+                            "id": "custom.hideFrom",
+                            "value": {
+                              "legend": false,
+                              "tooltip": true,
+                              "viz": true
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 10
+                  },
+                  "id": 7,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
+                      "legendFormat": "1m",
+                      "range": true,
+                      "refId": "A"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\", window=\"5m\"})",
+                      "legendFormat": "5m",
+                      "range": true,
+                      "refId": "B"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\",window=\"15m\"})",
+                      "legendFormat": "15m",
+                      "range": true,
+                      "refId": "C"
+                    }
+                  ],
+                  "title": "TPS trend (1m/5m/15m)",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "MSPT (milliseconds per tick). Tick budget is 50ms (20 TPS). Above 50ms means the server cannot sustain 20 TPS.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 1,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 45
+                          },
+                          {
+                            "color": "red",
+                            "value": 50
+                          }
+                        ]
+                      },
+                      "unit": "ms"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 10
+                  },
+                  "id": 8,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_server_mspt_avg_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "MSPT avg / p95",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Heatmap of tick duration buckets. Dense areas at higher ms indicate dangerous spikes that cause lag.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "custom": {
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "scaleDistribution": {
+                          "type": "linear"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 9,
+                    "w": 24,
+                    "x": 0,
+                    "y": 17
+                  },
+                  "id": 9,
+                  "options": {
+                    "calculate": false,
+                    "cellGap": 1,
+                    "cellValues": {
+                      "unit": "ms"
+                    },
+                    "color": {
+                      "exponent": 0.5,
+                      "fill": "dark-orange",
+                      "mode": "scheme",
+                      "reverse": false,
+                      "scale": "exponential",
+                      "scheme": "RdGy",
+                      "steps": 64
+                    },
+                    "exemplars": {
+                      "color": "rgba(255,0,255,0.7)"
+                    },
+                    "filterValues": {
+                      "le": 1e-9
+                    },
+                    "legend": {
+                      "show": true
+                    },
+                    "reverseYBuckets": false,
+                    "rowsFrame": {
+                      "layout": "ge",
+                      "value": "Tick Duration"
+                    },
+                    "showValue": "never",
+                    "tooltip": {
+                      "mode": "single",
+                      "show": true,
+                      "showColorScale": false,
+                      "yHistogram": false
+                    },
+                    "yAxis": {
+                      "axisPlacement": "left",
+                      "reverse": false,
+                      "unit": "ms"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum by (le) (\n  rate(minecraft_tick_duration_milliseconds_bucket{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+                      "format": "heatmap",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Tick duration heatmap (ms, rate over 5m)",
+                  "type": "heatmap"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Total loaded chunks. Increases with players, farms, and active world area.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 26
+                  },
+                  "id": 10,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(minecraft_chunks_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Chunks loaded (total)",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Total loaded entities. High entity counts often correlate with higher MSPT.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 26
+                  },
+                  "id": 11,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(minecraft_entities_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Entities loaded (total)",
+                  "type": "timeseries"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 33
+                  },
+                  "id": 12,
+                  "panels": [],
+                  "title": "Detail view (world / entity drilldown)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Loaded chunks per world. Use $world to isolate worlds.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 34
+                  },
+                  "id": 13,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_chunks_load_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{cloudnet_service_name}}/{{world}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Chunks loaded by world",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Rates over time. High 'generated' often means exploration or missing world pre-generation.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "ops"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 34
+                  },
+                  "id": 14,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "rate(minecraft_chunks_load_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "L {{cloudnet_service_name}}/{{world}}",
+                      "range": true,
+                      "refId": "A"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "rate(minecraft_chunks_unload_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "UL {{cloudnet_service_name}}/{{world}}",
+                      "range": true,
+                      "refId": "B"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "rate(minecraft_chunks_generated_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "G {{cloudnet_service_name}}/{{world}}",
+                      "range": true,
+                      "refId": "C"
+                    }
+                  ],
+                  "title": "Chunk load/unload/generate rate",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Entity load trend per world.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 41
+                  },
+                  "id": 15,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_entities_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{cloudnet_service_name}}/{{world}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Entities loaded by world",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Entity counts by type. Use $entity_type to isolate offenders (items, villagers, etc.).",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 41
+                  },
+                  "id": 16,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true,
+                      "sortBy": "Name",
+                      "sortDesc": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_entities_loaded_by_type_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "interval": "",
+                      "legendFormat": "{{entity_type}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Entities loaded by type",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Entity churn. High adds without matching removes can indicate spikes, leaks, or farms.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "ops"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 48
+                  },
+                  "id": 17,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "rate(minecraft_entities_added_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "+{{cloudnet_service_name}}/{{world}}",
+                      "range": true,
+                      "refId": "A"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "rate(minecraft_entities_removed_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "-{{cloudnet_service_name}}/{{world}}",
+                      "range": true,
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "Entities add/remove rate",
+                  "type": "timeseries"
+                }
+              ],
+              "preload": false,
+              "refresh": "10s",
+              "schemaVersion": 42,
+              "tags": [
+                "minecraft",
+                "otel"
+              ],
+              "templating": {
+                "list": [
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "All",
+                      "value": [
+                        "$__all"
+                      ]
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": true,
+                    "label": "CloudNet Task",
+                    "multi": true,
+                    "name": "cloudnet_task",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": false,
+                    "label": "CloudNet Service",
+                    "name": "cloudnet_service",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "datasource": "Mimir",
+                    "hide": 2,
+                    "includeAll": false,
+                    "label": "job (optional)",
+                    "name": "job",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "datasource": "Mimir",
+                    "hide": 2,
+                    "includeAll": false,
+                    "label": "instance (optional)",
+                    "name": "instance",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": true,
+                    "multi": true,
+                    "name": "world",
+                    "options": [],
+                    "query": "label_values(minecraft_chunks_loaded{job=~\"$job\", instance=~\"$instance\"}, world)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": true,
+                    "multi": true,
+                    "name": "entity_type",
+                    "options": [],
+                    "query": "label_values(minecraft_entities_loaded_by_type{job=~\"$job\", instance=~\"$instance\"}, entity_type)",
+                    "refresh": 2,
+                    "type": "query"
+                  }
+                ]
+              },
+              "time": {
+                "from": "now-30m",
+                "to": "now"
+              },
+              "timepicker": {},
+              "timezone": "browser",
+              "title": "MinecraftOTEL - Server Detail (Overview + Drilldown)",
+              "uid": "minecraftotel-main",
+              "version": 17
+            }
+        minecraft-fleet:
+          json: |
+            {
+              "annotations": {
+                "list": [
+                  {
+                    "builtIn": 1,
+                    "datasource": "Mimir",
+                    "enable": true,
+                    "hide": true,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                  }
+                ]
+              },
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "graphTooltip": 0,
+              "id": 13,
+              "links": [
+                {
+                  "includeVars": true,
+                  "keepTime": true,
+                  "targetBlank": false,
+                  "title": "Minecraft Detail Dashboard",
+                  "type": "link",
+                  "url": "/d/minecraftotel-main/minecraftotel-main"
+                },
+                {
+                  "includeVars": true,
+                  "keepTime": true,
+                  "targetBlank": false,
+                  "title": "JVM Dashboard",
+                  "type": "link",
+                  "url": "/d/minecraftotel-jvm/minecraftotel-jvm"
+                }
+              ],
+              "panels": [
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "id": 1,
+                  "panels": [],
+                  "title": "Fleet overview (all servers)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Server TPS (0–20). 20 TPS is ideal. Below 15 TPS requires urgent action.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 2,
+                      "mappings": [],
+                      "max": 20,
+                      "min": 0,
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 18
+                          },
+                          {
+                            "color": "red",
+                            "value": 15
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 1
+                  },
+                  "id": 2,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "min by (cloudnet_task_name, cloudnet_service_name) (\n  minecraft_server_tps_ratio{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "TPS (1m) per server",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "MSPT p95 (milliseconds per tick). Tick budget is 50ms (20 TPS). Above 50ms means the server cannot sustain 20 TPS.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 1,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 45
+                          },
+                          {
+                            "color": "red",
+                            "value": 50
+                          }
+                        ]
+                      },
+                      "unit": "ms"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 1
+                  },
+                  "id": 3,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "MSPT p95 per server",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Average MSPT. Useful for baseline load. Combine with p95 to spot spikes.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 1,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 45
+                          },
+                          {
+                            "color": "red",
+                            "value": 50
+                          }
+                        ]
+                      },
+                      "unit": "ms"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 9
+                  },
+                  "id": 4,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_server_mspt_avg_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "MSPT avg per server",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Total loaded entities per server. High entity counts often correlate with higher MSPT.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 0,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 9
+                  },
+                  "id": 7,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "max by (cloudnet_task_name, cloudnet_service_name) (\n  minecraft_entities_loaded_ratio{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Entities loaded (total) per server",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Online players per server. Context for load and performance.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 0,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 17
+                  },
+                  "id": 6,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "minecraft_players_online_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Players online per server",
+                  "type": "timeseries"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 25
+                  },
+                  "id": 8,
+                  "panels": [],
+                  "title": "Top offenders (who is hurting right now)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Shows the worst servers by MSPT p95. Start here when you need a culprit fast.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 1,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 45
+                          },
+                          {
+                            "color": "red",
+                            "value": 50
+                          }
+                        ]
+                      },
+                      "unit": "ms"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 26
+                  },
+                  "id": 9,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "topk($topk, minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Top $topk MSPT p95 (highest)",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Shows the lowest TPS servers (actual TPS). Below 15 TPS is urgent.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 2,
+                      "mappings": [],
+                      "max": 20,
+                      "min": 0,
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          },
+                          {
+                            "color": "yellow",
+                            "value": 18
+                          },
+                          {
+                            "color": "red",
+                            "value": 15
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 26
+                  },
+                  "id": 10,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "bottomk(\n  $topk,\n  min by (cloudnet_task_name, cloudnet_service_name) (\n    minecraft_server_tps_ratio{\n      cloudnet_task_name=~\"$cloudnet_task\",\n      cloudnet_service_name=~\"$cloudnet_service\",\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Bottom $topk TPS (lowest)",
+                  "type": "timeseries"
+                }
+              ],
+              "preload": false,
+              "refresh": "10s",
+              "schemaVersion": 42,
+              "tags": [
+                "minecraft",
+                "otel",
+                "fleet"
+              ],
+              "templating": {
+                "list": [
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": [
+                        "All"
+                      ],
+                      "value": [
+                        "$__all"
+                      ]
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": true,
+                    "label": "CloudNet Task",
+                    "multi": true,
+                    "name": "cloudnet_task",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": [
+                        "All"
+                      ],
+                      "value": [
+                        "$__all"
+                      ]
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": true,
+                    "label": "CloudNet Service",
+                    "multi": true,
+                    "name": "cloudnet_service",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": [
+                        "All"
+                      ],
+                      "value": [
+                        "$__all"
+                      ]
+                    },
+                    "datasource": "Mimir",
+                    "hide": 2,
+                    "includeAll": true,
+                    "label": "job (optional)",
+                    "multi": true,
+                    "name": "job",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": [
+                        "All"
+                      ],
+                      "value": [
+                        "$__all"
+                      ]
+                    },
+                    "datasource": "Mimir",
+                    "hide": 2,
+                    "includeAll": true,
+                    "label": "instance (optional)",
+                    "multi": true,
+                    "name": "instance",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "current": {
+                      "text": "20",
+                      "value": "20"
+                    },
+                    "name": "topk",
+                    "options": [
+                      {
+                        "selected": false,
+                        "text": "10",
+                        "value": "10"
+                      },
+                      {
+                        "selected": true,
+                        "text": "20",
+                        "value": "20"
+                      },
+                      {
+                        "selected": false,
+                        "text": "50",
+                        "value": "50"
+                      },
+                      {
+                        "selected": false,
+                        "text": "100",
+                        "value": "100"
+                      }
+                    ],
+                    "query": "10,20,50,100",
+                    "type": "custom"
+                  }
+                ]
+              },
+              "time": {
+                "from": "now-30m",
+                "to": "now"
+              },
+              "timepicker": {},
+              "timezone": "browser",
+              "title": "MinecraftOTEL - Fleet Overview",
+              "uid": "minecraftotel-fleet",
+              "version": 8
+            }
+        minecraft-jvm:
+          json: |
+            {
+              "annotations": {
+                "list": [
+                  {
+                    "builtIn": 1,
+                    "datasource": "Mimir",
+                    "enable": true,
+                    "hide": true,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                  }
+                ]
+              },
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "graphTooltip": 0,
+              "id": 15,
+              "links": [
+                {
+                  "includeVars": true,
+                  "keepTime": true,
+                  "targetBlank": false,
+                  "title": "Fleet Overview",
+                  "type": "link",
+                  "url": "/d/minecraftotel-fleet/minecraftotel-fleet"
+                },
+                {
+                  "includeVars": true,
+                  "keepTime": true,
+                  "targetBlank": false,
+                  "title": "Minecraft Detail Dashboard",
+                  "type": "link",
+                  "url": "/d/minecraftotel-main/minecraftotel-main"
+                }
+              ],
+              "panels": [
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "id": 1,
+                  "panels": [],
+                  "title": "Critical (JVM health)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "JVM CPU utilization (0..1). Sustained high values mean the server is CPU-bound.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 2,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "percentunit"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 0,
+                    "y": 1
+                  },
+                  "id": 2,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "jvm_cpu_recent_utilization_ratio{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\",\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "CPU util (JVM)",
+                  "type": "stat"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Thread count. Sudden jumps can indicate leaks or newly activated subsystems.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 0,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 6,
+                    "y": 1
+                  },
+                  "id": 3,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "max by (instance, job) (\n  jvm_thread_count{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Threads",
+                  "type": "stat"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "GC time per second. Spikes here often correlate with MSPT spikes.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 3,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "s/s"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 12,
+                    "y": 1
+                  },
+                  "id": 4,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum by (instance, job) (\n  rate(jvm_gc_duration_seconds_sum{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "GC pause rate",
+                  "type": "stat"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Heap used (sum over pools). See the used-vs-limit panel for headroom.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "decimals": 0,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 18,
+                    "y": 1
+                  },
+                  "id": 5,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Heap used",
+                  "type": "stat"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 5
+                  },
+                  "id": 6,
+                  "panels": [],
+                  "title": "Abstract view (memory / GC / threads)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "If used hugs the limit and GC rises, expect lag and potential OOM.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 6
+                  },
+                  "id": 7,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"})",
+                      "legendFormat": "__auto",
+                      "range": true,
+                      "refId": "A"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(jvm_memory_limit_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"})",
+                      "legendFormat": "__auto",
+                      "range": true,
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "Heap used vs limit",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Non-heap: Metaspace, CodeCache, etc. Leaks here feel 'mysterious' until they crash you.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 6
+                  },
+                  "id": 8,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"})",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "A"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "sum(jvm_memory_limit_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"})",
+                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "range": true,
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "Non-heap used vs limit",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Higher means the JVM spends more time cleaning up instead of running ticks.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "s/s"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 14
+                  },
+                  "id": 9,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "rate(\n  jvm_gc_duration_seconds_sum{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\"\n  }[5m]\n)",
+                      "legendFormat": "{{jvm_gc_name}}/{{jvm_gc_action}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "GC pause time rate (sec/s)",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "short"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 14
+                  },
+                  "id": 10,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "jvm_thread_count{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\"\n}\n",
+                      "legendFormat": "{{jvm_thread_state}}",
+                      "range": true,
+                      "refId": "A"
+                    },
+                    {
+                      "editorMode": "code",
+                      "expr": "jvm_cpu_recent_utilization_ratio{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\",\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
+                      "hide": true,
+                      "legendFormat": "__auto",
+                      "range": true,
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "Threads",
+                  "type": "timeseries"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 21
+                  },
+                  "id": 11,
+                  "panels": [],
+                  "title": "Detail view (memory pools)",
+                  "type": "row"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Heap per pool. Use $jvm_pool to isolate pools.",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 22
+                  },
+                  "id": 12,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"}",
+                      "legendFormat": "{{jvm_memory_pool_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Heap pools used (filterable)",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": "Mimir",
+                  "description": "Non-heap per pool (Metaspace, CodeHeap, etc.).",
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "showValues": false,
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 22
+                  },
+                  "id": 13,
+                  "options": {
+                    "legend": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "displayMode": "table",
+                      "placement": "right",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "hideZeros": false,
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "pluginVersion": "12.3.1",
+                  "targets": [
+                    {
+                      "editorMode": "code",
+                      "expr": "jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"}",
+                      "legendFormat": "{{jvm_memory_pool_name}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Non-heap pools used (filterable)",
+                  "type": "timeseries"
+                }
+              ],
+              "preload": false,
+              "refresh": "10s",
+              "schemaVersion": 42,
+              "tags": [
+                "minecraft",
+                "otel",
+                "jvm"
+              ],
+              "templating": {
+                "list": [
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "All",
+                      "value": [
+                        "$__all"
+                      ]
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": true,
+                    "label": "CloudNet Task",
+                    "multi": true,
+                    "name": "cloudnet_task",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "current": {
+                      "text": "MemberBuild-1",
+                      "value": "MemberBuild-1"
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": false,
+                    "label": "CloudNet Service",
+                    "name": "cloudnet_service",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "MemberBuild-1",
+                      "value": "MemberBuild-1"
+                    },
+                    "datasource": "Mimir",
+                    "hide": 2,
+                    "includeAll": false,
+                    "label": "job (optional)",
+                    "name": "job",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": "9e39787f-9d20-4c19-9c84-522621fabdf2",
+                      "value": "9e39787f-9d20-4c19-9c84-522621fabdf2"
+                    },
+                    "datasource": "Mimir",
+                    "hide": 2,
+                    "includeAll": false,
+                    "label": "instance (optional)",
+                    "name": "instance",
+                    "options": [],
+                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "refresh": 2,
+                    "type": "query"
+                  },
+                  {
+                    "allValue": ".*",
+                    "current": {
+                      "text": [
+                        "All"
+                      ],
+                      "value": [
+                        "$__all"
+                      ]
+                    },
+                    "datasource": "Mimir",
+                    "includeAll": true,
+                    "multi": true,
+                    "name": "jvm_pool",
+                    "options": [],
+                    "query": "label_values(jvm_memory_used_bytes{job=~\"$job\", instance=~\"$instance\"}, jvm_memory_pool_name)",
+                    "refresh": 2,
+                    "type": "query"
+                  }
+                ]
+              },
+              "time": {
+                "from": "now-30m",
+                "to": "now"
+              },
+              "timepicker": {},
+              "timezone": "browser",
+              "title": "MinecraftOTEL - JVM",
+              "uid": "minecraftotel-jvm",
+              "version": 16
             }
     resources:
       requests:
