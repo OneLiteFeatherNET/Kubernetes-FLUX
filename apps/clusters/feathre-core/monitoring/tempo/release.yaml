@@ -9,10 +9,6 @@ spec:
       podLabels:
         logs.onelitefeather.net/env: prod
       priorityClassName: feather-high
-      # Required so ${AWS_ACCESS_KEY_ID}/${AWS_SECRET_ACCESS_KEY} below are
-      # expanded from the env vars injected by extraEnvFrom (mirrors mimir).
-      extraArgs:
-        - -config.expand-env=true
       extraEnvFrom:
         - secretRef:
             name: tempo-s3
@@ -38,6 +34,12 @@ spec:
           forcepathstyle: true
     compactor:
       replicas: 1
+      # Needed here (not on global.extraArgs) so ${AWS_ACCESS_KEY_ID}/
+      # ${AWS_SECRET_ACCESS_KEY} above get expanded — global.extraArgs also
+      # reaches memcached, which doesn't understand this Tempo-binary flag
+      # and crashloops on it ("Maximum connections must be greater than 0").
+      extraArgs:
+        - -config.expand-env=true
       resources:
         requests:
           cpu: 100m
@@ -61,6 +63,8 @@ spec:
           block_retention: 168h
     distributor:
       replicas: 1
+      extraArgs:
+        - -config.expand-env=true
       resources:
         requests:
           cpu: 50m
@@ -79,6 +83,8 @@ spec:
                       - fr01
     ingester:
       replicas: 1
+      extraArgs:
+        - -config.expand-env=true
       config:
         replication_factor: 1
       resources:
@@ -103,6 +109,8 @@ spec:
                       - fr01
     querier:
       replicas: 1
+      extraArgs:
+        - -config.expand-env=true
       resources:
         requests:
           cpu: 50m
@@ -121,6 +129,8 @@ spec:
                       - fr01
     queryFrontend:
       replicas: 1
+      extraArgs:
+        - -config.expand-env=true
       resources:
         requests:
           cpu: 50m
