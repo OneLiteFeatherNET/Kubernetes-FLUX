@@ -74,8 +74,27 @@ spec:
           otelcol.processor.batch "default" {
             output {
               metrics = [otelcol.processor.transform.strip_verbose_resource_attrs.input]
-              logs    = [otelcol.processor.filter.drop_debug_logs.input]
+              logs    = [otelcol.processor.transform.strip_ansi_codes.input]
               traces  = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          // Console loggers (CloudNet/Velocity/Paper) emit 24-bit ANSI SGR
+          // color codes (ESC[38;2;r;g;bm ... ESC[0m) in the log body, which
+          // are unreadable once shipped as plain text to Loki. Strips them
+          // before the severity filter/Loki export.
+          otelcol.processor.transform "strip_ansi_codes" {
+            error_mode = "ignore"
+
+            log_statements {
+              context = "log"
+              statements = [
+                `replace_pattern(body, "\\x1b\\[[0-9;]*m", "")`,
+              ]
+            }
+
+            output {
+              logs = [otelcol.processor.filter.drop_debug_logs.input]
             }
           }
 
