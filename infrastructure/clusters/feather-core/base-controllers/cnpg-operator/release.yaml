@@ -18,3 +18,9 @@ spec:
       data:
         CNPG_INCLUDE_PLUGINS: "barman-cloud.cloudnative-pg.io"
         INCLUDE_PLUGINS: "barman-cloud.cloudnative-pg.io"
+    # Alloy discovers PodMonitors cluster-wide, same as spegel/mariadb-galera.
+    # Enables scraping the operator's own controller-runtime metrics
+    # (controller_runtime_*, workqueue_*, etc. on the "metrics" port/8080)
+    # in addition to the already-scraped per-cluster cnpg_* exporter.
+    monitoring:
+      podMonitorEnabled: true
