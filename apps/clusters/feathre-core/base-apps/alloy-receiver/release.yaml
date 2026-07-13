@@ -33,13 +33,6 @@ spec:
     serviceMonitor:
       enabled: true
     alloy:
-      # Basic-auth credentials for the OTLP receiver below (this endpoint is
-      # reachable externally via the alloy-receiver HTTPRoute). Note: this
-      # chart's field is `envFrom`, not `extraEnvFrom` (that's a different
-      # field name used by the tempo/mimir/loki charts).
-      envFrom:
-        - secretRef:
-            name: alloy-receiver-otlp-auth
       extraPorts:
         - name: otlp-grpc
           port: 4317
@@ -59,23 +52,16 @@ spec:
       configMap:
         content: |
           // Single OTLP intake point (grpc :4317, http :4318) fanning traces
-          // to Tempo, metrics to Mimir, and logs to Loki. Only the http port
-          // is exposed externally (see the alloy-receiver HTTPRoute) — grpc
-          // stays cluster-internal for now.
-          otelcol.auth.basic "ingest" {
-            username = sys.env("OTLP_BASIC_AUTH_USERNAME")
-            password = sys.env("OTLP_BASIC_AUTH_PASSWORD")
-          }
-
+          // to Tempo, metrics to Mimir, and logs to Loki. otel.apps.onelite.feather
+          // is only reachable over the internal step-ca-issued TLS network
+          // (not the public internet), so no auth layer is needed here.
           otelcol.receiver.otlp "default" {
             grpc {
               endpoint = "0.0.0.0:4317"
-              auth     = otelcol.auth.basic.ingest.handler
             }
 
             http {
               endpoint = "0.0.0.0:4318"
-              auth     = otelcol.auth.basic.ingest.handler
             }
 
             output {

@@ -9,8 +9,3 @@ resources:
   - grpcroute.yaml
 patches:
   - path: release.yaml
-
-secretGenerator:
-  - name: alloy-receiver-otlp-auth
-    envs:
-      - otlp-auth.sops.env
