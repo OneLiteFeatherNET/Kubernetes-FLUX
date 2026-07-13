@@ -45,6 +45,15 @@ spec:
         limits:
           cpu: 200m
           memory: 256Mi
+    # cloudflared already runs its Prometheus /metrics endpoint on :44483
+    # (the controller sets --metrics itself, not configurable via Helm) --
+    # this just wires up scraping for it. No tracing equivalent exists:
+    # cloudflared's OTel spans are shipped only to Cloudflare's own edge as
+    # an internal header, with no external-export flag at all (confirmed
+    # upstream, cloudflare/cloudflared#671 -- maintainer: "we do not plan
+    # for the OpenTelemetry traces ... to be exposed externally").
+    cloudflaredServiceMonitor:
+      create: true
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
