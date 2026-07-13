@@ -87,13 +87,16 @@ spec:
         - -config.expand-env=true
       config:
         replication_factor: 1
+      # Bumped after repeated OOMKills: each crash left more WAL blocks to
+      # replay+flush on the next start, so the ingester needed more memory
+      # each time just to get past startup, compounding the crashloop.
       resources:
         requests:
           cpu: 100m
-          memory: 256Mi
+          memory: 512Mi
         limits:
           cpu: "1"
-          memory: 1Gi
+          memory: 2Gi
       persistence:
         enabled: true
         size: 10Gi
