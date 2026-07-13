@@ -4,23 +4,6 @@ metadata:
   name: loki
   namespace: grafana
 spec:
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: StatefulSet
-              labelSelector: app.kubernetes.io/instance=loki
-            patch: |
-              - op: add
-                path: /spec/template/spec/priorityClassName
-                value: feather-high
-          - target:
-              kind: Deployment
-              labelSelector: app.kubernetes.io/instance=loki
-            patch: |
-              - op: add
-                path: /spec/template/spec/priorityClassName
-                value: feather-high
   valuesFrom:
     - kind: Secret
       name: loki-s3
@@ -31,11 +14,25 @@ spec:
       valuesKey: secretAccessKey
       targetPath: loki.storage.s3.secretAccessKey
   values:
-    deploymentMode: SingleBinary
+    deploymentMode: Distributed
+    # SimpleScalable targets default to 3 replicas each in this chart;
+    # they must be explicitly zeroed out or validate.yaml rejects the
+    # values (mixed scalable + distributed replica counts).
+    write:
+      replicas: 0
+    read:
+      replicas: 0
+    backend:
+      replicas: 0
+    global:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      priorityClassName: feather-high
     loki:
       auth_enabled: false
       commonConfig:
-        replication_factor: 1
+        # Matches ingester.replicas below so every write is fully replicated.
+        replication_factor: 3
       limits_config:
         retention_period: 168h
         allow_structured_metadata: true
@@ -86,9 +83,130 @@ spec:
             index:
               prefix: index_
               period: 24h
-    singleBinary:
-      podLabels:
-        logs.onelitefeather.net/env: prod
+    ingester:
+      replicas: 3
+      maxUnavailable: 1
+      zoneAwareReplication:
+        enabled: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      persistence:
+        enabled: true
+        claims:
+          - name: data
+            size: 10Gi
+            storageClass: ceph-rbd-fr01
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: "1"
+          memory: 1Gi
+    distributor:
+      replicas: 2
+      maxUnavailable: 1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+    querier:
+      replicas: 2
+      maxUnavailable: 1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+    queryFrontend:
+      replicas: 2
+      maxUnavailable: 1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+    queryScheduler:
+      replicas: 2
+      maxUnavailable: 1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
+    indexGateway:
+      replicas: 2
+      maxUnavailable: 1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+    compactor:
+      # Exactly one compactor must run at a time.
       replicas: 1
       affinity:
         nodeAffinity:
@@ -101,23 +219,22 @@ spec:
                       - fr01
       resources:
         requests:
-          cpu: 250m
-          memory: 512Mi
+          cpu: 50m
+          memory: 128Mi
         limits:
-          cpu: 2
-          memory: 2Gi
-      persistence:
-        enabled: true
-        size: 20Gi
-        storageClass: ceph-rbd-fr01
-        accessModes:
-          - ReadWriteOnce
-    write:
-      replicas: 0
-    read:
-      replicas: 0
-    backend:
-      replicas: 0
+          cpu: "1"
+          memory: 512Mi
+    chunksCache:
+      # Trimmed well below the chart's 8Gi default for this cluster's log volume.
+      allocatedMemory: 1024
+      allocatedCPU: 250m
+      nodeSelector:
+        topology.kubernetes.io/zone: fr01
+    resultsCache:
+      allocatedMemory: 256
+      allocatedCPU: 100m
+      nodeSelector:
+        topology.kubernetes.io/zone: fr01
     gateway:
       podLabels:
         logs.onelitefeather.net/env: prod
