@@ -42,16 +42,20 @@ spec:
         - -config.expand-env=true
       # Bumped after repeated OOMKills: enabling the local-blocks generator
       # processor means the compactor now also compacts blocks flushed from
-      # metrics-generator, and vParquet4 compaction needs several times a
-      # block's on-disk size in memory — 512Mi wasn't enough and left it in
-      # a CrashLoopBackOff that never got a compaction cycle to finish.
+      # metrics-generator. vParquet4 compaction memory scales with the
+      # number of distinct trace IDs being combined across input blocks
+      # (an in-memory index per trace), not with on-disk block size — three
+      # ~1-17MB blocks totaling ~92k objects still OOMKilled at 1Gi within
+      # seconds of "compacting hash" starting. Matches the same
+      # bytes-on-disk-understates-memory-need pattern already seen on the
+      # ingester above.
       resources:
         requests:
           cpu: 100m
-          memory: 256Mi
+          memory: 512Mi
         limits:
           cpu: "1"
-          memory: 1Gi
+          memory: 2Gi
       affinity: |
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
