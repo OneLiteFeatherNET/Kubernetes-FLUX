@@ -111,6 +111,14 @@ spec:
           envFrom:
 {{ toYaml .Values.envFrom | indent 12 }}
           {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: http
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+          {{- end }}
           readinessProbe:
             httpGet:
               path: {{ .Values.readinessProbe.path }}
