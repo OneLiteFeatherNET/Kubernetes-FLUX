@@ -6,7 +6,6 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/tempo
   - httproute.yaml
-  - bucket-init-job.yaml
 patches:
   - path: release.yaml
 
