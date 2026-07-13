@@ -38,6 +38,16 @@ spec:
   gateway:
     port: 80
     instances: 3
+    # Beast's own idle-keepalive default (request_timeout_ms) is 65s. In-cluster
+    # clients that talk to the RGW Service directly (bypassing the Cloudflare
+    # Tunnel entirely, e.g. reposilite) can hit the same cold-reconnect pattern
+    # observed on the tunnel path once their pooled connection sits idle past
+    # that. Raised to 10m to match the tunnel-side fix (PR #67).
+    # NOTE: rgwCommandFlags replaces the whole --rgw-frontends value and
+    # restarts all RGW pods on change — port=80 must stay in sync with
+    # spec.gateway.port above.
+    rgwCommandFlags:
+      rgw_frontends: "beast port=80 request_timeout_ms=650000"
     placement:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
