@@ -21,6 +21,32 @@ spec:
     deployment:
       podLabels:
         logs.onelitefeather.net/env: prod
+        # Reposilite's console logger emits ANSI SGR color codes with no JSON
+        # option; opts into the alloy-logs ANSI-strip + level-extract stage.
+        logs.onelitefeather.net/format: ansi
+      # otis/vulpes-backend pattern: init container copies the OTel Java
+      # agent jar into an emptyDir the main container mounts read-only.
+      initContainers:
+        - name: otel-agent
+          image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.29.0
+          command: ["cp", "/javaagent.jar", "/otel/javaagent.jar"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: otel-agent
+              mountPath: /otel
+      additionalVolumes:
+        - name: otel-agent
+          emptyDir: {}
+      additionalVolumeMounts:
+        - name: otel-agent
+          mountPath: /otel
+          readOnly: true
     ## Readiness and liveness probes
     probes:
       port: 8080 # The port Reposilite is running on inside the pod.
@@ -92,12 +118,36 @@ spec:
               value: 1
               periodSeconds: 60
     env:
+      # Bumped from 64M: the OTel javaagent's own SDK buffers/batching need
+      # headroom on top of Reposilite's baseline heap use.
       - name: JAVA_OPTS
-        value: "-Xmx64M -Dreposilite.s3.pathStyleAccessEnabled=true"
+        value: "-Xmx256M -Dreposilite.s3.pathStyleAccessEnabled=true"
       - name: REPOSILITE_LOCAL_DATABASE
         valueFrom:
           secretKeyRef:
             name: reposilite-secrets
             key: DATABASE
+      - name: JDK_JAVA_OPTIONS
+        value: "-javaagent:/otel/javaagent.jar"
+      - name: OTEL_SERVICE_NAME
+        value: "reposilite"
+      - name: OTEL_TRACES_EXPORTER
+        value: "otlp"
+      # Reposilite has no native Prometheus endpoint -- OTel's JVM + HTTP
+      # server auto-instrumentation is the only source of metrics here.
+      - name: OTEL_METRICS_EXPORTER
+        value: "otlp"
+      # Logs stay off: Reposilite's console output already ships via the
+      # container-stdout -> alloy-logs -> Loki path (format=ansi stage),
+      # so OTLP logs would just duplicate it.
+      - name: OTEL_LOGS_EXPORTER
+        value: "none"
+      # alloy-receiver (not tempo-gateway directly): unlike traces-only
+      # otis/vulpes-backend, this needs metrics fanned out to Mimir too,
+      # which only alloy-receiver's OTLP gateway does.
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: "http://alloy-receiver.grafana.svc.cluster.local:4317"
+      - name: OTEL_EXPORTER_OTLP_PROTOCOL
+        value: "grpc"
     ingress:
       enabled: false
