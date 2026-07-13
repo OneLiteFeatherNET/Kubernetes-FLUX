@@ -83,7 +83,7 @@ spec:
         subPath: world_op_nether.conf
     bluemap:
       packs:
-        - https://github.com/TheMeinerLP/BlueMapS3Storage/releases/download/v1.4.0/BlueMapS3Storage-1.4.0.jar
+        - https://github.com/TheMeinerLP/BlueMapS3Storage/releases/download/v1.4.7/BlueMapS3Storage-1.4.7.jar
       config:
         - path: "/app/config/core.conf"
           configMap:
