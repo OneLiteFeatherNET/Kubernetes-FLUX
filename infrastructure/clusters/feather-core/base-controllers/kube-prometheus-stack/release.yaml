@@ -44,9 +44,13 @@ spec:
       resources:
         requests:
           cpu: 20m
-          memory: 64Mi
-        limits:
           memory: 128Mi
+        # Confirmed live: 128Mi OOMKilled the pod within 1s of startup once
+        # customResourceState below was added -- watching/caching all Flux
+        # CRDs cluster-wide needs real headroom on top of the standard
+        # collector set.
+        limits:
+          memory: 384Mi
       # Restores per-object Flux Ready/Suspended status as gotk_resource_info
       # (the metric the Flux Cluster Stats dashboard was built for -- it's
       # not a native Flux controller metric, it's this kube-state-metrics
