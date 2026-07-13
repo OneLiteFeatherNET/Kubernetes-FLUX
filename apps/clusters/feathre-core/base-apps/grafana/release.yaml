@@ -107,6 +107,32 @@ spec:
             editable: false
             jsonData:
               maxLines: 1000
+              derivedFields:
+                - datasourceUid: tempo
+                  matcherRegex: '"trace_id":"(\w+)"'
+                  name: TraceID
+                  url: "$${__value.raw}"
+          - name: Tempo
+            uid: tempo
+            type: tempo
+            access: proxy
+            url: http://tempo-gateway.grafana.svc.cluster.local
+            editable: false
+            jsonData:
+              tracesToLogsV2:
+                datasourceUid: loki
+                spanStartTimeShift: "-1h"
+                spanEndTimeShift: "1h"
+                filterByTraceID: false
+                filterBySpanID: false
+              tracesToMetrics:
+                datasourceUid: mimir
+                spanStartTimeShift: "-1h"
+                spanEndTimeShift: "1h"
+              serviceMap:
+                datasourceUid: mimir
+              nodeGraph:
+                enabled: true
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1

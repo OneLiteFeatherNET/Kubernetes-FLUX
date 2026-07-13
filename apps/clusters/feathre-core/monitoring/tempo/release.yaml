@@ -1,0 +1,164 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tempo
+  namespace: grafana
+spec:
+  values:
+    global:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      priorityClassName: feather-high
+      # Required so ${AWS_ACCESS_KEY_ID}/${AWS_SECRET_ACCESS_KEY} below are
+      # expanded from the env vars injected by extraEnvFrom (mirrors mimir).
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: tempo-s3
+    multitenancyEnabled: false
+    traces:
+      otlp:
+        http:
+          enabled: true
+        grpc:
+          enabled: true
+    storage:
+      trace:
+        backend: s3
+        s3:
+          # Internal RGW service (path-style, http) — decoupled from the
+          # external s3.onelitefeather.net ingress path.
+          bucket: tempo-traces
+          endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+          region: us-west-1
+          access_key: ${AWS_ACCESS_KEY_ID}
+          secret_key: ${AWS_SECRET_ACCESS_KEY}
+          insecure: true
+          forcepathstyle: true
+    compactor:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      config:
+        compaction:
+          # Traces are far higher-volume/lower-value per byte than logs or
+          # metrics, so keep retention short to bound the S3 bucket size.
+          block_retention: 168h
+    distributor:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+    ingester:
+      replicas: 1
+      config:
+        replication_factor: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: "1"
+          memory: 1Gi
+      persistence:
+        enabled: true
+        size: 10Gi
+        storageClass: ceph-rbd-fr01
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+    querier:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+    queryFrontend:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+    gateway:
+      enabled: true
+      replicas: 2
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      affinity: |
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      ingress:
+        enabled: false
+    metaMonitoring:
+      serviceMonitor:
+        enabled: true

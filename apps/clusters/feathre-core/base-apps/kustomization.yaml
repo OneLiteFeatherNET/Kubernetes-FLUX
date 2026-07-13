@@ -13,7 +13,7 @@ resources:
   - grafana
   - n8n
   - ollama
-  # loki + mimir (later tempo) are managed by the dedicated
+  # loki + mimir + tempo are managed by the dedicated
   # wait:false monitoring Kustomization
   # (clusters/feather-core/monitoring.yaml) so their external
   # Ceph-RGW S3 backend does not block base-apps -> apps.
