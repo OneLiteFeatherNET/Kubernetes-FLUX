@@ -9,6 +9,12 @@ spec:
   selector:
     matchLabels:
       app: dragonfly
+  # Promotes the pod's "app" label onto every scraped metric -- without
+  # this, the official dragonfly-operator Grafana dashboard's $Dragonfly
+  # variable (label_values(..., app)) resolves empty, since Alloy/Prometheus
+  # only attach pod labels listed here, not the whole label set.
+  podTargetLabels:
+    - app
   podMetricsEndpoints:
     # Dragonfly serves its native Prometheus metrics (dragonfly_* series, NOT
     # redis_exporter-compatible redis_* series) on the "admin" port (9999),
