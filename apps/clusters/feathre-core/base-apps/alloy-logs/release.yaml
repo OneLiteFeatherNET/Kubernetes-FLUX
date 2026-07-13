@@ -134,6 +134,17 @@ spec:
               }
             }
 
+            // Unconditional and top-level, not nested in a stage.match: a
+            // nested stage.replace inside stage.match was confirmed live to
+            // not actually mutate the line (matched, but ANSI codes passed
+            // through untouched -- root cause not fully isolated, moving it
+            // out sidesteps the issue entirely). Harmless no-op on lines
+            // without ANSI codes, so no need to scope it to format="ansi".
+            stage.replace {
+              expression = "(\\x1b\\[[0-9;]*m)"
+              replace    = ""
+            }
+
             // Only applied to streams that opted in via logs.onelitefeather.net/format="json".
             // Plain-text apps fall through untouched (no parse-error spam, no wasted CPU).
             stage.match {
@@ -169,21 +180,12 @@ spec:
             }
 
             // Plain-text console apps (Reposilite and similar) that emit ANSI SGR
-            // color codes in the log body -- unreadable once shipped as-is.
-            // Strips the escape codes, then extracts level from the app's
-            // "HH:mm:ss.SSS LEVEL | message" console format for the same
-            // {level="..."} filtering the json format gets above.
+            // color codes in the log body (stripped above, unconditionally).
+            // Extracts level from the app's "HH:mm:ss.SSS LEVEL | message"
+            // console format for the same {level="..."} filtering the json
+            // format gets above.
             stage.match {
               selector = "{format=\"ansi\"}"
-
-              // stage.replace only substitutes captured groups, not the
-              // whole match -- the pattern must be wrapped in a group or
-              // nothing gets replaced (confirmed live: ANSI codes passed
-              // through untouched with an ungrouped expression).
-              stage.replace {
-                expression = "(\\x1b\\[[0-9;]*m)"
-                replace    = ""
-              }
 
               stage.regex {
                 expression = "^\\S+ (?P<level>[A-Z]+) \\|"
