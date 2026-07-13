@@ -10,36 +10,27 @@ spec:
       enabled: false
     alertmanager:
       enabled: false
+    # Scraping + remote_write now happens via a dedicated Alloy instance
+    # (apps/clusters/feathre-core/base-apps/alloy-metrics) instead of the
+    # Prometheus Operator's own Prometheus-Agent StatefulSet. `crds.enabled`
+    # is left at its chart default (true) so the PodMonitor/ServiceMonitor
+    # CRDs — and the chart's own built-in ServiceMonitors below — keep
+    # existing.
+    #
+    # Deliberately staged in two steps, NOT done in one shot:
+    # step 1 (this change) only removes the PrometheusAgent CR while the
+    # operator is still running, so its finalizer-driven reconcile loop
+    # actually tears down the prometheus-agent StatefulSet/PVCs itself.
+    # The generated StatefulSet has no Kubernetes ownerReference back to
+    # the CR, so if the operator were disabled in the same apply, nothing
+    # would be left to clean it up — the old Agent pods would keep running
+    # and double-writing to Mimir alongside alloy-metrics, forever.
+    # Step 2 — set prometheusOperator.enabled: false — only once
+    # `kubectl get statefulset -n monitoring -l operator.prometheus.io/name=kube-prometheus-stack-prometheus`
+    # (or `flux get helmrelease kube-prometheus-stack -n monitoring`) confirms
+    # the agent StatefulSet is actually gone.
     prometheus:
-      agentMode: true
-      ingress:
-        enabled: false
-      prometheusSpec:
-        replicas: 2
-        priorityClassName: feather-high
-        resources:
-          requests:
-            cpu: 250m
-            memory: 1536Mi
-          limits:
-            cpu: "2"
-            memory: 2560Mi
-        replicaExternalLabelName: __replica__
-        podAntiAffinity: hard
-        podMonitorNamespaceSelector: {}
-        podMonitorSelectorNilUsesHelmValues: false
-        serviceMonitorNamespaceSelector: {}
-        serviceMonitorSelectorNilUsesHelmValues: false
-        externalLabels:
-          cluster: feather-core
-        remoteWrite:
-          - url: http://mimir-gateway.grafana.svc.cluster.local/api/v1/push
-            sendExemplars: true
-            queueConfig:
-              capacity: 10000
-              minShards: 4
-              maxShards: 20
-              maxSamplesPerSend: 5000
+      enabled: false
     # Apiserver duration-histogram buckets alone were ~127k of ~275k active
     # series and pushed Mimir into its per-tenant series limit; the
     # _sum/_count series survive, so rates and averages still work.
@@ -49,20 +40,6 @@ spec:
           - action: drop
             sourceLabels: [__name__]
             regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
-    prometheusOperator:
-      resources:
-        requests:
-          cpu: 20m
-          memory: 64Mi
-        limits:
-          memory: 128Mi
-      prometheusConfigReloader:
-        resources:
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            memory: 64Mi
     kube-state-metrics:
       resources:
         requests:

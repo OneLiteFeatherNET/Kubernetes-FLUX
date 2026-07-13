@@ -41,9 +41,6 @@ spec:
         ingester:
           push_grpc_method_enabled: true
         limits:
-          accept_ha_samples: true
-          ha_cluster_label: cluster
-          ha_replica_label: __replica__
           compactor_blocks_retention_period: 365d
           # Default 150k was exhausted (new series silently rejected with
           # err-mimir-max-series-per-user), blocking envoy metrics ingestion.
@@ -75,6 +72,11 @@ spec:
             bucket_lookup_type: path
           tsdb:
             dir: /data/tsdb
+        # HA-tracker/dedup removed: metrics now arrive via clustered Alloy
+        # (apps/clusters/feathre-core/base-apps/alloy-metrics), which shards
+        # scrape targets across replicas instead of scraping everything
+        # twice, so there are no duplicate __replica__-tagged samples to
+        # deduplicate here anymore.
         alertmanager_storage:
           backend: s3
           s3:
@@ -95,11 +97,6 @@ spec:
             secret_access_key: ${AWS_SECRET_ACCESS_KEY}
             insecure: true
             bucket_lookup_type: path
-        distributor:
-          ha_tracker:
-            enable_ha_tracker: true
-            kvstore:
-              store: memberlist
     gateway:
       enabled: true
       replicas: 2
