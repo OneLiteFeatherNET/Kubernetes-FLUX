@@ -57,3 +57,7 @@ spec:
             name: s3-apps-onelite-feather-tls
           - kind: Secret
             name: n8n-apps-onelite-feather-tls
+          - kind: Secret
+            name: tempo-apps-onelite-feather-tls
+          - kind: Secret
+            name: otel-apps-onelite-feather-tls
