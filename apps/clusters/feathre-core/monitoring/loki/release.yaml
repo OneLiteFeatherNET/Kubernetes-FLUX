@@ -156,13 +156,16 @@ spec:
                     operator: In
                     values:
                       - fr01
+      # Bumped after the grpc message size fix (4MiB -> 100MiB) let large
+      # query results through instead of being rejected outright, which
+      # OOM-killed queriers at the old 512Mi limit.
       resources:
         requests:
           cpu: 100m
-          memory: 256Mi
+          memory: 512Mi
         limits:
           cpu: "1"
-          memory: 512Mi
+          memory: 1536Mi
     queryFrontend:
       replicas: 2
       maxUnavailable: 1
@@ -175,13 +178,16 @@ spec:
                     operator: In
                     values:
                       - fr01
+      # Bumped alongside querier: query-frontend merges results across
+      # shards/queriers, so it's also exposed to the larger gRPC message
+      # size now that 100MiB responses aren't rejected outright.
       resources:
         requests:
           cpu: 50m
-          memory: 128Mi
+          memory: 256Mi
         limits:
           cpu: "1"
-          memory: 512Mi
+          memory: 1Gi
     queryScheduler:
       replicas: 2
       maxUnavailable: 1
