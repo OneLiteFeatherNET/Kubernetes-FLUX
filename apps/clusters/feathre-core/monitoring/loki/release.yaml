@@ -103,6 +103,8 @@ spec:
           - name: data
             size: 10Gi
             storageClass: ceph-rbd-fr01
+            accessModes:
+              - ReadWriteOnce
       resources:
         requests:
           cpu: 100m
