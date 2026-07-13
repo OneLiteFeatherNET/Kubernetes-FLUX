@@ -176,8 +176,12 @@ spec:
             stage.match {
               selector = "{format=\"ansi\"}"
 
+              // stage.replace only substitutes captured groups, not the
+              // whole match -- the pattern must be wrapped in a group or
+              // nothing gets replaced (confirmed live: ANSI codes passed
+              // through untouched with an ungrouped expression).
               stage.replace {
-                expression = "\\x1b\\[[0-9;]*m"
+                expression = "(\\x1b\\[[0-9;]*m)"
                 replace    = ""
               }
 
