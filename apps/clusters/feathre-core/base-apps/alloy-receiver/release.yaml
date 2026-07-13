@@ -74,8 +74,28 @@ spec:
           otelcol.processor.batch "default" {
             output {
               metrics = [otelcol.exporter.prometheus.mimir.input]
-              logs    = [otelcol.exporter.loki.default.input]
+              logs    = [otelcol.processor.filter.drop_debug_logs.input]
               traces  = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          // Drops DEBUG/TRACE-level log records before they reach Loki,
+          // based on the OTLP severity_number the log4j2/logback OTel
+          // appender already sets — no text/regex matching needed.
+          // severity_number == 0 means "unspecified"; those are kept
+          // rather than guessed at.
+          otelcol.processor.filter "drop_debug_logs" {
+            error_mode = "ignore"
+
+            log_conditions {
+              context = "log"
+              conditions = [
+                `severity_number > 0 and severity_number < SEVERITY_NUMBER_INFO`,
+              ]
+            }
+
+            output {
+              logs = [otelcol.exporter.loki.default.input]
             }
           }
 
