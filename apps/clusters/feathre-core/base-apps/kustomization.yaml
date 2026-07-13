@@ -19,3 +19,4 @@ resources:
   # Ceph-RGW S3 backend does not block base-apps -> apps.
   - alloy-logs
   - alloy-metrics
+  - alloy-receiver

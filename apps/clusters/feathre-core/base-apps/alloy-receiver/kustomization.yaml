@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/alloy-receiver
+  - httproute.yaml
+  - grpcroute.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: alloy-receiver-otlp-auth
+    envs:
+      - otlp-auth.sops.env

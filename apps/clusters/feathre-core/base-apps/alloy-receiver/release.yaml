@@ -1,0 +1,130 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy-receiver
+  namespace: grafana
+spec:
+  values:
+    controller:
+      type: deployment
+      replicas: 2
+      priorityClassName: feather-high
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: alloy
+                    app.kubernetes.io/instance: alloy-receiver
+                topologyKey: kubernetes.io/hostname
+    serviceMonitor:
+      enabled: true
+    alloy:
+      # Basic-auth credentials for the OTLP receiver below (this endpoint is
+      # reachable externally via the alloy-receiver HTTPRoute).
+      extraEnvFrom:
+        - secretRef:
+            name: alloy-receiver-otlp-auth
+      extraPorts:
+        - name: otlp-grpc
+          port: 4317
+          targetPort: 4317
+          protocol: TCP
+        - name: otlp-http
+          port: 4318
+          targetPort: 4318
+          protocol: TCP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      configMap:
+        content: |
+          // Single OTLP intake point (grpc :4317, http :4318) fanning traces
+          // to Tempo, metrics to Mimir, and logs to Loki. Only the http port
+          // is exposed externally (see the alloy-receiver HTTPRoute) — grpc
+          // stays cluster-internal for now.
+          otelcol.auth.basic "ingest" {
+            username = sys.env("OTLP_BASIC_AUTH_USERNAME")
+            password = sys.env("OTLP_BASIC_AUTH_PASSWORD")
+          }
+
+          otelcol.receiver.otlp "default" {
+            grpc {
+              endpoint = "0.0.0.0:4317"
+              auth     = otelcol.auth.basic.ingest.handler
+            }
+
+            http {
+              endpoint = "0.0.0.0:4318"
+              auth     = otelcol.auth.basic.ingest.handler
+            }
+
+            output {
+              metrics = [otelcol.processor.batch.default.input]
+              logs    = [otelcol.processor.batch.default.input]
+              traces  = [otelcol.processor.batch.default.input]
+            }
+          }
+
+          otelcol.processor.batch "default" {
+            output {
+              metrics = [otelcol.exporter.prometheus.mimir.input]
+              logs    = [otelcol.exporter.loki.default.input]
+              traces  = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          otelcol.exporter.otlp "tempo" {
+            client {
+              endpoint = "tempo-gateway.grafana.svc.cluster.local:4317"
+
+              tls {
+                insecure = true
+              }
+            }
+          }
+
+          otelcol.exporter.prometheus "mimir" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+          }
+
+          prometheus.remote_write "mimir" {
+            endpoint {
+              url = "http://mimir-gateway.grafana.svc.cluster.local/api/v1/push"
+            }
+
+            external_labels = {
+              cluster = "feather-core",
+            }
+          }
+
+          otelcol.exporter.loki "default" {
+            forward_to = [loki.write.default.receiver]
+          }
+
+          loki.write "default" {
+            endpoint {
+              url = "http://loki-gateway.grafana.svc.cluster.local/loki/api/v1/push"
+            }
+
+            external_labels = {
+              cluster = "feather-core",
+            }
+          }
