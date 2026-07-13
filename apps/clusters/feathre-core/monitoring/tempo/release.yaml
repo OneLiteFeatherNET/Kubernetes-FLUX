@@ -147,6 +147,39 @@ spec:
                     operator: In
                     values:
                       - fr01
+    metricsGenerator:
+      enabled: true
+      extraArgs:
+        - -config.expand-env=true
+      config:
+        storage:
+          remote_write:
+            - url: http://mimir-gateway.grafana.svc.cluster.local/api/v1/push
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+    # Enables the metrics-generator processors above — without this the
+    # generator runs but produces no metrics (span rate/service graph
+    # panels in Grafana would keep showing "empty ring"/no data).
+    overrides:
+      defaults:
+        metrics_generator:
+          processors:
+            - service-graphs
+            - span-metrics
     gateway:
       enabled: true
       replicas: 2
