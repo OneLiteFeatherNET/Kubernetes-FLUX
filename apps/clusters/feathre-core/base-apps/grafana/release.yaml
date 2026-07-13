@@ -23,6 +23,10 @@ spec:
       name: grafana-admin
       valuesKey: adminPassword
       targetPath: adminPassword
+    - kind: Secret
+      name: grafana-discord
+      valuesKey: webhookUrl
+      targetPath: alerting.contactpoints\.yaml.secret.contactPoints[0].receivers[0].settings.url
   values:
     podLabels:
       logs.onelitefeather.net/env: prod
@@ -27560,6 +27564,303 @@ spec:
               "uid": "minecraftotel-jvm",
               "version": 16
             }
+    alerting:
+      contactpoints.yaml:
+        secret:
+          apiVersion: 1
+          contactPoints:
+            - orgId: 1
+              name: discord
+              receivers:
+                - uid: discord_webhook
+                  type: discord
+                  settings:
+                    url: "placeholder-overwritten-by-valuesFrom"
+                    use_discord_username: true
+                    title: '{{ `{{ template "default.title" . }}` }}'
+                    message: '{{ `{{ template "default.message" . }}` }}'
+      policies.yaml:
+        apiVersion: 1
+        policies:
+          - orgId: 1
+            receiver: discord
+            group_by: ['alertname']
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 4h
+      rules.yaml:
+        apiVersion: 1
+        groups:
+          - orgId: 1
+            name: core_services
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: flux-core-layer-not-ready
+                title: Flux core layer not ready
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: count(gotk_resource_info{customresource_kind="Kustomization", ready="False"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "One or more of the 12 core Flux Kustomization layers (controllers/configs/rook/apps/monitoring/etc.) is not Ready. Check: flux get kustomizations -A"
+                labels:
+                  severity: critical
+              - uid: core-infra-helmrelease-not-ready
+                title: Core infrastructure HelmRelease not ready
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: count(gotk_resource_info{customresource_kind="HelmRelease", ready="False", name=~"envoy|cert-manager|rook-ceph|cnpg|mariadb-operator|mimir|loki|tempo|grafana|cloudflare-tunnel-ingress-controller|metallb|dragonfly"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "A core infrastructure HelmRelease (gateway/certs/storage/database/observability) is not Ready. Check: flux get helmrelease -A | grep -v True"
+                labels:
+                  severity: critical
+          - orgId: 1
+            name: backups
+            folder: Backups
+            interval: 60s
+            rules:
+              - uid: cnpg-backup-stale
+                title: CNPG backup stale
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: (time() - cnpg_collector_last_available_backup_timestamp) / 3600
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 24
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "No successful CloudNativePG (Postgres) backup in over 24h."
+                labels:
+                  severity: warning
+              - uid: cnpg-backup-failing
+                title: CNPG backup failing
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: cnpg_collector_last_failed_backup_timestamp - cnpg_collector_last_available_backup_timestamp
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "CloudNativePG's most recent backup attempt failed (a failure timestamp is newer than the last successful one)."
+                labels:
+                  severity: warning
+              - uid: mariadb-galera-backup-job-failed
+                title: MariaDB Galera backup job failed
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(kube_job_status_failed{namespace="mariadb-galera"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "The mariadb-galera-backup CronJob's most recent Job run failed. Check: kubectl get jobs -n mariadb-galera"
+                labels:
+                  severity: warning
     resources:
       requests:
         cpu: 250m

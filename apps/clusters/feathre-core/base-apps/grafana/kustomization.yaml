@@ -16,3 +16,6 @@ secretGenerator:
   - name: grafana-postgresql
     envs:
       - grafana-postgresql.sops.env
+  - name: grafana-discord
+    envs:
+      - grafana-discord.sops.env
