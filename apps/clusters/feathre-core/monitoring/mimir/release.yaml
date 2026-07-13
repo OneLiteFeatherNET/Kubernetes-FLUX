@@ -55,6 +55,18 @@ spec:
           # aged out yet. Revert to 400000 once cortex_ingester_memory_series
           # settles back near its ~275k baseline.
           max_global_series_per_user: 600000
+          # Default (10000/s, 200000 burst) started rejecting the whole
+          # tenant with err-mimir-tenant-max-ingestion-rate on 2026-07-13,
+          # after this session added several new metrics sources (otis/
+          # vulpes-backend/reposilite OTel metrics, envoy tracing span-
+          # metrics, tempo local-blocks generator). The 429 backpressure
+          # cascaded into err-mimir-sample-timestamp-too-old, dropping
+          # unrelated pre-existing metrics (node-exporter, kubelet/cadvisor,
+          # envoy, ceph, mariadb) as the remote_write retry queue backed up.
+          # Revisit sizing once the actual sustained rate is confirmed via
+          # cortex_distributor_ingestion_rate_samples_per_second.
+          ingestion_rate: 30000
+          ingestion_burst_size: 600000
         common:
           storage:
             backend: s3
