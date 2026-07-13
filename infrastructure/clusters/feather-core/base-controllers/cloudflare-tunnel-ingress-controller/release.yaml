@@ -45,6 +45,14 @@ spec:
         limits:
           cpu: 200m
           memory: 256Mi
+      # Default keepalive on the connector->origin connection is 90s
+      # (cloudflared default). Bursty/gappy origins (e.g. S3 tile uploads
+      # from BlueMap) fall idle past that and pay a full TCP+TLS reconnect
+      # (~700ms observed) on the next request. Raise it well past typical
+      # gaps between uploads. Applies to ALL hosts behind this shared
+      # connector, not just s3.onelitefeather.net.
+      extraArgs:
+        - "--proxy-keepalive-timeout=10m"
     # cloudflared already runs its Prometheus /metrics endpoint on :44483
     # (the controller sets --metrics itself, not configurable via Helm) --
     # this just wires up scraping for it. No tracing equivalent exists:
