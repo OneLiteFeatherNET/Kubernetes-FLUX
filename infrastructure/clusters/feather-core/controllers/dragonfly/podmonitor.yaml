@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dragonfly
+spec:
+  # Matches the labels the dragonfly-operator actually sets on the pods
+  # (see dragonfly.yaml topologySpreadConstraints comment -- it does NOT set
+  # app.kubernetes.io/instance).
+  selector:
+    matchLabels:
+      app: dragonfly
+  podMetricsEndpoints:
+    # Dragonfly serves its native Prometheus metrics (dragonfly_* series, NOT
+    # redis_exporter-compatible redis_* series) on the "admin" port (9999),
+    # not the redis protocol port (6379). Confirmed live:
+    #   kubectl port-forward -n dragonfly pod/dragonfly-0 19999:9999
+    #   curl -s localhost:19999/metrics | head
+    - port: admin
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
