@@ -213,6 +213,26 @@ env:
 
 envFrom: []
 
+# Traces-only OTel Java agent instrumentation. Metrics/logs already flow via
+# the chart's own Prometheus scrape (metrics.serviceMonitor) and container
+# stdout shipping, so only OTEL_TRACES_EXPORTER is enabled here to avoid
+# duplicating either. An initContainer copies the javaagent jar out of the
+# upstream image into an emptyDir the main container mounts read-only --
+# no OpenTelemetry Operator/CRDs involved, just the jar-holder image it publishes.
+tracing:
+  enabled: false
+  # Matches the tempo-gateway target already used by EnvoyProxy's native
+  # tracing and the alloy-receiver OTLP gateway elsewhere in this cluster.
+  endpoint: http://tempo-gateway.grafana.svc.cluster.local:4317
+  image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:1.33.6
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
 containerSecurityContext:
   enabled: true
   allowPrivilegeEscalation: false

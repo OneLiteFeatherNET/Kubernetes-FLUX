@@ -59,6 +59,11 @@ spec:
       logs.onelitefeather.net/format: json
       logs.onelitefeather.net/env: dev
 
+    # Traces only -- metrics/logs already covered by serviceMonitor scraping
+    # and stdout shipping above.
+    tracing:
+      enabled: true
+
     config:
       base: |-
         micronaut:
