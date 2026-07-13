@@ -177,12 +177,16 @@ spec:
     # Enables the metrics-generator processors above — without this the
     # generator runs but produces no metrics (span rate/service graph
     # panels in Grafana would keep showing "empty ring"/no data).
+    # local-blocks is additionally required for Grafana's Traces Drilldown
+    # app, which queries recent/live TraceQL metrics straight from the
+    # generator rather than pre-aggregated Prometheus series.
     overrides:
       defaults:
         metrics_generator:
           processors:
             - service-graphs
             - span-metrics
+            - local-blocks
     gateway:
       enabled: true
       replicas: 2
