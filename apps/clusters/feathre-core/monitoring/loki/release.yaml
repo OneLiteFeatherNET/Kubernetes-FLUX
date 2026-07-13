@@ -30,6 +30,17 @@ spec:
       priorityClassName: feather-high
     loki:
       auth_enabled: false
+      # Default 4MiB gRPC message size is too small for larger query
+      # results (querier -> query-scheduler/-frontend), causing
+      # "grpc: received message larger than max" / ResourceExhausted.
+      server:
+        grpc_server_max_recv_msg_size: 104857600
+        grpc_server_max_send_msg_size: 104857600
+      querier:
+        query_frontend_grpc_client:
+          max_recv_msg_size: 104857600
+        query_scheduler_grpc_client:
+          max_recv_msg_size: 104857600
       commonConfig:
         # Matches ingester.replicas below so every write is fully replicated.
         replication_factor: 3
