@@ -1204,6 +1204,12 @@ spec:
           datasource:
             - name: DS_PROMETHEUS
               value: Mimir
+        cloudflare-tunnel:
+          gnetId: 24874
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
         flux-cluster-stats:
           json: |
             {
