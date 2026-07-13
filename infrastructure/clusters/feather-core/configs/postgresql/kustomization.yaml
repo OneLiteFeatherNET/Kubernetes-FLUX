@@ -8,6 +8,7 @@ resources:
   - podmonitor.yaml
   - object-store.yaml
   - backup.yaml
+  - scheduled-backup.yaml
   - pooler-rw.yaml
   - pooler-ro.yaml
   - database/harbor.yaml
