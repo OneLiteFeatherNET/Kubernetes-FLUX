@@ -27577,8 +27577,28 @@ spec:
                   settings:
                     url: "placeholder-overwritten-by-valuesFrom"
                     use_discord_username: true
-                    title: '{{ `{{ template "default.title" . }}` }}'
-                    message: '{{ `{{ template "default.message" . }}` }}'
+                    title: '{{ `{{ template "discord.title" . }}` }}'
+                    message: '{{ `{{ template "discord.message" . }}` }}'
+      templates.yaml:
+        apiVersion: 1
+        templates:
+          - name: discord.title
+            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴{{ `{{ else }}` }}✅{{ `{{ end }}` }} [{{ `{{ .Status | toUpper }}` }}] {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
+          - name: discord.message
+            template: |
+              {{ `{{ define "discord.message" }}` }}
+              {{ `{{- range .Alerts }}` }}
+              **{{ `{{ .Labels.alertname }}` }}**
+              {{ `{{ .Annotations.summary }}` }}
+              {{ `{{- if .Labels.severity }}` }}
+              severity: `{{ `{{ .Labels.severity }}` }}`
+              {{ `{{- end }}` }}
+              {{ `{{- if .Labels.name }}` }}
+              object: `{{ `{{ .Labels.exported_namespace }}` }}/{{ `{{ .Labels.name }}` }}` (`{{ `{{ .Labels.customresource_kind }}` }}`)
+              {{ `{{- end }}` }}
+
+              {{ `{{ end }}` }}
+              {{ `{{- end }}` }}
       policies.yaml:
         apiVersion: 1
         policies:
@@ -27607,7 +27627,7 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: count(gotk_resource_info{customresource_kind="Kustomization", ready="False"})
+                      expr: gotk_resource_info{customresource_kind="Kustomization", ready="False"}
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
@@ -27659,7 +27679,7 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: count(gotk_resource_info{customresource_kind="HelmRelease", ready="False", name=~"envoy|cert-manager|rook-ceph|cnpg|mariadb-operator|mimir|loki|tempo|grafana|cloudflare-tunnel-ingress-controller|metallb|dragonfly"})
+                      expr: gotk_resource_info{customresource_kind="HelmRelease", ready="False", name=~"envoy|cert-manager|rook-ceph|cnpg|mariadb-operator|mimir|loki|tempo|grafana|cloudflare-tunnel-ingress-controller|metallb|dragonfly"}
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
