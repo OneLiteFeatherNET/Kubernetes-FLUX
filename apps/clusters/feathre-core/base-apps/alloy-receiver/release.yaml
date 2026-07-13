@@ -34,8 +34,10 @@ spec:
       enabled: true
     alloy:
       # Basic-auth credentials for the OTLP receiver below (this endpoint is
-      # reachable externally via the alloy-receiver HTTPRoute).
-      extraEnvFrom:
+      # reachable externally via the alloy-receiver HTTPRoute). Note: this
+      # chart's field is `envFrom`, not `extraEnvFrom` (that's a different
+      # field name used by the tempo/mimir/loki charts).
+      envFrom:
         - secretRef:
             name: alloy-receiver-otlp-auth
       extraPorts:
