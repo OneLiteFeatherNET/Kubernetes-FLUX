@@ -17,4 +17,5 @@ resources:
   # wait:false monitoring Kustomization
   # (clusters/feather-core/monitoring.yaml) so their external
   # Ceph-RGW S3 backend does not block base-apps -> apps.
-  - alloy
+  - alloy-logs
+  - alloy-metrics

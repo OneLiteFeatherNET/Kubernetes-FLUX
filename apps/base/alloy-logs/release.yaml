@@ -1,10 +1,10 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: alloy
+  name: alloy-logs
   namespace: grafana
 spec:
-  releaseName: alloy
+  releaseName: alloy-logs
   chart:
     spec:
       chart: alloy
