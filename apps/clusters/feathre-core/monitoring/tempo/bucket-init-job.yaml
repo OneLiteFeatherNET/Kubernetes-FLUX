@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tempo-traces-bucket-init
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: create-bucket
+          image: amazon/aws-cli:2.17.60
+          # RGW zonegroup api_name is "default", not a real AWS region — using
+          # any other value makes CreateBucket fail with InvalidLocationConstraint.
+          # Owner ends up being the "tempo" CephObjectStoreUser (creds from
+          # envFrom), matching the ownership convention used by every other
+          # bucket in this cluster (harbor, loki, mimir, ...).
+          command:
+            - sh
+            - -c
+            - >
+              aws --endpoint-url=http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+              --region=default s3 mb s3://tempo-traces
+              || aws --endpoint-url=http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+              --region=default s3 ls s3://tempo-traces
+          envFrom:
+            - secretRef:
+                name: tempo-s3
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
