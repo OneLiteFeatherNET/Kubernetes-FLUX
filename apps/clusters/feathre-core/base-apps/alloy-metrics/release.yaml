@@ -52,10 +52,18 @@ spec:
           // this path.
           prometheus.operator.podmonitors "cluster" {
             forward_to = [prometheus.remote_write.mimir.receiver]
+
+            clustering {
+              enabled = true
+            }
           }
 
           prometheus.operator.servicemonitors "cluster" {
             forward_to = [prometheus.remote_write.mimir.receiver]
+
+            clustering {
+              enabled = true
+            }
           }
 
           prometheus.remote_write "mimir" {
