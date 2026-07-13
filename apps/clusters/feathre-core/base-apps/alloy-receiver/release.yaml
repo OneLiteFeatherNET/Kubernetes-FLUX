@@ -73,9 +73,30 @@ spec:
 
           otelcol.processor.batch "default" {
             output {
-              metrics = [otelcol.exporter.prometheus.mimir.input]
+              metrics = [otelcol.processor.transform.strip_verbose_resource_attrs.input]
               logs    = [otelcol.processor.filter.drop_debug_logs.input]
               traces  = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          // OTel's process resource detector adds command_line/command_args,
+          // which for a JVM with agent + classpath flags easily exceeds
+          // Mimir's per-label-value length limit (err-mimir-label-value-too-long)
+          // once it lands on the synthetic target_info metric. Strip before
+          // it becomes a label.
+          otelcol.processor.transform "strip_verbose_resource_attrs" {
+            error_mode = "ignore"
+
+            metric_statements {
+              context = "resource"
+              statements = [
+                `delete_key(attributes, "process.command_line")`,
+                `delete_key(attributes, "process.command_args")`,
+              ]
+            }
+
+            output {
+              metrics = [otelcol.exporter.prometheus.mimir.input]
             }
           }
 
