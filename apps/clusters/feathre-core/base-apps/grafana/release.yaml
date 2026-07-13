@@ -27736,7 +27736,12 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: (time() - cnpg_collector_last_available_backup_timestamp) / 3600
+                      # cnpg_collector_last_available_backup_timestamp never updates for
+                      # plugin-based (barman-cloud) backups -- confirmed live it stays
+                      # stuck at 0 even after real completed backups. cnpg_backup_stopped_at_seconds
+                      # (kube-state-metrics customResourceState reading the Backup CR itself)
+                      # is the metric that actually reflects reality.
+                      expr: (time() - max(cnpg_backup_stopped_at_seconds{cluster="feather-core-cluster-pg", phase="completed"})) / 3600
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
@@ -27788,7 +27793,12 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: cnpg_collector_last_failed_backup_timestamp - cnpg_collector_last_available_backup_timestamp
+                      # Same dead-metric issue as cnpg-backup-stale: the legacy
+                      # cnpg_collector_last_failed_backup_timestamp metric never fires
+                      # for plugin-based backups. Failed backups never get a stoppedAt
+                      # (only completed ones do), so use createdAt instead: any Backup
+                      # CR that entered phase=failed within the staleness window (24h).
+                      expr: count(cnpg_backup_created_at_seconds{cluster="feather-core-cluster-pg", phase="failed"} > (time() - 86400)) OR vector(0)
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200

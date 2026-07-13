@@ -79,6 +79,16 @@ spec:
               - providers
               - receivers
             verbs: ["list", "watch"]
+          # cnpg_collector_last_available/failed_backup_timestamp (the CNPG
+          # operator's own metrics) never update for plugin-based
+          # (barman-cloud.cloudnative-pg.io) backups -- confirmed live they
+          # stay stuck at 0 even after real completed backups. Backup CRs
+          # are the only reliable source of plugin backup status/timing.
+          - apiGroups:
+              - postgresql.cnpg.io
+            resources:
+              - backups
+            verbs: ["list", "watch"]
       customResourceState:
         enabled: true
         config:
@@ -269,6 +279,39 @@ spec:
                       ready: [status, conditions, "[type=Ready]", status]
                       suspended: [spec, suspend]
                       webhook_path: [status, webhookPath]
+              # Plugin-based (barman-cloud) backups don't update the CNPG
+              # operator's own cnpg_collector_last_available/failed_backup_timestamp
+              # metrics -- confirmed live they stay 0 forever regardless of
+              # real completed backups. These two gauges read the Backup CR
+              # itself instead. stoppedAt is only ever set once a backup
+              # finishes (completed or failed both leave it unset on error),
+              # so nilIsZero is required or KSM would skip the series for
+              # in-progress/failed backups entirely.
+              - groupVersionKind:
+                  group: postgresql.cnpg.io
+                  version: v1
+                  kind: Backup
+                metricNamePrefix: cnpg_backup
+                metrics:
+                  - name: "created_at_seconds"
+                    help: "Unix timestamp when the CloudNativePG Backup resource was created."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, creationTimestamp]
+                  - name: "stopped_at_seconds"
+                    help: "Unix timestamp when the CloudNativePG backup finished running (completed only; unset on failure)."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, stoppedAt]
+                        nilIsZero: true
+                labelsFromPath:
+                  name: [metadata, name]
+                  exported_namespace: [metadata, namespace]
+                  cluster: [spec, cluster, name]
+                  phase: [status, phase]
+                  method: [spec, method]
     prometheus-node-exporter:
       resources:
         requests:
