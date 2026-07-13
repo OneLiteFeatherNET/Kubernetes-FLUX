@@ -224,7 +224,12 @@ tracing:
   # Matches the tempo-gateway target already used by EnvoyProxy's native
   # tracing and the alloy-receiver OTLP gateway elsewhere in this cluster.
   endpoint: http://tempo-gateway.grafana.svc.cluster.local:4317
-  image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:1.33.6
+  # otis/vulpes-backend run JDK 25; older javaagent releases fail to attach
+  # there (InaccessibleObjectException on ClassLoader.findLoadedClass --
+  # module java.base doesn't opens java.lang to the unnamed module under
+  # newer JDKs). 2.29.0 is the latest available and includes the JDK23+
+  # MethodHandles.Lookup fix for boot-loader class injection.
+  image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.29.0
   resources:
     requests:
       cpu: 10m
