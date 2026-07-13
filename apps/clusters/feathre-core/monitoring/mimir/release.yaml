@@ -47,7 +47,14 @@ spec:
           # 400k covers the in-memory head (stale series linger up to 2h
           # after compaction) on top of ~275k active series; the apiserver
           # bucket drops in kube-prometheus-stack bring actives down again.
-          max_global_series_per_user: 400000
+          #
+          # Temporarily raised to 600k on 2026-07-13: the alloy-metrics
+          # clustering bugfix (both replicas were scraping the full target
+          # set, undeduplicated, for ~2.5h before the fix) filled the
+          # ingesters to exactly 400k with duplicate series that hadn't
+          # aged out yet. Revert to 400000 once cortex_ingester_memory_series
+          # settles back near its ~275k baseline.
+          max_global_series_per_user: 600000
         common:
           storage:
             backend: s3
