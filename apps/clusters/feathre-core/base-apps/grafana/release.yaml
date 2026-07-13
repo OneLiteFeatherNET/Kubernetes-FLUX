@@ -9037,6 +9037,2307 @@ spec:
           datasource:
             - name: DS_PROMETHEUS
               value: Mimir
+        metallb:
+          json: |
+            {
+              "annotations": {
+                "list": [
+                  {
+                    "builtIn": 1,
+                    "datasource": {
+                      "type": "grafana",
+                      "uid": "-- Grafana --"
+                    },
+                    "enable": true,
+                    "hide": true,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                  }
+                ]
+              },
+              "description": "Metallb dashboard https://metallb.universe.tf/  ",
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "gnetId": 20162,
+              "graphTooltip": 0,
+              "links": [],
+              "liveNow": false,
+              "panels": [
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "id": 83,
+                  "panels": [],
+                  "title": "Pool",
+                  "type": "row"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 3,
+                    "x": 0,
+                    "y": 1
+                  },
+                  "id": 229,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Total pool",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 3,
+                    "x": 3,
+                    "y": 1
+                  },
+                  "id": 230,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "IPv4 pool",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 3,
+                    "x": 6,
+                    "y": 1
+                  },
+                  "id": 231,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "IPv6 pool",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [],
+                      "max": 100,
+                      "min": 0,
+                      "noValue": "<1%",
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "orange",
+                            "value": 75
+                          },
+                          {
+                            "color": "red",
+                            "value": 90
+                          }
+                        ]
+                      },
+                      "unit": "percentunit",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 3,
+                    "x": 0,
+                    "y": 2
+                  },
+                  "id": 58,
+                  "options": {
+                    "minVizHeight": 75,
+                    "minVizWidth": 75,
+                    "orientation": "horizontal",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showThresholdLabels": false,
+                    "showThresholdMarkers": true,
+                    "sizing": "auto"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "repeat": "pool",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "last_over_time(metallb_allocator_addresses_in_use_total{pool=~\"$pool\"}[$__rate_interval]) / last_over_time(metallb_allocator_addresses_total{pool=~\"$pool\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "__auto",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "$pool",
+                  "type": "gauge"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [],
+                      "max": 100,
+                      "min": 0,
+                      "noValue": "<1%",
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "orange",
+                            "value": 75
+                          },
+                          {
+                            "color": "red",
+                            "value": 90
+                          }
+                        ]
+                      },
+                      "unit": "percentunit",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 3,
+                    "x": 3,
+                    "y": 2
+                  },
+                  "id": 232,
+                  "options": {
+                    "minVizHeight": 75,
+                    "minVizWidth": 75,
+                    "orientation": "horizontal",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showThresholdLabels": false,
+                    "showThresholdMarkers": true,
+                    "sizing": "auto"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "repeat": "pool",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "last_over_time(metallb_allocator_ipv4_addresses_in_use_total{pool=~\"$pool\"}[$__rate_interval]) / last_over_time(metallb_allocator_ipv4_addresses_total{pool=~\"$pool\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "__auto",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "$pool",
+                  "type": "gauge"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [],
+                      "max": 100,
+                      "min": 0,
+                      "noValue": "<1%",
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "orange",
+                            "value": 75
+                          },
+                          {
+                            "color": "red",
+                            "value": 90
+                          }
+                        ]
+                      },
+                      "unit": "percentunit",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 3,
+                    "x": 6,
+                    "y": 2
+                  },
+                  "id": 233,
+                  "options": {
+                    "minVizHeight": 75,
+                    "minVizWidth": 75,
+                    "orientation": "horizontal",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showThresholdLabels": false,
+                    "showThresholdMarkers": true,
+                    "sizing": "auto"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "repeat": "pool",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "last_over_time(metallb_allocator_ipv6_addresses_in_use_total{pool=~\"$pool\"}[$__rate_interval]) / last_over_time(metallb_allocator_ipv6_addresses_total{pool=~\"$pool\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "__auto",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "$pool",
+                  "type": "gauge"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 9
+                  },
+                  "id": 108,
+                  "panels": [],
+                  "title": "L2",
+                  "type": "row"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 8,
+                    "x": 0,
+                    "y": 10
+                  },
+                  "id": 158,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Gratuitous sent",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 8,
+                    "x": 8,
+                    "y": 10
+                  },
+                  "id": 159,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Requests received",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 8,
+                    "x": 16,
+                    "y": 10
+                  },
+                  "id": 160,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Responses sent",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "pps",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 8,
+                    "x": 0,
+                    "y": 11
+                  },
+                  "id": 133,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "repeat": "l2",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "rate(metallb_layer2_gratuitous_sent{instance=~\"$l2\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "{{ ip }}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "$l2",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 0,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "pps",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 8,
+                    "x": 8,
+                    "y": 11
+                  },
+                  "id": 191,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "repeat": "l2",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "rate(metallb_layer2_requests_received{instance=~\"$l2\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "{{ip}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "$l2",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "decimals": 0,
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "pps",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 8,
+                    "x": 16,
+                    "y": 11
+                  },
+                  "id": 192,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "repeat": "l2",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "rate(metallb_layer2_responses_sent{instance=~\"$l2\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "{{ ip }}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "$l2",
+                  "type": "timeseries"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 46
+                  },
+                  "id": 300,
+                  "panels": [],
+                  "title": "BGP",
+                  "type": "row"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [
+                        {
+                          "options": {
+                            "0": {
+                              "index": 0,
+                              "text": "Down"
+                            },
+                            "1": {
+                              "index": 1,
+                              "text": "Up"
+                            }
+                          },
+                          "type": "value"
+                        }
+                      ],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "dark-red"
+                          },
+                          {
+                            "color": "green",
+                            "value": 1
+                          }
+                        ]
+                      },
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 8,
+                    "x": 0,
+                    "y": 47
+                  },
+                  "id": 301,
+                  "options": {
+                    "colorMode": "background",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "auto",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "10.3.1",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "metallb_bgp_session_up{peer=~\".+:.+\"}",
+                      "instant": true,
+                      "legendFormat": "{{pod}} - {{peer}}",
+                      "range": false,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "BGP Session Up",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "short",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 8,
+                    "x": 8,
+                    "y": 47
+                  },
+                  "id": 302,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "metallb_bgp_announced_prefixes_total{peer=~\".+:.+\"}",
+                      "instant": false,
+                      "legendFormat": "{{pod}} - {{peer}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "BGP Announced Prefixes",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "short",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 8,
+                    "x": 16,
+                    "y": 47
+                  },
+                  "id": 303,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "metallb_bgp_pending_prefixes_total{peer=~\".+:.+\"}",
+                      "instant": false,
+                      "legendFormat": "{{pod}} - {{peer}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "BGP Pending Prefixes",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "reqps",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 24,
+                    "x": 0,
+                    "y": 54
+                  },
+                  "id": 304,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "rate(metallb_bgp_updates_total{peer=~\".+:.+\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "{{pod}} - {{peer}}",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "BGP Updates Rate",
+                  "type": "timeseries"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 55
+                  },
+                  "id": 33,
+                  "panels": [],
+                  "title": "Client metrics",
+                  "type": "row"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 2,
+                    "x": 0,
+                    "y": 56
+                  },
+                  "id": 6,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Config loaded",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 2,
+                    "x": 2,
+                    "y": 56
+                  },
+                  "id": 7,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Config stale",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 10,
+                    "x": 4,
+                    "y": 56
+                  },
+                  "id": 4,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Client update",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "gridPos": {
+                    "h": 1,
+                    "w": 10,
+                    "x": 14,
+                    "y": 56
+                  },
+                  "id": 5,
+                  "options": {
+                    "code": {
+                      "language": "plaintext",
+                      "showLineNumbers": false,
+                      "showMiniMap": false
+                    },
+                    "content": "",
+                    "mode": "markdown"
+                  },
+                  "pluginVersion": "10.3.1",
+                  "title": "Client update errors",
+                  "type": "text"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [
+                        {
+                          "options": {
+                            "0": {
+                              "index": 0,
+                              "text": "No"
+                            },
+                            "1": {
+                              "index": 1,
+                              "text": "Yes"
+                            }
+                          },
+                          "type": "value"
+                        }
+                      ],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "dark-red"
+                          },
+                          {
+                            "color": "green",
+                            "value": 1
+                          }
+                        ]
+                      },
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 2,
+                    "x": 0,
+                    "y": 57
+                  },
+                  "id": 3,
+                  "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "10.3.1",
+                  "repeat": "metallb_client",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "exemplar": false,
+                      "expr": "metallb_k8s_client_config_loaded_bool{instance=~\"$metallb_client\"}",
+                      "instant": true,
+                      "legendFormat": "",
+                      "range": false,
+                      "refId": "A"
+                    }
+                  ],
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "mappings": [
+                        {
+                          "options": {
+                            "0": {
+                              "index": 0,
+                              "text": "No"
+                            },
+                            "1": {
+                              "index": 1,
+                              "text": "Yes"
+                            }
+                          },
+                          "type": "value"
+                        }
+                      ],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "dark-red",
+                            "value": 1
+                          }
+                        ]
+                      },
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 2,
+                    "x": 2,
+                    "y": 57
+                  },
+                  "id": 8,
+                  "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                      "calcs": [
+                        "lastNotNull"
+                      ],
+                      "fields": "",
+                      "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                  },
+                  "pluginVersion": "10.3.1",
+                  "repeat": "metallb_client",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "exemplar": false,
+                      "expr": "metallb_k8s_client_config_stale_bool{instance=~\"$metallb_client\"}",
+                      "instant": true,
+                      "legendFormat": "",
+                      "range": false,
+                      "refId": "A"
+                    }
+                  ],
+                  "type": "stat"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "reqps",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 10,
+                    "x": 4,
+                    "y": 57
+                  },
+                  "id": 2,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "repeat": "metallb_client",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "rate(metallb_k8s_client_updates_total{instance=~\"$metallb_client\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "$metallb_client",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                          "legend": false,
+                          "tooltip": false,
+                          "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                          "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                          "group": "A",
+                          "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                          "mode": "off"
+                        }
+                      },
+                      "mappings": [],
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                          {
+                            "color": "green"
+                          },
+                          {
+                            "color": "red",
+                            "value": 80
+                          }
+                        ]
+                      },
+                      "unit": "reqps",
+                      "unitScale": true
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 7,
+                    "w": 10,
+                    "x": 14,
+                    "y": 57
+                  },
+                  "id": 1,
+                  "options": {
+                    "legend": {
+                      "calcs": [],
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "repeat": "metallb_client",
+                  "repeatDirection": "v",
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "editorMode": "code",
+                      "expr": "increase(metallb_k8s_client_update_errors_total{instance=~\"$metallb_client\"}[$__rate_interval])",
+                      "instant": false,
+                      "legendFormat": "$metallb_client",
+                      "range": true,
+                      "refId": "A"
+                    }
+                  ],
+                  "type": "timeseries"
+                }
+              ],
+              "refresh": "",
+              "schemaVersion": 42,
+              "tags": [],
+              "templating": {
+                "list": [
+                  {
+                    "current": {},
+                    "datasource": {
+                      "type": "prometheus",
+                      "uid": "mimir"
+                    },
+                    "definition": "label_values(metallb_allocator_addresses_in_use_total,pool)",
+                    "hide": 0,
+                    "includeAll": true,
+                    "multi": true,
+                    "name": "pool",
+                    "options": [],
+                    "query": {
+                      "qryType": 1,
+                      "query": "label_values(metallb_allocator_addresses_in_use_total,pool)",
+                      "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                    },
+                    "refresh": 1,
+                    "regex": "",
+                    "skipUrlSync": false,
+                    "sort": 0,
+                    "type": "query"
+                  },
+                  {
+                    "current": {},
+                    "datasource": {
+                      "type": "prometheus",
+                      "uid": "mimir"
+                    },
+                    "definition": "label_values(metallb_layer2_gratuitous_sent,instance)",
+                    "hide": 0,
+                    "includeAll": true,
+                    "label": "l2",
+                    "multi": true,
+                    "name": "l2",
+                    "options": [],
+                    "query": {
+                      "qryType": 1,
+                      "query": "label_values(metallb_layer2_gratuitous_sent,instance)",
+                      "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                    },
+                    "refresh": 1,
+                    "regex": "",
+                    "skipUrlSync": false,
+                    "sort": 0,
+                    "type": "query"
+                  },
+                  {
+                    "current": {},
+                    "datasource": {
+                      "type": "prometheus",
+                      "uid": "mimir"
+                    },
+                    "definition": "label_values(metallb_k8s_client_config_loaded_bool,instance)",
+                    "description": "",
+                    "hide": 0,
+                    "includeAll": true,
+                    "label": "metallb client",
+                    "multi": true,
+                    "name": "metallb_client",
+                    "options": [],
+                    "query": {
+                      "qryType": 1,
+                      "query": "label_values(metallb_k8s_client_config_loaded_bool,instance)",
+                      "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                    },
+                    "refresh": 1,
+                    "regex": "",
+                    "skipUrlSync": false,
+                    "sort": 5,
+                    "type": "query"
+                  }
+                ]
+              },
+              "time": {
+                "from": "now-12h",
+                "to": "now"
+              },
+              "timepicker": {},
+              "timezone": "",
+              "title": "Metallb",
+              "uid": "fb5d0c21-344b-41e1-b342-d611f32b9fe4",
+              "weekStart": ""
+            }
+        spegel:
+          json: |
+            {
+              "annotations": {
+                "list": [
+                  {
+                    "builtIn": 1,
+                    "datasource": {
+                      "type": "grafana",
+                      "uid": "-- Grafana --"
+                    },
+                    "enable": true,
+                    "hide": true,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                  }
+                ]
+              },
+              "description": "A comprehensive Grafana dashboard for monitoring Spegel, focusing on Spegel-specific metrics such as mirror requests, resolve durations, advertised images, and HTTP metrics.",
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "gnetId": 22104,
+              "graphTooltip": 0,
+              "links": [],
+              "liveNow": false,
+              "panels": [
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "id": 100,
+                  "panels": [],
+                  "title": "Spegel Mirror Operations",
+                  "type": "row"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 1
+                  },
+                  "id": 2,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "sum(rate(spegel_mirror_requests_total{instance=~\"$instance\"}[$__rate_interval])) by (cache, source)",
+                      "legendFormat": "{{cache}} - {{source}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Mirror Requests Rate",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "s"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 1
+                  },
+                  "id": 3,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "histogram_quantile(0.95, sum(rate(spegel_resolve_duration_seconds_bucket{instance=~\"$instance\"}[$__rate_interval])) by (le, router, instance))",
+                      "legendFormat": "{{router}} - {{instance}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Spegel Resolve Duration (95th Percentile)",
+                  "type": "timeseries"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 9
+                  },
+                  "id": 102,
+                  "panels": [],
+                  "title": "Advertised Metrics",
+                  "type": "row"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 10
+                  },
+                  "id": 4,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "sum(spegel_advertised_image_digests{instance=~\"$instance\"}) by (registry)",
+                      "legendFormat": "{{registry}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Advertised Images per Registry",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 10
+                  },
+                  "id": 5,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "sum(spegel_advertised_image_tags{instance=~\"$instance\"}) by (registry)",
+                      "legendFormat": "{{registry}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Advertised Image Tags per Registry",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 18
+                  },
+                  "id": 6,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "sum(spegel_advertised_image_digests{instance=~\"$instance\"}) by (registry)",
+                      "legendFormat": "{{registry}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Advertised Image Digests per Registry",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 18
+                  },
+                  "id": 7,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "sum(spegel_advertised_content_digests{instance=~\"$instance\"}) by (registry)",
+                      "legendFormat": "{{registry}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Advertised Layers per Registry",
+                  "type": "timeseries"
+                },
+                {
+                  "collapsed": false,
+                  "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 35
+                  },
+                  "id": 103,
+                  "panels": [],
+                  "title": "HTTP Metrics",
+                  "type": "row"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "none"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 36
+                  },
+                  "id": 8,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "sum(http_requests_inflight{instance=~\"$instance\"}) by (handler)",
+                      "legendFormat": "{{handler}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Current In-flight HTTP Requests",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "bytes"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 36
+                  },
+                  "id": 9,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "histogram_quantile(0.95, sum(rate(http_response_size_bytes_bucket{instance=~\"$instance\"}[$__rate_interval])) by (le, handler, method, code))",
+                      "legendFormat": "{{handler}} - {{method}} - {{code}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "HTTP Response Size (95th Percentile)",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "mimir"
+                  },
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "showPoints": "never"
+                      },
+                      "thresholds": {
+                        "mode": "absolute",
+                        "steps": []
+                      },
+                      "unit": "s"
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 44
+                  },
+                  "id": 10,
+                  "options": {
+                    "legend": {
+                      "displayMode": "list",
+                      "placement": "bottom",
+                      "showLegend": true
+                    },
+                    "tooltip": {
+                      "mode": "single"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "mimir"
+                      },
+                      "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{instance=~\"$instance\"}[$__rate_interval])) by (le, handler, method, code))",
+                      "legendFormat": "{{handler}} - {{method}} - {{code}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "HTTP Request Duration (95th Percentile)",
+                  "type": "timeseries"
+                }
+              ],
+              "refresh": "30s",
+              "schemaVersion": 42,
+              "tags": [
+                "spegel",
+                "kubernetes",
+                "monitoring"
+              ],
+              "templating": {
+                "list": [
+                  {
+                    "current": {
+                      "selected": false,
+                      "text": "All",
+                      "value": "$__all"
+                    },
+                    "datasource": {
+                      "type": "prometheus",
+                      "uid": "mimir"
+                    },
+                    "includeAll": true,
+                    "label": "Instance",
+                    "multi": true,
+                    "name": "instance",
+                    "options": [],
+                    "query": {
+                      "query": "label_values(spegel_advertised_content_digests, instance)",
+                      "refId": "StandardVariableQuery"
+                    },
+                    "refresh": 2,
+                    "type": "query"
+                  }
+                ]
+              },
+              "time": {
+                "from": "now-6h",
+                "to": "now"
+              },
+              "timepicker": {},
+              "timezone": "",
+              "title": "Spegel Monitoring Dashboard",
+              "uid": "spegel-monitoring-dashboard",
+              "weekStart": ""
+            }
         flux-cluster-stats:
           json: |
             {
