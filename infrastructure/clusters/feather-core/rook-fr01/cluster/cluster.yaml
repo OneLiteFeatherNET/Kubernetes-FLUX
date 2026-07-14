@@ -135,7 +135,11 @@ spec:
       osd_recovery_max_active: "2"
       osd_recovery_op_priority: "1"
       osd_memory_target: "4294967296"
-    # Disable RGW debug logging (default 1/5) to cut log-collector volume.
-    # client.rgw inherits to all rgw daemons (e.g. client.rgw.feather-s3.a).
-    client.rgw:
+    # Disable RGW debug logging (default 1/5) to cut Loki/log-collector volume.
+    # Ceph's config fallback is only global -> client -> <exact section>; a
+    # section named "client.rgw" is NOT inherited by "client.rgw.<id>" daemons,
+    # so this must target the RGW daemon's exact identity (--id on the pod,
+    # e.g. rgw.feather.s3.a for the feather-s3 CephObjectStore) or it's silently
+    # ignored. Verify via: ceph config get client.rgw.<store-with-dots>.a debug_rgw
+    client.rgw.feather.s3.a:
       debug_rgw: "0/0"
