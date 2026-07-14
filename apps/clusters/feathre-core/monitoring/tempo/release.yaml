@@ -143,6 +143,14 @@ spec:
       replicas: 1
       extraArgs:
         - -config.expand-env=true
+      config:
+        metrics:
+          # Max allowed range for a TraceQL-metrics query (chart default 3h).
+          # Anything longer is rejected -> Traces Drilldown's histogram/rate
+          # panels go "No data" the moment you pick "Last 12 hours". Raised to
+          # 24h so the common Drilldown ranges work; query_backend_after stays
+          # at its 30m default (recent from the generator, older from S3).
+          max_duration: 24h
       resources:
         requests:
           cpu: 50m
@@ -167,6 +175,19 @@ spec:
         storage:
           remote_write:
             - url: http://mimir-gateway.grafana.svc.cluster.local/api/v1/push
+        processor:
+          # Persist the local-blocks WAL to the trace S3 backend. Without this,
+          # local-blocks only keeps a short in-memory/live window (~query_backend_after,
+          # default 30m), so Grafana Traces Drilldown's TraceQL-metrics panels
+          # (histogram by duration, rate, etc.) show "No data" as soon as the
+          # selected range reaches past the live window — while the plain
+          # "Slow traces" list (a normal trace search) still returns results.
+          # Flushing to S3 lets the query-frontend answer older sub-ranges from
+          # object storage. Note: adds block-build/flush load on the generator
+          # and extra compaction work — watch the 512Mi generator limit and the
+          # compactor (both have prior OOMKill history).
+          local_blocks:
+            flush_to_storage: true
       resources:
         requests:
           cpu: 50m
