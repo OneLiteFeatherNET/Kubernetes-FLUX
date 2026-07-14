@@ -28,14 +28,14 @@ spec:
           bucket: tempo-traces
           endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
           region: us-west-1
-          access_key: ${AWS_ACCESS_KEY_ID}
-          secret_key: ${AWS_SECRET_ACCESS_KEY}
+          access_key: $${AWS_ACCESS_KEY_ID}
+          secret_key: $${AWS_SECRET_ACCESS_KEY}
           insecure: true
           forcepathstyle: true
     compactor:
       replicas: 1
-      # Needed here (not on global.extraArgs) so ${AWS_ACCESS_KEY_ID}/
-      # ${AWS_SECRET_ACCESS_KEY} above get expanded — global.extraArgs also
+      # Needed here (not on global.extraArgs) so $${AWS_ACCESS_KEY_ID}/
+      # $${AWS_SECRET_ACCESS_KEY} above get expanded — global.extraArgs also
       # reaches memcached, which doesn't understand this Tempo-binary flag
       # and crashloops on it ("Maximum connections must be greater than 0").
       extraArgs:

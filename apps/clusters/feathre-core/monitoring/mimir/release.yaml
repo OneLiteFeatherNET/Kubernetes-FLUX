@@ -75,8 +75,8 @@ spec:
               # external s3.onelitefeather.net ingress path.
               endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
               region: us-west-1
-              access_key_id: ${AWS_ACCESS_KEY_ID}
-              secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+              access_key_id: $${AWS_ACCESS_KEY_ID}
+              secret_access_key: $${AWS_SECRET_ACCESS_KEY}
               insecure: true
               bucket_lookup_type: path
         blocks_storage:
@@ -85,8 +85,8 @@ spec:
             bucket_name: mimir-blocks
             endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
-            access_key_id: ${AWS_ACCESS_KEY_ID}
-            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            access_key_id: $${AWS_ACCESS_KEY_ID}
+            secret_access_key: $${AWS_SECRET_ACCESS_KEY}
             insecure: true
             bucket_lookup_type: path
           tsdb:
@@ -102,8 +102,8 @@ spec:
             bucket_name: mimir-alertmanager
             endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
-            access_key_id: ${AWS_ACCESS_KEY_ID}
-            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            access_key_id: $${AWS_ACCESS_KEY_ID}
+            secret_access_key: $${AWS_SECRET_ACCESS_KEY}
             insecure: true
             bucket_lookup_type: path
         ruler_storage:
@@ -112,8 +112,8 @@ spec:
             bucket_name: mimir-ruler
             endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
-            access_key_id: ${AWS_ACCESS_KEY_ID}
-            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            access_key_id: $${AWS_ACCESS_KEY_ID}
+            secret_access_key: $${AWS_SECRET_ACCESS_KEY}
             insecure: true
             bucket_lookup_type: path
     gateway:
