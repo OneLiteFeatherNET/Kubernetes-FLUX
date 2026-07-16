@@ -25,15 +25,15 @@ spec:
       secretAccessKeySecretKeyRef:
         name: mariadb
         key: secret-access-key
-  # Define a PVC to use as staging area for keeping the backups while they are being processed.
+  # emptyDir staging area on the target Pod's Node: the operator wipes it after
+  # each backup completes, unlike a PVC which keeps accumulating .xb.bz2 files
+  # forever (no built-in cleanup upstream, see mariadb-operator issue #1243).
+  # fr01-wrk-xl-01 (where podAffinity pins this Job) has ~244Gi ephemeral-storage
+  # free; largest backup observed so far is ~28Gi.
   stagingStorage:
-    persistentVolumeClaim:
-      storageClassName: ceph-cephfs-fr01
-      resources:
-        requests:
-          storage: 75Gi
-      accessModes:
-        - ReadWriteOnce
+    volume:
+      emptyDir:
+        sizeLimit: 100Gi
   timeout: 2h
   # Disabled: hard podAffinity pins the backup Pod onto the primary's Node
   # (mariadb-galera-0 on a saturated general worker), leaving it Pending.
