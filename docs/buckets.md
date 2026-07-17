@@ -58,3 +58,61 @@ kubectl exec -n rook-ceph-fr01 deploy/rook-ceph-tools -- \
 The `ObjectBucketClaim` files stay in place as bucket-name reservations /
 documentation of intent, but don't rely on them actually provisioning
 anything.
+
+## 2026-07-14 incident: fixing the provisioner made it worse
+
+`619fde4` (2026-07-13, "fix(rook-fr01): correct bucket StorageClass
+provisioner name") fixed the immutable `provisioner` field described above.
+The very next day, every OBC that had been sitting `Pending` since its
+creation (some for 37+ days) finally bound — and each one **took over
+ownership of the pre-existing, already-populated bucket of the same name**,
+reassigning it from the app's own `CephObjectStoreUser` to a freshly minted
+`obc-<ns>-<name>-<uuid>` user. 13 of 15 real buckets were silently hijacked
+this way (`tempo-traces` and `olf` were the only ones spared, because their
+OBCs never bound). Every app using its static user's hand-copied credentials
+(the only working pattern — see above) started getting `403
+AccessDeniedException` on every S3 write, discovered via Tempo traces from
+BlueMap running on an external Minecraft server, of all things.
+
+**Detection** — audit every real bucket's owner and flag anything owned by
+an `obc-*` ghost user instead of its app's own `CephObjectStoreUser`:
+
+```bash
+for b in <bucket1> <bucket2> ...; do
+  echo "$b -> $(kubectl exec -n rook-ceph-fr01 deploy/rook-ceph-tools -- \
+    radosgw-admin bucket stats --bucket="$b" --rgw-realm=feather-s3 2>/dev/null \
+    | grep '"owner"')"
+done
+```
+
+**Fix** is the same `bucket link` command as above, applied per bucket.
+
+**Why this doesn't self-heal and won't recur on its own**: once an OBC
+reaches `Bound`, Rook's bucket controller doesn't re-run `Create()` on
+subsequent reconciles — it only re-hijacks ownership if the OBC is deleted
+and recreated (or newly created against an existing bucket name for the
+first time). The already-Bound OBCs for these buckets are stable now that
+ownership has been corrected. **Never delete-and-recreate one of these OBCs
+while its bucket already has data** — that WILL mint a new ghost owner
+again. If an OBC genuinely needs to be recreated, re-run the ownership audit
+above afterwards.
+
+**Trap for whoever fixes this next time**: at least one app (CNPG's
+`cnpg-backup` / `feather-core-cluster-pg-backup`) got "fixed" the *other*
+direction on 2026-07-14 — instead of re-linking the bucket back to its
+static `CephObjectStoreUser`, the app's SOPS secret was repointed at the
+new `obc-*` ghost user's own key pair, since at the time that ghost user
+really was the verified-working owner. That fix and the `bucket link`
+fix above are **mutually exclusive** — re-linking the bucket back to the
+static user (as this doc recommends) without also reverting the SOPS
+secret back to that static user's key pair leaves the app broken again,
+just in the opposite direction. Before running `bucket link` on any
+bucket, check whether the consuming app's secret was quietly repointed at
+the current (ghost) owner's key first — `grep` the app's HelmRelease/
+Cluster/ObjectStore manifest for which Secret it reads
+(`accessKeyId.name`/`secretAccessKey.name`), decrypt that secret with
+`sops -d`, and compare its `access-key-id` against
+`radosgw-admin user info --uid=<ghost-uid>`. If they match, relinking the
+bucket must be paired with `sops --set` on that secret to swap back to
+the static user's key pair (`radosgw-admin user info --uid=<app>`), in the
+same change.
