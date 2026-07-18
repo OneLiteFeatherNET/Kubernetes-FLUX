@@ -28170,6 +28170,176 @@ spec:
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
                 labels:
                   severity: warning
+          - orgId: 1
+            name: databases
+            folder: Databases
+            interval: 60s
+            rules:
+              - uid: cnpg-connection-saturation-warning
+                title: CNPG Postgres connection saturation high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  # Threshold is against the live max_connections setting (queried dynamically),
+                  # not a hardcoded value - stays correct if the setting is changed again.
+                  summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+                labels:
+                  severity: warning
+              - uid: cnpg-connection-saturation-critical
+                title: CNPG Postgres connection saturation critical
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+                labels:
+                  severity: critical
+              - uid: mariadb-galera-cluster-degraded
+                title: MariaDB Galera cluster degraded
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: min(mysql_global_status_wsrep_cluster_size{namespace="mariadb-galera"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 3
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 2m
+                annotations:
+                  # min() across all 3 nodes' own view of cluster size - a node that loses
+                  # connectivity to its peers (e.g. the Flannel host-gw/MTU incident) reports a
+                  # smaller cluster size on its own, so this catches split-brain, not just a
+                  # fully-down node.
+                  summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained. Check: kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%';\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: critical
     resources:
       requests:
         cpu: 250m
