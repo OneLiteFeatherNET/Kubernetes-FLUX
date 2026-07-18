@@ -84,10 +84,13 @@ spec:
     tmp_table_size=64M
     max_heap_table_size=64M
 
-    # === Diagnostics at the constraint ===
-    slow_query_log=1
-    long_query_time=1                     # log everything slower than 1s
-    log_slow_verbosity=query_plan,explain
+    # Diagnostics (slow_query_log) intentionally left off: with no rotation
+    # configured, it grew mariadb-galera-0's log to 17GB/96% disk over ~6 days
+    # (long_query_time=1 logs every query >1s; Galera only logs
+    # client-originated queries, not applied write-sets, so it lands
+    # disproportionately on whichever node handles write traffic at the
+    # time). Buffer pool hit ratio was already 99.34% with no other perf
+    # signal, so it was disabled rather than given a rotation mechanism.
   affinity:
     antiAffinityEnabled: true
     nodeAffinity:
