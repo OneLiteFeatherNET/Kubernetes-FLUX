@@ -27897,6 +27897,117 @@ spec:
                   summary: "The mariadb-galera-backup CronJob's most recent Job run failed. Check: kubectl get jobs -n mariadb-galera"
                 labels:
                   severity: warning
+          - orgId: 1
+            name: storage
+            folder: Storage
+            interval: 60s
+            rules:
+              - uid: mariadb-galera-pvc-usage-high
+                title: MariaDB Galera PVC usage high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 80% capacity. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: warning
+              - uid: mariadb-galera-pvc-usage-critical
+                title: MariaDB Galera PVC almost full
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 90% capacity and at risk of filling up. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: critical
     resources:
       requests:
         cpu: 250m
