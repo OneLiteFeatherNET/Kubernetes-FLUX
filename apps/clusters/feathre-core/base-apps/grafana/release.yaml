@@ -27582,6 +27582,11 @@ spec:
       templates.yaml:
         apiVersion: 1
         templates:
+          # discord.message prints severity/Rule/Dashboard once per notification group (not once
+          # per instance) via .CommonLabels/.CommonAnnotations, which only stays correct as long as
+          # every alert rule keeps severity and dashboard_url static (not templated per-$labels)
+          # and rule titles stay unique (group_by: ['alertname'] in policies.yaml). Violating either
+          # doesn't error - the affected line is just silently dropped from the notification.
           - name: discord.title
             template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
           - name: discord.message
