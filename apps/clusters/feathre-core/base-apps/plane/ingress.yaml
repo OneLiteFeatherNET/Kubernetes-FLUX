@@ -10,6 +10,19 @@ spec:
     - host: tasks.onelitefeather.net
       http:
         paths:
+          # cloudflare-tunnel-ingress-controller matches path rules by substring,
+          # not path-prefix. Hashed web bundle filenames like auth.service-*.js
+          # and api.service-*.js contain "/auth"/"/api" as a substring (right at
+          # the /assets + filename boundary) and get misrouted to plane-api,
+          # breaking the SPA's auth bootstrap. This rule must stay first so it
+          # wins the match before /api and /auth are ever checked.
+          - path: /assets
+            pathType: Prefix
+            backend:
+              service:
+                name: plane-web
+                port:
+                  number: 3000
           - path: /spaces
             pathType: Prefix
             backend:
