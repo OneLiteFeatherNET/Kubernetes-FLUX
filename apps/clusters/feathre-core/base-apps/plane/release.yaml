@@ -40,6 +40,21 @@ spec:
               - op: add
                 path: /spec/template/spec/containers/0/args
                 value: ["python manage.py wait_for_db && python manage.py wait_for_migrations && celery -A plane worker -l info --concurrency=2"]
+          # The chart's app-vars ConfigMap hardcodes WEB_URL to "http://" + appHost
+          # with no values field to change the scheme (templates/config-secrets/app-env.yaml:
+          # `WEB_URL: "http://{{ .Values.ingress.appHost }}"`, unconditional). We serve
+          # exclusively over https (Cloudflare Tunnel + HSTS is on), so every redirect
+          # the API computes from WEB_URL sends the browser to http://, which Cloudflare/
+          # HSTS immediately upgrades back to https://, and the app redirects to http://
+          # again — an infinite redirect loop on login and anywhere else WEB_URL drives
+          # a redirect. Force it to the correct scheme post-render.
+          - target:
+              kind: ConfigMap
+              name: plane-app-vars
+            patch: |
+              - op: replace
+                path: /data/WEB_URL
+                value: https://tasks.onelitefeather.net
   values:
     planeVersion: v1.3.1
 
