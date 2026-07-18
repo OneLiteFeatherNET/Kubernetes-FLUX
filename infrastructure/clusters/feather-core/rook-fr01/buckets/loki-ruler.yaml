@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: loki-ruler
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: loki

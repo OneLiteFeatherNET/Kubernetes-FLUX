@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: tempo-traces
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: tempo

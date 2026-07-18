@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: mimir-alertmanager
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: mimir
