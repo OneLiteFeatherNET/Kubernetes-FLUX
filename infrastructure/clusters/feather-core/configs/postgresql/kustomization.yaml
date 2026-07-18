@@ -22,6 +22,7 @@ resources:
   - database/grafana.yaml
   - database/n8n.yaml
   - database/plane.yaml
+  - database/plane-pi.yaml
 
 secretGenerator:
   - name: cnpg-backup
