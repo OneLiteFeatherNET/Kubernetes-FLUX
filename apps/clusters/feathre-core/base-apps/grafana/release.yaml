@@ -28340,6 +28340,67 @@ spec:
                   dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
                 labels:
                   severity: critical
+          - orgId: 1
+            name: cluster_health
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: pods-stuck-terminating
+                title: Pods stuck in Terminating
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # kube_pod_deletion_timestamp has NO series at all when nothing is
+                      # terminating (confirmed live) - "OR vector(0)" turns that healthy state
+                      # into a real 0 instead of "no data", which matters because this rule uses
+                      # noDataState: Alerting.
+                      expr: count(time() - kube_pod_deletion_timestamp > 900) OR vector(0)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before. Check: kubectl get pods -A --field-selector=status.phase!=Running | grep Terminating"
+                labels:
+                  severity: warning
     resources:
       requests:
         cpu: 250m
