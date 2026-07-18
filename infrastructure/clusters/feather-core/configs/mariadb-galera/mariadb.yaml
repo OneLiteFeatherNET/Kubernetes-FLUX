@@ -59,6 +59,13 @@ spec:
       podSyncTimeout: 10m
     availableWhenDonor: true
     replicaThreads: 4
+    # gcache.size default (128M) only buffers ~44min of replication history
+    # at this cluster's measured ~49.5KB/s average write throughput, forcing
+    # a slow full SST on any node offline longer than that. 2G extends the
+    # safe fast-IST-rejoin window to ~12h. See design doc:
+    # docs/superpowers/specs/2026-07-18-mariadb-galera-gcache-design.md
+    providerOptions:
+      gcache.size: "2G"
   tls:
     enabled: true
   myCnf: |
