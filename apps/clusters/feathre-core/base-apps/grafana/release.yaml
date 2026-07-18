@@ -28417,12 +28417,15 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      # absent() returns a real 1-valued series when up{job="kubelet"} has zero
-                      # matching series - i.e. the whole Alloy remote-write pipeline into Mimir has
-                      # gone dark, not just one target. A total Mimir outage instead trips
-                      # execErrState: Alerting on this and every other rule, which is the
-                      # existing belt-and-suspenders behavior already shared by all rules.
-                      expr: absent(up{job="kubelet", metrics_path="/metrics"})
+                      # count() returns a real value (currently 10, one per kubelet target) when
+                      # the pipeline is healthy - evaluated normally against the threshold below,
+                      # not firing. If every kubelet target vanishes from Mimir (the whole Alloy
+                      # remote-write pipeline going dark), this query returns NO series, which
+                      # triggers Grafana's NoData path -> noDataState: Alerting -> fires. Do NOT
+                      # use absent() here: it returns empty exactly when healthy (the opposite of
+                      # what noDataState: Alerting needs), which was a real bug (empty result +
+                      # noDataState: Alerting fired immediately on a healthy cluster).
+                      expr: count(up{job="kubelet", metrics_path="/metrics"})
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
@@ -28437,8 +28440,8 @@ spec:
                       conditions:
                         - evaluator:
                             params:
-                              - 0
-                            type: gt
+                              - 1
+                            type: lt
                           operator:
                             type: and
                           query:
