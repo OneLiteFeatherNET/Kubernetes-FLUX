@@ -27583,22 +27583,19 @@ spec:
         apiVersion: 1
         templates:
           - name: discord.title
-            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ else }}` }}✅ RESOLVED{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
+            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
           - name: discord.message
             template: |
-              {{ `{{ define "discord.message" }}` }}
-              {{ `{{- range .Alerts }}` }}
-              {{ `{{ .Annotations.summary }}` }}
-              {{ `{{- if .Labels.severity }}` }}
-              severity: `{{ `{{ .Labels.severity }}` }}`
-              {{ `{{- end }}` }}
-              🔗 Rule: <{{ `{{ .GeneratorURL }}` }}>
-              {{ `{{- if .Annotations.dashboard_url }}` }}
-              📊 Dashboard: <{{ `{{ .Annotations.dashboard_url }}` }}>
-              {{ `{{- end }}` }}
-
+              {{ `{{ define "discord.message" }}` }}{{ `{{ if .CommonLabels.severity }}` }}severity: `{{ `{{ .CommonLabels.severity }}` }}`
+              {{ `{{ end }}` }}🔗 Rule: <{{ `{{ (index .Alerts 0).GeneratorURL }}` }}>
+              {{ `{{ if .CommonAnnotations.dashboard_url }}` }}📊 Dashboard: <{{ `{{ .CommonAnnotations.dashboard_url }}` }}>
               {{ `{{ end }}` }}
-              {{ `{{- end }}` }}
+
+              {{ `{{ if gt (len .Alerts.Firing) 0 }}` }}Firing ({{ `{{ len .Alerts.Firing }}` }}):
+              {{ `{{ range .Alerts.Firing }}` }}• {{ `{{ reReplaceAll "^(.*?\\.) Check:.*$" "$1" .Annotations.summary }}` }}
+              {{ `{{ end }}` }}{{ `{{ end }}` }}{{ `{{ if gt (len .Alerts.Resolved) 0 }}` }}Resolved ({{ `{{ len .Alerts.Resolved }}` }}):
+              {{ `{{ range .Alerts.Resolved }}` }}• {{ `{{ reReplaceAll "^(.*?\\.) Check:.*$" "$1" .Annotations.summary }}` }}
+              {{ `{{ end }}` }}{{ `{{ end }}` }}{{ `{{ end }}` }}
       policies.yaml:
         apiVersion: 1
         policies:
