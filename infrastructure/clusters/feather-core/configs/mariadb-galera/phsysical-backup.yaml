@@ -11,12 +11,12 @@ spec:
     suspend: false
     immediate: true
   maxRetention: 720h # 30 days
-  # Speed test: bzip2 took ~60-67min/run (compression-bound); switched to gzip,
-  # still >7min into compression alone on the first run. Trying "none" now to
-  # measure pure dump+upload time and see how close that gets to a 5-15min
-  # target - compression choice is otherwise the only speed lever this CRD
-  # exposes (no level control, no zstd/pigz). Trade-off if kept: larger,
-  # uncompressed backups in S3, more storage cost at 30-day retention.
+  # No compression, deliberately: the operator's pipeline is sequential
+  # (dump -> compress -> upload, not streamed), so compression algorithm was
+  # the entire bottleneck. Measured on this cluster: bzip2 ~60-67min/run,
+  # gzip 22m12s/6.8GiB, none 4m18s/28.6GiB. "none" was chosen to hit a
+  # 5-15min backup window; trade-off is ~4.2x more S3 storage per backup
+  # than gzip (~3.4TiB vs ~816GiB at 4 backups/day * 30-day maxRetention).
   compression: none
   storage:
     s3:
@@ -35,8 +35,8 @@ spec:
   # each backup completes, unlike a PVC which keeps accumulating .xb files
   # forever (no built-in cleanup upstream, see mariadb-operator issue #1243).
   # fr01-wrk-xl-01 (where podAffinity pins this Job) has ~244Gi ephemeral-storage
-  # free; largest bzip2 backup observed was ~28Gi (uncompressed will be larger,
-  # watch this doesn't exceed the sizeLimit below).
+  # free; measured uncompressed backup size is ~28.6Gi, comfortable margin
+  # under the 100Gi sizeLimit below.
   stagingStorage:
     volume:
       emptyDir:
