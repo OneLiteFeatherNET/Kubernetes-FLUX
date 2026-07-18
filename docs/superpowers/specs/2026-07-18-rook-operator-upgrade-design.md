@@ -1,5 +1,12 @@
 # Rook Operator Upgrade 1.18 → 1.20 — Design
 
+> **Post-implementation note:** this design shipped as planned (PRs #72 and #73, both merged
+> and verified healthy on the live cluster). One correction below (the HelmRepository URL)
+> and the "Open question" section were both resolved during implementation — see
+> `docs/superpowers/plans/2026-07-18-rook-operator-upgrade.md` (Task 5) for the actual,
+> evidence-backed answers and the exact shipped values. This spec is left as the original
+> planning record, not updated in place.
+
 ## Goal & scope
 
 Upgrade the `rook-ceph` Helm chart in `infrastructure/clusters/feather-core/rook/release.yaml`
@@ -42,7 +49,9 @@ plan exists to avoid.
   CSI is no longer configured through this chart as of 1.20.
 - New files, same `rook` Flux layer (no new Kustomization/dependency-graph layer needed):
   - `infrastructure/clusters/feather-core/base-sources/ceph-csi-operator.yaml` — new
-    `HelmRepository` pointing at `https://ceph.github.io/ceph-csi-operator-charts`,
+    `HelmRepository` pointing at `https://ceph.github.io/ceph-csi-operator` (**correction:**
+    the URL originally planned here, `.../ceph-csi-operator-charts`, 404s — this was caught
+    and fixed during implementation, see the plan doc),
     registered in `base-sources/kustomization.yaml`.
   - `infrastructure/clusters/feather-core/rook/csi-drivers-release.yaml` — new
     `HelmRelease` for the `ceph-csi-drivers` chart, added to `rook/kustomization.yaml`.
@@ -56,7 +65,7 @@ plan exists to avoid.
     `csi.csiRBDProvisionerResource` → `drivers.rbd.controllerPlugin.resources`
   - `nfs.enabled` / `nvmeof.enabled` → both `false` (unused on this cluster)
 
-### Open question (must be resolved during implementation, not assumed here)
+### Open question (resolved during implementation — see below)
 
 The `ceph-csi-drivers` chart's `resources` fields appear to be one block per pod-side
 (`controllerPlugin` / `nodePlugin`), not the current per-container granularity (separate
@@ -65,6 +74,21 @@ limits for `csi-provisioner`/`csi-resizer`/`csi-attacher`/`csi-snapshotter`/
 endpoints or are auto-wired by Rook against the existing `rook-ceph-fr01` `CephCluster` is
 also unconfirmed. This requires reading the actual chart templates (not just its docs)
 before the exact `values` are written.
+
+**Resolved (Task 3 / Task 3b research, both independently verified against the live
+cluster):** `resources` is a per-container-role map (`controllerPlugin.resources.
+{provisioner,resizer,attacher,snapshotter,plugin}`, `nodePlugin.resources.
+{registrar,plugin}`), not per-pod-side — confirmed against the chart's `Driver` CRD Go
+types and the already-live `Driver` CR's rendered values. `cephConnections`/
+`clientProfiles` are auto-managed by Rook's `CephCluster` controller and must be omitted
+from the new HelmRelease. Additionally: `drivers.rbd.name`/`drivers.cephfs.name` must be
+explicitly overridden to the `rook-ceph.`-prefixed provisioner names already in use
+(chart defaults would break every existing PVC/PV), `nodePlugin` host networking is
+hardcoded and not configurable (only `controllerPlugin.hostNetwork` exists, and it should
+stay unset/`false`), and no ownership conflict exists between Rook's operator and the new
+chart at 1.20 — the in-process CR-rendering code path was deleted outright between Rook
+v1.19.7 and v1.20.2, not flag-gated. Full evidence trail and the exact shipped values are
+in `docs/superpowers/plans/2026-07-18-rook-operator-upgrade.md` (Task 5).
 
 ## Verification & rollback
 
