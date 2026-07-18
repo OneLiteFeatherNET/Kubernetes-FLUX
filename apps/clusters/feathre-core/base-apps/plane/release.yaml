@@ -58,7 +58,6 @@ spec:
         local_setup: false
       rabbitmq:
         local_setup: true
-        storageClass: ceph-rbd-fr01
       opensearch:
         local_setup: true
 
@@ -100,6 +99,18 @@ spec:
       pi_api_env_existingSecret: plane-pi-api
 
     env:
+      # Global storage class for every chart-bundled StatefulSet PVC (rabbitmq,
+      # opensearch, monitor). NOT a per-service field despite matching per-service
+      # value blocks elsewhere in this chart — services.*.storageClass doesn't
+      # exist; every workloads/*.stateful.yaml template reads this single
+      # env.storageClass value. Left unset, opensearch/monitor's PVC templates
+      # render an explicit storageClassName: "" (they `| quote` the empty
+      # default), which blocks the cluster's default-StorageClass admission
+      # behavior and leaves the PVC Pending forever — rabbitmq's template omits
+      # the quote filter, so it degrades to an unset field instead and happens
+      # to pick up the default class by luck. Set explicitly so all three behave
+      # the same way on purpose.
+      storageClass: ceph-rbd-fr01
       docstore_bucket: plane
       cors_allowed_origins: "https://tasks.onelitefeather.net"
       default_cluster_domain: cluster.local
