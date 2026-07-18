@@ -84,10 +84,14 @@ spec:
       silo:
         enabled: true
 
-      pi:
-        enabled: true
-      pi_beat_worker: {}
-      pi_worker: {}
+      # Pi (the AI assistant) is left at the chart default (disabled): its
+      # migrator job hard-fails without an embedding model configured
+      # (tries to auto-create one via Cohere, errors out if COHERE_API_KEY
+      # or OPENSEARCH_ML_MODEL_ID isn't set), which blocks the whole release
+      # from ever becoming Ready. Re-enable (pi.enabled: true, plus
+      # pi_beat_worker/pi_worker, plus an AI provider key in
+      # external_secrets.pi_api_env_existingSecret) once a provider key is
+      # available.
 
     external_secrets:
       app_env_existingSecret: plane-app-env
@@ -96,7 +100,6 @@ spec:
       rabbitmq_existingSecret: plane-rabbitmq
       opensearch_existingSecret: plane-opensearch
       silo_env_existingSecret: plane-silo
-      pi_api_env_existingSecret: plane-pi-api
 
     env:
       # Global storage class for every chart-bundled StatefulSet PVC (rabbitmq,
@@ -115,4 +118,3 @@ spec:
       cors_allowed_origins: "https://tasks.onelitefeather.net"
       default_cluster_domain: cluster.local
       web_url: "https://tasks.onelitefeather.net"
-      pg_pi_db_name: plane_pi
