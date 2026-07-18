@@ -27897,6 +27897,575 @@ spec:
                   summary: "The mariadb-galera-backup CronJob's most recent Job run failed. Check: kubectl get jobs -n mariadb-galera"
                 labels:
                   severity: warning
+          - orgId: 1
+            name: storage
+            folder: Storage
+            interval: 60s
+            rules:
+              - uid: mariadb-galera-pvc-usage-high
+                title: MariaDB Galera PVC usage high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 80% capacity. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: warning
+              - uid: mariadb-galera-pvc-usage-critical
+                title: MariaDB Galera PVC almost full
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 90% capacity and at risk of filling up. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: critical
+              - uid: ceph-cluster-health-warning
+                title: Ceph cluster health degraded
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: max(ceph_health_status)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  summary: "Ceph cluster health is not HEALTH_OK (HEALTH_WARN or worse). Check: ceph -s (or kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail)"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: warning
+              - uid: ceph-cluster-health-critical
+                title: Ceph cluster health critical
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: max(ceph_health_status)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "Ceph cluster health is HEALTH_ERR. Check: ceph -s (or kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail)"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: critical
+              - uid: ceph-rgw-failed-request-rate
+                title: Ceph RGW failed request rate elevated
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(rate(ceph_rgw_failed_req[5m]))
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 5
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  # Baseline observed 2026-07-18 was 0.02-0.3 req/s; a real RGW degradation
+                  # incident (Rook 1.20 upgrade, S3 access broken for non-owner users) would
+                  # show as a sustained multi-request/s error rate, not baseline noise.
+                  summary: "RGW failed request rate is elevated (baseline is <1/s). This is the class of failure that broke S3 access for backups/Loki/Mimir/Postgres WAL during the Rook 1.20 upgrade incident. Check: kubectl -n rook-ceph-fr01 logs -l app=rook-ceph-rgw --tail=200"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: warning
+          - orgId: 1
+            name: databases
+            folder: Databases
+            interval: 60s
+            rules:
+              - uid: cnpg-connection-saturation-warning
+                title: CNPG Postgres connection saturation high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  # Threshold is against the live max_connections setting (queried dynamically),
+                  # not a hardcoded value - stays correct if the setting is changed again.
+                  summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+                labels:
+                  severity: warning
+              - uid: cnpg-connection-saturation-critical
+                title: CNPG Postgres connection saturation critical
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+                labels:
+                  severity: critical
+              - uid: mariadb-galera-cluster-degraded
+                title: MariaDB Galera cluster degraded
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: min(mysql_global_status_wsrep_cluster_size{namespace="mariadb-galera"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 3
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 2m
+                annotations:
+                  # min() across all 3 nodes' own view of cluster size - a node that loses
+                  # connectivity to its peers (e.g. the Flannel host-gw/MTU incident) reports a
+                  # smaller cluster size on its own, so this catches split-brain, not just a
+                  # fully-down node.
+                  summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained. Check: kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%';\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: critical
+          - orgId: 1
+            name: cluster_health
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: pods-stuck-terminating
+                title: Pods stuck in Terminating
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # kube_pod_deletion_timestamp has NO series at all when nothing is
+                      # terminating (confirmed live) - "OR vector(0)" turns that healthy state
+                      # into a real 0 instead of "no data", which matters because this rule uses
+                      # noDataState: Alerting.
+                      expr: count(time() - kube_pod_deletion_timestamp > 900) OR vector(0)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before. Check: kubectl get pods -A --field-selector=status.phase!=Running | grep Terminating"
+                labels:
+                  severity: warning
+          - orgId: 1
+            name: observability
+            folder: Observability
+            interval: 60s
+            rules:
+              - uid: observability-pipeline-no-data
+                title: Observability pipeline producing no data
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # count() returns a real value (currently 10, one per kubelet target) when
+                      # the pipeline is healthy - evaluated normally against the threshold below,
+                      # not firing. If every kubelet target vanishes from Mimir (the whole Alloy
+                      # remote-write pipeline going dark), this query returns NO series, which
+                      # triggers Grafana's NoData path -> noDataState: Alerting -> fires. Do NOT
+                      # use absent() here: it returns empty exactly when healthy (the opposite of
+                      # what noDataState: Alerting needs), which was a real bug (empty result +
+                      # noDataState: Alerting fired immediately on a healthy cluster).
+                      expr: count(up{job="kubelet", metrics_path="/metrics"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires. Check: kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
+                labels:
+                  severity: critical
     resources:
       requests:
         cpu: 250m
