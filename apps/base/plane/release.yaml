@@ -7,8 +7,8 @@ spec:
   releaseName: plane
   chart:
     spec:
-      chart: plane-ce
-      version: "1.6.0"
+      chart: plane-enterprise
+      version: "3.0.0"
       sourceRef:
         kind: HelmRepository
         name: plane

@@ -22,6 +22,15 @@ secretGenerator:
   - name: plane-rabbitmq
     envs:
       - plane.sops.env
+  - name: plane-opensearch
+    envs:
+      - plane.sops.env
+  - name: plane-silo
+    envs:
+      - plane.sops.env
+  - name: plane-pi-api
+    envs:
+      - plane.sops.env
   - name: cf-origin-tls
     type: kubernetes.io/tls
     files:
