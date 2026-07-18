@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: plane
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: plane
