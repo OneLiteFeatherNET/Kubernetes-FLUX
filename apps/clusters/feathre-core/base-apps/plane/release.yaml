@@ -13,6 +13,14 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # The chart renders RabbitMQ as a StatefulSet, not a Deployment, so it
+          # needs its own patch target to get the same priority class.
+          - target:
+              kind: StatefulSet
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
     planeVersion: v1.3.1
 
@@ -46,6 +54,17 @@ spec:
       assign_cluster_ip: true
     live:
       assign_cluster_ip: true
+
+    # Chart default (1000Mi) OOMKilled the worker repeatedly under real load
+    # during initial rollout (5 restarts in 10 minutes). Bump both async
+    # components; beat-worker gets the same ceiling pre-emptively since it
+    # runs the same backend image under the same workload profile.
+    worker:
+      memoryLimit: 2000Mi
+      cpuLimit: "1"
+    beatworker:
+      memoryLimit: 1500Mi
+      cpuLimit: 500m
 
     env:
       docstore_bucket: plane
