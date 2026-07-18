@@ -11,6 +11,7 @@ resources:
   - reposilite.yaml
   - leantime.yaml
   - outline.yaml
+  - plane.yaml
   - mimir.yaml
   - reposilite-public.yaml
   - bakery.yaml

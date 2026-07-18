@@ -1,0 +1,106 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plane
+  namespace: plane
+spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          # The chart renders RabbitMQ as a StatefulSet, not a Deployment, so it
+          # needs its own patch target to get the same priority class.
+          - target:
+              kind: StatefulSet
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          # The chart's docker-entrypoint-worker.sh runs `celery -A plane worker`
+          # with no --concurrency flag, so Celery defaults to forking one worker
+          # process per CPU core it detects. The container doesn't get a
+          # cgroup-aware CPU count from this Python/Celery version, so it forks
+          # against the *node's* 32 cores regardless of our cpuLimit, ballooning
+          # memory well past any reasonable limit (still OOMKilled at 2000Mi).
+          # There's no chart values hook to change the entrypoint's command, so
+          # override it directly: keep the same db/migration wait steps, cap
+          # concurrency to something that actually fits cpuLimit: "1".
+          - target:
+              kind: Deployment
+              name: plane-worker-wl
+            patch: |
+              - op: replace
+                path: /spec/template/spec/containers/0/command
+                value: ["/bin/bash", "-c"]
+              - op: add
+                path: /spec/template/spec/containers/0/args
+                value: ["python manage.py wait_for_db && python manage.py wait_for_migrations && celery -A plane worker -l info --concurrency=2"]
+          # The chart's app-vars ConfigMap hardcodes WEB_URL to "http://" + appHost
+          # with no values field to change the scheme (templates/config-secrets/app-env.yaml:
+          # `WEB_URL: "http://{{ .Values.ingress.appHost }}"`, unconditional). We serve
+          # exclusively over https (Cloudflare Tunnel + HSTS is on), so every redirect
+          # the API computes from WEB_URL sends the browser to http://, which Cloudflare/
+          # HSTS immediately upgrades back to https://, and the app redirects to http://
+          # again — an infinite redirect loop on login and anywhere else WEB_URL drives
+          # a redirect. Force it to the correct scheme post-render.
+          - target:
+              kind: ConfigMap
+              name: plane-app-vars
+            patch: |
+              - op: replace
+                path: /data/WEB_URL
+                value: https://tasks.onelitefeather.net
+  values:
+    planeVersion: v1.3.1
+
+    ingress:
+      enabled: false
+      appHost: tasks.onelitefeather.net
+
+    postgres:
+      local_setup: false
+    redis:
+      local_setup: false
+    minio:
+      local_setup: false
+    rabbitmq:
+      local_setup: true
+      storageClass: ceph-rbd-fr01
+
+    external_secrets:
+      app_env_existingSecret: plane-app-env
+      doc_store_existingSecret: plane-doc-store
+      live_env_existingSecret: plane-live-env
+      rabbitmq_existingSecret: plane-rabbitmq
+
+    web:
+      assign_cluster_ip: true
+    space:
+      assign_cluster_ip: true
+    admin:
+      assign_cluster_ip: true
+    api:
+      assign_cluster_ip: true
+    live:
+      assign_cluster_ip: true
+
+    # Chart default (1000Mi) OOMKilled the worker repeatedly under real load
+    # during initial rollout (5 restarts in 10 minutes). Bump both async
+    # components; beat-worker gets the same ceiling pre-emptively since it
+    # runs the same backend image under the same workload profile.
+    worker:
+      memoryLimit: 2000Mi
+      cpuLimit: "1"
+    beatworker:
+      memoryLimit: 1500Mi
+      cpuLimit: 500m
+
+    env:
+      docstore_bucket: plane
+      cors_allowed_origins: "https://tasks.onelitefeather.net"
+      default_cluster_domain: cluster.local
