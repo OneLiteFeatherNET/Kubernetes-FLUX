@@ -7,6 +7,13 @@ metadata:
 #    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
   image: "mariadb:12.3.2"
+  # Without this, the official image's entrypoint silently skips mariadb-upgrade
+  # on every major-version bump (confirmed during the 11.8.8 -> 12.3.2 upgrade:
+  # "MariaDB upgrade ... skipped due to $MARIADB_AUTO_UPGRADE setting"), leaving
+  # stale mysql.* system tables until someone notices and runs it by hand.
+  env:
+    - name: MARIADB_AUTO_UPGRADE
+      value: "1"
 #  securityContext:
 #    allowPrivilegeEscalation: false
 #    capabilities:
