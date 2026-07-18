@@ -1,0 +1,156 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ceph-csi-drivers
+  namespace: rook-ceph
+spec:
+  releaseName: ceph-csi-drivers
+  chart:
+    spec:
+      chart: ceph-csi-drivers
+      version: ">=1.0.4 <2.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: ceph-csi-operator
+        namespace: flux-system
+  dependsOn:
+    - name: rook-ceph
+      namespace: rook-ceph
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  timeout: 10m0s
+  values:
+    drivers:
+      rbd:
+        enabled: true
+        name: rook-ceph.rbd.csi.ceph.com
+        nodePlugin:
+          tolerations:
+            - key: node-role.feather/storage
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
+          resources:
+            registrar:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+        controllerPlugin:
+          replicas: 2
+          resources:
+            provisioner:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            resizer:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            attacher:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            snapshotter:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+      cephfs:
+        enabled: true
+        name: rook-ceph.cephfs.csi.ceph.com
+        nodePlugin:
+          tolerations:
+            - key: node-role.feather/storage
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
+          resources:
+            registrar:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+        controllerPlugin:
+          replicas: 2
+          resources:
+            provisioner:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            resizer:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            attacher:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            snapshotter:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+      nfs:
+        enabled: false
+      nvmeof:
+        enabled: false
