@@ -44,6 +44,15 @@ spec:
                 name: plane-live
                 port:
                   number: 3000
+          # Integrations backend. The chart's SILO_BASE_PATH/SILO_API_BASE_URL
+          # env vars (plane-silo-vars ConfigMap) already assume this exact path.
+          - path: /silo
+            pathType: Prefix
+            backend:
+              service:
+                name: plane-silo
+                port:
+                  number: 3000
           - path: /api
             pathType: Prefix
             backend:
