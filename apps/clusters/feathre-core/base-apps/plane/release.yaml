@@ -1,0 +1,53 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plane
+  namespace: plane
+spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+  values:
+    planeVersion: v1.3.1
+
+    ingress:
+      enabled: false
+      appHost: tasks.onelitefeather.net
+
+    postgres:
+      local_setup: false
+    redis:
+      local_setup: false
+    minio:
+      local_setup: false
+    rabbitmq:
+      local_setup: true
+      storageClass: ceph-rbd-fr01
+
+    external_secrets:
+      app_env_existingSecret: plane-app-env
+      doc_store_existingSecret: plane-doc-store
+      live_env_existingSecret: plane-live-env
+      rabbitmq_existingSecret: plane-rabbitmq
+
+    web:
+      assign_cluster_ip: true
+    space:
+      assign_cluster_ip: true
+    admin:
+      assign_cluster_ip: true
+    api:
+      assign_cluster_ip: true
+    live:
+      assign_cluster_ip: true
+
+    env:
+      docstore_bucket: plane
+      cors_allowed_origins: "https://tasks.onelitefeather.net"
+      default_cluster_domain: cluster.local

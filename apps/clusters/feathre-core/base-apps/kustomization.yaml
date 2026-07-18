@@ -10,6 +10,7 @@ resources:
   - dependency-track
   - uptime-kuma
   - leantime
+  - plane
   - grafana
   - n8n
   - ollama
