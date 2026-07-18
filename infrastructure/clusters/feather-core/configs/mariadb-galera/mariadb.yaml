@@ -121,7 +121,7 @@ spec:
   # Configure enough compute resources. This is just an example, take a look at your historic compute metrics to estimate.
   resources:
     requests:
-      cpu: "2"
+      cpu: "4"
       memory: 8Gi
     limits:
       memory: 8Gi
