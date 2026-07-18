@@ -22,3 +22,4 @@ resources:
   - n8n.yml
   - ollama.yml
   - descheduler.yml
+  - plane.yml
