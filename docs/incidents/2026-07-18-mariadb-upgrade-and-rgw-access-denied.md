@@ -2,7 +2,7 @@
 
 **Status as of 2026-07-18 ~14:00 UTC:**
 - MariaDB Galera major upgrade — **DONE, cluster fully healthy.**
-- Rook Ceph RGW (S3) AccessDenied incident — **ROOT-CAUSED, NOT YET FIXED.** Blocks MariaDB backups and several unrelated services. Awaiting a decision on remediation.
+- Rook Ceph RGW (S3) AccessDenied incident — **FIXED.** All 17 affected buckets (the `mariadb-galera-backup` canary + 16 more) now declare `additionalConfig.bucketOwner` on their `ObjectBucketClaim`, making the named app user the true bucket owner instead of relying on the admin-cap access path that the Rook 1.18→1.20 upgrade broke. Fully declarative and git-tracked — no manual `radosgw-admin` command needed going forward. See `docs/superpowers/plans/2026-07-18-rgw-bucket-owner-fix.md` and the Resolution section below.
 
 This doc exists because the two are entangled: the RGW incident was discovered *while validating* the MariaDB upgrade (the post-upgrade backup check failed), but its actual cause is a separate, unrelated change (a Rook operator upgrade). Keeping both in one place so the MariaDB status doesn't get lost inside the bigger incident.
 
@@ -119,7 +119,7 @@ kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- radosgw-admin bucket st
 # on the rook-ceph-tools pod for re-runs; not committed to the repo (throwaway diagnostic tool).
 ```
 
-### Recommended next steps (not yet executed — needs a decision)
+### Recommended next steps (as originally written — see Resolution below for what was actually done)
 
 1. **Immediate mitigation options** (pick one, needs explicit sign-off before acting — this touches shared production storage):
    - Roll `rook-ceph-operator` back to `v1.18.11` and see if access is restored (would confirm the operator version as the direct cause, and unblock everyone immediately) — but this reverts a deliberate, already-"verified"-and-merged upgrade (PRs #73/#74/#75), so should be coordinated with whoever ran that migration.
@@ -128,3 +128,42 @@ kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- radosgw-admin bucket st
 2. Once RGW access is restored, re-trigger `mariadb-galera-backup`'s on-demand backup (`kubectl patch physicalbackup mariadb-galera-backup -n mariadb-galera --type merge -p '{"spec":{"schedule":{"onDemand":"<new-value>"}}}'`) and confirm success before considering the MariaDB upgrade fully closed out.
 3. Check whether CNPG's Postgres WAL archive backlog needs attention once access is restored (verify no disk-pressure alarm fired during the outage window).
 4. Consider adding an S3 data-path smoke test (PUT+GET+DELETE as a representative non-owner named user) to future Rook/Ceph upgrade plans' verification gates, given this is exactly what slipped through this time.
+
+Of the three mitigation options in Step 1, the second (`bucketOwner`) is the one that was actually chosen and executed — see below.
+
+### Resolution (2026-07-18, later same day)
+
+**Fix mechanism:** Rook's `ObjectBucketClaim.spec.additionalConfig.bucketOwner` field makes the named `CephObjectStoreUser` (e.g. `mariadb`, `loki`, `harbor`) the actual, declared owner of its bucket, rather than the bucket defaulting to Rook's auto-generated OBC-owner user with the named app relying on some other (broken) grant path. This field had to first be allow-listed on the `rook-ceph` operator's Helm values (`obcAllowAdditionalConfigFields: "maxObjects,maxSize,bucketOwner"` in `infrastructure/clusters/feather-core/rook/release.yaml`, commit `8528256`) — it's silently ignored by Rook otherwise.
+
+Rook only applies `bucketOwner` on its `Provision()` (creation) path, not on an in-place patch. Since every `ObjectBucketClaim` in this repo keeps a stable name (`generatorOptions.disableNameSuffixHash: true`), the per-bucket procedure was: add `additionalConfig.bucketOwner: <user>` to the OBC YAML → push → delete the live (already-`Bound`) OBC object in `rook-ceph-fr01` → let Flux/Rook re-provision it. Because the `ceph-bucket-fr01` StorageClass has `reclaimPolicy: Retain` (confirmed live before touching anything), deleting the OBC only re-links ownership metadata — it never deletes or touches the underlying Ceph bucket or its objects. Full plan and per-task verification evidence: `docs/superpowers/plans/2026-07-18-rgw-bucket-owner-fix.md`.
+
+This is now **fully declarative and git-tracked**: the fix isn't a one-off `radosgw-admin bucket link` run by hand (which the incident's root cause implicitly depended on, and which the user explicitly wants to avoid repeating) — it's an OBC spec field checked into this repo. Any future re-creation of one of these buckets (disaster recovery, namespace rebuild, etc.) re-applies the same ownership automatically via Rook's own supported `Provision()` path, with no manual RGW admin step required.
+
+**All 17 buckets fixed** (canary + 16 more, rolled out by app family):
+
+| Bucket | Owner | Commit | Notes |
+|---|---|---|---|
+| `mariadb-galera-backup` | `mariadb` | `755893a` | Canary/gate. 95 objects / 251,890,233,827 bytes unchanged across the relink; real end-to-end `PhysicalBackup` run (`mariadb-galera-backup-20260718134058`) completed successfully post-fix — the required gate before any bulk rollout. |
+| `loki-chunks` | `loki` | `f62e16a` | Live traffic sample post-fix: 99×200, 0×403. |
+| `loki-ruler` | `loki` | `f62e16a` | Legitimately low/empty usage (long-lived config bucket) — verified not data loss. |
+| `mimir-alertmanager` | `mimir` | `f62e16a` | Legitimately low/empty usage — verified not data loss. |
+| `mimir-blocks` | `mimir` | `f62e16a` | Live traffic sample post-fix: 48×200, 0×403 (mimir user, aggregate). |
+| `mimir-ruler` | `mimir` | `f62e16a` | Legitimately low/empty usage — verified not data loss. |
+| `tempo-traces` | `tempo` | `f62e16a` | Live traffic sample post-fix: 1016×200 + 205×206, 0×403. |
+| `bluemap0` | `bluemap` | `f7ea0aa` | 2,197,344 objects preserved. Implementer's first sample (taken immediately) showed a residual 15/510 (2.9%) 403 rate; a re-sample ~6 min later showed 0×403 — see RGW convergence-lag note below. |
+| `reposilite-onelitefeather-proxy` | `reposilite` | `3365e47` | 1,258 objects preserved; confirmed live traffic post-fix. |
+| `reposilite-onelitefeather-releases` | `reposilite` | `3365e47` | 8,650 objects preserved; confirmed live traffic post-fix. |
+| `reposilite-onelitefeather-snapshots` | `reposilite` | `3365e47` | 4,421 objects preserved. |
+| `reposilite-releases` | `reposilite` | `3365e47` | 30 objects preserved. |
+| `reposilite-snapshots` | `reposilite` | `3365e47` | 0 objects (empty, pre-existing — `Retain` reclaim policy made this safe to relink regardless). |
+| `harbor` | `harbor` | `31a42d3` | 9,017 objects preserved; all 12 harbor pods healthy, no registry-side S3 errors in a 20-minute post-fix sample. |
+| `outline` | `outline` | `2768aab` | 27 objects preserved; pods healthy, no S3/AccessDenied errors in logs. |
+| `plane` | `plane` | `f446799` | 0 objects — bucket was created *after* the operator upgrade already broke this pattern, so it never held data under the broken state either. |
+
+**Notable findings, not follow-up work but worth being aware of:**
+
+- **RGW daemon convergence lag.** After deleting/recreating an OBC, the cluster's 3 RGW daemons do not pick up the new ownership atomically — one implementer sample (bluemap, Task 4) taken immediately after recreation still showed a ~3% 403 rate, which cleared to 0% on a re-sample about 6 minutes later. Anyone re-running or extending this pattern (e.g. relinking another bucket by hand) should wait up to ~5–6 minutes and re-check before concluding a relink failed.
+- **`PhysicalBackup` CR has a stale-status bug**, unrelated to this fix but discovered while verifying the canary: `kubectl get physicalbackup mariadb-galera-backup` continued reporting `STATUS=Failed` from an earlier pre-fix attempt even after the real backup `Job` completed successfully. Verify via `kubectl get jobs` (or the Job's own conditions), not the `PhysicalBackup` CR's `status.conditions`, when checking backup outcomes going forward — this looks like a `mariadb-operator` bug, not something this fix caused or resolved.
+- **`plane`'s auth path was not exercised end-to-end.** Ownership and the `ObjectBucketClaim` state were confirmed correct, but `plane` has no live traffic yet, so there's no RGW access-log evidence (unlike every other bucket in the table) that the fix actually resolves 403s for this app in practice. Worth a quick log check the first time `plane` does real S3 I/O.
+
+**Explicitly out of scope, not touched:** `feather-core-cluster-pg-backup` (CNPG's Postgres WAL/base backups). Unlike the other affected buckets, it authenticates as its own bucket owner directly, so it was never subject to the same non-owner-grant breakage — it had already self-healed independently (confirmed via `pg_stat_archiver` showing continuous successful archiving) before this plan started, and neither its `ObjectBucketClaim` nor its credentials were modified by this fix.
