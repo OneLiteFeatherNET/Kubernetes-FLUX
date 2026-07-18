@@ -84,6 +84,8 @@ spec:
     innodb_flush_method=O_DIRECT          # skip double-buffering through the OS page cache
     innodb_log_file_size=1G               # ~1/4 of buffer pool, fewer checkpoints, less disk I/O
     innodb_log_buffer_size=64M            # less disk I/O for larger transactions
+    innodb_flush_neighbors=0              # no seek penalty on Ceph RBD, don't batch-flush adjacent pages
+    innodb_io_capacity=1000               # 200 default is HDD-era; half of the existing io_capacity_max=2000
 
     # === Cleanup (subordination, step 3) ===
     max_connections=500                    # instead of 100000
