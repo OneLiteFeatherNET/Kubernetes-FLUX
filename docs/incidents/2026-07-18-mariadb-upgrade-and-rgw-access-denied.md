@@ -1,8 +1,8 @@
-# 2026-07-18: MariaDB 12.3.2 upgrade (complete) + cluster-wide RGW AccessDenied incident (ongoing)
+# 2026-07-18: MariaDB 12.3.2 upgrade (complete) + cluster-wide RGW AccessDenied incident (fixed)
 
 **Status as of 2026-07-18 ~14:00 UTC:**
 - MariaDB Galera major upgrade — **DONE, cluster fully healthy.**
-- Rook Ceph RGW (S3) AccessDenied incident — **FIXED.** All 17 affected buckets (the `mariadb-galera-backup` canary + 16 more) now declare `additionalConfig.bucketOwner` on their `ObjectBucketClaim`, making the named app user the true bucket owner instead of relying on the admin-cap access path that the Rook 1.18→1.20 upgrade broke. Fully declarative and git-tracked — no manual `radosgw-admin` command needed going forward. See `docs/superpowers/plans/2026-07-18-rgw-bucket-owner-fix.md` and the Resolution section below.
+- Rook Ceph RGW (S3) AccessDenied incident — **FIXED.** All 16 affected buckets (the `mariadb-galera-backup` canary + 15 more) now declare `additionalConfig.bucketOwner` on their `ObjectBucketClaim`, making the named app user the true bucket owner instead of relying on the admin-cap access path that the Rook 1.18→1.20 upgrade broke. Fully declarative and git-tracked — no manual `radosgw-admin` command needed going forward. See `docs/superpowers/plans/2026-07-18-rgw-bucket-owner-fix.md` and the Resolution section below.
 
 This doc exists because the two are entangled: the RGW incident was discovered *while validating* the MariaDB upgrade (the post-upgrade backup check failed), but its actual cause is a separate, unrelated change (a Rook operator upgrade). Keeping both in one place so the MariaDB status doesn't get lost inside the bigger incident.
 
@@ -89,10 +89,9 @@ Every app that authenticates as a **named `CephObjectStoreUser` that does not ow
 5. `radosgw-admin user info --uid=mariadb` shows no `system`/`admin` bypass flag — ruling out "it used to be a Ceph system user and that flag got cleared" as the mechanism.
 6. `ceph config log` shows no relevant `rgw_*` config changes in the incident window — ruling out a live RGW daemon config change as the direct trigger. (It does show `osd_recovery_max_active` and `rbd_default_map_options` being toggled on/off repeatedly around the same time, which looks like operator-driven flapping/instability during the upgrade — not chased further.)
 
-**Not yet done / open:**
-- The precise Rook code path responsible (which controller, what changed between 1.18 and 1.20) is not identified — only the empirical *symptom* and *trigger window* are confirmed.
-- The upstream migration plan's own verification gate (`docs/superpowers/plans/2026-07-18-rook-operator-upgrade.md`, Task 2 Step 5) only checked `ceph status` / Kustomization readiness — it never exercised actual S3 data-path access for a non-owner named user, which is why this regression wasn't caught before merging.
-- No remediation attempted yet (see below) — this doc stops at root-cause per the explicit instruction to investigate, not fix, without a separate go-ahead.
+**Still open (root-cause-level, not blocking — the incident itself is fixed; see Resolution below):**
+- The precise Rook code path responsible (which controller, what changed between 1.18 and 1.20) is not identified — only the empirical *symptom* and *trigger window* are confirmed. Remediation (below) worked around this via `bucketOwner` rather than by fixing the underlying Rook behavior.
+- The upstream migration plan's own verification gate (`docs/superpowers/plans/2026-07-18-rook-operator-upgrade.md`, Task 2 Step 5) only checked `ceph status` / Kustomization readiness — it never exercised actual S3 data-path access for a non-owner named user, which is why this regression wasn't caught before merging. Worth adding an S3 data-path smoke test to future Rook/Ceph upgrade plans (see recommended next steps, item 4).
 
 ### Evidence commands (for reproduction / re-verification)
 
@@ -139,7 +138,7 @@ Rook only applies `bucketOwner` on its `Provision()` (creation) path, not on an 
 
 This is now **fully declarative and git-tracked**: the fix isn't a one-off `radosgw-admin bucket link` run by hand (which the incident's root cause implicitly depended on, and which the user explicitly wants to avoid repeating) — it's an OBC spec field checked into this repo. Any future re-creation of one of these buckets (disaster recovery, namespace rebuild, etc.) re-applies the same ownership automatically via Rook's own supported `Provision()` path, with no manual RGW admin step required.
 
-**All 17 buckets fixed** (canary + 16 more, rolled out by app family):
+**All 16 buckets fixed** (canary + 15 more, rolled out by app family):
 
 | Bucket | Owner | Commit | Notes |
 |---|---|---|---|
@@ -162,7 +161,7 @@ This is now **fully declarative and git-tracked**: the fix isn't a one-off `rado
 
 **Notable findings, not follow-up work but worth being aware of:**
 
-- **RGW daemon convergence lag.** After deleting/recreating an OBC, the cluster's 3 RGW daemons do not pick up the new ownership atomically — one implementer sample (bluemap, Task 4) taken immediately after recreation still showed a ~3% 403 rate, which cleared to 0% on a re-sample about 6 minutes later. Anyone re-running or extending this pattern (e.g. relinking another bucket by hand) should wait up to ~5–6 minutes and re-check before concluding a relink failed.
+- **RGW daemon convergence lag.** After deleting/recreating an OBC, the cluster's 3 RGW daemons do not pick up the new ownership atomically — this was seen twice: Task 3 (tempo, in the loki/mimir/tempo batch) first showed the pattern, and Task 4 (bluemap) confirmed it again with an implementer sample taken immediately after recreation still showing a ~3% 403 rate, which cleared to 0% on a re-sample about 6 minutes later. Anyone re-running or extending this pattern (e.g. relinking another bucket by hand) should wait up to ~5–6 minutes and re-check before concluding a relink failed.
 - **`PhysicalBackup` CR has a stale-status bug**, unrelated to this fix but discovered while verifying the canary: `kubectl get physicalbackup mariadb-galera-backup` continued reporting `STATUS=Failed` from an earlier pre-fix attempt even after the real backup `Job` completed successfully. Verify via `kubectl get jobs` (or the Job's own conditions), not the `PhysicalBackup` CR's `status.conditions`, when checking backup outcomes going forward — this looks like a `mariadb-operator` bug, not something this fix caused or resolved.
 - **`plane`'s auth path was not exercised end-to-end.** Ownership and the `ObjectBucketClaim` state were confirmed correct, but `plane` has no live traffic yet, so there's no RGW access-log evidence (unlike every other bucket in the table) that the fix actually resolves 403s for this app in practice. Worth a quick log check the first time `plane` does real S3 I/O.
 
