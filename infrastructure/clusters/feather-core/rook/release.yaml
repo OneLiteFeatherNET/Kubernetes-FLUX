@@ -28,6 +28,7 @@ spec:
       enabled: true
     monitoring:
       enabled: true
+    obcAllowAdditionalConfigFields: "maxObjects,maxSize,bucketOwner"
     resources:
       limits:
         cpu: "500m"
