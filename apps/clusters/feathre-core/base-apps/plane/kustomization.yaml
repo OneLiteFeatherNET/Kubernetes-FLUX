@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/plane/
   - ingress.yaml
+  - silo-service.yaml
 patches:
   - path: release.yaml
 
