@@ -11,7 +11,10 @@ spec:
     suspend: false
     immediate: true
   maxRetention: 720h # 30 days
-  compression: bzip2
+  # gzip instead of bzip2: bzip2 was taking ~60-67min per run (dominated by
+  # compression, not the mariabackup dump itself, which finishes in ~2min).
+  # gzip trades some compression ratio for a much faster compressor.
+  compression: gzip
   storage:
     s3:
       bucket: mariadb-galera-backup
@@ -26,10 +29,10 @@ spec:
         name: mariadb
         key: secret-access-key
   # emptyDir staging area on the target Pod's Node: the operator wipes it after
-  # each backup completes, unlike a PVC which keeps accumulating .xb.bz2 files
+  # each backup completes, unlike a PVC which keeps accumulating .xb.gz files
   # forever (no built-in cleanup upstream, see mariadb-operator issue #1243).
   # fr01-wrk-xl-01 (where podAffinity pins this Job) has ~244Gi ephemeral-storage
-  # free; largest backup observed so far is ~28Gi.
+  # free; largest bzip2 backup observed was ~28Gi (gzip output will be larger).
   stagingStorage:
     volume:
       emptyDir:
