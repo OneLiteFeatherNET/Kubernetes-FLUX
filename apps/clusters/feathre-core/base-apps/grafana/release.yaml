@@ -27583,18 +27583,18 @@ spec:
         apiVersion: 1
         templates:
           - name: discord.title
-            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴{{ `{{ else }}` }}✅{{ `{{ end }}` }} [{{ `{{ .Status | toUpper }}` }}] {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
+            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ else }}` }}✅ RESOLVED{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
           - name: discord.message
             template: |
               {{ `{{ define "discord.message" }}` }}
               {{ `{{- range .Alerts }}` }}
-              **{{ `{{ .Labels.alertname }}` }}**
               {{ `{{ .Annotations.summary }}` }}
               {{ `{{- if .Labels.severity }}` }}
               severity: `{{ `{{ .Labels.severity }}` }}`
               {{ `{{- end }}` }}
-              {{ `{{- if .Labels.name }}` }}
-              object: `{{ `{{ .Labels.exported_namespace }}` }}/{{ `{{ .Labels.name }}` }}` (`{{ `{{ .Labels.customresource_kind }}` }}`)
+              🔗 Rule: <{{ `{{ .GeneratorURL }}` }}>
+              {{ `{{- if .Annotations.dashboard_url }}` }}
+              📊 Dashboard: <{{ `{{ .Annotations.dashboard_url }}` }}>
               {{ `{{- end }}` }}
 
               {{ `{{ end }}` }}
@@ -27665,7 +27665,8 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "One or more of the 12 core Flux Kustomization layers (controllers/configs/rook/apps/monitoring/etc.) is not Ready. Check: flux get kustomizations -A"
+                  summary: "Flux Kustomization {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) is not Ready. Check: flux get kustomization {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
                   severity: critical
               - uid: core-infra-helmrelease-not-ready
@@ -27717,7 +27718,8 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "A core infrastructure HelmRelease (gateway/certs/storage/database/observability) is not Ready. Check: flux get helmrelease -A | grep -v True"
+                  summary: "Flux HelmRelease {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) is not Ready. Check: flux get helmrelease {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
                   severity: critical
           - orgId: 1
@@ -27780,6 +27782,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "No successful CloudNativePG (Postgres) backup in over 24h."
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: warning
               - uid: cnpg-backup-failing
@@ -27837,6 +27840,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "CloudNativePG's most recent backup attempt failed (a failure timestamp is newer than the last successful one)."
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: warning
               - uid: mariadb-galera-backup-job-failed
@@ -27888,6 +27892,8 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
+                  # No dashboard_url: the mariadb-galera dashboard (gnetId 13106) covers
+                  # cluster health, not backup jobs, so it wouldn't add useful context here.
                   summary: "The mariadb-galera-backup CronJob's most recent Job run failed. Check: kubectl get jobs -n mariadb-galera"
                 labels:
                   severity: warning
