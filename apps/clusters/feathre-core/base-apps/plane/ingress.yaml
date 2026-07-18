@@ -10,26 +10,60 @@ spec:
     - host: tasks.onelitefeather.net
       http:
         paths:
-          # cloudflare-tunnel-ingress-controller matches path rules by substring,
-          # not path-prefix. Hashed web bundle filenames like auth.service-*.js
-          # and api.service-*.js contain "/auth"/"/api" as a substring (right at
-          # the /assets + filename boundary) and get misrouted to plane-api,
-          # breaking the SPA's auth bootstrap. This rule must stay first so it
-          # wins the match before /api and /auth are ever checked.
-          - path: /assets
-            pathType: Prefix
-            backend:
-              service:
-                name: plane-web
-                port:
-                  number: 3000
-          - path: /spaces
+          # ============================================================
+          # IMPORTANT — how cloudflare-tunnel-ingress-controller actually
+          # matches these paths (verified against its source, v0.0.23,
+          # pkg/cloudflare-controller/tunnel-client.go):
+          #
+          #   1. Rules for one hostname are sorted by len(path) DESCENDING
+          #      before being pushed to Cloudflare. The order they're
+          #      written in below has NO effect on evaluation order.
+          #   2. Each rule's "path" becomes a Cloudflare Tunnel ingress
+          #      `path`, which is an UNANCHORED regex — it matches if the
+          #      text appears ANYWHERE in the request path, not just as a
+          #      leading prefix. cloudflared evaluates the length-sorted
+          #      list top to bottom; first match wins.
+          #   3. Consequence: any two rules of EQUAL path length race in
+          #      an unspecified (non-deterministic sort) order if both
+          #      match the same request. Every rule below MUST have a
+          #      length distinct from any other rule it could plausibly
+          #      collide with. Two known, deliberately-resolved cases:
+          #        - plane-web's hashed bundle "/assets/*.js" vs
+          #          plane-api's "/api/assets/*" upload endpoints — both
+          #          contain "/assets" as a substring.
+          #        - plane-space's own "/spaces/assets/*.js" bundle vs
+          #          the same generic "/assets" rule.
+          #      Both were live outages/breakage before being split out
+          #      into their own longer, more specific rules below.
+          #      /silo, /live, /auth are still tied at 5 chars — left
+          #      alone since no real path has been found that matches
+          #      more than one of them, but treat any future addition of
+          #      an endpoint containing one of those words as a substring
+          #      as a potential silent misroute until re-verified.
+          # ============================================================
+
+          # plane-space's own hashed JS/CSS bundle, e.g.
+          # /spaces/assets/entry.client-*.js — must outrank the generic
+          # /assets rule (both would otherwise tie at 7 chars).
+          - path: /spaces/assets
             pathType: Prefix
             backend:
               service:
                 name: plane-space
                 port:
                   number: 3000
+
+          # Asset upload/attachment API (plane.app.urls, mounted at /api/),
+          # e.g. /api/assets/v2/workspaces/<slug>/ — must outrank the
+          # generic /assets rule (both would otherwise tie at 7 chars).
+          - path: /api/assets
+            pathType: Prefix
+            backend:
+              service:
+                name: plane-api
+                port:
+                  number: 8000
+
           - path: /god-mode
             pathType: Prefix
             backend:
@@ -37,19 +71,35 @@ spec:
                 name: plane-admin
                 port:
                   number: 3000
-          - path: /live
+
+          - path: /spaces
             pathType: Prefix
             backend:
               service:
-                name: plane-live
+                name: plane-space
                 port:
                   number: 3000
+
+          # plane-web's own hashed JS/CSS bundle, e.g. /assets/auth.service-*.js
+          # or /assets/api.service-*.js. Some filenames contain "/auth" or
+          # "/api" as a substring (right at the /assets + filename boundary)
+          # — this rule's length (7) must stay longer than /auth (5) and
+          # /api (4) so it's evaluated first for those.
+          - path: /assets
+            pathType: Prefix
+            backend:
+              service:
+                name: plane-web
+                port:
+                  number: 3000
+
           # Integrations backend. The chart's SILO_BASE_PATH/SILO_API_BASE_URL
-          # env vars (plane-silo-vars ConfigMap) already assume this exact path.
-          # Routed to plane-silo-ingress (silo-service.yaml), NOT the chart's
-          # own "plane-silo" Service — that one is headless (clusterIP: None),
-          # which cloudflare-tunnel-ingress-controller can't parse a backend
-          # for; referencing it here previously took down the whole domain.
+          # env vars (plane-silo-vars ConfigMap) already assume this exact
+          # path. Routed to plane-silo-ingress (silo-service.yaml), NOT the
+          # chart's own "plane-silo" Service — that one is headless
+          # (clusterIP: None), which this controller can't parse a backend
+          # for; referencing it directly previously took down the whole
+          # domain (see git history on this file).
           - path: /silo
             pathType: Prefix
             backend:
@@ -57,13 +107,15 @@ spec:
                 name: plane-silo-ingress
                 port:
                   number: 3000
-          - path: /api
+
+          - path: /live
             pathType: Prefix
             backend:
               service:
-                name: plane-api
+                name: plane-live
                 port:
-                  number: 8000
+                  number: 3000
+
           - path: /auth
             pathType: Prefix
             backend:
@@ -71,6 +123,15 @@ spec:
                 name: plane-api
                 port:
                   number: 8000
+
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: plane-api
+                port:
+                  number: 8000
+
           - path: /
             pathType: Prefix
             backend:
