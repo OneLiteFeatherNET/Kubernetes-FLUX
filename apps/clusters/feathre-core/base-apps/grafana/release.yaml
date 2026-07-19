@@ -24456,7 +24456,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -24819,14 +24819,14 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "B"
@@ -25817,7 +25817,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "min by (job, instance) (\n  minecraft_server_tps_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
+                      "expr": "min by (job) (\n  minecraft_server_tps_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
@@ -25917,7 +25917,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
@@ -26017,7 +26017,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
@@ -26109,7 +26109,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "max by (job, instance) (\n  minecraft_entities_loaded_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "expr": "max by (job) (\n  minecraft_entities_loaded_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
@@ -26201,7 +26201,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job) (minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
@@ -26314,7 +26314,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "topk($topk, minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+                      "expr": "topk($topk, max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}))",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
@@ -26416,7 +26416,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "bottomk(\n  $topk,\n  min by (job, instance) (\n    minecraft_server_tps_ratio{\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
+                      "expr": "bottomk(\n  $topk,\n  min by (job) (\n    minecraft_server_tps_ratio{\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
                       "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
