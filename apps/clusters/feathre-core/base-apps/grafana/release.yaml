@@ -26676,7 +26676,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "max by (instance, job) (\n  jvm_thread_count{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "expr": "max by (job) (\n  jvm_thread_count{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -26732,7 +26732,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum by (instance, job) (\n  rate(jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+                      "expr": "sum by (job) (\n  rate(jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -27083,7 +27083,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(\n  jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m]\n)",
+                      "expr": "sum by (job, jvm_gc_name, jvm_gc_action) (\n  rate(jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)",
                       "legendFormat": "{{job}} \u00b7 {{jvm_gc_name}}/{{jvm_gc_action}}",
                       "range": true,
                       "refId": "A"
@@ -27286,7 +27286,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_memory_used_bytes{jvm_memory_type=\"heap\", job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job, jvm_memory_pool_name) (jvm_memory_used_bytes{jvm_memory_type=\"heap\", job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}} \u00b7 {{jvm_memory_pool_name}}",
                       "range": true,
                       "refId": "A"
@@ -27377,7 +27377,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_memory_used_bytes{jvm_memory_type=\"non_heap\", job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job, jvm_memory_pool_name) (jvm_memory_used_bytes{jvm_memory_type=\"non_heap\", job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}} \u00b7 {{jvm_memory_pool_name}}",
                       "range": true,
                       "refId": "A"
