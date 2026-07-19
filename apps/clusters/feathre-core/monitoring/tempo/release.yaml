@@ -99,13 +99,18 @@ spec:
       # Bumped after repeated OOMKills: each crash left more WAL blocks to
       # replay+flush on the next start, so the ingester needed more memory
       # each time just to get past startup, compounding the crashloop.
+      # Bumped again 2026-07-19: same compounding crashloop recurred at 2Gi
+      # (51 OOMKills in 46m) once span ingestion roughly tripled (48-78/s ->
+      # 100-190/s); working set was plateauing at 1.2-2GB before each kill.
+      # Node has ample headroom (~27% memory used), so going straight to 4Gi
+      # rather than a marginal bump that likely just delays the next round.
       resources:
         requests:
           cpu: 100m
           memory: 512Mi
         limits:
           cpu: "1"
-          memory: 2Gi
+          memory: 4Gi
       persistence:
         enabled: true
         size: 10Gi
