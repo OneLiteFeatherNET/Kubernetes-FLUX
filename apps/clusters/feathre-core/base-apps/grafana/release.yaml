@@ -25189,7 +25189,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job, world) (minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
@@ -25280,21 +25280,21 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "expr": "sum by (job, world) (rate(minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
                       "legendFormat": "L {{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_unload_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "expr": "sum by (job, world) (rate(minecraft_chunks_unload_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
                       "legendFormat": "UL {{job}}/{{world}}",
                       "range": true,
                       "refId": "B"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_generated_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "expr": "sum by (job, world) (rate(minecraft_chunks_generated_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
                       "legendFormat": "G {{job}}/{{world}}",
                       "range": true,
                       "refId": "C"
@@ -25385,7 +25385,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job, world) (minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
                       "legendFormat": "{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
@@ -25478,7 +25478,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job, entity_type) (minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\"})",
                       "interval": "",
                       "legendFormat": "{{entity_type}}",
                       "range": true,
@@ -25570,14 +25570,14 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_entities_added_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "expr": "sum by (job, world) (rate(minecraft_entities_added_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
                       "legendFormat": "+{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_entities_removed_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "expr": "sum by (job, world) (rate(minecraft_entities_removed_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
                       "legendFormat": "-{{job}}/{{world}}",
                       "range": true,
                       "refId": "B"
