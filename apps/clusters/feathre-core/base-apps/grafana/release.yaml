@@ -25621,7 +25621,7 @@ spec:
                       "value": "$__all"
                     },
                     "datasource": "Mimir",
-                    "hide": 2,
+                    "hide": 1,
                     "includeAll": false,
                     "label": "instance (optional)",
                     "name": "instance",
@@ -26467,7 +26467,7 @@ spec:
                       ]
                     },
                     "datasource": "Mimir",
-                    "hide": 2,
+                    "hide": 1,
                     "includeAll": true,
                     "label": "instance (optional)",
                     "multi": true,
@@ -27421,7 +27421,7 @@ spec:
                       "value": "$__all"
                     },
                     "datasource": "Mimir",
-                    "hide": 2,
+                    "hide": 1,
                     "includeAll": true,
                     "label": "instance (optional)",
                     "name": "instance",
