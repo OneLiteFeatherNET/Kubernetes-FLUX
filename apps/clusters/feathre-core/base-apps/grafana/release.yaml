@@ -27398,7 +27398,6 @@ spec:
               "templating": {
                 "list": [
                   {
-                    "allValue": ".*",
                     "current": {
                       "text": "All",
                       "value": [
