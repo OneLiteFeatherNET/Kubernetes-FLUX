@@ -128,13 +128,21 @@ spec:
       replicas: 1
       extraArgs:
         - -config.expand-env=true
+      # Bumped 2026-07-19 after OOMKills: memcached became briefly unreachable
+      # during a tempo-wide rollout ("connect timeout to <clusterIP>:11211"),
+      # so every parquet-footer/bloom/frontend-search cache lookup fell
+      # through to uncached in-memory work; working set jumped from its
+      # normal ~30MB baseline to 394MB+ within seconds and got OOMKilled at
+      # 512Mi. Memcached itself was healthy throughout - this is about
+      # surviving that class of transient cache-miss storm, not a sustained
+      # need for more memory day to day.
       resources:
         requests:
           cpu: 50m
           memory: 128Mi
         limits:
           cpu: "1"
-          memory: 512Mi
+          memory: 1Gi
       affinity: |
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
