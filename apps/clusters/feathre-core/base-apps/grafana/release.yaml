@@ -24392,7 +24392,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", window=\"1m\"})",
+                      "expr": "(minecraft_server_tps_ratio{window=\"1m\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -24456,7 +24456,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
                       "range": true,
                       "refId": "A"
                     }
@@ -24512,7 +24512,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(minecraft_players_online_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "expr": "sum(minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -24568,7 +24568,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "histogram_quantile(0.95, sum by (le) (rate(minecraft_tick_duration_milliseconds_bucket{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])))",
+                      "expr": "histogram_quantile(0.95, sum by (le) (rate(minecraft_tick_duration_milliseconds_bucket{job=~\"$job\", instance=~\"$instance\"}[5m])))",
                       "range": true,
                       "refId": "A"
                     }
@@ -24707,21 +24707,21 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
+                      "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
                       "legendFormat": "1m",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\", window=\"5m\"})",
+                      "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"5m\"})",
                       "legendFormat": "5m",
                       "range": true,
                       "refId": "B"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\",window=\"15m\"})",
+                      "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\",window=\"15m\"})",
                       "legendFormat": "15m",
                       "range": true,
                       "refId": "C"
@@ -24819,15 +24819,15 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_avg_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "B"
                     }
@@ -24906,9 +24906,9 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum by (le) (\n  rate(minecraft_tick_duration_milliseconds_bucket{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+                      "expr": "sum by (le) (\n  rate(minecraft_tick_duration_milliseconds_bucket{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
                       "format": "heatmap",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -24996,8 +24996,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(minecraft_chunks_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "sum(minecraft_chunks_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25085,8 +25085,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(minecraft_entities_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
-                      "legendFormat": "{{cloudnet_service_name}}",
+                      "expr": "sum(minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25189,8 +25189,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_chunks_load_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_service_name}}/{{world}}",
+                      "expr": "minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25280,22 +25280,22 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_load_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "L {{cloudnet_service_name}}/{{world}}",
+                      "expr": "rate(minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "L {{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_unload_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "UL {{cloudnet_service_name}}/{{world}}",
+                      "expr": "rate(minecraft_chunks_unload_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "UL {{job}}/{{world}}",
                       "range": true,
                       "refId": "B"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_generated_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "G {{cloudnet_service_name}}/{{world}}",
+                      "expr": "rate(minecraft_chunks_generated_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "G {{job}}/{{world}}",
                       "range": true,
                       "refId": "C"
                     }
@@ -25385,8 +25385,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_entities_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_service_name}}/{{world}}",
+                      "expr": "minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25478,7 +25478,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_entities_loaded_by_type_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\"}",
                       "interval": "",
                       "legendFormat": "{{entity_type}}",
                       "range": true,
@@ -25570,15 +25570,15 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_entities_added_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "+{{cloudnet_service_name}}/{{world}}",
+                      "expr": "rate(minecraft_entities_added_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "+{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_entities_removed_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "-{{cloudnet_service_name}}/{{world}}",
+                      "expr": "rate(minecraft_entities_removed_total{job=~\"$job\", instance=~\"$instance\"}[5m])",
+                      "legendFormat": "-{{job}}/{{world}}",
                       "range": true,
                       "refId": "B"
                     }
@@ -25606,41 +25606,11 @@ spec:
                     },
                     "datasource": "Mimir",
                     "includeAll": true,
-                    "label": "CloudNet Task",
+                    "label": "Server",
                     "multi": true,
-                    "name": "cloudnet_task",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "includeAll": false,
-                    "label": "CloudNet Service",
-                    "name": "cloudnet_service",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "hide": 2,
-                    "includeAll": false,
-                    "label": "job (optional)",
                     "name": "job",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "query": "label_values(minecraft_server_tps_ratio, job)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -25656,7 +25626,7 @@ spec:
                     "label": "instance (optional)",
                     "name": "instance",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -25847,8 +25817,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "min by (cloudnet_task_name, cloudnet_service_name) (\n  minecraft_server_tps_ratio{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "min by (job, instance) (\n  minecraft_server_tps_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25947,8 +25917,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26047,8 +26017,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_avg_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26139,8 +26109,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "max by (cloudnet_task_name, cloudnet_service_name) (\n  minecraft_entities_loaded_ratio{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "max by (job, instance) (\n  minecraft_entities_loaded_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26231,8 +26201,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_players_online_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"}",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26344,8 +26314,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "topk($topk, minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "topk($topk, minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26446,8 +26416,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "bottomk(\n  $topk,\n  min by (cloudnet_task_name, cloudnet_service_name) (\n    minecraft_server_tps_ratio{\n      cloudnet_task_name=~\"$cloudnet_task\",\n      cloudnet_service_name=~\"$cloudnet_service\",\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "bottomk(\n  $topk,\n  min by (job, instance) (\n    minecraft_server_tps_ratio{\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26478,52 +26448,11 @@ spec:
                     },
                     "datasource": "Mimir",
                     "includeAll": true,
-                    "label": "CloudNet Task",
-                    "multi": true,
-                    "name": "cloudnet_task",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": [
-                        "All"
-                      ],
-                      "value": [
-                        "$__all"
-                      ]
-                    },
-                    "datasource": "Mimir",
-                    "includeAll": true,
-                    "label": "CloudNet Service",
-                    "multi": true,
-                    "name": "cloudnet_service",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": [
-                        "All"
-                      ],
-                      "value": [
-                        "$__all"
-                      ]
-                    },
-                    "datasource": "Mimir",
-                    "hide": 2,
-                    "includeAll": true,
-                    "label": "job (optional)",
+                    "label": "Server",
                     "multi": true,
                     "name": "job",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "query": "label_values(minecraft_server_tps_ratio, job)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -26544,7 +26473,7 @@ spec:
                     "multi": true,
                     "name": "instance",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -26691,7 +26620,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_cpu_recent_utilization_ratio{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\",\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
+                      "expr": "jvm_cpu_recent_utilization_ratio{\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -26747,7 +26676,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "max by (instance, job) (\n  jvm_thread_count{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "expr": "max by (instance, job) (\n  jvm_thread_count{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -26803,7 +26732,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum by (instance, job) (\n  rate(jvm_gc_duration_seconds_sum{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+                      "expr": "sum by (instance, job) (\n  rate(jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -26859,7 +26788,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "expr": "sum(jvm_memory_used_bytes{job=~\"$job\", instance=~\"$instance\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -26960,14 +26889,14 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"})",
+                      "expr": "sum(jvm_memory_used_bytes{jvm_memory_type=\"heap\"})",
                       "legendFormat": "__auto",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_limit_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"})",
+                      "expr": "sum(jvm_memory_limit_bytes{jvm_memory_type=\"heap\"})",
                       "legendFormat": "__auto",
                       "range": true,
                       "refId": "B"
@@ -27056,15 +26985,15 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "sum(jvm_memory_used_bytes{jvm_memory_type=\"non_heap\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_limit_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "sum(jvm_memory_limit_bytes{jvm_memory_type=\"non_heap\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "B"
                     }
@@ -27154,7 +27083,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(\n  jvm_gc_duration_seconds_sum{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\"\n  }[5m]\n)",
+                      "expr": "rate(\n  jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m]\n)",
                       "legendFormat": "{{jvm_gc_name}}/{{jvm_gc_action}}",
                       "range": true,
                       "refId": "A"
@@ -27245,14 +27174,14 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_thread_count{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\"\n}\n",
+                      "expr": "jvm_thread_count{\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
                       "legendFormat": "{{jvm_thread_state}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "jvm_cpu_recent_utilization_ratio{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\",\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
+                      "expr": "jvm_cpu_recent_utilization_ratio{\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
                       "hide": true,
                       "legendFormat": "__auto",
                       "range": true,
@@ -27357,7 +27286,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"}",
+                      "expr": "jvm_memory_used_bytes{jvm_memory_type=\"heap\"}",
                       "legendFormat": "{{jvm_memory_pool_name}}",
                       "range": true,
                       "refId": "A"
@@ -27448,7 +27377,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"}",
+                      "expr": "jvm_memory_used_bytes{jvm_memory_type=\"non_heap\"}",
                       "legendFormat": "{{jvm_memory_pool_name}}",
                       "range": true,
                       "refId": "A"
@@ -27478,42 +27407,11 @@ spec:
                     },
                     "datasource": "Mimir",
                     "includeAll": true,
-                    "label": "CloudNet Task",
+                    "label": "Server",
                     "multi": true,
-                    "name": "cloudnet_task",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "includeAll": true,
-                    "label": "CloudNet Service",
-                    "name": "cloudnet_service",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "hide": 2,
-                    "includeAll": true,
-                    "label": "job (optional)",
                     "name": "job",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "query": "label_values(minecraft_server_tps_ratio, job)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -27529,7 +27427,7 @@ spec:
                     "label": "instance (optional)",
                     "name": "instance",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
                     "refresh": 2,
                     "type": "query"
                   },
