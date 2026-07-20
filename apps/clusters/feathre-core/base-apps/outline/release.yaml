@@ -13,7 +13,7 @@ spec:
       # This sets the pull policy for images.
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "1.8.1"
+      tag: "1.9.1"
     # Applied to every component pod (replaces the former post-render patch).
     priorityClassName: feather-standard
     # One Node process per pod — we scale horizontally via replicas, not via
