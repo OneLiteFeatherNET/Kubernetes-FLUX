@@ -240,7 +240,7 @@ tracing:
   # module java.base doesn't opens java.lang to the unnamed module under
   # newer JDKs). 2.29.0 is the latest available and includes the JDK23+
   # MethodHandles.Lookup fix for boot-loader class injection.
-  image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.29.0
+  image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.30.0
   resources:
     requests:
       cpu: 10m
