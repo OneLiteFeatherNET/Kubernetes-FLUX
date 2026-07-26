@@ -28069,6 +28069,117 @@ spec:
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
                 labels:
                   severity: warning
+              - uid: ceph-osd-usage-high
+                title: Ceph OSD usage high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # Per-OSD, not cluster-aggregate: the 2026-07-26 InsufficientCapacity
+                      # incident had individual OSDs at 94% (backfillfull) while the cluster-wide
+                      # average still read 86.7% -- ceph-cluster-health-warning only fires once
+                      # Ceph itself declares HEALTH_WARN (nearfull/backfillfull already tripped),
+                      # this is the earlier leading indicator on the single most-full OSD.
+                      expr: max(ceph_osd_stat_bytes_used / ceph_osd_stat_bytes) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  summary: "The most-full Ceph OSD is above 80% used. Ceph's own nearfull/backfillfull thresholds trip around here and will start rejecting large S3 uploads (InsufficientCapacity) before HEALTH_WARN fires. Check: kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: warning
+              - uid: ceph-osd-usage-critical
+                title: Ceph OSD usage critical
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: max(ceph_osd_stat_bytes_used / ceph_osd_stat_bytes) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "The most-full Ceph OSD is above 90% used -- at or past Ceph's backfillfull threshold, new writes to affected pools (including S3/RGW uploads) will start being rejected. Check: kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df; ceph health detail"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: critical
           - orgId: 1
             name: databases
             folder: Databases
