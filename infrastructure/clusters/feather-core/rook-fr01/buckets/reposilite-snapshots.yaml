@@ -7,4 +7,5 @@ spec:
   bucketName: reposilite-snapshots
   storageClassName: ceph-bucket-fr01
   additionalConfig:
-    bucketOwner: reposilite
+    # See reposilite-releases.yaml: public buckets are owned separately.
+    bucketOwner: reposilite-public
