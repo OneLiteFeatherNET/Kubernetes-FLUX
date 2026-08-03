@@ -30,6 +30,23 @@ spec:
           # the "-commercial" variant of the same backend image; verify after
           # cutover whether the bug still applies (harmless either way — this pins
           # concurrency to 2 regardless).
+          # services.rabbitmq exposes no resource keys in plane-enterprise 3.0.0,
+          # so the StatefulSet ships with `resources: {}` — BestEffort, and the
+          # first thing the kubelet evicts, despite being the queue every worker
+          # depends on. No CPU limit on purpose: throttling a broker is worse
+          # than letting it burst (observed 453m under normal load).
+          - target:
+              kind: StatefulSet
+              name: plane-rabbitmq-wl
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/resources
+                value:
+                  requests:
+                    cpu: 250m
+                    memory: 256Mi
+                  limits:
+                    memory: 1Gi
           - target:
               kind: Deployment
               name: plane-worker-wl
@@ -61,28 +78,52 @@ spec:
       opensearch:
         local_setup: true
 
+      # Requests were the chart default 50m/50Mi against 1000-2000Mi limits
+      # while `kubectl top` showed 150-483Mi. Floors below are ~real usage
+      # rounded up; there is no LimitRange anywhere in the cluster to correct
+      # them. plane-opensearch-wl is deliberately absent — the chart already
+      # sizes it correctly (500m/2Gi).
       web:
         assign_cluster_ip: true
+        memoryRequest: 64Mi
+        cpuRequest: 25m
       space:
         assign_cluster_ip: true
+        memoryRequest: 256Mi
+        cpuRequest: 50m
       admin:
         assign_cluster_ip: true
+        memoryRequest: 64Mi
+        cpuRequest: 25m
       api:
         assign_cluster_ip: true
+        memoryRequest: 320Mi
+        cpuRequest: 100m
       live:
         assign_cluster_ip: true
+        memoryRequest: 256Mi
+        cpuRequest: 50m
+      monitor:
+        memoryRequest: 64Mi
+        cpuRequest: 25m
 
       # Same reasoning as the CE cutover: chart default (1000Mi) OOMKilled the
       # worker repeatedly under real load. Bump both async components.
       worker:
         memoryLimit: 2000Mi
         cpuLimit: "1"
+        memoryRequest: 512Mi
+        cpuRequest: 100m
       beatworker:
         memoryLimit: 1500Mi
         cpuLimit: 500m
+        memoryRequest: 320Mi
+        cpuRequest: 50m
 
       silo:
         enabled: true
+        memoryRequest: 256Mi
+        cpuRequest: 50m
 
       # Pi (the AI assistant) is left at the chart default (disabled): its
       # migrator job hard-fails without an embedding model configured
