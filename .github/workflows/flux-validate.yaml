@@ -38,3 +38,19 @@ jobs:
         run: pip install --quiet pyyaml
       - name: Validate Flux manifests
         run: ./scripts/validate.sh
+
+  sops-encryption:
+    name: sops encryption
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.x'
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+      - name: Assert sops-matched files are encrypted
+        run: python3 scripts/check-sops-encryption.py
