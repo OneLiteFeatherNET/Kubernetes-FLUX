@@ -40,13 +40,3 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
         operator: Exists
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: topology.kubernetes.io/region
-                  operator: In
-                  values:
-                    - fi-helsinki
