@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: "*"
+      version: "=0.40.2"
   values:
     podLabels:
       logs.onelitefeather.net/env: prod
