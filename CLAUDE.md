@@ -68,10 +68,10 @@ sops <file>
 
 Full workflow in `docs/sops.md`. Essentials:
 
-- Recipients are listed in **two** files: `.sops.yaml` (repo root) and `clusters/feather-core/.sops.yaml`. Both must stay in sync.
-- Encrypted file suffixes: `*.sops.env`, `*.sops.yaml`, `*.sops.json`, `*.sops.crt`, `*.sops.key`, `*.sops.conf` — **and plain `*.env`** (the root `.sops.yaml` regex encrypts those too). `*.yaml` files use field-level encryption (`encrypted_regex` for keys like `*_password`, `*_ca_key`).
+- Recipients are listed in exactly **one** file: `.sops.yaml` at the repo root. (`clusters/feather-core/.sops.pub.asc` is the public half of the key and is unrelated.)
+- Encrypted file suffixes: `*.sops.env`, `*.sops.yaml`, `*.sops.json`, `*.sops.crt`, `*.sops.key`, `*.sops.conf` — **and plain `*.env`** (the root `.sops.yaml` regex encrypts those too). Everything is whole-file encrypted; there is deliberately no rule for plain `*.yaml`, so `sops -e` on one fails closed. Name a Secret manifest `*.sops.yaml`.
 - Secrets reach pods via Kustomize `secretGenerator` (`envs:`/`files:`) or `generators:` in an overlay's `kustomization.yaml`; Flux decrypts at apply time.
-- Edit in place: `sops path/to/file.sops.env`. Add/remove a member: update both `.sops.yaml`, then re-encrypt everything with `sops updatekeys` (one per file).
+- Edit in place: `sops path/to/file.sops.env`. Add/remove a member: update `.sops.yaml`, then re-encrypt everything with `sops updatekeys` (one per file).
 
 ## In-repo Helm charts
 
