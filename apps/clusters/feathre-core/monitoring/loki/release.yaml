@@ -257,6 +257,12 @@ spec:
       nodeSelector:
         topology.kubernetes.io/zone: fr01
     gateway:
+      # 2 replicas: the gateway is the sole read AND write path for all logs,
+      # and it was the only Loki component left at the chart default of 1.
+      # This also switches on the chart's gateway PodDisruptionBudget, which
+      # is templated on `replicas > 1` and has no value of its own — at 1
+      # replica there was no PDB at all, unlike every sibling.
+      replicas: 2
       podLabels:
         logs.onelitefeather.net/env: prod
       resources:
@@ -265,6 +271,10 @@ spec:
           memory: 32Mi
         limits:
           memory: 128Mi
+      # This block replaces the chart's default affinity wholesale. The chart
+      # default is a *hard* podAntiAffinity on hostname; restating it here as
+      # preferred keeps both replicas schedulable if only one node is
+      # available, which for the sole log path beats leaving one Pending.
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -275,6 +285,15 @@ spec:
                     operator: In
                     values:
                       - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: loki
+                    app.kubernetes.io/component: gateway
+                topologyKey: kubernetes.io/hostname
       ingress:
         enabled: false
     lokiCanary:
