@@ -16,6 +16,10 @@ spec:
   install:
     remediation:
       retries: 0
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   interval: 1m0s
   # Default values
   # https://raw.githubusercontent.com/grafana/alloy/main/operations/helm/charts/alloy/values.yaml
