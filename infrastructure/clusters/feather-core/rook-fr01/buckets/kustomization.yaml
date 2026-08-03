@@ -19,3 +19,4 @@ resources:
   - reposilite-releases.yaml
   - reposilite-snapshots.yaml
   - tempo-traces.yaml
+  - bakery.yaml
