@@ -6,7 +6,9 @@ set -euo pipefail
 
 KUSTOMIZE_VERSION="${KUSTOMIZE_VERSION:-5.7.1}"
 KUBECONFORM_VERSION="${KUBECONFORM_VERSION:-0.7.0}"
-KUBERNETES_VERSION="${KUBERNETES_VERSION:-1.31.0}"
+# Keep in step with the live cluster (`kubectl get nodes`), otherwise CI
+# validates against APIs the cluster no longer serves.
+KUBERNETES_VERSION="${KUBERNETES_VERSION:-1.36.0}"
 
 BIN_DIR="$(mktemp -d)"
 trap 'rm -rf "${BIN_DIR}"' EXIT
