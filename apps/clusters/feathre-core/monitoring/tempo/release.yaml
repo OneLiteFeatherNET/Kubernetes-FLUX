@@ -289,6 +289,10 @@ spec:
         limits:
           cpu: 500m
           memory: 128Mi
+      # This block replaces the chart's default affinity wholesale, so the
+      # podAntiAffinity has to be restated here — without it the only spread
+      # signal left is the chart's zone-keyed topologySpreadConstraint, which
+      # is a no-op on a single-zone cluster (all nodes are zone fr01).
       affinity: |
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -299,6 +303,15 @@ spec:
                     operator: In
                     values:
                       - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: gateway
+                topologyKey: kubernetes.io/hostname
       ingress:
         enabled: false
     metaMonitoring:
