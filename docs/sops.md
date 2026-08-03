@@ -42,17 +42,17 @@ gpg --armor --export <your-email> > my-public-key.asc
 # 1. Import the member's public key
 gpg --import their-public-key.asc
 
-# 2. Add their fingerprint to both .sops.yaml files (comma-separated):
-#      .sops.yaml
-#      clusters/feather-core/.sops.yaml
+# 2. Add their fingerprint to the pgp list in .sops.yaml (comma-separated).
+#    There is only one SOPS config, at the repo root.
 
-# 3. Re-encrypt all encrypted files with the updated recipient list
-find . -name "*.sops.yaml" | xargs -I {} sops updatekeys {}
-find . -name "*.sops.env"  | xargs -I {} sops updatekeys {}
+# 3. Re-encrypt EVERY encrypted file against the new recipient list
+./scripts/rekey.sh
 
-# 4. Commit the changes
-git add .sops.yaml clusters/feather-core/.sops.yaml
-git add $(find . -name "*.sops.*")
+# 4. Verify nothing was missed — this must print nothing
+./scripts/rekey.sh --list | xargs grep -L '<THEIR-FINGERPRINT>'
+
+# 5. Commit
+git add .sops.yaml $(./scripts/rekey.sh --list)
 git commit -m "chore: add <name> as SOPS recipient"
 ```
 
@@ -61,15 +61,23 @@ git commit -m "chore: add <name> as SOPS recipient"
 ## Remove a member
 
 ```bash
-# 1. Remove their fingerprint from both .sops.yaml files
+# 1. Remove their fingerprint from the pgp list in .sops.yaml
 
-# 2. Re-encrypt all secrets — mandatory!
-#    (the removed key can still decrypt as long as it has access to the old ciphertext)
-find . -name "*.sops.yaml" | xargs -I {} sops updatekeys {}
+# 2. Re-encrypt EVERY encrypted file — mandatory, and it must be every one.
+#    A file you skip stays decryptable by the removed key forever, because
+#    they already have the old ciphertext from the git history.
+./scripts/rekey.sh
 
-# 3. Commit
-git commit -am "chore: remove <name> from SOPS recipients"
+# 3. Verify their key is gone everywhere — this must print nothing
+./scripts/rekey.sh --list | xargs grep -l '<THEIR-FINGERPRINT>'
+
+# 4. Commit
+git add .sops.yaml $(./scripts/rekey.sh --list)
+git commit -m "chore: remove <name> from SOPS recipients"
 ```
+
+> Removing a recipient does **not** invalidate anything they already read.
+> Treat every credential in this repo as known to them and rotate it.
 
 ---
 
@@ -122,126 +130,13 @@ Flux decrypts the file automatically via the SOPS provider configured in the clu
 
 ---
 
-## Azure Key Vault (Entra ID)
-
-Instead of PGP keys, SOPS can use an **Azure Key Vault** key as the Key Encryption Key (KEK). This removes the need to distribute private keys to team members — access is controlled entirely via Azure Entra ID.
-
-### How authentication works
-
-SOPS uses Azure's default credential chain and tries the following in order:
-
-| Method | When to use |
-|---|---|
-| **Workload Identity** | AKS clusters (recommended for production) |
-| **Managed Identity** | Azure VMs / non-AKS compute |
-| **Service Principal** | CI/CD pipelines, local dev |
-| **Azure CLI** | Local development (`az login`) |
-
-### 1. Create the Key Vault and key
-
-```bash
-# Create a Key Vault
-az keyvault create --name <vault-name> --resource-group <rg> --location <region>
-
-# Create an RSA key used for SOPS encryption
-az keyvault key create --vault-name <vault-name> --name sops-key --kty RSA --size 4096
-
-# Get the key identifier (used in .sops.yaml)
-az keyvault key show --vault-name <vault-name> --name sops-key --query key.kid -o tsv
-# → https://<vault-name>.vault.azure.net/keys/sops-key/<version>
-```
-
-### 2. Grant access via Entra ID
-
-```bash
-# Assign the "Key Vault Crypto User" role to a user, group, or managed identity
-az role assignment create \
-  --role "Key Vault Crypto User" \
-  --assignee <object-id-or-email> \
-  --scope $(az keyvault show --name <vault-name> --query id -o tsv)
-```
-
-### 3. Configure .sops.yaml
-
-Add the `azure_keyvault` field to your creation rules. PGP and Azure KV can be combined so that both can decrypt:
-
-```yaml
-creation_rules:
-  - path_regex: .*\.sops\.ya?ml$
-    azure_keyvault: https://<vault-name>.vault.azure.net/keys/sops-key/
-    # Optional: also keep PGP for local dev without Azure CLI
-    pgp: 0231831CB40B8E587B7353CBA3AF727721205A62
-```
-
-Omit the key version at the end of the URL so SOPS always uses the latest version.
-
-### 4. Authenticate locally
-
-```bash
-# Easiest for local development — SOPS picks this up automatically
-az login
-```
-
-For a Service Principal (e.g. CI/CD):
-
-```bash
-export AZURE_TENANT_ID="<tenant-uuid>"
-export AZURE_CLIENT_ID="<app-id>"
-export AZURE_CLIENT_SECRET="<password>"
-```
-
-### 5. Workload Identity for Flux on AKS
-
-The `kustomize-controller` needs permission to unwrap the DEK at reconcile time.
-
-```bash
-# Enable OIDC issuer and workload identity on the AKS cluster (if not already done)
-az aks update --name <cluster> --resource-group <rg> \
-  --enable-oidc-issuer --enable-workload-identity
-
-# Create a managed identity for the controller
-az identity create --name flux-sops --resource-group <rg>
-
-# Grant it the Crypto User role on the Key Vault
-az role assignment create \
-  --role "Key Vault Crypto User" \
-  --assignee $(az identity show --name flux-sops --resource-group <rg> --query principalId -o tsv) \
-  --scope $(az keyvault show --name <vault-name> --query id -o tsv)
-
-# Create a federated credential linking the K8s ServiceAccount to the managed identity
-az identity federated-credential create \
-  --name flux-kustomize-controller \
-  --identity-name flux-sops \
-  --resource-group <rg> \
-  --issuer $(az aks show --name <cluster> --resource-group <rg> --query oidcIssuerProfile.issuerUrl -o tsv) \
-  --subject system:serviceaccount:flux-system:kustomize-controller \
-  --audience api://AzureADTokenExchange
-```
-
-Then patch the `kustomize-controller` ServiceAccount in your Flux bootstrap config:
-
-```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: kustomize-controller
-  namespace: flux-system
-  annotations:
-    azure.workload.identity/client-id: <managed-identity-client-id>
-    azure.workload.identity/tenant-id: <tenant-id>
-  labels:
-    azure.workload.identity/use: "true"
-```
-
----
-
 ## Current recipients
 
 | Name         | PGP Fingerprint                            |
 |--------------|--------------------------------------------|
 | TheMeinerLP  | `0231831CB40B8E587B7353CBA3AF727721205A62` |
 
-> Fingerprints are managed in `.sops.yaml` and `clusters/feather-core/.sops.yaml`.
+> Fingerprints are managed in `.sops.yaml` at the repo root. There is no per-cluster SOPS config.
 
 ---
 
