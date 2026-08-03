@@ -15,5 +15,10 @@ spec:
   install:
     remediation:
       retries: 0
+  driftDetection:
+    mode: warn
+    ignore:
+      # The documented rollout-restart workflow (CLAUDE.md) mutates this.
+      - paths: ["/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"]
   interval: 1m0s
   values: {}

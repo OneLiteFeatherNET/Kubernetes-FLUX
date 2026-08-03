@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: harbor
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: harbor

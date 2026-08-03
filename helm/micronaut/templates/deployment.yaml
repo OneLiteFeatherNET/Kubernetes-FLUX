@@ -57,6 +57,17 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.tracing.enabled }}
+      initContainers:
+        - name: otel-agent
+          image: {{ .Values.tracing.image }}
+          command: ["cp", "/javaagent.jar", "/otel/javaagent.jar"]
+          resources:
+            {{- toYaml .Values.tracing.resources | nindent 12 }}
+          volumeMounts:
+            - name: otel-agent
+              mountPath: /otel
+      {{- end }}
       containers:
         - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -77,9 +88,36 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
+            {{- if .Values.tracing.enabled }}
+            # JDK_JAVA_OPTIONS is independent of JAVA_TOOL_OPTIONS (which
+            # apps commonly override wholesale via .Values.env above), so
+            # the agent attaches regardless of what that list contains.
+            - name: JDK_JAVA_OPTIONS
+              value: "-javaagent:/otel/javaagent.jar"
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Release.Name | quote }}
+            - name: OTEL_TRACES_EXPORTER
+              value: "otlp"
+            - name: OTEL_METRICS_EXPORTER
+              value: "none"
+            - name: OTEL_LOGS_EXPORTER
+              value: "none"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.tracing.endpoint | quote }}
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            {{- end }}
           {{- if .Values.envFrom }}
           envFrom:
 {{ toYaml .Values.envFrom | indent 12 }}
+          {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: http
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
           {{- end }}
           readinessProbe:
             httpGet:
@@ -102,6 +140,11 @@ spec:
             - name: secrets
               mountPath: /secrets
             {{- end }}
+            {{- if .Values.tracing.enabled }}
+            - name: otel-agent
+              mountPath: /otel
+              readOnly: true
+            {{- end }}
       volumes:
         - name: config
           configMap:
@@ -110,4 +153,8 @@ spec:
         - name: secrets
           secret:
             secretName: {{ include "micronaut.fullname" . }}-secrets
+        {{- end }}
+        {{- if .Values.tracing.enabled }}
+        - name: otel-agent
+          emptyDir: {}
         {{- end }}

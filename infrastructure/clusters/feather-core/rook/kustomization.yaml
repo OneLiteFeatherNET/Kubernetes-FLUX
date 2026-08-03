@@ -4,4 +4,4 @@ resources:
   - namespace.yaml
   - secrets.sops.yaml
   - release.yaml
-  - storageclass.yaml
+  - csi-drivers-release.yaml

@@ -149,6 +149,17 @@ readinessProbe:
     path: /health
     port: http
 
+# Off by default. Mainly needed when tracing.enabled: OTel bytecode
+# instrumentation adds real seconds to JVM cold start (class transformation
+# on Micronaut/Hibernate/Hikari), which can push first-successful-health
+# past livenessProbe's steady-state deadline and SIGTERM-loop the pod
+# before it ever finishes starting. Uses the readiness path/port since
+# that's the only health endpoint the app exposes.
+startupProbe:
+  enabled: false
+  failureThreshold: 30
+  periodSeconds: 10
+
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
   enabled: false
@@ -212,6 +223,31 @@ env:
     value: "-XX:MaxRAMPercentage=75.0 -Duser.timezone=UTC"
 
 envFrom: []
+
+# Traces-only OTel Java agent instrumentation. Metrics/logs already flow via
+# the chart's own Prometheus scrape (metrics.serviceMonitor) and container
+# stdout shipping, so only OTEL_TRACES_EXPORTER is enabled here to avoid
+# duplicating either. An initContainer copies the javaagent jar out of the
+# upstream image into an emptyDir the main container mounts read-only --
+# no OpenTelemetry Operator/CRDs involved, just the jar-holder image it publishes.
+tracing:
+  enabled: false
+  # Matches the tempo-gateway target already used by EnvoyProxy's native
+  # tracing and the alloy-receiver OTLP gateway elsewhere in this cluster.
+  endpoint: http://tempo-gateway.grafana.svc.cluster.local:4317
+  # otis/vulpes-backend run JDK 25; older javaagent releases fail to attach
+  # there (InaccessibleObjectException on ClassLoader.findLoadedClass --
+  # module java.base doesn't opens java.lang to the unnamed module under
+  # newer JDKs). 2.29.0 is the latest available and includes the JDK23+
+  # MethodHandles.Lookup fix for boot-loader class injection.
+  image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.29.0
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
 
 containerSecurityContext:
   enabled: true

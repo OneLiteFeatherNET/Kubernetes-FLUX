@@ -1,0 +1,178 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy-receiver
+  namespace: grafana
+spec:
+  values:
+    controller:
+      type: deployment
+      replicas: 2
+      priorityClassName: feather-high
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: alloy
+                    app.kubernetes.io/instance: alloy-receiver
+                topologyKey: kubernetes.io/hostname
+    serviceMonitor:
+      enabled: true
+    alloy:
+      extraPorts:
+        - name: otlp-grpc
+          port: 4317
+          targetPort: 4317
+          protocol: TCP
+        - name: otlp-http
+          port: 4318
+          targetPort: 4318
+          protocol: TCP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      configMap:
+        content: |
+          // Single OTLP intake point (grpc :4317, http :4318) fanning traces
+          // to Tempo, metrics to Mimir, and logs to Loki. otel.apps.onelite.feather
+          // is only reachable over the internal step-ca-issued TLS network
+          // (not the public internet), so no auth layer is needed here.
+          otelcol.receiver.otlp "default" {
+            grpc {
+              endpoint = "0.0.0.0:4317"
+            }
+
+            http {
+              endpoint = "0.0.0.0:4318"
+            }
+
+            output {
+              metrics = [otelcol.processor.batch.default.input]
+              logs    = [otelcol.processor.batch.default.input]
+              traces  = [otelcol.processor.batch.default.input]
+            }
+          }
+
+          otelcol.processor.batch "default" {
+            output {
+              metrics = [otelcol.processor.transform.strip_verbose_resource_attrs.input]
+              logs    = [otelcol.processor.transform.strip_ansi_codes.input]
+              traces  = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          // Console loggers (CloudNet/Velocity/Paper) emit 24-bit ANSI SGR
+          // color codes (ESC[38;2;r;g;bm ... ESC[0m) in the log body, which
+          // are unreadable once shipped as plain text to Loki. Strips them
+          // before the severity filter/Loki export.
+          otelcol.processor.transform "strip_ansi_codes" {
+            error_mode = "ignore"
+
+            log_statements {
+              context = "log"
+              statements = [
+                `replace_pattern(body, "\\x1b\\[[0-9;]*m", "")`,
+              ]
+            }
+
+            output {
+              logs = [otelcol.processor.filter.drop_debug_logs.input]
+            }
+          }
+
+          // OTel's process resource detector adds command_line/command_args,
+          // which for a JVM with agent + classpath flags easily exceeds
+          // Mimir's per-label-value length limit (err-mimir-label-value-too-long)
+          // once it lands on the synthetic target_info metric. Strip before
+          // it becomes a label.
+          otelcol.processor.transform "strip_verbose_resource_attrs" {
+            error_mode = "ignore"
+
+            metric_statements {
+              context = "resource"
+              statements = [
+                `delete_key(attributes, "process.command_line")`,
+                `delete_key(attributes, "process.command_args")`,
+              ]
+            }
+
+            output {
+              metrics = [otelcol.exporter.prometheus.mimir.input]
+            }
+          }
+
+          // Drops DEBUG/TRACE-level log records before they reach Loki,
+          // based on the OTLP severity_number the log4j2/logback OTel
+          // appender already sets — no text/regex matching needed.
+          // severity_number == 0 means "unspecified"; those are kept
+          // rather than guessed at.
+          otelcol.processor.filter "drop_debug_logs" {
+            error_mode = "ignore"
+
+            log_conditions {
+              context = "log"
+              conditions = [
+                `severity_number > 0 and severity_number < SEVERITY_NUMBER_INFO`,
+              ]
+            }
+
+            output {
+              logs = [otelcol.exporter.loki.default.input]
+            }
+          }
+
+          otelcol.exporter.otlp "tempo" {
+            client {
+              endpoint = "tempo-gateway.grafana.svc.cluster.local:4317"
+
+              tls {
+                insecure = true
+              }
+            }
+          }
+
+          otelcol.exporter.prometheus "mimir" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+          }
+
+          prometheus.remote_write "mimir" {
+            endpoint {
+              url = "http://mimir-gateway.grafana.svc.cluster.local/api/v1/push"
+            }
+
+            external_labels = {
+              cluster = "feather-core",
+            }
+          }
+
+          otelcol.exporter.loki "default" {
+            forward_to = [loki.write.default.receiver]
+          }
+
+          loki.write "default" {
+            endpoint {
+              url = "http://loki-gateway.grafana.svc.cluster.local/loki/api/v1/push"
+            }
+
+            external_labels = {
+              cluster = "feather-core",
+            }
+          }

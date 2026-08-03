@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: ">=0.0.23"
+      version: "=0.0.24"
   values:
     # HA: two controller replicas in active/standby. Leader election ensures
     # only one reconciles Cloudflare at a time (mandatory with replicaCount > 1,
@@ -45,6 +45,23 @@ spec:
         limits:
           cpu: 200m
           memory: 256Mi
+      # Default keepalive on the connector->origin connection is 90s
+      # (cloudflared default). Bursty/gappy origins (e.g. S3 tile uploads
+      # from BlueMap) fall idle past that and pay a full TCP+TLS reconnect
+      # (~700ms observed) on the next request. Raise it well past typical
+      # gaps between uploads. Applies to ALL hosts behind this shared
+      # connector, not just s3.onelitefeather.net.
+      extraArgs:
+        - "--proxy-keepalive-timeout=10m"
+    # cloudflared already runs its Prometheus /metrics endpoint on :44483
+    # (the controller sets --metrics itself, not configurable via Helm) --
+    # this just wires up scraping for it. No tracing equivalent exists:
+    # cloudflared's OTel spans are shipped only to Cloudflare's own edge as
+    # an internal header, with no external-export flag at all (confirmed
+    # upstream, cloudflare/cloudflared#671 -- maintainer: "we do not plan
+    # for the OpenTelemetry traces ... to be exposed externally").
+    cloudflaredServiceMonitor:
+      create: true
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:

@@ -1,11 +1,14 @@
 namespace: metallb-system
 
 resources:
-  - github.com/metallb/metallb/config/native?ref=v0.15.3
+  - github.com/metallb/metallb/config/native?ref=v0.16.1
 
-# Upstream MetalLB manifests ship no resource requests/limits, leaving the
-# controller and speakers BestEffort (first to be evicted — would drop BGP
-# announcements). Inject modest requests + memory limits.
+# Upstream MetalLB manifests ship no resource requests/limits and no
+# priorityClassName, leaving the controller and speakers BestEffort at
+# priority 0 — first to be evicted, which would drop BGP announcements and
+# with them every LoadBalancer IP in the cluster. Inject modest requests +
+# memory limits, and feather-platform to match the other edge components
+# (envoyproxy, cloudflare-tunnel).
 patches:
   - patch: |
       apiVersion: apps/v1
@@ -15,6 +18,7 @@ patches:
       spec:
         template:
           spec:
+            priorityClassName: feather-platform
             containers:
               - name: controller
                 resources:
@@ -31,6 +35,7 @@ patches:
       spec:
         template:
           spec:
+            priorityClassName: feather-platform
             containers:
               - name: speaker
                 resources:

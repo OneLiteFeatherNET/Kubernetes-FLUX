@@ -1,0 +1,25 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: feather-core-cluster-pg-daily
+  namespace: cnpg-system
+spec:
+  # 6-field cron (seconds first): daily at 02:00:00, off-peak.
+  schedule: "0 0 2 * * *"
+  cluster:
+    name: feather-core-cluster-pg
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+    parameters:
+      barmanObjectName: s3-store
+  # Ties each Backup object's lifecycle to this ScheduledBackup rather than
+  # leaving them ownerless (the one-time backup.yaml Backup predates this
+  # and has no owner at all -- confirmed only one backup ever ran, back on
+  # 2026-06-11, since there was no recurring schedule).
+  backupOwnerReference: self
+  # Avoid adding backup I/O load on the primary; this cluster runs with
+  # standbys specifically for HA.
+  target: prefer-standby
+  # Don't wait until 02:00 for the first proof this actually works.
+  immediate: true

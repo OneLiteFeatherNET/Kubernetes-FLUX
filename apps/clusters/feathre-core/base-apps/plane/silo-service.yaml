@@ -1,0 +1,18 @@
+# The chart's own "plane-silo" Service is headless (clusterIP: None), which
+# cloudflare-tunnel-ingress-controller can't route to (it fails to parse the
+# *entire* Ingress object when a referenced backend is headless — see the
+# tasks.onelitefeather.net outage this caused). This is a plain ClusterIP
+# Service in front of the same pods, used only as the ingress backend for
+# /silo. Selector must stay in lockstep with the chart's plane-silo Service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: plane-silo-ingress
+spec:
+  type: ClusterIP
+  selector:
+    app.name: plane-plane-silo
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000

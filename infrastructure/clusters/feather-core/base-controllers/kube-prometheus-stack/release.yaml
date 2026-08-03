@@ -10,36 +10,27 @@ spec:
       enabled: false
     alertmanager:
       enabled: false
+    # Scraping + remote_write now happens via a dedicated Alloy instance
+    # (apps/clusters/feathre-core/base-apps/alloy-metrics) instead of the
+    # Prometheus Operator's own Prometheus-Agent StatefulSet. `crds.enabled`
+    # is left at its chart default (true) so the PodMonitor/ServiceMonitor
+    # CRDs — and the chart's own built-in ServiceMonitors below — keep
+    # existing.
+    #
+    # Deliberately staged in two steps, NOT done in one shot:
+    # step 1 (this change) only removes the PrometheusAgent CR while the
+    # operator is still running, so its finalizer-driven reconcile loop
+    # actually tears down the prometheus-agent StatefulSet/PVCs itself.
+    # The generated StatefulSet has no Kubernetes ownerReference back to
+    # the CR, so if the operator were disabled in the same apply, nothing
+    # would be left to clean it up — the old Agent pods would keep running
+    # and double-writing to Mimir alongside alloy-metrics, forever.
+    # Step 2 — set prometheusOperator.enabled: false — only once
+    # `kubectl get statefulset -n monitoring -l operator.prometheus.io/name=kube-prometheus-stack-prometheus`
+    # (or `flux get helmrelease kube-prometheus-stack -n monitoring`) confirms
+    # the agent StatefulSet is actually gone.
     prometheus:
-      agentMode: true
-      ingress:
-        enabled: false
-      prometheusSpec:
-        replicas: 2
-        priorityClassName: feather-high
-        resources:
-          requests:
-            cpu: 250m
-            memory: 1536Mi
-          limits:
-            cpu: "2"
-            memory: 2560Mi
-        replicaExternalLabelName: __replica__
-        podAntiAffinity: hard
-        podMonitorNamespaceSelector: {}
-        podMonitorSelectorNilUsesHelmValues: false
-        serviceMonitorNamespaceSelector: {}
-        serviceMonitorSelectorNilUsesHelmValues: false
-        externalLabels:
-          cluster: feather-core
-        remoteWrite:
-          - url: http://mimir-gateway.grafana.svc.cluster.local/api/v1/push
-            sendExemplars: true
-            queueConfig:
-              capacity: 10000
-              minShards: 4
-              maxShards: 20
-              maxSamplesPerSend: 5000
+      enabled: false
     # Apiserver duration-histogram buckets alone were ~127k of ~275k active
     # series and pushed Mimir into its per-tenant series limit; the
     # _sum/_count series survive, so rates and averages still work.
@@ -49,27 +40,278 @@ spec:
           - action: drop
             sourceLabels: [__name__]
             regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
-    prometheusOperator:
-      resources:
-        requests:
-          cpu: 20m
-          memory: 64Mi
-        limits:
-          memory: 128Mi
-      prometheusConfigReloader:
-        resources:
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            memory: 64Mi
     kube-state-metrics:
       resources:
         requests:
           cpu: 20m
-          memory: 64Mi
-        limits:
           memory: 128Mi
+        # Confirmed live: 128Mi OOMKilled the pod within 1s of startup once
+        # customResourceState below was added -- watching/caching all Flux
+        # CRDs cluster-wide needs real headroom on top of the standard
+        # collector set.
+        limits:
+          memory: 384Mi
+      # Restores per-object Flux Ready/Suspended status as gotk_resource_info
+      # (the metric the Flux Cluster Stats dashboard was built for -- it's
+      # not a native Flux controller metric, it's this kube-state-metrics
+      # feature, which was simply never configured here). Deliberately
+      # does NOT set collectors/extraArgs --custom-resource-state-only:
+      # both would replace/restrict the chart's existing full resource
+      # collector list, breaking every other kube-state-metrics-backed
+      # dashboard (Kubernetes Views, Objects, Kube State Metrics v2, etc.)
+      # instead of adding Flux metrics alongside them.
+      rbac:
+        extraRules:
+          - apiGroups:
+              - source.toolkit.fluxcd.io
+              - kustomize.toolkit.fluxcd.io
+              - helm.toolkit.fluxcd.io
+              - notification.toolkit.fluxcd.io
+            resources:
+              - gitrepositories
+              - buckets
+              - helmrepositories
+              - helmcharts
+              - ocirepositories
+              - kustomizations
+              - helmreleases
+              - alerts
+              - providers
+              - receivers
+            verbs: ["list", "watch"]
+          # cnpg_collector_last_available/failed_backup_timestamp (the CNPG
+          # operator's own metrics) never update for plugin-based
+          # (barman-cloud.cloudnative-pg.io) backups -- confirmed live they
+          # stay stuck at 0 even after real completed backups. Backup CRs
+          # are the only reliable source of plugin backup status/timing.
+          - apiGroups:
+              - postgresql.cnpg.io
+            resources:
+              - backups
+            verbs: ["list", "watch"]
+      customResourceState:
+        enabled: true
+        config:
+          spec:
+            resources:
+              - groupVersionKind:
+                  group: kustomize.toolkit.fluxcd.io
+                  version: v1
+                  kind: Kustomization
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux Kustomization resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, lastAppliedRevision]
+                      source_name: [spec, sourceRef, name]
+              - groupVersionKind:
+                  group: helm.toolkit.fluxcd.io
+                  version: v2
+                  kind: HelmRelease
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux HelmRelease resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, history, "0", chartVersion]
+                      chart_name: [status, history, "0", chartName]
+                      chart_source_name: [spec, chart, spec, sourceRef, name]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: GitRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux GitRepository resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      url: [spec, url]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: Bucket
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux Bucket resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      bucket_name: [spec, bucketName]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: HelmRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux HelmRepository resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      url: [spec, url]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: HelmChart
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux HelmChart resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      chart_name: [spec, chart]
+                      chart_version: [spec, version]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: OCIRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux OCIRepository resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      url: [spec, url]
+              - groupVersionKind:
+                  group: notification.toolkit.fluxcd.io
+                  version: v1beta3
+                  kind: Alert
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux Alert resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      suspended: [spec, suspend]
+              - groupVersionKind:
+                  group: notification.toolkit.fluxcd.io
+                  version: v1beta3
+                  kind: Provider
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux Provider resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      suspended: [spec, suspend]
+              - groupVersionKind:
+                  group: notification.toolkit.fluxcd.io
+                  version: v1
+                  kind: Receiver
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux Receiver resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      webhook_path: [status, webhookPath]
+              # Plugin-based (barman-cloud) backups don't update the CNPG
+              # operator's own cnpg_collector_last_available/failed_backup_timestamp
+              # metrics -- confirmed live they stay 0 forever regardless of
+              # real completed backups. These two gauges read the Backup CR
+              # itself instead. stoppedAt is only ever set once a backup
+              # finishes (completed or failed both leave it unset on error),
+              # so nilIsZero is required or KSM would skip the series for
+              # in-progress/failed backups entirely.
+              - groupVersionKind:
+                  group: postgresql.cnpg.io
+                  version: v1
+                  kind: Backup
+                metricNamePrefix: cnpg_backup
+                metrics:
+                  - name: "created_at_seconds"
+                    help: "Unix timestamp when the CloudNativePG Backup resource was created."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, creationTimestamp]
+                  - name: "stopped_at_seconds"
+                    help: "Unix timestamp when the CloudNativePG backup finished running (completed only; unset on failure)."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, stoppedAt]
+                        nilIsZero: true
+                labelsFromPath:
+                  name: [metadata, name]
+                  exported_namespace: [metadata, namespace]
+                  cluster: [spec, cluster, name]
+                  phase: [status, phase]
+                  method: [spec, method]
     prometheus-node-exporter:
       resources:
         requests:

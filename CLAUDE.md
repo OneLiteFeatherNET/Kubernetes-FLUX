@@ -11,7 +11,7 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 - `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `infrastructure/` or `apps/`.
 - `infrastructure/` — cluster plumbing: Flux **sources**, **controllers/operators**, and **configs** (databases, storage, PKI).
 - `apps/` — actual workloads.
-- `helm/` — in-repo Helm charts (`shlink`, `outline`, `leantime`, `metabase`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
+- `helm/` — in-repo Helm charts (`shlink`, `outline`, `leantime`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
 - `scripts/validate.sh` — local/CI manifest validation. `docs/sops.md` — secrets workflow.
 
 **Two-tier Kustomize pattern.** Everything is a `base` + cluster `overlay`:
@@ -68,10 +68,10 @@ sops <file>
 
 Full workflow in `docs/sops.md`. Essentials:
 
-- Recipients are listed in **two** files: `.sops.yaml` (repo root) and `clusters/feather-core/.sops.yaml`. Both must stay in sync.
-- Encrypted file suffixes: `*.sops.env`, `*.sops.yaml`, `*.sops.json`, `*.sops.crt`, `*.sops.key`, `*.sops.conf` — **and plain `*.env`** (the root `.sops.yaml` regex encrypts those too). `*.yaml` files use field-level encryption (`encrypted_regex` for keys like `*_password`, `*_ca_key`).
+- Recipients are listed in exactly **one** file: `.sops.yaml` at the repo root. (`clusters/feather-core/.sops.pub.asc` is the public half of the key and is unrelated.)
+- Encrypted file suffixes: `*.sops.env`, `*.sops.yaml`, `*.sops.json`, `*.sops.crt`, `*.sops.key`, `*.sops.conf` — **and plain `*.env`** (the root `.sops.yaml` regex encrypts those too). Everything is whole-file encrypted; there is deliberately no rule for plain `*.yaml`, so `sops -e` on one fails closed. Name a Secret manifest `*.sops.yaml`.
 - Secrets reach pods via Kustomize `secretGenerator` (`envs:`/`files:`) or `generators:` in an overlay's `kustomization.yaml`; Flux decrypts at apply time.
-- Edit in place: `sops path/to/file.sops.env`. Add/remove a member: update both `.sops.yaml`, then re-encrypt everything with `sops updatekeys` (one per file).
+- Edit in place: `sops path/to/file.sops.env`. Add/remove a member: update `.sops.yaml`, then re-encrypt everything with `sops updatekeys` (one per file).
 
 ## In-repo Helm charts
 

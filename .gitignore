@@ -35,3 +35,10 @@ fabric.properties
 /.idea/misc.xml
 /.idea/modules.xml
 /.idea/vcs.xml
+
+# Decrypted / exported secret material — never commit (see docs/sops.md)
+# *.asc is deliberately not blanket-ignored: clusters/feather-core/.sops.pub.asc
+# is a tracked public key.
+private-key.asc
+*.dec
+*.plain

@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tempo
+  namespace: grafana
+spec:
+  releaseName: tempo
+  chart:
+    spec:
+      chart: tempo-distributed
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-labs
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  # https://github.com/grafana/helm-charts/blob/main/charts/tempo-distributed/values.yaml
+  values: {}

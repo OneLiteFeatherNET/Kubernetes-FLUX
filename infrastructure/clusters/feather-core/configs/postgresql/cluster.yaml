@@ -85,6 +85,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-n8n
+      - name: plane
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-plane
     services:
       additional:
         - selectorType: rw

@@ -447,10 +447,13 @@ spec:
         #   action: replace
 
     trace:
-      enabled: false
+      # Same alloy-receiver OTLP gateway reposilite uses (see its release.yaml),
+      # via the HTTP port instead of gRPC since Harbor's otel provider only
+      # speaks OTLP/HTTP.
+      enabled: true
       # trace provider: jaeger or otel
       # jaeger should be 1.26+
-      provider: jaeger
+      provider: otel
       # set sample_rate to 1 if you wanna sampling 100% of trace data; set 0.5 if you wanna sampling 50% of trace data, and so forth
       sample_rate: 1
       # namespace used to differentiate different harbor services
@@ -469,7 +472,7 @@ spec:
         # export trace data by jaeger.thrift in compact mode
         # agent_port: 6831
       otel:
-        endpoint: hostname:4318
+        endpoint: alloy-receiver.grafana.svc.cluster.local:4318
         url_path: /v1/traces
         compression: false
         insecure: true

@@ -1,0 +1,93 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy-metrics
+  namespace: grafana
+spec:
+  values:
+    controller:
+      type: statefulset
+      replicas: 2
+      priorityClassName: feather-high
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: alloy
+                  app.kubernetes.io/instance: alloy-metrics
+              topologyKey: kubernetes.io/hostname
+    serviceMonitor:
+      enabled: true
+    alloy:
+      clustering:
+        enabled: true
+        name: alloy-metrics
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+          # The remote_write WAL lives on the container writable layer — this
+          # StatefulSet has no volumeClaimTemplate. Alloy's own
+          # truncate_frequency/max_keepalive_time defaults bound it to ~8h,
+          # but nothing caps it, so a stuck remote_write would eat the node's
+          # root filesystem. 4Gi is roughly 4x the expected footprint: the pod
+          # gets evicted instead.
+          ephemeral-storage: 1Gi
+        limits:
+          cpu: "1"
+          memory: 2Gi
+          ephemeral-storage: 4Gi
+      configMap:
+        content: |
+          // Discovers PodMonitor/ServiceMonitor CRs cluster-wide (all
+          // namespaces, no label selector) — same scope the retired
+          // Prometheus-Agent had via podMonitorNamespaceSelector/
+          // serviceMonitorNamespaceSelector: {}. Each of the 2 clustered
+          // replicas scrapes a disjoint shard of the discovered targets,
+          // so — unlike the old 2x-replica Prometheus Agent — there is no
+          // sample duplication and no need for Mimir-side HA dedup for
+          // this path.
+          prometheus.operator.podmonitors "cluster" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            clustering {
+              enabled = true
+            }
+          }
+
+          prometheus.operator.servicemonitors "cluster" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            clustering {
+              enabled = true
+            }
+          }
+
+          prometheus.remote_write "mimir" {
+            endpoint {
+              url            = "http://mimir-gateway.grafana.svc.cluster.local/api/v1/push"
+              send_exemplars = true
+
+              queue_config {
+                capacity             = 10000
+                min_shards           = 4
+                max_shards           = 20
+                max_samples_per_send = 5000
+              }
+            }
+
+            external_labels = {
+              cluster = "feather-core",
+            }
+          }

@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - loki
   - mimir
-  # - tempo  # added later
+  - tempo

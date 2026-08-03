@@ -6,7 +6,30 @@ metadata:
 #  annotations:
 #    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
-  image: "mariadb:11.8.5"
+  image: "mariadb:12.3.2"
+  # Without this, the official image's entrypoint silently skips mariadb-upgrade
+  # on every major-version bump (confirmed during the 11.8.8 -> 12.3.2 upgrade:
+  # "MariaDB upgrade ... skipped due to $MARIADB_AUTO_UPGRADE setting"), leaving
+  # stale mysql.* system tables until someone notices and runs it by hand.
+  env:
+    - name: MARIADB_AUTO_UPGRADE
+      value: "1"
+#  securityContext:
+#    allowPrivilegeEscalation: false
+#    capabilities:
+#      drop: ["ALL"]
+#    runAsNonRoot: true
+#    runAsUser: 999
+#    runAsGroup: 999
+#    seccompProfile:
+#      type: RuntimeDefault
+#  podSecurityContext:
+#    runAsNonRoot: true
+#    runAsUser: 999
+#    runAsGroup: 999
+#    fsGroup: 999
+#    seccompProfile:
+#      type: RuntimeDefault
 #  podSecurityContext:
 #    seccompProfile:
 #      type: RuntimeDefault
@@ -16,6 +39,12 @@ spec:
 #      drop:
 #        - ALL
   replicas: 3
+  livenessProbe:
+    failureThreshold: 15
+    timeoutSeconds: 10
+  readinessProbe:
+    failureThreshold: 15
+    timeoutSeconds: 10
   startupProbe:
     failureThreshold: 60
     periodSeconds: 10
@@ -30,6 +59,13 @@ spec:
       podSyncTimeout: 10m
     availableWhenDonor: true
     replicaThreads: 4
+    # gcache.size default (128M) only buffers ~44min of replication history
+    # at this cluster's measured ~49.5KB/s average write throughput, forcing
+    # a slow full SST on any node offline longer than that. 2G extends the
+    # safe fast-IST-rejoin window to ~12h. See design doc:
+    # docs/superpowers/specs/2026-07-18-mariadb-galera-gcache-design.md
+    providerOptions:
+      gcache.size: "2G"
   tls:
     enabled: true
   myCnf: |
@@ -48,6 +84,8 @@ spec:
     innodb_flush_method=O_DIRECT          # skip double-buffering through the OS page cache
     innodb_log_file_size=1G               # ~1/4 of buffer pool, fewer checkpoints, less disk I/O
     innodb_log_buffer_size=64M            # less disk I/O for larger transactions
+    innodb_flush_neighbors=0              # no seek penalty on Ceph RBD, don't batch-flush adjacent pages
+    innodb_io_capacity=1000               # 200 default is HDD-era; half of the existing io_capacity_max=2000
 
     # === Cleanup (subordination, step 3) ===
     max_connections=500                    # instead of 100000
@@ -55,10 +93,13 @@ spec:
     tmp_table_size=64M
     max_heap_table_size=64M
 
-    # === Diagnostics at the constraint ===
-    slow_query_log=1
-    long_query_time=1                     # log everything slower than 1s
-    log_slow_verbosity=query_plan,explain
+    # Diagnostics (slow_query_log) intentionally left off: with no rotation
+    # configured, it grew mariadb-galera-0's log to 17GB/96% disk over ~6 days
+    # (long_query_time=1 logs every query >1s; Galera only logs
+    # client-originated queries, not applied write-sets, so it lands
+    # disproportionately on whichever node handles write traffic at the
+    # time). Buffer pool hit ratio was already 99.34% with no other perf
+    # signal, so it was disabled rather than given a rotation mechanism.
   affinity:
     antiAffinityEnabled: true
     nodeAffinity:
@@ -80,7 +121,7 @@ spec:
   # Configure enough compute resources. This is just an example, take a look at your historic compute metrics to estimate.
   resources:
     requests:
-      cpu: "2"
+      cpu: "4"
       memory: 8Gi
     limits:
       memory: 8Gi
@@ -97,21 +138,6 @@ spec:
         requests:
           storage: 50Gi
       storageClassName: ceph-rbd-fr01
-
-  bootstrapFrom:
-    backupContentType: Physical
-    s3:
-      bucket: mariadb-galera-backup
-      prefix: feather-core-backups
-      endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
-      tls:
-        enabled: false
-      accessKeyIdSecretKeyRef:
-        name: mariadb
-        key: access-key-id
-      secretAccessKeySecretKeyRef:
-        name: mariadb
-        key: secret-access-key
 
   rootPasswordSecretKeyRef:
     name: mariadb

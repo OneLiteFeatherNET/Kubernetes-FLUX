@@ -70,6 +70,17 @@ spec:
       logs.onelitefeather.net/format: json
       logs.onelitefeather.net/env: prod
 
+    # Traces only -- metrics/logs already covered by serviceMonitor scraping
+    # and stdout shipping above.
+    tracing:
+      enabled: true
+
+    # OTel bytecode instrumentation adds real seconds to JVM cold start,
+    # which pushed first-successful-health past livenessProbe's deadline
+    # and SIGTERM-looped the pod before it ever finished starting.
+    startupProbe:
+      enabled: true
+
     config:
       base: |-
         micronaut:

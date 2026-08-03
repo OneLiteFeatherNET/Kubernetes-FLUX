@@ -28,3 +28,16 @@ spec:
           metallb.io/loadBalancerIPs: "10.200.90.1"
         labels:
           onelite.feather/bgp: "announce"
+  telemetry:
+    tracing:
+      # 10% sampling: this gateway fronts every ingress route in the
+      # cluster, so 100% would multiply the trace volume that already
+      # OOM-killed tempo-ingester once this session from a single
+      # low-traffic source. Raise if you need finer-grained visibility.
+      samplingRate: 10
+      provider:
+        type: OpenTelemetry
+        # host/port (not backendRefs) to avoid a cross-namespace
+        # ReferenceGrant from envoy -> grafana for a plain internal sink.
+        host: tempo-gateway.grafana.svc.cluster.local
+        port: 4317

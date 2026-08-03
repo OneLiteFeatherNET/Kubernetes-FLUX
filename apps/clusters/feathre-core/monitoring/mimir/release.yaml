@@ -41,16 +41,32 @@ spec:
         ingester:
           push_grpc_method_enabled: true
         limits:
-          accept_ha_samples: true
-          ha_cluster_label: cluster
-          ha_replica_label: __replica__
           compactor_blocks_retention_period: 365d
           # Default 150k was exhausted (new series silently rejected with
           # err-mimir-max-series-per-user), blocking envoy metrics ingestion.
           # 400k covers the in-memory head (stale series linger up to 2h
           # after compaction) on top of ~275k active series; the apiserver
           # bucket drops in kube-prometheus-stack bring actives down again.
-          max_global_series_per_user: 400000
+          #
+          # Temporarily raised to 600k on 2026-07-13: the alloy-metrics
+          # clustering bugfix (both replicas were scraping the full target
+          # set, undeduplicated, for ~2.5h before the fix) filled the
+          # ingesters to exactly 400k with duplicate series that hadn't
+          # aged out yet. Revert to 400000 once cortex_ingester_memory_series
+          # settles back near its ~275k baseline.
+          max_global_series_per_user: 600000
+          # Default (10000/s, 200000 burst) started rejecting the whole
+          # tenant with err-mimir-tenant-max-ingestion-rate on 2026-07-13,
+          # after this session added several new metrics sources (otis/
+          # vulpes-backend/reposilite OTel metrics, envoy tracing span-
+          # metrics, tempo local-blocks generator). The 429 backpressure
+          # cascaded into err-mimir-sample-timestamp-too-old, dropping
+          # unrelated pre-existing metrics (node-exporter, kubelet/cadvisor,
+          # envoy, ceph, mariadb) as the remote_write retry queue backed up.
+          # Revisit sizing once the actual sustained rate is confirmed via
+          # cortex_distributor_ingestion_rate_samples_per_second.
+          ingestion_rate: 30000
+          ingestion_burst_size: 600000
         common:
           storage:
             backend: s3
@@ -59,8 +75,8 @@ spec:
               # external s3.onelitefeather.net ingress path.
               endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
               region: us-west-1
-              access_key_id: ${AWS_ACCESS_KEY_ID}
-              secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+              access_key_id: $${AWS_ACCESS_KEY_ID}
+              secret_access_key: $${AWS_SECRET_ACCESS_KEY}
               insecure: true
               bucket_lookup_type: path
         blocks_storage:
@@ -69,20 +85,25 @@ spec:
             bucket_name: mimir-blocks
             endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
-            access_key_id: ${AWS_ACCESS_KEY_ID}
-            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            access_key_id: $${AWS_ACCESS_KEY_ID}
+            secret_access_key: $${AWS_SECRET_ACCESS_KEY}
             insecure: true
             bucket_lookup_type: path
           tsdb:
             dir: /data/tsdb
+        # HA-tracker/dedup removed: metrics now arrive via clustered Alloy
+        # (apps/clusters/feathre-core/base-apps/alloy-metrics), which shards
+        # scrape targets across replicas instead of scraping everything
+        # twice, so there are no duplicate __replica__-tagged samples to
+        # deduplicate here anymore.
         alertmanager_storage:
           backend: s3
           s3:
             bucket_name: mimir-alertmanager
             endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
-            access_key_id: ${AWS_ACCESS_KEY_ID}
-            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            access_key_id: $${AWS_ACCESS_KEY_ID}
+            secret_access_key: $${AWS_SECRET_ACCESS_KEY}
             insecure: true
             bucket_lookup_type: path
         ruler_storage:
@@ -91,15 +112,10 @@ spec:
             bucket_name: mimir-ruler
             endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
             region: us-west-1
-            access_key_id: ${AWS_ACCESS_KEY_ID}
-            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            access_key_id: $${AWS_ACCESS_KEY_ID}
+            secret_access_key: $${AWS_SECRET_ACCESS_KEY}
             insecure: true
             bucket_lookup_type: path
-        distributor:
-          ha_tracker:
-            enable_ha_tracker: true
-            kvstore:
-              store: memberlist
     gateway:
       enabled: true
       replicas: 2

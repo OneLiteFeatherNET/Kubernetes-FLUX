@@ -14,7 +14,7 @@ spec:
     name: flux-system
   path: ./apps/clusters/feathre-core/monitoring
   prune: true
-  # wait:false on purpose: loki/mimir (and later tempo) depend on the
+  # wait:false on purpose: loki/mimir/tempo depend on the
   # external Ceph RGW S3 backend whose bucket quota can be exceeded.
   # Health-gating here must NOT block base-apps -> apps.
   wait: false

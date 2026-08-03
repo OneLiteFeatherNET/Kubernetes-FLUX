@@ -12,13 +12,14 @@ resources:
   - jetstack.yml
   - spegel.yaml
   - harbor.yml
-  - checkmk.yml
   - dependency-track.yml
   - dirsigler.yml
   - envoy.yaml
   - prometheus-stack.yaml
   - grafana.yml
   - rook.yaml
+  - ceph-csi-operator.yaml
   - n8n.yml
   - ollama.yml
   - descheduler.yml
+  - plane.yml

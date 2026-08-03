@@ -1,0 +1,319 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tempo
+  namespace: grafana
+spec:
+  values:
+    global:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      priorityClassName: feather-high
+      extraEnvFrom:
+        - secretRef:
+            name: tempo-s3
+    multitenancyEnabled: false
+    traces:
+      otlp:
+        http:
+          enabled: true
+        grpc:
+          enabled: true
+    storage:
+      trace:
+        backend: s3
+        s3:
+          # Internal RGW service (path-style, http) — decoupled from the
+          # external s3.onelitefeather.net ingress path.
+          bucket: tempo-traces
+          endpoint: rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+          region: us-west-1
+          access_key: $${AWS_ACCESS_KEY_ID}
+          secret_key: $${AWS_SECRET_ACCESS_KEY}
+          insecure: true
+          forcepathstyle: true
+    compactor:
+      replicas: 1
+      # Needed here (not on global.extraArgs) so $${AWS_ACCESS_KEY_ID}/
+      # $${AWS_SECRET_ACCESS_KEY} above get expanded — global.extraArgs also
+      # reaches memcached, which doesn't understand this Tempo-binary flag
+      # and crashloops on it ("Maximum connections must be greater than 0").
+      extraArgs:
+        - -config.expand-env=true
+      # Bumped after repeated OOMKills: enabling the local-blocks generator
+      # processor means the compactor now also compacts blocks flushed from
+      # metrics-generator. vParquet4 compaction memory scales with the
+      # number of distinct trace IDs being combined across input blocks
+      # (an in-memory index per trace), not with on-disk block size — three
+      # ~1-17MB blocks totaling ~92k objects still OOMKilled at 1Gi within
+      # seconds of "compacting hash" starting. Matches the same
+      # bytes-on-disk-understates-memory-need pattern already seen on the
+      # ingester above.
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: "1"
+          memory: 2Gi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+      config:
+        compaction:
+          # Traces are far higher-volume/lower-value per byte than logs or
+          # metrics, so keep retention short to bound the S3 bucket size.
+          block_retention: 168h
+    distributor:
+      # 3 replicas 2026-07-19: distributor is stateless, safe to scale
+      # directly for HA - no per-replica config needed beyond replica count.
+      replicas: 3
+      extraArgs:
+        - -config.expand-env=true
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: distributor
+                topologyKey: kubernetes.io/hostname
+    ingester:
+      # 3 replicas + replication_factor 3 2026-07-19: every span was going to
+      # a single ingester with zero redundancy - any restart (routine or
+      # OOMKill) meant a real gap in ingestion/query availability, not just
+      # elevated latency. With RF == replica count every ingester holds a
+      # full copy of every trace (simple full mirroring, not sharding) -
+      # appropriate at this scale where a single ingester already handles
+      # the full load comfortably; this is purely for redundancy.
+      replicas: 3
+      extraArgs:
+        - -config.expand-env=true
+      config:
+        replication_factor: 3
+      # Bumped after repeated OOMKills: each crash left more WAL blocks to
+      # replay+flush on the next start, so the ingester needed more memory
+      # each time just to get past startup, compounding the crashloop.
+      # Bumped again 2026-07-19: same compounding crashloop recurred at 2Gi
+      # (51 OOMKills in 46m) once span ingestion roughly tripled (48-78/s ->
+      # 100-190/s); working set was plateauing at 1.2-2GB before each kill.
+      # Node has ample headroom (~27% memory used), so going straight to 4Gi
+      # rather than a marginal bump that likely just delays the next round.
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: "1"
+          memory: 4Gi
+      persistence:
+        enabled: true
+        size: 10Gi
+        storageClass: ceph-rbd-fr01
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: ingester
+                topologyKey: kubernetes.io/hostname
+    querier:
+      # 3 replicas 2026-07-19: stateless, safe to scale directly for HA -
+      # also gives real headroom against the cache-miss-storm OOM class
+      # fixed just above (three independent pods instead of one).
+      replicas: 3
+      extraArgs:
+        - -config.expand-env=true
+      # Bumped 2026-07-19 after OOMKills: memcached became briefly unreachable
+      # during a tempo-wide rollout ("connect timeout to <clusterIP>:11211"),
+      # so every parquet-footer/bloom/frontend-search cache lookup fell
+      # through to uncached in-memory work; working set jumped from its
+      # normal ~30MB baseline to 394MB+ within seconds and got OOMKilled at
+      # 512Mi. Memcached itself was healthy throughout - this is about
+      # surviving that class of transient cache-miss storm, not a sustained
+      # need for more memory day to day.
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 1Gi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: querier
+                topologyKey: kubernetes.io/hostname
+    queryFrontend:
+      # 3 replicas 2026-07-19: stateless, safe to scale directly for HA.
+      replicas: 3
+      extraArgs:
+        - -config.expand-env=true
+      config:
+        metrics:
+          # Max allowed range for a TraceQL-metrics query (chart default 3h).
+          # Anything longer is rejected -> Traces Drilldown's histogram/rate
+          # panels go "No data" the moment you pick "Last 12 hours". Raised to
+          # 24h so the common Drilldown ranges work; query_backend_after stays
+          # at its 30m default (recent from the generator, older from S3).
+          max_duration: 24h
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: query-frontend
+                topologyKey: kubernetes.io/hostname
+    metricsGenerator:
+      enabled: true
+      extraArgs:
+        - -config.expand-env=true
+      config:
+        storage:
+          remote_write:
+            - url: http://mimir-gateway.grafana.svc.cluster.local/api/v1/push
+        processor:
+          # Persist the local-blocks WAL to the trace S3 backend. Without this,
+          # local-blocks only keeps a short in-memory/live window (~query_backend_after,
+          # default 30m), so Grafana Traces Drilldown's TraceQL-metrics panels
+          # (histogram by duration, rate, etc.) show "No data" as soon as the
+          # selected range reaches past the live window — while the plain
+          # "Slow traces" list (a normal trace search) still returns results.
+          # Flushing to S3 lets the query-frontend answer older sub-ranges from
+          # object storage. Note: adds block-build/flush load on the generator
+          # and extra compaction work — watch the 512Mi generator limit and the
+          # compactor (both have prior OOMKill history).
+          local_blocks:
+            flush_to_storage: true
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      affinity: |
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+    # Enables the metrics-generator processors above — without this the
+    # generator runs but produces no metrics (span rate/service graph
+    # panels in Grafana would keep showing "empty ring"/no data).
+    # local-blocks is additionally required for Grafana's Traces Drilldown
+    # app, which queries recent/live TraceQL metrics straight from the
+    # generator rather than pre-aggregated Prometheus series.
+    overrides:
+      defaults:
+        metrics_generator:
+          processors:
+            - service-graphs
+            - span-metrics
+            - local-blocks
+    gateway:
+      enabled: true
+      replicas: 2
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      # This block replaces the chart's default affinity wholesale, so the
+      # podAntiAffinity has to be restated here — without it the only spread
+      # signal left is the chart's zone-keyed topologySpreadConstraint, which
+      # is a no-op on a single-zone cluster (all nodes are zone fr01).
+      affinity: |
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: gateway
+                topologyKey: kubernetes.io/hostname
+      ingress:
+        enabled: false
+    metaMonitoring:
+      serviceMonitor:
+        enabled: true

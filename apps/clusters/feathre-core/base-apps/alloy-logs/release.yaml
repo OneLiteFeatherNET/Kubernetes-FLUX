@@ -1,0 +1,219 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy-logs
+  namespace: grafana
+spec:
+  values:
+    controller:
+      type: daemonset
+      podLabels:
+        logs.onelitefeather.net/env: prod
+    serviceMonitor:
+      enabled: true
+    alloy:
+      configMap:
+        content: |
+          discovery.kubernetes "pod" {
+            role = "pod"
+
+            selectors {
+              role = "pod"
+              field = "spec.nodeName=" + coalesce(sys.env("HOSTNAME"), constants.hostname)
+            }
+          }
+
+          discovery.relabel "pod_logs" {
+            targets = discovery.kubernetes.pod.targets
+
+            // Opt-out: pods annotated with logs.onelitefeather.net/scrape="false"
+            // are dropped entirely. If the annotation is absent, the pod is scraped (default).
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_logs_onelitefeather_net_scrape"]
+              regex  = "false"
+              action = "drop"
+            }
+
+            // --- Identity labels (low cardinality, app.kubernetes.io/* standard) ---
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              action = "replace"
+              target_label = "namespace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              action = "replace"
+              target_label = "app"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component"]
+              action = "replace"
+              target_label = "component"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_part_of"]
+              action = "replace"
+              target_label = "part_of"
+            }
+
+            // instance distinguishes Helm releases that share a chart name
+            // (e.g. the micronaut chart): app stays "micronaut", instance = release.
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_instance"]
+              action = "replace"
+              target_label = "instance"
+            }
+
+            // --- Custom policy labels (onelitefeather.net) ---
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_logs_onelitefeather_net_tenant"]
+              action = "replace"
+              target_label = "tenant"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_onelitefeather_net_team"]
+              action = "replace"
+              target_label = "team"
+            }
+
+            // Environment (prod/dev). Set explicitly per app via the pod label
+            // logs.onelitefeather.net/env so prod and dev streams are separable
+            // in Loki/Grafana ({env="prod"} vs {env="dev"}).
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_logs_onelitefeather_net_env"]
+              action = "replace"
+              target_label = "env"
+            }
+
+            // Log-format opt-in: pods labeled logs.onelitefeather.net/format="json"
+            // get their JSON parsed in loki.process below (level -> label,
+            // logger -> structured metadata, embedded timestamp honoured).
+            // Absent -> label dropped -> stage.match skips them (plain-text default).
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_logs_onelitefeather_net_format"]
+              action = "replace"
+              target_label = "format"
+            }
+
+            // --- Identification (higher cardinality, but k8s standard) ---
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              action = "replace"
+              target_label = "pod"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name"]
+              action = "replace"
+              target_label = "container"
+            }
+
+            // job = namespace/container (unchanged, so existing queries keep working)
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
+              action = "replace"
+              target_label = "job"
+              separator = "/"
+              replacement = "$1"
+            }
+          }
+
+          loki.source.kubernetes "pod_logs" {
+            targets    = discovery.relabel.pod_logs.output
+            forward_to = [loki.process.pod_logs.receiver]
+          }
+
+          loki.process "pod_logs" {
+            stage.static_labels {
+              values = {
+                cluster = "feather-core",
+              }
+            }
+
+            // Unconditional and top-level, not nested in a stage.match: a
+            // nested stage.replace inside stage.match was confirmed live to
+            // not actually mutate the line (matched, but ANSI codes passed
+            // through untouched -- root cause not fully isolated, moving it
+            // out sidesteps the issue entirely). Harmless no-op on lines
+            // without ANSI codes, so no need to scope it to format="ansi".
+            stage.replace {
+              expression = "(\\x1b\\[[0-9;]*m)"
+              replace    = ""
+            }
+
+            // Only applied to streams that opted in via logs.onelitefeather.net/format="json".
+            // Plain-text apps fall through untouched (no parse-error spam, no wasted CPU).
+            stage.match {
+              selector = "{format=\"json\"}"
+
+              stage.json {
+                expressions = {
+                  level  = "level",
+                  logger = "logger",
+                  log_ts = "timestamp",
+                }
+              }
+
+              // Use the application's own timestamp instead of the ingest time.
+              stage.timestamp {
+                source = "log_ts"
+                format = "RFC3339Nano"
+              }
+
+              // level is low-cardinality -> a real index label for fast {level="ERROR"} filtering.
+              stage.labels {
+                values = {
+                  level = "level",
+                }
+              }
+
+              // logger is higher-cardinality -> structured metadata, not an index label.
+              stage.structured_metadata {
+                values = {
+                  logger = "logger",
+                }
+              }
+            }
+
+            // Plain-text console apps (Reposilite and similar) that emit ANSI SGR
+            // color codes in the log body (stripped above, unconditionally).
+            // Extracts level from the app's "HH:mm:ss.SSS LEVEL | message"
+            // console format for the same {level="..."} filtering the json
+            // format gets above.
+            stage.match {
+              selector = "{format=\"ansi\"}"
+
+              stage.regex {
+                expression = "^\\S+ (?P<level>[A-Z]+) \\|"
+              }
+
+              stage.labels {
+                values = {
+                  level = "level",
+                }
+              }
+            }
+
+            forward_to = [loki.write.default.receiver]
+          }
+
+          loki.write "default" {
+            endpoint {
+              url = "http://loki-gateway.grafana.svc.cluster.local/loki/api/v1/push"
+            }
+
+            external_labels = {
+              cluster = "feather-core",
+            }
+          }
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi

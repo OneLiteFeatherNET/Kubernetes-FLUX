@@ -15,6 +15,10 @@ spec:
   install:
     remediation:
       retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   interval: 1m0s
   # Default values
   # https://github.com/STRRL/cloudflare-tunnel-ingress-controller/blob/main/helm/cloudflare-tunnel-ingress-controller/values.yaml
