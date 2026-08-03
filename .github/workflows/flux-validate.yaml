@@ -2,31 +2,55 @@ name: flux-validate
 
 # Render every Flux Kustomization with kustomize and schema-check the
 # output with kubeconform so broken manifests never reach the cluster.
+
+# No `paths:` filter on pull_request. A filtered-out workflow never reports
+# a result, so once this becomes a required status check a docs-only PR
+# would sit forever on "Expected — waiting for status". It also means every
+# PR exercises the check, including ones that only touch scripts/. The full
+# run is ~30s.
 on:
   pull_request:
-    paths:
-      - 'clusters/**'
-      - 'infrastructure/**'
-      - 'apps/**'
-      - 'helm/**'
-      - 'scripts/validate.sh'
-      - '.github/workflows/flux-validate.yaml'
   push:
     branches: [main]
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Deliberately false on push: a cancelled post-merge run on main would
+  # leave the last line of defence unreported.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   validate:
     name: kustomize build + kubeconform
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.x'
       - name: Install PyYAML
         run: pip install --quiet pyyaml
       - name: Validate Flux manifests
         run: ./scripts/validate.sh
+
+  sops-encryption:
+    name: sops encryption
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.x'
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+      - name: Assert sops-matched files are encrypted
+        run: python3 scripts/check-sops-encryption.py

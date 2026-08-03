@@ -1,0 +1,161 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plane
+  namespace: plane
+spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          # The chart renders RabbitMQ, Postgres (unused here), and OpenSearch as
+          # StatefulSets, not Deployments, so they need their own patch target to
+          # get the same priority class.
+          - target:
+              kind: StatefulSet
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          # Carried over from the CE cutover: the shared makeplane/backend* image's
+          # docker-entrypoint-worker.sh runs `celery -A plane worker` with no
+          # --concurrency flag, forking one process per *node* CPU core (32 here)
+          # regardless of cpuLimit. Kept as a precaution since this chart's worker
+          # Deployment (plane-worker-wl) execs the same-named entrypoint script on
+          # the "-commercial" variant of the same backend image; verify after
+          # cutover whether the bug still applies (harmless either way — this pins
+          # concurrency to 2 regardless).
+          # services.rabbitmq exposes no resource keys in plane-enterprise 3.0.0,
+          # so the StatefulSet ships with `resources: {}` — BestEffort, and the
+          # first thing the kubelet evicts, despite being the queue every worker
+          # depends on. No CPU limit on purpose: throttling a broker is worse
+          # than letting it burst (observed 453m under normal load).
+          - target:
+              kind: StatefulSet
+              name: plane-rabbitmq-wl
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/resources
+                value:
+                  requests:
+                    cpu: 250m
+                    memory: 256Mi
+                  limits:
+                    memory: 1Gi
+          - target:
+              kind: Deployment
+              name: plane-worker-wl
+            patch: |
+              - op: replace
+                path: /spec/template/spec/containers/0/command
+                value: ["/bin/bash", "-c"]
+              - op: add
+                path: /spec/template/spec/containers/0/args
+                value: ["python manage.py wait_for_db && python manage.py wait_for_migrations && celery -A plane worker -l info --concurrency=2"]
+  values:
+    planeVersion: v3.0.0
+
+    ingress:
+      enabled: false
+
+    license:
+      licenseDomain: tasks.onelitefeather.net
+
+    services:
+      postgres:
+        local_setup: false
+      redis:
+        local_setup: false
+      minio:
+        local_setup: false
+      rabbitmq:
+        local_setup: true
+      opensearch:
+        local_setup: true
+
+      # Requests were the chart default 50m/50Mi against 1000-2000Mi limits
+      # while `kubectl top` showed 150-483Mi. Floors below are ~real usage
+      # rounded up; there is no LimitRange anywhere in the cluster to correct
+      # them. plane-opensearch-wl is deliberately absent — the chart already
+      # sizes it correctly (500m/2Gi).
+      web:
+        assign_cluster_ip: true
+        memoryRequest: 64Mi
+        cpuRequest: 25m
+      space:
+        assign_cluster_ip: true
+        memoryRequest: 256Mi
+        cpuRequest: 50m
+      admin:
+        assign_cluster_ip: true
+        memoryRequest: 64Mi
+        cpuRequest: 25m
+      api:
+        assign_cluster_ip: true
+        memoryRequest: 320Mi
+        cpuRequest: 100m
+      live:
+        assign_cluster_ip: true
+        memoryRequest: 256Mi
+        cpuRequest: 50m
+      monitor:
+        memoryRequest: 64Mi
+        cpuRequest: 25m
+
+      # Same reasoning as the CE cutover: chart default (1000Mi) OOMKilled the
+      # worker repeatedly under real load. Bump both async components.
+      worker:
+        memoryLimit: 2000Mi
+        cpuLimit: "1"
+        memoryRequest: 512Mi
+        cpuRequest: 100m
+      beatworker:
+        memoryLimit: 1500Mi
+        cpuLimit: 500m
+        memoryRequest: 320Mi
+        cpuRequest: 50m
+
+      silo:
+        enabled: true
+        memoryRequest: 256Mi
+        cpuRequest: 50m
+
+      # Pi (the AI assistant) is left at the chart default (disabled): its
+      # migrator job hard-fails without an embedding model configured
+      # (tries to auto-create one via Cohere, errors out if COHERE_API_KEY
+      # or OPENSEARCH_ML_MODEL_ID isn't set), which blocks the whole release
+      # from ever becoming Ready. Re-enable (pi.enabled: true, plus
+      # pi_beat_worker/pi_worker, plus an AI provider key in
+      # external_secrets.pi_api_env_existingSecret) once a provider key is
+      # available.
+
+    external_secrets:
+      app_env_existingSecret: plane-app-env
+      doc_store_existingSecret: plane-doc-store
+      live_env_existingSecret: plane-live-env
+      rabbitmq_existingSecret: plane-rabbitmq
+      opensearch_existingSecret: plane-opensearch
+      silo_env_existingSecret: plane-silo
+
+    env:
+      # Global storage class for every chart-bundled StatefulSet PVC (rabbitmq,
+      # opensearch, monitor). NOT a per-service field despite matching per-service
+      # value blocks elsewhere in this chart — services.*.storageClass doesn't
+      # exist; every workloads/*.stateful.yaml template reads this single
+      # env.storageClass value. Left unset, opensearch/monitor's PVC templates
+      # render an explicit storageClassName: "" (they `| quote` the empty
+      # default), which blocks the cluster's default-StorageClass admission
+      # behavior and leaves the PVC Pending forever — rabbitmq's template omits
+      # the quote filter, so it degrades to an unset field instead and happens
+      # to pick up the default class by luck. Set explicitly so all three behave
+      # the same way on purpose.
+      storageClass: ceph-rbd-fr01
+      docstore_bucket: plane
+      cors_allowed_origins: "https://tasks.onelitefeather.net"
+      default_cluster_domain: cluster.local
+      web_url: "https://tasks.onelitefeather.net"

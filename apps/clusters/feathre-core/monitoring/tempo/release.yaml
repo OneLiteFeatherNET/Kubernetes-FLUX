@@ -71,7 +71,9 @@ spec:
           # metrics, so keep retention short to bound the S3 bucket size.
           block_retention: 168h
     distributor:
-      replicas: 1
+      # 3 replicas 2026-07-19: distributor is stateless, safe to scale
+      # directly for HA - no per-replica config needed beyond replica count.
+      replicas: 3
       extraArgs:
         - -config.expand-env=true
       resources:
@@ -90,22 +92,43 @@ spec:
                     operator: In
                     values:
                       - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: distributor
+                topologyKey: kubernetes.io/hostname
     ingester:
-      replicas: 1
+      # 3 replicas + replication_factor 3 2026-07-19: every span was going to
+      # a single ingester with zero redundancy - any restart (routine or
+      # OOMKill) meant a real gap in ingestion/query availability, not just
+      # elevated latency. With RF == replica count every ingester holds a
+      # full copy of every trace (simple full mirroring, not sharding) -
+      # appropriate at this scale where a single ingester already handles
+      # the full load comfortably; this is purely for redundancy.
+      replicas: 3
       extraArgs:
         - -config.expand-env=true
       config:
-        replication_factor: 1
+        replication_factor: 3
       # Bumped after repeated OOMKills: each crash left more WAL blocks to
       # replay+flush on the next start, so the ingester needed more memory
       # each time just to get past startup, compounding the crashloop.
+      # Bumped again 2026-07-19: same compounding crashloop recurred at 2Gi
+      # (51 OOMKills in 46m) once span ingestion roughly tripled (48-78/s ->
+      # 100-190/s); working set was plateauing at 1.2-2GB before each kill.
+      # Node has ample headroom (~27% memory used), so going straight to 4Gi
+      # rather than a marginal bump that likely just delays the next round.
       resources:
         requests:
           cpu: 100m
           memory: 512Mi
         limits:
           cpu: "1"
-          memory: 2Gi
+          memory: 4Gi
       persistence:
         enabled: true
         size: 10Gi
@@ -119,17 +142,37 @@ spec:
                     operator: In
                     values:
                       - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: ingester
+                topologyKey: kubernetes.io/hostname
     querier:
-      replicas: 1
+      # 3 replicas 2026-07-19: stateless, safe to scale directly for HA -
+      # also gives real headroom against the cache-miss-storm OOM class
+      # fixed just above (three independent pods instead of one).
+      replicas: 3
       extraArgs:
         - -config.expand-env=true
+      # Bumped 2026-07-19 after OOMKills: memcached became briefly unreachable
+      # during a tempo-wide rollout ("connect timeout to <clusterIP>:11211"),
+      # so every parquet-footer/bloom/frontend-search cache lookup fell
+      # through to uncached in-memory work; working set jumped from its
+      # normal ~30MB baseline to 394MB+ within seconds and got OOMKilled at
+      # 512Mi. Memcached itself was healthy throughout - this is about
+      # surviving that class of transient cache-miss storm, not a sustained
+      # need for more memory day to day.
       resources:
         requests:
           cpu: 50m
           memory: 128Mi
         limits:
           cpu: "1"
-          memory: 512Mi
+          memory: 1Gi
       affinity: |
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -139,8 +182,18 @@ spec:
                     operator: In
                     values:
                       - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: querier
+                topologyKey: kubernetes.io/hostname
     queryFrontend:
-      replicas: 1
+      # 3 replicas 2026-07-19: stateless, safe to scale directly for HA.
+      replicas: 3
       extraArgs:
         - -config.expand-env=true
       config:
@@ -167,6 +220,15 @@ spec:
                     operator: In
                     values:
                       - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: query-frontend
+                topologyKey: kubernetes.io/hostname
     metricsGenerator:
       enabled: true
       extraArgs:
@@ -227,6 +289,10 @@ spec:
         limits:
           cpu: 500m
           memory: 128Mi
+      # This block replaces the chart's default affinity wholesale, so the
+      # podAntiAffinity has to be restated here — without it the only spread
+      # signal left is the chart's zone-keyed topologySpreadConstraint, which
+      # is a no-op on a single-zone cluster (all nodes are zone fr01).
       affinity: |
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -237,6 +303,15 @@ spec:
                     operator: In
                     values:
                       - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo
+                    app.kubernetes.io/component: gateway
+                topologyKey: kubernetes.io/hostname
       ingress:
         enabled: false
     metaMonitoring:

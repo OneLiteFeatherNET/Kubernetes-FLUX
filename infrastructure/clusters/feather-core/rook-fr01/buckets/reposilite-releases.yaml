@@ -6,3 +6,7 @@ metadata:
 spec:
   bucketName: reposilite-releases
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    # Public artifacts get their own owner: a leaked public key must not open
+    # the private onelitefeather-* buckets, which stay owned by `reposilite`.
+    bucketOwner: reposilite-public

@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: outline
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: outline

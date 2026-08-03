@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: reposilite-onelitefeather-proxy
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: reposilite

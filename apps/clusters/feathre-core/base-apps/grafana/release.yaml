@@ -24392,7 +24392,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", window=\"1m\"})",
+                      "expr": "(minecraft_server_tps_ratio{window=\"1m\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -24456,7 +24456,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -24512,7 +24512,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(minecraft_players_online_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "expr": "sum(minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -24568,7 +24568,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "histogram_quantile(0.95, sum by (le) (rate(minecraft_tick_duration_milliseconds_bucket{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])))",
+                      "expr": "histogram_quantile(0.95, sum by (le) (rate(minecraft_tick_duration_milliseconds_bucket{job=~\"$job\", instance=~\"$instance\"}[5m])))",
                       "range": true,
                       "refId": "A"
                     }
@@ -24707,21 +24707,21 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
+                      "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
                       "legendFormat": "1m",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\", window=\"5m\"})",
+                      "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"5m\"})",
                       "legendFormat": "5m",
                       "range": true,
                       "refId": "B"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\",window=\"15m\"})",
+                      "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\",window=\"15m\"})",
                       "legendFormat": "15m",
                       "range": true,
                       "refId": "C"
@@ -24819,15 +24819,15 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_avg_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "B"
                     }
@@ -24906,9 +24906,9 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum by (le) (\n  rate(minecraft_tick_duration_milliseconds_bucket{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+                      "expr": "sum by (le) (\n  rate(minecraft_tick_duration_milliseconds_bucket{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
                       "format": "heatmap",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -24996,8 +24996,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(minecraft_chunks_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "sum(minecraft_chunks_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25085,8 +25085,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(minecraft_entities_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
-                      "legendFormat": "{{cloudnet_service_name}}",
+                      "expr": "sum(minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25189,8 +25189,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_chunks_load_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_service_name}}/{{world}}",
+                      "expr": "max by (job, world) (minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25280,22 +25280,22 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_load_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "L {{cloudnet_service_name}}/{{world}}",
+                      "expr": "sum by (job, world) (rate(minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+                      "legendFormat": "L {{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_unload_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "UL {{cloudnet_service_name}}/{{world}}",
+                      "expr": "sum by (job, world) (rate(minecraft_chunks_unload_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+                      "legendFormat": "UL {{job}}/{{world}}",
                       "range": true,
                       "refId": "B"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_chunks_generated_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "G {{cloudnet_service_name}}/{{world}}",
+                      "expr": "sum by (job, world) (rate(minecraft_chunks_generated_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+                      "legendFormat": "G {{job}}/{{world}}",
                       "range": true,
                       "refId": "C"
                     }
@@ -25385,8 +25385,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_entities_loaded_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_service_name}}/{{world}}",
+                      "expr": "max by (job, world) (minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25478,7 +25478,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_entities_loaded_by_type_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
+                      "expr": "max by (job, entity_type) (minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\"})",
                       "interval": "",
                       "legendFormat": "{{entity_type}}",
                       "range": true,
@@ -25570,15 +25570,15 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_entities_added_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "+{{cloudnet_service_name}}/{{world}}",
+                      "expr": "sum by (job, world) (rate(minecraft_entities_added_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+                      "legendFormat": "+{{job}}/{{world}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "rate(minecraft_entities_removed_total{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}[5m])",
-                      "legendFormat": "-{{cloudnet_service_name}}/{{world}}",
+                      "expr": "sum by (job, world) (rate(minecraft_entities_removed_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+                      "legendFormat": "-{{job}}/{{world}}",
                       "range": true,
                       "refId": "B"
                     }
@@ -25606,41 +25606,11 @@ spec:
                     },
                     "datasource": "Mimir",
                     "includeAll": true,
-                    "label": "CloudNet Task",
+                    "label": "Server",
                     "multi": true,
-                    "name": "cloudnet_task",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "includeAll": false,
-                    "label": "CloudNet Service",
-                    "name": "cloudnet_service",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "hide": 2,
-                    "includeAll": false,
-                    "label": "job (optional)",
                     "name": "job",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "query": "label_values(minecraft_server_tps_ratio, job)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -25651,12 +25621,12 @@ spec:
                       "value": "$__all"
                     },
                     "datasource": "Mimir",
-                    "hide": 2,
+                    "hide": 1,
                     "includeAll": false,
                     "label": "instance (optional)",
                     "name": "instance",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -25847,8 +25817,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "min by (cloudnet_task_name, cloudnet_service_name) (\n  minecraft_server_tps_ratio{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "min by (job) (\n  minecraft_server_tps_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -25947,8 +25917,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26047,8 +26017,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_server_mspt_avg_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26139,8 +26109,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "max by (cloudnet_task_name, cloudnet_service_name) (\n  minecraft_entities_loaded_ratio{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "max by (job) (\n  minecraft_entities_loaded_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26231,8 +26201,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "minecraft_players_online_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"}",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "max by (job) (minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26344,8 +26314,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "topk($topk, minecraft_server_mspt_p95_milliseconds{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "topk($topk, max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}))",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26446,8 +26416,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "bottomk(\n  $topk,\n  min by (cloudnet_task_name, cloudnet_service_name) (\n    minecraft_server_tps_ratio{\n      cloudnet_task_name=~\"$cloudnet_task\",\n      cloudnet_service_name=~\"$cloudnet_service\",\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "bottomk(\n  $topk,\n  min by (job) (\n    minecraft_server_tps_ratio{\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
+                      "legendFormat": "{{job}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -26478,52 +26448,11 @@ spec:
                     },
                     "datasource": "Mimir",
                     "includeAll": true,
-                    "label": "CloudNet Task",
-                    "multi": true,
-                    "name": "cloudnet_task",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": [
-                        "All"
-                      ],
-                      "value": [
-                        "$__all"
-                      ]
-                    },
-                    "datasource": "Mimir",
-                    "includeAll": true,
-                    "label": "CloudNet Service",
-                    "multi": true,
-                    "name": "cloudnet_service",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": [
-                        "All"
-                      ],
-                      "value": [
-                        "$__all"
-                      ]
-                    },
-                    "datasource": "Mimir",
-                    "hide": 2,
-                    "includeAll": true,
-                    "label": "job (optional)",
+                    "label": "Server",
                     "multi": true,
                     "name": "job",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "query": "label_values(minecraft_server_tps_ratio, job)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -26538,13 +26467,13 @@ spec:
                       ]
                     },
                     "datasource": "Mimir",
-                    "hide": 2,
+                    "hide": 1,
                     "includeAll": true,
                     "label": "instance (optional)",
                     "multi": true,
                     "name": "instance",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -26691,7 +26620,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_cpu_recent_utilization_ratio{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\",\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
+                      "expr": "jvm_cpu_recent_utilization_ratio{\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -26747,7 +26676,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "max by (instance, job) (\n  jvm_thread_count{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "expr": "max by (job) (\n  jvm_thread_count{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -26803,7 +26732,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum by (instance, job) (\n  rate(jvm_gc_duration_seconds_sum{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\",\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+                      "expr": "sum by (job) (\n  rate(jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
                       "range": true,
                       "refId": "A"
                     }
@@ -26859,7 +26788,7 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\", instance=~\"$instance\"})",
+                      "expr": "sum by (job) (jvm_memory_used_bytes{job=~\"$job\", instance=~\"$instance\"})",
                       "range": true,
                       "refId": "A"
                     }
@@ -26960,15 +26889,15 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"})",
-                      "legendFormat": "__auto",
+                      "expr": "sum by (job) (jvm_memory_used_bytes{jvm_memory_type=\"heap\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}} used",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_limit_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"})",
-                      "legendFormat": "__auto",
+                      "expr": "sum by (job) (jvm_memory_limit_bytes{jvm_memory_type=\"heap\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}} limit",
                       "range": true,
                       "refId": "B"
                     }
@@ -27056,15 +26985,15 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "sum by (job) (jvm_memory_used_bytes{jvm_memory_type=\"non_heap\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}} used",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "sum(jvm_memory_limit_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"})",
-                      "legendFormat": "{{cloudnet_task_name}}/{{cloudnet_service_name}}",
+                      "expr": "sum by (job) (jvm_memory_limit_bytes{jvm_memory_type=\"non_heap\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}} limit",
                       "range": true,
                       "refId": "B"
                     }
@@ -27154,8 +27083,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "rate(\n  jvm_gc_duration_seconds_sum{\n    cloudnet_task_name=~\"$cloudnet_task\",\n    cloudnet_service_name=~\"$cloudnet_service\"\n  }[5m]\n)",
-                      "legendFormat": "{{jvm_gc_name}}/{{jvm_gc_action}}",
+                      "expr": "sum by (job, jvm_gc_name, jvm_gc_action) (\n  rate(jvm_gc_duration_seconds_sum{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)",
+                      "legendFormat": "{{job}} \u00b7 {{jvm_gc_name}}/{{jvm_gc_action}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -27245,14 +27174,14 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_thread_count{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\"\n}\n",
-                      "legendFormat": "{{jvm_thread_state}}",
+                      "expr": "sum by (job, jvm_thread_state) (\n  jvm_thread_count{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+                      "legendFormat": "{{job}} \u00b7 {{jvm_thread_state}}",
                       "range": true,
                       "refId": "A"
                     },
                     {
                       "editorMode": "code",
-                      "expr": "jvm_cpu_recent_utilization_ratio{\n  cloudnet_task_name=~\"$cloudnet_task\",\n  cloudnet_service_name=~\"$cloudnet_service\",\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
+                      "expr": "jvm_cpu_recent_utilization_ratio{\n  job=~\"$job\",\n  instance=~\"$instance\"\n}\n",
                       "hide": true,
                       "legendFormat": "__auto",
                       "range": true,
@@ -27357,8 +27286,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"heap\"}",
-                      "legendFormat": "{{jvm_memory_pool_name}}",
+                      "expr": "max by (job, jvm_memory_pool_name) (jvm_memory_used_bytes{jvm_memory_type=\"heap\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}} \u00b7 {{jvm_memory_pool_name}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -27448,8 +27377,8 @@ spec:
                   "targets": [
                     {
                       "editorMode": "code",
-                      "expr": "jvm_memory_used_bytes{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", jvm_memory_type=\"non_heap\"}",
-                      "legendFormat": "{{jvm_memory_pool_name}}",
+                      "expr": "max by (job, jvm_memory_pool_name) (jvm_memory_used_bytes{jvm_memory_type=\"non_heap\", job=~\"$job\", instance=~\"$instance\"})",
+                      "legendFormat": "{{job}} \u00b7 {{jvm_memory_pool_name}}",
                       "range": true,
                       "refId": "A"
                     }
@@ -27469,7 +27398,6 @@ spec:
               "templating": {
                 "list": [
                   {
-                    "allValue": ".*",
                     "current": {
                       "text": "All",
                       "value": [
@@ -27478,42 +27406,11 @@ spec:
                     },
                     "datasource": "Mimir",
                     "includeAll": true,
-                    "label": "CloudNet Task",
+                    "label": "Server",
                     "multi": true,
-                    "name": "cloudnet_task",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio, cloudnet_task_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "includeAll": true,
-                    "label": "CloudNet Service",
-                    "name": "cloudnet_service",
-                    "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\"}, cloudnet_service_name)",
-                    "refresh": 2,
-                    "type": "query"
-                  },
-                  {
-                    "allValue": ".*",
-                    "current": {
-                      "text": "All",
-                      "value": "$__all"
-                    },
-                    "datasource": "Mimir",
-                    "hide": 2,
-                    "includeAll": true,
-                    "label": "job (optional)",
                     "name": "job",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\"}, job)",
+                    "query": "label_values(minecraft_server_tps_ratio, job)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -27524,12 +27421,12 @@ spec:
                       "value": "$__all"
                     },
                     "datasource": "Mimir",
-                    "hide": 2,
+                    "hide": 1,
                     "includeAll": true,
                     "label": "instance (optional)",
                     "name": "instance",
                     "options": [],
-                    "query": "label_values(minecraft_server_tps_ratio{cloudnet_task_name=~\"$cloudnet_task\", cloudnet_service_name=~\"$cloudnet_service\", job=~\"$job\"}, instance)",
+                    "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
                     "refresh": 2,
                     "type": "query"
                   },
@@ -27582,23 +27479,25 @@ spec:
       templates.yaml:
         apiVersion: 1
         templates:
+          # discord.message prints severity/Rule/Dashboard once per notification group (not once
+          # per instance) via .CommonLabels/.CommonAnnotations, which only stays correct as long as
+          # every alert rule keeps severity and dashboard_url static (not templated per-$labels)
+          # and rule titles stay unique (group_by: ['alertname'] in policies.yaml). Violating either
+          # doesn't error - the affected line is just silently dropped from the notification.
           - name: discord.title
-            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴{{ `{{ else }}` }}✅{{ `{{ end }}` }} [{{ `{{ .Status | toUpper }}` }}] {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
+            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
           - name: discord.message
             template: |
-              {{ `{{ define "discord.message" }}` }}
-              {{ `{{- range .Alerts }}` }}
-              **{{ `{{ .Labels.alertname }}` }}**
-              {{ `{{ .Annotations.summary }}` }}
-              {{ `{{- if .Labels.severity }}` }}
-              severity: `{{ `{{ .Labels.severity }}` }}`
-              {{ `{{- end }}` }}
-              {{ `{{- if .Labels.name }}` }}
-              object: `{{ `{{ .Labels.exported_namespace }}` }}/{{ `{{ .Labels.name }}` }}` (`{{ `{{ .Labels.customresource_kind }}` }}`)
-              {{ `{{- end }}` }}
-
+              {{ `{{ define "discord.message" }}` }}{{ `{{ if .CommonLabels.severity }}` }}severity: `{{ `{{ .CommonLabels.severity }}` }}`
+              {{ `{{ end }}` }}🔗 Rule: <{{ `{{ (index .Alerts 0).GeneratorURL }}` }}>
+              {{ `{{ if .CommonAnnotations.dashboard_url }}` }}📊 Dashboard: <{{ `{{ .CommonAnnotations.dashboard_url }}` }}>
               {{ `{{ end }}` }}
-              {{ `{{- end }}` }}
+
+              {{ `{{ if gt (len .Alerts.Firing) 0 }}` }}Firing ({{ `{{ len .Alerts.Firing }}` }}):
+              {{ `{{ range .Alerts.Firing }}` }}• {{ `{{ reReplaceAll "^(.*?\\.) Check:.*$" "$1" .Annotations.summary }}` }}
+              {{ `{{ end }}` }}{{ `{{ end }}` }}{{ `{{ if gt (len .Alerts.Resolved) 0 }}` }}Resolved ({{ `{{ len .Alerts.Resolved }}` }}):
+              {{ `{{ range .Alerts.Resolved }}` }}• {{ `{{ reReplaceAll "^(.*?\\.) Check:.*$" "$1" .Annotations.summary }}` }}
+              {{ `{{ end }}` }}{{ `{{ end }}` }}{{ `{{ end }}` }}
       policies.yaml:
         apiVersion: 1
         policies:
@@ -27665,7 +27564,8 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "One or more of the 12 core Flux Kustomization layers (controllers/configs/rook/apps/monitoring/etc.) is not Ready. Check: flux get kustomizations -A"
+                  summary: "Flux Kustomization {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) is not Ready. Check: flux get kustomization {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
                   severity: critical
               - uid: core-infra-helmrelease-not-ready
@@ -27717,7 +27617,8 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "A core infrastructure HelmRelease (gateway/certs/storage/database/observability) is not Ready. Check: flux get helmrelease -A | grep -v True"
+                  summary: "Flux HelmRelease {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) is not Ready. Check: flux get helmrelease {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
                   severity: critical
           - orgId: 1
@@ -27780,6 +27681,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "No successful CloudNativePG (Postgres) backup in over 24h."
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: warning
               - uid: cnpg-backup-failing
@@ -27837,6 +27739,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "CloudNativePG's most recent backup attempt failed (a failure timestamp is newer than the last successful one)."
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: warning
               - uid: mariadb-galera-backup-job-failed
@@ -27888,9 +27791,1039 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
+                  # No dashboard_url: the mariadb-galera dashboard (gnetId 13106) covers
+                  # cluster health, not backup jobs, so it wouldn't add useful context here.
                   summary: "The mariadb-galera-backup CronJob's most recent Job run failed. Check: kubectl get jobs -n mariadb-galera"
                 labels:
                   severity: warning
+          - orgId: 1
+            name: storage
+            folder: Storage
+            interval: 60s
+            rules:
+              - uid: mariadb-galera-pvc-usage-high
+                title: MariaDB Galera PVC usage high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 80% capacity. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: warning
+              - uid: mariadb-galera-pvc-usage-critical
+                title: MariaDB Galera PVC almost full
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 90% capacity and at risk of filling up. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: critical
+              - uid: ceph-cluster-health-warning
+                title: Ceph cluster health degraded
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: max(ceph_health_status)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  summary: "Ceph cluster health is not HEALTH_OK (HEALTH_WARN or worse). Check: ceph -s (or kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail)"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: warning
+              - uid: ceph-cluster-health-critical
+                title: Ceph cluster health critical
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: max(ceph_health_status)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "Ceph cluster health is HEALTH_ERR. Check: ceph -s (or kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail)"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: critical
+              - uid: ceph-rgw-failed-request-rate
+                title: Ceph RGW failed request rate elevated
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(rate(ceph_rgw_failed_req[5m]))
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 5
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  # Baseline observed 2026-07-18 was 0.02-0.3 req/s; a real RGW degradation
+                  # incident (Rook 1.20 upgrade, S3 access broken for non-owner users) would
+                  # show as a sustained multi-request/s error rate, not baseline noise.
+                  summary: "RGW failed request rate is elevated (baseline is <1/s). This is the class of failure that broke S3 access for backups/Loki/Mimir/Postgres WAL during the Rook 1.20 upgrade incident. Check: kubectl -n rook-ceph-fr01 logs -l app=rook-ceph-rgw --tail=200"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: warning
+              - uid: ceph-osd-usage-high
+                title: Ceph OSD usage high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # Per-OSD, not cluster-aggregate: the 2026-07-26 InsufficientCapacity
+                      # incident had individual OSDs at 94% (backfillfull) while the cluster-wide
+                      # average still read 86.7% -- ceph-cluster-health-warning only fires once
+                      # Ceph itself declares HEALTH_WARN (nearfull/backfillfull already tripped),
+                      # this is the earlier leading indicator on the single most-full OSD.
+                      expr: max(ceph_osd_stat_bytes_used / ceph_osd_stat_bytes) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  summary: "The most-full Ceph OSD is above 80% used. Ceph's own nearfull/backfillfull thresholds trip around here and will start rejecting large S3 uploads (InsufficientCapacity) before HEALTH_WARN fires. Check: kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: warning
+              - uid: ceph-osd-usage-critical
+                title: Ceph OSD usage critical
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: max(ceph_osd_stat_bytes_used / ceph_osd_stat_bytes) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "The most-full Ceph OSD is above 90% used -- at or past Ceph's backfillfull threshold, new writes to affected pools (including S3/RGW uploads) will start being rejected. Check: kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df; ceph health detail"
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+                labels:
+                  severity: critical
+          - orgId: 1
+            name: databases
+            folder: Databases
+            interval: 60s
+            rules:
+              - uid: cnpg-connection-saturation-warning
+                title: CNPG Postgres connection saturation high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 10m
+                annotations:
+                  # Threshold is against the live max_connections setting (queried dynamically),
+                  # not a hardcoded value - stays correct if the setting is changed again.
+                  summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+                labels:
+                  severity: warning
+              - uid: cnpg-connection-saturation-critical
+                title: CNPG Postgres connection saturation critical
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 90
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+                labels:
+                  severity: critical
+              - uid: mariadb-galera-cluster-degraded
+                title: MariaDB Galera cluster degraded
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: min(mysql_global_status_wsrep_cluster_size{namespace="mariadb-galera"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 3
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 2m
+                annotations:
+                  # min() across all 3 nodes' own view of cluster size - a node that loses
+                  # connectivity to its peers (e.g. the Flannel host-gw/MTU incident) reports a
+                  # smaller cluster size on its own, so this catches split-brain, not just a
+                  # fully-down node.
+                  summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained. Check: kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%';\""
+                  dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+                labels:
+                  severity: critical
+          - orgId: 1
+            name: cluster_health
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: pods-stuck-terminating
+                title: Pods stuck in Terminating
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # kube_pod_deletion_timestamp has NO series at all when nothing is
+                      # terminating (confirmed live) - "OR vector(0)" turns that healthy state
+                      # into a real 0 instead of "no data", which matters because this rule uses
+                      # noDataState: Alerting.
+                      expr: count(time() - kube_pod_deletion_timestamp > 900) OR vector(0)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before. Check: kubectl get pods -A --field-selector=status.phase!=Running | grep Terminating"
+                labels:
+                  severity: warning
+          - orgId: 1
+            name: observability
+            folder: Observability
+            interval: 60s
+            rules:
+              - uid: observability-pipeline-no-data
+                title: Observability pipeline producing no data
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # count() returns a real value (currently 10, one per kubelet target) when
+                      # the pipeline is healthy - evaluated normally against the threshold below,
+                      # not firing. If every kubelet target vanishes from Mimir (the whole Alloy
+                      # remote-write pipeline going dark), this query returns NO series, which
+                      # triggers Grafana's NoData path -> noDataState: Alerting -> fires. Do NOT
+                      # use absent() here: it returns empty exactly when healthy (the opposite of
+                      # what noDataState: Alerting needs), which was a real bug (empty result +
+                      # noDataState: Alerting fired immediately on a healthy cluster).
+                      expr: count(up{job="kubelet", metrics_path="/metrics"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires. Check: kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
+                labels:
+                  severity: critical
+          - orgId: 1
+            name: node_health
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: node-not-ready
+                title: Node not Ready
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # kube_node_status_condition carries all 3 statuses for every
+                      # condition (150 series = 10 nodes x 5 conditions x 3 statuses),
+                      # so this always has data -> noDataState: OK is correct.
+                      # status="false" is NotReady, status="unknown" is Unreachable
+                      # (kubelet stopped reporting) - both are pages, one rule.
+                      # Do NOT write `{status="true"} == 0`: the filtered value is 0,
+                      # so a `gt 0` threshold would never fire.
+                      expr: max by (node) (kube_node_status_condition{condition="Ready", status=~"false|unknown"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "Node {{ `{{ $labels.node }}` }} is NotReady or Unreachable. Check: kubectl get node {{ `{{ $labels.node }}` }} -o wide; kubectl describe node {{ `{{ $labels.node }}` }} | tail -30"
+                labels:
+                  severity: critical
+              - uid: kubelet-down
+                title: Kubelet down
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # min by (node) keeps a real 0/1 value per node instead of
+                      # filtering healthy nodes out of the result, so the series
+                      # never disappears while the scrape pipeline is alive. Total
+                      # pipeline loss is already covered by observability-pipeline-no-data.
+                      expr: min by (node) (up{job="kubelet", metrics_path="/metrics"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "Kubelet on node {{ `{{ $labels.node }}` }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired. Check: talosctl -n {{ `{{ $labels.node }}` }} service kubelet status"
+                labels:
+                  severity: critical
+              - uid: node-clock-unsynchronised
+                title: Node clock not synchronised
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # machine.time.servers is /dev/ptp0 only (talos repo:
+                      # clusters/feather-core/talos/patches/common/time-ptp.yaml) and
+                      # Talos makes PTP and NTP mutually exclusive - there is NO NTP
+                      # fallback. A live-migration onto a host without ptp_kvm leaves
+                      # the clock free-running silently. node-exporter series carry
+                      # instance (IP:9100), not node.
+                      expr: min by (instance) (node_timex_sync_status)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 15m
+                annotations:
+                  summary: "Clock on {{ `{{ $labels.instance }}` }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback. Check: talosctl -n <node> read /sys/class/ptp/ptp0/clock_name; talosctl -n <node> dmesg | grep -i ptp"
+                labels:
+                  severity: warning
+              - uid: node-clock-offset-high
+                title: Node clock offset high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # Current cluster-wide max is 5.7 microseconds; 50ms is ~4
+                      # orders of magnitude above that and well below the point
+                      # where Galera/etcd/TLS start misbehaving.
+                      expr: max by (instance) (abs(node_timex_offset_seconds))
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0.05
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 15m
+                annotations:
+                  summary: "Clock offset on {{ `{{ $labels.instance }}` }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock. Check: talosctl -n <node> time"
+                labels:
+                  severity: warning
+          - orgId: 1
+            name: certificates
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: certificate-expiring-soon
+                title: Certificate expiring within 14 days
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # cert-manager's own metric. The certificate's namespace is in
+                      # exported_namespace (namespace= is cert-manager, where the
+                      # controller runs). Lowest value across the 20 series today is
+                      # ~72.7 days, so this will not fire on merge.
+                      # noDataState MUST stay OK: if a Certificate is deleted its
+                      # series vanishes, and "no certs" is not an emergency.
+                      expr: min by (exported_namespace, name) ((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 14
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 1h
+                annotations:
+                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 14 days and has not renewed. Check: kubectl describe certificate {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}; kubectl get certificaterequest -n {{ `{{ $labels.exported_namespace }}` }}"
+                labels:
+                  severity: warning
+              - uid: certificate-expiring-critical
+                title: Certificate expiring within 3 days
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: min by (exported_namespace, name) ((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 3
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 15m
+                annotations:
+                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 3 days. Renewal has failed. Check: kubectl describe certificate {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}; kubectl -n cert-manager logs deploy/cert-manager --tail=100"
+                labels:
+                  severity: critical
     resources:
       requests:
         cpu: 250m

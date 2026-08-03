@@ -6,3 +6,5 @@ metadata:
 spec:
   bucketName: bluemap0
   storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: bluemap
