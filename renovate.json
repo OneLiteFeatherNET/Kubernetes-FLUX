@@ -3,5 +3,17 @@
   "extends": [
     "config:recommended",
     "helpers:pinGitHubActionDigests"
+  ],
+  "packageRules": [
+    {
+      "description": "commitlint caps the header at 100 chars. The full depName here is 70, which pushes 'chore(deps): update <depName> docker tag to vX.Y.Z' to 112 and makes every bump of this image unmergeable (PR #89). Shorten the display name; nothing else about the update changes.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java"
+      ],
+      "overrideDepName": "otel-autoinstrumentation-java"
+    }
   ]
 }
