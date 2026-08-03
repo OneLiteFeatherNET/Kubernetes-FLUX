@@ -8,7 +8,8 @@ spec:
   displayName: bakery
   # External party: deliberately NO capabilities. A plain S3 user (no admin-ops
   # caps) can only see/access its own buckets — never the other tenants' data.
-  # Quota caps total usage and limits the user to a single bucket.
+  # Quota caps total usage; the bucket count leaves room for rclone, which
+  # creates a bucket per `mkdir` at the remote root.
   quotas:
-    maxBuckets: 1
+    maxBuckets: 4
     maxSize: 1Ti
