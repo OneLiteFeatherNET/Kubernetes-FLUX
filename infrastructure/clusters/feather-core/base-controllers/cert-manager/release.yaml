@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: ">=1.14.4"
+      version: "=v1.21.1"
   values:
     affinity:
       nodeAffinity:
