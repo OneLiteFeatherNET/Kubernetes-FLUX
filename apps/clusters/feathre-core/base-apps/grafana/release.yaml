@@ -28476,6 +28476,354 @@ spec:
                   summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires. Check: kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
                 labels:
                   severity: critical
+          - orgId: 1
+            name: node_health
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: node-not-ready
+                title: Node not Ready
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # kube_node_status_condition carries all 3 statuses for every
+                      # condition (150 series = 10 nodes x 5 conditions x 3 statuses),
+                      # so this always has data -> noDataState: OK is correct.
+                      # status="false" is NotReady, status="unknown" is Unreachable
+                      # (kubelet stopped reporting) - both are pages, one rule.
+                      # Do NOT write `{status="true"} == 0`: the filtered value is 0,
+                      # so a `gt 0` threshold would never fire.
+                      expr: max by (node) (kube_node_status_condition{condition="Ready", status=~"false|unknown"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "Node {{ `{{ $labels.node }}` }} is NotReady or Unreachable. Check: kubectl get node {{ `{{ $labels.node }}` }} -o wide; kubectl describe node {{ `{{ $labels.node }}` }} | tail -30"
+                labels:
+                  severity: critical
+              - uid: kubelet-down
+                title: Kubelet down
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # min by (node) keeps a real 0/1 value per node instead of
+                      # filtering healthy nodes out of the result, so the series
+                      # never disappears while the scrape pipeline is alive. Total
+                      # pipeline loss is already covered by observability-pipeline-no-data.
+                      expr: min by (node) (up{job="kubelet", metrics_path="/metrics"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "Kubelet on node {{ `{{ $labels.node }}` }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired. Check: talosctl -n {{ `{{ $labels.node }}` }} service kubelet status"
+                labels:
+                  severity: critical
+              - uid: node-clock-unsynchronised
+                title: Node clock not synchronised
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # machine.time.servers is /dev/ptp0 only (talos repo:
+                      # clusters/feather-core/talos/patches/common/time-ptp.yaml) and
+                      # Talos makes PTP and NTP mutually exclusive - there is NO NTP
+                      # fallback. A live-migration onto a host without ptp_kvm leaves
+                      # the clock free-running silently. node-exporter series carry
+                      # instance (IP:9100), not node.
+                      expr: min by (instance) (node_timex_sync_status)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 15m
+                annotations:
+                  summary: "Clock on {{ `{{ $labels.instance }}` }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback. Check: talosctl -n <node> read /sys/class/ptp/ptp0/clock_name; talosctl -n <node> dmesg | grep -i ptp"
+                labels:
+                  severity: warning
+              - uid: node-clock-offset-high
+                title: Node clock offset high
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # Current cluster-wide max is 5.7 microseconds; 50ms is ~4
+                      # orders of magnitude above that and well below the point
+                      # where Galera/etcd/TLS start misbehaving.
+                      expr: max by (instance) (abs(node_timex_offset_seconds))
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0.05
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 15m
+                annotations:
+                  summary: "Clock offset on {{ `{{ $labels.instance }}` }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock. Check: talosctl -n <node> time"
+                labels:
+                  severity: warning
+          - orgId: 1
+            name: certificates
+            folder: Core Services
+            interval: 60s
+            rules:
+              - uid: certificate-expiring-soon
+                title: Certificate expiring within 14 days
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # cert-manager's own metric. The certificate's namespace is in
+                      # exported_namespace (namespace= is cert-manager, where the
+                      # controller runs). Lowest value across the 20 series today is
+                      # ~72.7 days, so this will not fire on merge.
+                      # noDataState MUST stay OK: if a Certificate is deleted its
+                      # series vanishes, and "no certs" is not an emergency.
+                      expr: min by (exported_namespace, name) ((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 14
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 1h
+                annotations:
+                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 14 days and has not renewed. Check: kubectl describe certificate {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}; kubectl get certificaterequest -n {{ `{{ $labels.exported_namespace }}` }}"
+                labels:
+                  severity: warning
+              - uid: certificate-expiring-critical
+                title: Certificate expiring within 3 days
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      expr: min by (exported_namespace, name) ((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400)
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 3
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: OK
+                execErrState: Alerting
+                for: 15m
+                annotations:
+                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 3 days. Renewal has failed. Check: kubectl describe certificate {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}; kubectl -n cert-manager logs deploy/cert-manager --tail=100"
+                labels:
+                  severity: critical
     resources:
       requests:
         cpu: 250m
