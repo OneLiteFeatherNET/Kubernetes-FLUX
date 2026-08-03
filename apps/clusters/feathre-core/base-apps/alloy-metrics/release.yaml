@@ -37,9 +37,17 @@ spec:
         requests:
           cpu: 100m
           memory: 512Mi
+          # The remote_write WAL lives on the container writable layer — this
+          # StatefulSet has no volumeClaimTemplate. Alloy's own
+          # truncate_frequency/max_keepalive_time defaults bound it to ~8h,
+          # but nothing caps it, so a stuck remote_write would eat the node's
+          # root filesystem. 4Gi is roughly 4x the expected footprint: the pod
+          # gets evicted instead.
+          ephemeral-storage: 1Gi
         limits:
           cpu: "1"
           memory: 2Gi
+          ephemeral-storage: 4Gi
       configMap:
         content: |
           // Discovers PodMonitor/ServiceMonitor CRs cluster-wide (all
