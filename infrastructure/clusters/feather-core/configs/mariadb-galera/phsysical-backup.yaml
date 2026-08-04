@@ -10,13 +10,14 @@ spec:
     cron: "0 */6 * * *"
     suspend: false
     immediate: true
-  maxRetention: 720h # 30 days
+  # 7 days: 28 backups * 34.6GiB = ~970GiB in S3 (~2.9TiB raw at 3x replication).
+  # 30 days would need 4.15TiB / 12.5TiB raw — more than the whole Ceph cluster.
+  maxRetention: 168h # 7 days
   # No compression, deliberately: the operator's pipeline is sequential
   # (dump -> compress -> upload, not streamed), so compression algorithm was
   # the entire bottleneck. Measured on this cluster: bzip2 ~60-67min/run,
   # gzip 22m12s/6.8GiB, none 4m18s/28.6GiB. "none" was chosen to hit a
-  # 5-15min backup window; trade-off is ~4.2x more S3 storage per backup
-  # than gzip (~3.4TiB vs ~816GiB at 4 backups/day * 30-day maxRetention).
+  # 5-15min backup window; the storage trade-off is paid via maxRetention above.
   compression: none
   storage:
     s3:
@@ -35,7 +36,7 @@ spec:
   # each backup completes, unlike a PVC which keeps accumulating .xb files
   # forever (no built-in cleanup upstream, see mariadb-operator issue #1243).
   # fr01-wrk-xl-01 (where podAffinity pins this Job) has ~244Gi ephemeral-storage
-  # free; measured uncompressed backup size is ~28.6Gi, comfortable margin
+  # free; measured uncompressed backup size is ~34.6Gi, comfortable margin
   # under the 100Gi sizeLimit below.
   stagingStorage:
     volume:
