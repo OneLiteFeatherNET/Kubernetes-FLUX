@@ -1,0 +1,10 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: cygnus-pack
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: cygnus-pack
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: cygnus-pack

@@ -20,3 +20,4 @@ resources:
   - reposilite-snapshots.yaml
   - tempo-traces.yaml
   - bakery.yaml
+  - cygnus-pack.yaml

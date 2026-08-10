@@ -17,3 +17,4 @@ resources:
   - bakery.yaml
   - olf.yaml
   - tempo.yaml
+  - cygnus-pack.yaml
