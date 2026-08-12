@@ -28550,6 +28550,65 @@ spec:
                   check_command: "kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
                 labels:
                   severity: critical
+              - uid: kube-state-metrics-down
+                title: kube-state-metrics producing no data
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # Same count()/NoData pattern as observability-pipeline-no-data above, not
+                      # absent(): absent() is empty while healthy, which reads as NoData forever.
+                      expr: count(up{job="kube-state-metrics"})
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                noDataState: Alerting
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  # No dashboard_url: the Kubernetes Objects dashboard is built from the same
+                  # metrics, so it is empty exactly while this alert fires.
+                  summary: "kube-state-metrics has stopped producing metrics. Both Flux alerts read gotk_resource_info from it, so they report healthy while blind for as long as this fires."
+                  problem: "Keine kube-state-metrics-Daten"
+                  location: "monitoring"
+                  check_command: "kubectl -n monitoring get pods -l app.kubernetes.io/name=kube-state-metrics"
+                labels:
+                  severity: critical
           - orgId: 1
             name: node_health
             folder: Core Services
