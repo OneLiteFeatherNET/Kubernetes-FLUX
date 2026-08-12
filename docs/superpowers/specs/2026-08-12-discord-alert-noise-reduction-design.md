@@ -1,9 +1,21 @@
 # Discord alert noise reduction & table layout — design
 
-**Date:** 2026-08-12 (updated same day after `455edcf`, `959f39a`)
-**Status:** Shipped — commits `1c0ed60`, `8eee395`, `d7ea580`, `55ee41c`, `455edcf`, `959f39a` on
-`apps/clusters/feathre-core/base-apps/grafana/release.yaml` (branch
-`feat/grafana-alert-noise-reduction`).
+**Date:** 2026-08-12 (updated same day after `455edcf`, `959f39a`, then again after `20949ad`,
+`8e03ff7`)
+**Status:** Shipped — commits `1c0ed60`, `8eee395`, `d7ea580`, `55ee41c`, `455edcf`, `959f39a`,
+`20949ad`, `8e03ff7` on `apps/clusters/feathre-core/base-apps/grafana/release.yaml` (branch
+`feat/grafana-alert-noise-reduction` for the first six; `20949ad`/`8e03ff7` landed via PR #118/#119
+directly on `main`); `33c51cc` (PR #120, embed URL absoluteness fix) landed the same way.
+
+> **Part 4 (message layout) superseded 2026-08-12, same day:** the monospace code-block table
+> described in Part 4 below shipped, then was replaced hours later by real Discord embeds —
+> commits `20949ad` (PR #118) and `8e03ff7` (PR #119, hotfix). See the new **Part 4 — Discord
+> message layout: embeds** section (replacing the original Part 4 content) and **Parts 5–8** below
+> for the embed design, the delivery-reliability regression it introduced, the production incident
+> it caused, and the fix — all new material appended to this same document, since Parts 1–3 (the
+> PromQL sustain check, structured annotations, and routing/grouping timings) are unaffected and
+> remain the current design. Parts 5–8 also cover PR #120 (`fix(grafana): only set the embed url
+> when it is absolute`, commit `33c51cc`).
 
 **Supersedes:** `docs/superpowers/specs/2026-07-18-discord-alert-notification-design.md` (bullet
 list, `reReplaceAll` over `summary`, no instance cap — all replaced by what's below). Also revises
@@ -205,9 +217,126 @@ object's first report is capped at 5 minutes instead of 15.
 `discord.message` assumes a notification group holds exactly the instances of one rule; changing
 `group_by` would mix instances of different rules into one table.
 
-## Part 4 — Discord message table layout (`8eee395`, `55ee41c`)
+## Part 4 — Discord message layout: embeds (`20949ad`, `8e03ff7`)
+
+**This section replaces the original Part 4 (below), which shipped a monospace code-block table
+in `8eee395`/`55ee41c` and was live for a few hours on 2026-08-12 before being replaced by real
+Discord embeds.** The original text is kept as a subsection (### Superseded: monospace table
+layout) because the escaping constraints and Discord limits it documents are still the right
+mental model, just applied to a different payload shape.
+
+### Why webhook, not discord
+
+The contact point's `type` changes from `discord` to `webhook`, because only the webhook notifier
+supports `settings.payload.template` (new in Grafana 12.0, `receivers/webhook/v1/config.go`;
+confirmed live via `GET /api/v1/ngalert/notifiers`). When `payload.template` is set,
+`settings.title` and `settings.message` are ignored — they stay in the YAML as
+`discord.title`/`discord.message` only as a rollback target (see Part 8).
+
+`uid: discord_webhook` and `name: discord` are both unchanged. This matters because
+`policies.yaml`'s routes reference the contact point by **name**, not `uid` — so the existing root
+route and the two rule-level exceptions kept working across the type change with no edits to
+`policies.yaml` itself. `settings.url` also stays at the exact same YAML position
+(`contactPoints[0].receivers[0].settings.url`) so the Flux `valuesFrom` targetPath
+`alerting.contactpoints\.yaml.secret.contactPoints[0].receivers[0].settings.url` keeps resolving —
+the real webhook URL exists only in the `grafana-discord` Secret, never in git.
+
+### The payload is a data structure, not a string
+
+The template does not assemble JSON by string concatenation. `coll.Dict`, `coll.Slice`, and
+`coll.Append` build a real Go data structure (map/slice), and `data.ToJSON` serializes it — that
+call is `encoding/json.Marshal` under the hood (`templates/gomplate/data.go`). Because of that,
+quotes, backslashes, newlines, and control characters inside a label or annotation value cannot
+structurally break the JSON: `json.Marshal` handles all the escaping. Verified live with a label
+value of `mon"i\tor` and an annotation containing `" \ & <b>`, both of which came back correctly
+escaped (`\"`, `\\`, `&`, `<`) in the rendered payload.
+
+**Grafana's `coll` package here only exposes `Dict`, `Slice`, and `Append`.** `coll.Merge`,
+`coll.Omit`, `coll.Has`, and `coll.Keys` all fail live with `can't evaluate field X in type
+interface {}` — none of them are wired into this template context. The practical consequence: a
+key cannot be conditionally removed from an already-built dict. Where the payload needs two
+variants of the same object that differ by one key (see the `url` handling in the PR #120 section
+below), the template builds two separate `coll.Dict` calls rather than building one and stripping
+a key. Field
+order inside the dict is irrelevant either way — `json.Marshal` sorts map keys, so the two
+approaches would render identically even if key removal were available.
+
+### The backtick escape
+
+A literal backtick in the effective template text would terminate the Helm raw string
+(`{{ \`...\` }}`) early, the same constraint the original monospace-table design (below) already
+had to work around. The payload template obtains one via `{{ $bt := "`" }}`: Helm does not
+process `\u` escapes inside a raw string, but a Go template string literal does, so the ```
+survives Helm's pass unevaluated and becomes a real backtick when the Go template itself
+evaluates. The `check_command` field wraps its value in this backtick pair
+(`` `%s` ``-equivalent) so Discord renders it as inline code.
+
+### `object_matchers` is unusable here
+
+Unrelated to the payload template itself, but shipped in the same change set: the fallback child
+route in `policies.yaml` (Part 5) had to use the string form `matchers:` rather than
+`object_matchers:`. The Grafana Helm chart re-serializes `spec.values` through `toYaml`, which
+renders the `=` operator of an `object_matchers` triple as a bare YAML scalar — and YAML resolves a
+bare `=` to the special `tag:yaml.org,2002:value`, not a string. The rendered `policies.yaml`
+config failed to parse at all with that form. The string-matcher form has no standalone `=` token
+and round-trips cleanly through the rendered ConfigMap. Found during a render round-trip check,
+not in review — a silent config-parse failure here would have disabled alert routing entirely.
+
+### Discord's hard limits (still the binding constraint)
+
+Same category of constraint as the old table layout, applied to embed fields instead of a code
+fence: `title` 256 runes, `description` 4096, 25 fields per embed, `field.name` 256, `field.value`
+1024, `footer.text` 2048, 10 embeds per message, and 6000 summed across everything in the message.
+Exceeding any of these is a hard failure — Discord returns HTTP 400 and the webhook notifier drops
+the message with **no retry** (see Part 5). Every `printf` precision in the template is a limit
+guard sized against one of these numbers.
+
+**Instance cap: 12, computed, not guessed.** The binding limit is `field.value` ≤ 1024. Worst-case
+row length is 71 runes (1 backtick + 27-rune padded object column + 1 backtick + 1 space + 30-rune
+location + 11 runes for ` (behoben)` + 1 newline). `12 × 71 = 852`, plus 38 runes for the overflow
+("N more") line = 890 ≤ 1024, with one more row (13 × 71 = 923 + 38 = 961) still under the limit
+but cutting the margin closer — 12 was chosen to keep headroom. Measured worst case across the
+template-test cases run for this change: 723–793 runes of 6000 total across all fields — nowhere
+near the ceiling day-to-day; the cap exists for the pathological case, not the common one.
 
 ### Layout
+
+- `title`: a status emoji (🔴 firing/critical, 🟠 firing/warning, ✅ resolved) plus the rule name,
+  made clickable via the embed's top-level `url` (see the PR #120 section below for why that URL
+  isn't always set).
+- `description`: the `problem` annotation, plus an optional dashboard link line.
+- Up to 3 inline header fields: `Schwere` (severity), `Ort` (location, when common across
+  instances), `Seit`/`Behoben` (age or resolution time).
+- The instance list itself: one `inline: false` field, one row per instance (object + location).
+- `Prüfen` (`check_command`, wrapped in the backtick pair above): the last field.
+- `footer.text`: `grafana_folder`. `timestamp` is passed through `date "2006-01-02T15:04:05Z07:00"`
+  — Discord renders this in the *viewer's* local timezone, not Grafana's or UTC, and renders it
+  **absolutely** ("Today at 09:20"), not as a relative "x minutes ago". That's the reason the
+  age/resolution field still exists as its own line — the timestamp alone doesn't convey elapsed
+  time the way a relative-time renderer would.
+- Colors: `15548997` (red, firing/critical), `16426522` (orange, firing/warning), `5763719`
+  (green, resolved).
+
+**The alignment trick:** Discord renders inline code (`` `...` ``) in a monospace font and
+preserves internal spaces, so the object column is padded with `printf "%-27.26s"` *inside* a
+code span — the location column stays visually aligned without needing a full code-fenced block,
+which was the thing that could tear open mid-message under truncation in the old design. Padding
+is only applied when instances in the group actually differ by location; a single shared location
+renders as one plain header field instead (see Part 1/Layout note above about
+`.CommonAnnotations.location`).
+
+**Honest limitation:** in the three header fields, Discord renders the field name *above* its
+value, not to the left of it — the "label left, value right" mental model from the old monospace
+table only applies inside the instance-list field (object column left, location column right via
+padding), not to the header fields.
+
+### Superseded: monospace table layout
+
+Kept for history — the escaping/limits reasoning below still applies conceptually, but the
+contact point is no longer `type: discord` and this layout no longer ships. Do not implement
+against this subsection; see the embed design above instead.
+
+#### Layout
 
 A monospace two-column table inside a code fence: a 12-rune label on the left, the value on the
 right. Labels are chosen so `printf "%-12s"` (which counts **runes, not bytes**) aligns the
@@ -228,7 +357,7 @@ The separator lines are 44 × U+2500 (`─`, box-drawings light horizontal), and
 hidden" line uses U+2026 (`…`, horizontal ellipsis) rather than three periods. If Discord ever
 wraps these differently on mobile, `-` and `...` are the two ASCII fallbacks to swap in.
 
-### Verified template engine limits
+#### Verified template engine limits
 
 Tested live against Grafana 12.3.1 via the templates-test endpoint (below). **No Sprig functions,
 no `humanizeDuration`, no arithmetic (`math.Sub` does not exist)** — all three fail with "function
@@ -240,7 +369,7 @@ Consequence: alert age is derived by regexing `time.Duration.String()` output
 "instances hidden" overflow line prints the **total** instance count rather than the remainder
 past the cap, for the same reason — there's no subtraction available to compute "N more".
 
-### Escaping constraints
+#### Escaping constraints
 
 The Grafana Helm chart renders the `alerting:` values block through `tpl`, so every Grafana
 template has to be written as a Helm **raw string** (`{{ \`...\` }}`). Consequence: the effective
@@ -248,7 +377,7 @@ template text must contain **no backtick** (would close the raw string early) an
 quote** (Helm's `toYaml` may render a single-line scalar single-quoted, which would then appear
 inside the raw string and break the surrounding Helm parse).
 
-### Discord's own limits
+#### Discord's own limits (for the old `discord.message` content field)
 
 - `message` → Discord's `content` field: hard-truncated at **2000 runes**, with a marker appended
   on truncation. A cut landing inside the code fence would leave it unclosed and wreck the
@@ -259,7 +388,7 @@ inside the raw string and break the surrounding Helm parse).
   After the column-width fix in `55ee41c`, the worst observed render (3 full-length Galera PVC rows
   plus a 36-rune release name cut to 26) was **566 runes**.
 
-### Testability
+#### Testability
 
 `POST /api/alertmanager/grafana/config/api/v1/templates/test` renders a template **without writing
 any config and without sending a real message** — body shape: `{"name": "<define-name>",
@@ -273,9 +402,171 @@ shared-location form).
 **`POST /api/alertmanager/grafana/config/api/v1/receivers/test` is a different endpoint that
 actually posts to the Discord channel** — do not use it for iterating on template text.
 
-The contact point itself is untouched: `discord.title`/`discord.message` are still the names
-referenced from `contactpoints.yaml`, so the existing Flux `valuesFrom` targetPath into
-`contactPoints[0].receivers[0].settings.url` keeps working.
+**This endpoint only renders — it never validates**, which is exactly the gap that caused the
+outage in Part 6: it reported success for both the working table template and the later broken
+`discord.payload` trim-marker case alike, because `Validate()` is a separate code path this
+endpoint never calls.
+
+At the time this subsection was written, the contact point was still `type: discord` with
+`discord.title`/`discord.message` referenced directly from `contactpoints.yaml`. See Part 4 above
+for the current `type: webhook` / `payload.template` setup.
+
+## Part 5 — Notification delivery regression, and the fallback that catches it
+
+The embed payload template buys a real Discord UI at the cost of a retry regression, and that
+regression needs a safety net.
+
+**The regression:** the webhook notifier returns `(false, tmplErr)` when the payload template
+fails to render, and treats any non-2xx HTTP response as `retry=false`
+(`receivers/webhook/v1/webhook.go`). `notify/notify.go`'s `RetryStage` gives up immediately on
+`retry=false` — there is no retry, the message is simply gone. The old `discord` notifier only
+logged a warning on a template error and sent anyway. This is the one genuine regression of the
+embed switch: without a guard, a future typo in the template would silently cost notifications
+with no error visible anywhere except a Grafana log line.
+
+**Three pieces of mitigation, all shipped in `20949ad`:**
+
+1. A second contact point, `discord-fallback` (`uid: discord_fallback`), of the **old** `type:
+   discord` — the fault-tolerant notifier — with `use_discord_username: true` and no custom
+   payload, so it uses Grafana's default rendering. It deliberately depends on **no template at
+   all**, so a template error can never take down the exact path that's supposed to report template
+   errors. Same Discord channel; the URL comes from a second `valuesFrom` entry on the same
+   `grafana-discord` Secret targeting `contactPoints[1]`, so git still holds only a placeholder.
+2. A meta alert rule, `alert-notifications-failing`, in the `observability` group:
+   `(sum(increase(grafana_alerting_notification_requests_failed_total[10m])) or vector(0)) +
+   (sum(increase(grafana_alerting_notifications_failed_total[10m])) or vector(0))`. Both counters
+   are registered `WithSkipZeroValueMetrics`, so neither series exists at all while it's 0 — a bare
+   `sum()` would evaluate to `NoData`, not 0, hence the `or vector(0)` around each term. Either
+   counter may be the one that increments on the webhook failure path, so both are summed.
+   `noDataState: OK` (not `Alerting`): with `or vector(0)` the expression always returns a value
+   while Mimir itself is reachable, so `NoData` here could only mean the datasource is down —
+   already covered by `observability-pipeline-no-data`, and not evidence that notifications
+   specifically are broken. `execErrState: Alerting`, matching all other rules in the file.
+3. A child route in `policies.yaml` sending that one rule to `discord-fallback`, so it doesn't
+   report its own failure over the path it's reporting as broken. Everything else keeps routing to
+   `discord` unchanged; the root route (`group_by: ['alertname']`, `group_wait: 1m`,
+   `group_interval: 5m`, `repeat_interval: 24h`) is untouched.
+
+**Limits of the meta rule, worth stating plainly:** `increase()` needs two samples to produce a
+value, so a single isolated delivery failure stays invisible — only sustained failure trips this
+rule. And if delivery is broken badly enough that *nothing* gets through, this rule's own
+notification is subject to the same failure mode it's watching for; the honest floor is "a broken
+template surfaces at the next alert that actually fires," not before.
+
+**The mitigation proved itself the same day it shipped.** During the 2026-08-12 rollout, two
+notification deliveries failed (the startup race described in Part 7). `alert-notifications-failing`
+fired at 19:35:20, was delivered successfully via `discord-fallback`, and resolved at 19:38:49 —
+recovering on its own once the affected pods finished loading the new provisioning config.
+
+## Part 6 — The trim-marker outage (`8e03ff7`, hotfix for `20949ad`)
+
+**This is the most expensive mistake in this change set — it caused a production outage — and is
+documented in detail on purpose.**
+
+**Root cause:** every notification template in this file must open with `{{ define`, never
+`{{- define`. Grafana's `NotificationTemplate.Validate()`
+(`pkg/services/ngalert/api/tooling/definitions/alertmanager_validation.go`) decides whether a
+template body already declares a `define` block using `regexp.MatchString(`\{\{\s*define`,
+content)`. `\s*` cannot consume a `-`, so `{{- define "discord.payload" -}}` does not match that
+regex. Grafana concludes the body has no `define` at all and wraps it in a **second**
+`{{ define "discord.payload" }} ... {{ end }}`. The resulting nested define then fails the real
+`text/template` parse inside `TemplateDefinition.Validate()` (`grafana/alerting`,
+`templates/template_data.go`) with `template: :2: unexpected <define> in command`.
+
+`discord.title` and `discord.message` were never affected — they happen to open with `{{ define`
+with no trim marker already. `discord.payload`, introduced in `20949ad`, opened with
+`{{- define "discord.payload" -}}` and hit this exactly.
+
+**Consequence — CrashLoopBackOff, silently:** Grafana's provisioning module aborts on this error at
+startup, and the pod goes into `CrashLoopBackOff`. Because `maxUnavailable: 25%` of 2 replicas
+rounds down to 0, the old pods were never torn down and kept serving the UI — so the outage was
+not visible to anyone looking at Grafana. At the same time, the old pods (which poll the
+provisioning DB every 60s) had already loaded the new config from the DB, including the contact
+point now pointing at `discord.payload` — a template that, because provisioning aborted, was never
+actually committed. The next real alert would have been silently dropped by a contact point
+pointing at a template that doesn't exist.
+
+**And the bitterest part:** provisioning aborts on this error *before* it gets to policies and
+rules. The two safety nets built specifically to catch a failure like this one — the
+`discord-fallback` child route and the `alert-notifications-failing` meta rule from Part 5 — were
+themselves not provisioned yet, because they come later in the same provisioning pass that just
+aborted.
+
+**Trim markers inside the template body are fine.** The regex only inspects the opening `define`
+line; every `-}}`/`{{-` elsewhere in `discord.payload` (there are many, for whitespace control) is
+unaffected.
+
+**Fix:** remove the single leading `-` from `{{- define "discord.payload" -}}`, i.e.
+`{{ define "discord.payload" -}}`. Output-neutral: `Validate()` runs against
+`strings.TrimSpace(template)`, so there was never any leading whitespace for that marker to trim in
+the first place. The closing `-}}` and every other trim marker in the body are untouched.
+
+**Neither existing guard would have caught this.** `scripts/validate.sh` checks YAML syntax and
+kustomize/kubeconform schema conformance — this is Grafana-side semantic validation of a string
+value, invisible to both. `POST /api/alertmanager/grafana/config/api/v1/templates/test` only
+*renders* the submitted body; it never runs `Validate()`, so it reported success for the broken
+template too. The only reliable pre-merge check is to replicate Grafana's exact two-step logic
+(the regex, then the wrap) against the pinned `github.com/grafana/alerting` version Grafana itself
+uses, and parse the result with `text/template` — which is how the fix in `8e03ff7` was verified:
+against `grafana/alerting` pinned to the pseudo-version Grafana v12.3.1 itself resolves
+(`v0.0.0-20251120161053-ee90fc928c01`, including its `prometheus/alertmanager` →
+`grafana/prometheus-alertmanager` fork replace), with a control run that reproduced the exact
+production error before the fix and confirmed a clean parse after it.
+
+## Part 7 — Startup race (every Grafana restart, not just this one)
+
+The Alertmanager applies the **stored** config on pod start before provisioning has a chance to
+commit the new templates/contact points. Both new pods in the `20949ad` rollout therefore came up
+briefly still running the previous config, tried to notify with it, and failed with `template
+"discord.payload" not defined` — the two failed deliveries that tripped the meta rule in Part 5.
+The new config landed roughly 33 seconds later, and the notification groups that were still open at
+that point were retried successfully — nothing was actually lost in this particular rollout.
+
+The general risk this leaves behind: because the webhook notifier does not retry (Part 5), any
+notification whose delivery attempt lands inside this window — roughly the first 60 seconds after
+a Grafana pod restart, based on the provisioning poll interval — can be silently dropped rather
+than merely delayed. This is a standing cost of any Alerting-affecting change that triggers a pod
+roll, not something specific to the embed switch, and there is no mitigation for it beyond Part 5's
+fallback route (which itself depends on the new config already being live to route correctly).
+
+## Part 8 — Deployment ordering and rollback
+
+**`contactpoints.yaml` and `templates.yaml` changes must land together, in the same commit/PR.**
+The pod's `checksum/config` annotation hashes `grafana.configData` — which is `templates.yaml` —
+but not the config Secret that `contactpoints.yaml` renders into. A change to `contactpoints.yaml`
+alone therefore does not trigger a pod rollout, and since Grafana only reads provisioning config at
+startup, that change would silently not take effect until some unrelated change happened to roll
+the pod later.
+
+**`discord.message` (and `discord.title`) are kept, unused, as a rollback target.** Switching the
+contact point's `type` back to `discord` with no other changes restores the pre-embed behavior
+exactly, because those templates were never removed. Plan is to delete them once the embeds have
+run stable for about a week; not done as of this writing.
+
+**Side effect: the nflog key changes.** The Alertmanager's notification log key includes the
+integration name, which moves from `discord[0]` to `webhook[0]` when the contact point's `type`
+changes. Any alert that was actively firing at the moment of the cutover lost its `repeat_interval`
+bookkeeping under the old key and got one immediate extra repeat notification under the new key —
+a one-time, cosmetic side effect of the type change, not a recurring concern.
+
+## PR #120 — embed URL must be absolute (`33c51cc`)
+
+Grafana's built-in synthetic test alert (fired via the "Test" button in the UI) has no
+`GeneratorURL`. Before this fix, the template's `url` expression was `or $f.GeneratorURL
+.ExternalURL`, and Grafana appends `?orgId=1` to that empty `GeneratorURL`, making it a non-empty
+string — so `or` picked the relative `?orgId=1` value instead of falling through to
+`.ExternalURL`. Discord rejects an embed with a relative `url` outright, with HTTP 400, dropping
+the whole message (no retry, per Part 5). Real alerts always carry an absolute `GeneratorURL`, so
+only the built-in test button was ever affected — this was not seen in production alert traffic.
+
+**Fix:** build the URL in two steps rather than a single `or`. First try `$f.GeneratorURL` against
+`match "^https?://"`; if that doesn't match, try `.ExternalURL` the same way; if neither matches,
+omit the `url` key from the embed dict entirely rather than setting it to something invalid. This
+is the two-dict-variant pattern from Part 4 (`coll` has no way to delete a key from an
+already-built dict, so the template builds the embed dict twice — with and without `url` — rather
+than building it once and stripping the key). `match` is Alertmanager's `regexp.MatchString`
+helper and is available in this template context (unlike the arithmetic/Sprig functions ruled out
+in the original Part 4 below).
 
 ## Accepted blindness
 
