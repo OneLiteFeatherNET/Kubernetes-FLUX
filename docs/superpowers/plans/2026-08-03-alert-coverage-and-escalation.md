@@ -273,8 +273,25 @@ git commit -m "feat(flux): add discord notification provider and error alert"
 
 ### Task 2: Add a `severity=critical` child route and a second contact point
 
+> **Decision 2026-08-12: not now.** Deliberately deferred, not forgotten — see rationale below.
+
 > **Requires a credential** (DG-2): a second Discord webhook URL, ideally to a different channel.
 > **Loud warning:** a syntax error in `policies.yaml` can drop **all** Grafana alert routing silently. Step 4's render check is not optional.
+
+**Why deferred:** three reasons, together. (1) It's blocked on a new credential — a second Discord
+webhook — plus the plumbing that comes with it: a new `*.sops.env` file, a `secretGenerator` entry,
+and a fourth `valuesFrom` targetPath. (2) It doubles the blast radius of `policies.yaml`: a syntax
+error there already silently drops *all* Grafana alert routing (see the loud warning above), and a
+second route is a second place to get that wrong. (3) Its measurable benefit dropped to
+approximately zero after the `feat/grafana-alert-noise-reduction` noise-reduction work
+(`docs/superpowers/specs/2026-08-12-discord-alert-noise-reduction-design.md`): expected volume is
+now ~13 messages/week, and at that rate there is nothing left to meaningfully escalate away from.
+The real value in DG-2 was always option (b) — an ntfy.sh push, which actually wakes someone at
+03:00 — not a second Discord channel that two people both already read.
+
+**Recommendation:** re-evaluate after ~2 weeks of the noise-reduction change running in production
+(around 2026-08-26). If the volume estimate holds, do the ntfy.sh push and this Discord child route
+together as one PR, rather than shipping the lower-value half alone.
 
 **Files:**
 - Create: `apps/clusters/feathre-core/base-apps/grafana/grafana-discord-critical.sops.env`

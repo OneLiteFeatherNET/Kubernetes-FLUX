@@ -1,7 +1,19 @@
 # Monitoring/alerting gaps — prioritized backlog
 
+> **Partially stale as of 2026-08-12:** the rule count and the `noDataState` cross-cutting decision
+> below no longer match the live rule set. The 5 rules this document was scoped against have grown
+> to **24 rules across 8 groups** (`core_services`, `backups`, `storage`, `databases`,
+> `cluster_health`, `observability`, `node_health`, `certificates`), covering most of the P0/P1
+> items below (implemented outside the commits this note is attached to). More directly: the
+> "every P0/P1 rule uses `noDataState: Alerting`" decision was **revised** for 6 of those rules
+> (plus `pods-stuck-terminating`) back to `OK`, based on 28-day data showing their backing metrics
+> are continuously present — see
+> `docs/superpowers/specs/2026-08-12-discord-alert-noise-reduction-design.md` ("`noDataState`
+> revision") for the measurements and the 3 rules that deliberately keep `Alerting` as sentinels.
+> The backlog table's per-item prioritization is otherwise not re-verified here.
+
 **Date:** 2026-07-18
-**Status:** Approved for planning
+**Status:** Approved for planning (see staleness note above)
 
 ## Summary
 

@@ -1,7 +1,16 @@
 # Discord alert notification redesign
 
+> **Superseded 2026-08-12:** this bullet-list layout and its `reReplaceAll`-over-`summary`
+> approach were replaced by a structured-annotation, monospace-table layout (commits `1c0ed60`,
+> `8eee395`, `d7ea580`, `55ee41c`). The "no instance cap" decision under Out of scope below was
+> also reversed — Discord's 2000-rune hard truncation risked leaving the new code-fenced table
+> unclosed, so the current design caps the list at 8 instances. See
+> `docs/superpowers/specs/2026-08-12-discord-alert-noise-reduction-design.md` for the current
+> design, including a more precise version of the `.CommonLabels`/`.CommonAnnotations` invariant
+> noted below. Kept here for history only — do not implement against this document.
+
 **Date:** 2026-07-18
-**Status:** Approved for planning
+**Status:** Superseded — see note above
 
 ## Summary
 
