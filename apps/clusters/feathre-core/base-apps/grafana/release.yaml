@@ -27521,12 +27521,14 @@ spec:
                 data:
                   - refId: A
                     relativeTimeRange:
-                      from: 600
+                      from: 1200
                       to: 0
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: gotk_resource_info{customresource_kind="Kustomization", ready="False"}
+                      # Sustain check lives in PromQL instead of `for:`, so short reconcile blips never
+                      # fire; aggregating to exactly 2 labels is a hard requirement of the Discord template.
+                      expr: min_over_time((max by (exported_namespace, name) (gotk_resource_info{customresource_kind="Kustomization", ready!="True"}) or max by (exported_namespace, name) (gotk_resource_info{customresource_kind="Kustomization"}) * 0)[15m:1m])
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
@@ -27562,9 +27564,15 @@ spec:
                       type: threshold
                 noDataState: OK
                 execErrState: Alerting
-                for: 5m
+                for: 0s
+                keepFiringFor: 15m
                 annotations:
-                  summary: "Flux Kustomization {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) is not Ready. Check: flux get kustomization {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}"
+                  summary: "Flux Kustomization {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) has not been Ready for 15 minutes."
+                  problem: "Kustomization >15 min nicht Ready"
+                  object_label: "Layer"
+                  object: "{{ `{{ $labels.name }}` }}"
+                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  check_command: "flux get kustomization -A"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
                   severity: critical
@@ -27574,12 +27582,14 @@ spec:
                 data:
                   - refId: A
                     relativeTimeRange:
-                      from: 600
+                      from: 1200
                       to: 0
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: gotk_resource_info{customresource_kind="HelmRelease", ready="False", name=~"envoy|cert-manager|rook-ceph|cnpg|mariadb-operator|mimir|loki|tempo|grafana|cloudflare-tunnel-ingress-controller|metallb|dragonfly"}
+                      # Dropped metallb/dragonfly (never existed in 90d retention), added 9 real infra
+                      # releases; descheduler stays out on purpose (optimiser, not a dependency).
+                      expr: min_over_time((max by (exported_namespace, name) (gotk_resource_info{customresource_kind="HelmRelease", ready!="True", name=~"alloy-logs|alloy-metrics|alloy-receiver|ceph-csi-drivers|cert-manager|cloudflare-tunnel-ingress-controller|cnpg|envoy|grafana|kube-prometheus-stack|loki|mariadb-operator|mariadb-operator-crds|mimir|rook-ceph|spegel|step-ca|step-issuer|tempo"}) or max by (exported_namespace, name) (gotk_resource_info{customresource_kind="HelmRelease", name=~"alloy-logs|alloy-metrics|alloy-receiver|ceph-csi-drivers|cert-manager|cloudflare-tunnel-ingress-controller|cnpg|envoy|grafana|kube-prometheus-stack|loki|mariadb-operator|mariadb-operator-crds|mimir|rook-ceph|spegel|step-ca|step-issuer|tempo"}) * 0)[15m:1m])
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
@@ -27615,9 +27625,15 @@ spec:
                       type: threshold
                 noDataState: OK
                 execErrState: Alerting
-                for: 5m
+                for: 0s
+                keepFiringFor: 15m
                 annotations:
-                  summary: "Flux HelmRelease {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) is not Ready. Check: flux get helmrelease {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}"
+                  summary: "Flux HelmRelease {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) has not been Ready for 15 minutes."
+                  problem: "HelmRelease >15 min nicht Ready"
+                  object_label: "Release"
+                  object: "{{ `{{ $labels.name }}` }}"
+                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  check_command: "flux get helmrelease -A"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
                   severity: critical
@@ -27681,6 +27697,9 @@ spec:
                 for: 5m
                 annotations:
                   summary: "No successful CloudNativePG (Postgres) backup in over 24h."
+                  problem: "Kein Backup seit über 24 h"
+                  location: "cnpg-system"
+                  check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: warning
@@ -27739,6 +27758,9 @@ spec:
                 for: 5m
                 annotations:
                   summary: "CloudNativePG's most recent backup attempt failed (a failure timestamp is newer than the last successful one)."
+                  problem: "Backup-Versuch fehlgeschlagen"
+                  location: "cnpg-system"
+                  check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: warning
@@ -27793,7 +27815,10 @@ spec:
                 annotations:
                   # No dashboard_url: the mariadb-galera dashboard (gnetId 13106) covers
                   # cluster health, not backup jobs, so it wouldn't add useful context here.
-                  summary: "The mariadb-galera-backup CronJob's most recent Job run failed. Check: kubectl get jobs -n mariadb-galera"
+                  summary: "The mariadb-galera-backup CronJob's most recent Job run failed."
+                  problem: "Backup-CronJob fehlgeschlagen"
+                  location: "mariadb-galera"
+                  check_command: "kubectl -n mariadb-galera get jobs"
                 labels:
                   severity: warning
           - orgId: 1
@@ -27812,7 +27837,8 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      # Aggregating to (persistentvolumeclaim, node) is what the Discord template needs and keeps a pod reschedule (new instance label) from spawning a second alert instance.
+                      expr: max by (persistentvolumeclaim, node) (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
@@ -27850,7 +27876,12 @@ spec:
                 execErrState: Alerting
                 for: 10m
                 annotations:
-                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 80% capacity. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 80% capacity."
+                  problem: "PVC über 80 % belegt"
+                  object_label: "PVC"
+                  object: "{{ `{{ $labels.persistentvolumeclaim }}` }}"
+                  location: "{{ `{{ $labels.node }}` }}"
+                  check_command: "kubectl -n mariadb-galera get pvc"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
                 labels:
                   severity: warning
@@ -27865,7 +27896,7 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      expr: (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+                      expr: max by (persistentvolumeclaim, node) (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
                       instant: true
                       intervalMs: 1000
                       maxDataPoints: 43200
@@ -27903,7 +27934,12 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 90% capacity and at risk of filling up. Check: kubectl get pvc -n mariadb-galera; kubectl exec -n mariadb-galera <matching pod> -- df -h /var/lib/mysql"
+                  summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 90% capacity and at risk of filling up."
+                  problem: "PVC über 90 % belegt"
+                  object_label: "PVC"
+                  object: "{{ `{{ $labels.persistentvolumeclaim }}` }}"
+                  location: "{{ `{{ $labels.node }}` }}"
+                  check_command: "kubectl -n mariadb-galera get pvc"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
                 labels:
                   severity: critical
@@ -27952,11 +27988,16 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
+                # Only rule kept as the sentinel for "Ceph telemetry is gone": ceph_health_status was
+                # present 40319/40321 min in 28 days (longest gap 1 min), so for: 10m cannot blip-fire.
                 noDataState: Alerting
                 execErrState: Alerting
                 for: 10m
                 annotations:
-                  summary: "Ceph cluster health is not HEALTH_OK (HEALTH_WARN or worse). Check: ceph -s (or kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail)"
+                  summary: "Ceph cluster health is not HEALTH_OK (HEALTH_WARN or worse)."
+                  problem: "Ceph nicht HEALTH_OK"
+                  location: "rook-ceph-fr01"
+                  check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
                 labels:
                   severity: warning
@@ -28005,11 +28046,14 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
-                noDataState: Alerting
+                noDataState: OK
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "Ceph cluster health is HEALTH_ERR. Check: ceph -s (or kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail)"
+                  summary: "Ceph cluster health is HEALTH_ERR."
+                  problem: "Ceph HEALTH_ERR"
+                  location: "rook-ceph-fr01"
+                  check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
                 labels:
                   severity: critical
@@ -28058,14 +28102,17 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
-                noDataState: Alerting
+                noDataState: OK
                 execErrState: Alerting
                 for: 10m
                 annotations:
                   # Baseline observed 2026-07-18 was 0.02-0.3 req/s; a real RGW degradation
                   # incident (Rook 1.20 upgrade, S3 access broken for non-owner users) would
                   # show as a sustained multi-request/s error rate, not baseline noise.
-                  summary: "RGW failed request rate is elevated (baseline is <1/s). This is the class of failure that broke S3 access for backups/Loki/Mimir/Postgres WAL during the Rook 1.20 upgrade incident. Check: kubectl -n rook-ceph-fr01 logs -l app=rook-ceph-rgw --tail=200"
+                  summary: "RGW failed request rate is elevated (baseline is <1/s). This is the class of failure that broke S3 access for backups/Loki/Mimir/Postgres WAL during the Rook 1.20 upgrade incident."
+                  problem: "RGW-Fehlerrate erhöht"
+                  location: "rook-ceph-fr01"
+                  check_command: "kubectl -n rook-ceph-fr01 logs -l app=rook-ceph-rgw --tail=200"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
                 labels:
                   severity: warning
@@ -28119,11 +28166,14 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
-                noDataState: Alerting
+                noDataState: OK
                 execErrState: Alerting
                 for: 10m
                 annotations:
-                  summary: "The most-full Ceph OSD is above 80% used. Ceph's own nearfull/backfillfull thresholds trip around here and will start rejecting large S3 uploads (InsufficientCapacity) before HEALTH_WARN fires. Check: kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
+                  summary: "The most-full Ceph OSD is above 80% used. Ceph's own nearfull/backfillfull thresholds trip around here and will start rejecting large S3 uploads (InsufficientCapacity) before HEALTH_WARN fires."
+                  problem: "OSD über 80 % belegt"
+                  location: "rook-ceph-fr01"
+                  check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
                 labels:
                   severity: warning
@@ -28172,11 +28222,14 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
-                noDataState: Alerting
+                noDataState: OK
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "The most-full Ceph OSD is above 90% used -- at or past Ceph's backfillfull threshold, new writes to affected pools (including S3/RGW uploads) will start being rejected. Check: kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df; ceph health detail"
+                  summary: "The most-full Ceph OSD is above 90% used -- at or past Ceph's backfillfull threshold, new writes to affected pools (including S3/RGW uploads) will start being rejected."
+                  problem: "OSD über 90 % belegt"
+                  location: "rook-ceph-fr01"
+                  check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
                 labels:
                   severity: critical
@@ -28230,13 +28283,16 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
-                noDataState: Alerting
+                noDataState: OK
                 execErrState: Alerting
                 for: 10m
                 annotations:
                   # Threshold is against the live max_connections setting (queried dynamically),
                   # not a hardcoded value - stays correct if the setting is changed again.
-                  summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before."
+                  problem: "Postgres-Verbindungen über 80 %"
+                  location: "cnpg-system"
+                  check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: warning
@@ -28285,11 +28341,14 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
-                noDataState: Alerting
+                noDataState: OK
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool. Check: kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -c \"select datname, state, count(*) from pg_stat_activity group by 1,2 order by 3 desc;\""
+                  summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool."
+                  problem: "Postgres-Verbindungen über 90 %"
+                  location: "cnpg-system"
+                  check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
                 labels:
                   severity: critical
@@ -28340,13 +28399,18 @@ spec:
                       type: threshold
                 noDataState: Alerting
                 execErrState: Alerting
-                for: 2m
+                # In 28 days wsrep_cluster_size was below 3 for 7 minutes total, in exactly one
+                # episode >=2m and none >=5m - so 2m paged monthly for a rolling restart.
+                for: 5m
                 annotations:
                   # min() across all 3 nodes' own view of cluster size - a node that loses
                   # connectivity to its peers (e.g. the Flannel host-gw/MTU incident) reports a
                   # smaller cluster size on its own, so this catches split-brain, not just a
                   # fully-down node.
-                  summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained. Check: kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%';\""
+                  summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained."
+                  problem: "Galera-Cluster unter 3 Knoten"
+                  location: "mariadb-galera"
+                  check_command: "kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%'\""
                   dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
                 labels:
                   severity: critical
@@ -28366,10 +28430,7 @@ spec:
                     datasourceUid: mimir
                     model:
                       editorMode: code
-                      # kube_pod_deletion_timestamp has NO series at all when nothing is
-                      # terminating (confirmed live) - "OR vector(0)" turns that healthy state
-                      # into a real 0 instead of "no data", which matters because this rule uses
-                      # noDataState: Alerting.
+                      # "OR vector(0)" always yields a series, so the noDataState path is unreachable here.
                       expr: count(time() - kube_pod_deletion_timestamp > 900) OR vector(0)
                       instant: true
                       intervalMs: 1000
@@ -28404,11 +28465,13 @@ spec:
                       maxDataPoints: 43200
                       refId: B
                       type: threshold
-                noDataState: Alerting
+                noDataState: OK
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before. Check: kubectl get pods -A --field-selector=status.phase!=Running | grep Terminating"
+                  summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before."
+                  problem: "Pods hängen in Terminating"
+                  check_command: "kubectl get pods -A | grep Terminating"
                 labels:
                   severity: warning
           - orgId: 1
@@ -28473,7 +28536,10 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires. Check: kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
+                  summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires."
+                  problem: "Keine Kubelet-Metriken in Mimir"
+                  location: "grafana"
+                  check_command: "kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
                 labels:
                   severity: critical
           - orgId: 1
@@ -28537,7 +28603,11 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "Node {{ `{{ $labels.node }}` }} is NotReady or Unreachable. Check: kubectl get node {{ `{{ $labels.node }}` }} -o wide; kubectl describe node {{ `{{ $labels.node }}` }} | tail -30"
+                  summary: "Node {{ `{{ $labels.node }}` }} is NotReady or Unreachable."
+                  problem: "Node NotReady/Unreachable"
+                  object_label: "Node"
+                  object: "{{ `{{ $labels.node }}` }}"
+                  check_command: "kubectl get nodes -o wide"
                 labels:
                   severity: critical
               - uid: kubelet-down
@@ -28593,7 +28663,11 @@ spec:
                 execErrState: Alerting
                 for: 5m
                 annotations:
-                  summary: "Kubelet on node {{ `{{ $labels.node }}` }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired. Check: talosctl -n {{ `{{ $labels.node }}` }} service kubelet status"
+                  summary: "Kubelet on node {{ `{{ $labels.node }}` }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired."
+                  problem: "Kubelet wird nicht gescrapt"
+                  object_label: "Node"
+                  object: "{{ `{{ $labels.node }}` }}"
+                  check_command: "kubectl get nodes -o wide"
                 labels:
                   severity: critical
               - uid: node-clock-unsynchronised
@@ -28651,7 +28725,11 @@ spec:
                 execErrState: Alerting
                 for: 15m
                 annotations:
-                  summary: "Clock on {{ `{{ $labels.instance }}` }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback. Check: talosctl -n <node> read /sys/class/ptp/ptp0/clock_name; talosctl -n <node> dmesg | grep -i ptp"
+                  summary: "Clock on {{ `{{ $labels.instance }}` }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback."
+                  problem: "Uhr nicht synchronisiert"
+                  object_label: "Node"
+                  object: "{{ `{{ $labels.instance }}` }}"
+                  check_command: "talosctl -n <node> time"
                 labels:
                   severity: warning
               - uid: node-clock-offset-high
@@ -28706,7 +28784,11 @@ spec:
                 execErrState: Alerting
                 for: 15m
                 annotations:
-                  summary: "Clock offset on {{ `{{ $labels.instance }}` }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock. Check: talosctl -n <node> time"
+                  summary: "Clock offset on {{ `{{ $labels.instance }}` }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock."
+                  problem: "Uhr-Offset über 50 ms"
+                  object_label: "Node"
+                  object: "{{ `{{ $labels.instance }}` }}"
+                  check_command: "talosctl -n <node> time"
                 labels:
                   severity: warning
           - orgId: 1
@@ -28769,7 +28851,12 @@ spec:
                 execErrState: Alerting
                 for: 1h
                 annotations:
-                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 14 days and has not renewed. Check: kubectl describe certificate {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}; kubectl get certificaterequest -n {{ `{{ $labels.exported_namespace }}` }}"
+                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 14 days and has not renewed."
+                  problem: "Zertifikat läuft in <14 Tagen ab"
+                  object_label: "Zertifikat"
+                  object: "{{ `{{ $labels.name }}` }}"
+                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  check_command: "kubectl get certificate -A | grep -v True"
                 labels:
                   severity: warning
               - uid: certificate-expiring-critical
@@ -28821,7 +28908,12 @@ spec:
                 execErrState: Alerting
                 for: 15m
                 annotations:
-                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 3 days. Renewal has failed. Check: kubectl describe certificate {{ `{{ $labels.name }}` }} -n {{ `{{ $labels.exported_namespace }}` }}; kubectl -n cert-manager logs deploy/cert-manager --tail=100"
+                  summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 3 days. Renewal has failed."
+                  problem: "Zertifikat läuft in <3 Tagen ab"
+                  object_label: "Zertifikat"
+                  object: "{{ `{{ $labels.name }}` }}"
+                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  check_command: "kubectl get certificate -A | grep -v True"
                 labels:
                   severity: critical
     resources:
