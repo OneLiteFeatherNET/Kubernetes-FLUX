@@ -27511,8 +27511,9 @@ spec:
             group_by: ['alertname']
             # A full evaluation period, so all instances of a rule land in ONE message.
             group_wait: 1m
-            # Minimum gap between two messages for the same alertname when group membership changes.
-            group_interval: 15m
+            # Membership churn is fixed at the source, so no routing damping is needed here; 5m
+            # halves both the RESOLVED delay and the wait for a newly added object.
+            group_interval: 5m
             # A repeat carries no new information; two people, no on-call rotation.
             repeat_interval: 24h
       rules.yaml:
