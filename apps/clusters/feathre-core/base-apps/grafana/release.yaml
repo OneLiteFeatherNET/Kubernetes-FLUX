@@ -27479,25 +27479,29 @@ spec:
       templates.yaml:
         apiVersion: 1
         templates:
-          # discord.message prints severity/Rule/Dashboard once per notification group (not once
-          # per instance) via .CommonLabels/.CommonAnnotations, which only stays correct as long as
-          # every alert rule keeps severity and dashboard_url static (not templated per-$labels)
-          # and rule titles stay unique (group_by: ['alertname'] in policies.yaml). Violating either
-          # doesn't error - the affected line is just silently dropped from the notification.
+          # Static annotations (problem/object_label/check_command/location) are read from (index .Alerts 0),
+          # so a rule must never template them per-$labels - a wrong instance would silently supply the value.
+          # The effective template must contain no backtick (it would end the Helm raw string) and no single
+          # quote (toYaml may single-quote a scalar). Discord hard-truncates message at 2000 runes, which would
+          # rip the code fence open - hence the 8-instance cap. printf widths count runes, not bytes.
           - name: discord.title
             template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
           - name: discord.message
             template: |
-              {{ `{{ define "discord.message" }}` }}{{ `{{ if .CommonLabels.severity }}` }}severity: `{{ `{{ .CommonLabels.severity }}` }}`
-              {{ `{{ end }}` }}🔗 Rule: <{{ `{{ (index .Alerts 0).GeneratorURL }}` }}>
-              {{ `{{ if .CommonAnnotations.dashboard_url }}` }}📊 Dashboard: <{{ `{{ .CommonAnnotations.dashboard_url }}` }}>
-              {{ `{{ end }}` }}
-
-              {{ `{{ if gt (len .Alerts.Firing) 0 }}` }}Firing ({{ `{{ len .Alerts.Firing }}` }}):
-              {{ `{{ range .Alerts.Firing }}` }}• {{ `{{ reReplaceAll "^(.*?\\.) Check:.*$" "$1" .Annotations.summary }}` }}
-              {{ `{{ end }}` }}{{ `{{ end }}` }}{{ `{{ if gt (len .Alerts.Resolved) 0 }}` }}Resolved ({{ `{{ len .Alerts.Resolved }}` }}):
-              {{ `{{ range .Alerts.Resolved }}` }}• {{ `{{ reReplaceAll "^(.*?\\.) Check:.*$" "$1" .Annotations.summary }}` }}
-              {{ `{{ end }}` }}{{ `{{ end }}` }}{{ `{{ end }}` }}
+              {{ `{{ define "discord.message" }}{{ $f := index .Alerts 0 }}{{ $loc := .CommonAnnotations.location }}{{ $age := reReplaceAll "^(([0-9]+h)?([0-9]+m)?).*$" "$1" (printf "%s" (time.Now.Sub $f.StartsAt)) }}` }}```
+              {{ `{{ printf "%-12s" "Problem" }}{{ if $f.Annotations.problem }}{{ $f.Annotations.problem }}{{ else }}{{ $f.Annotations.summary }}{{ end }}` }}
+              {{ `{{ if $f.Labels.severity }}{{ printf "%-12s" "Schwere" }}{{ $f.Labels.severity }}` }}
+              {{ `{{ end }}{{ if eq .Status "firing" }}{{ printf "%-12s" "Seit" }}{{ date "15:04" (tz "Europe/Berlin" $f.StartsAt) }} Uhr  ({{ if $age }}{{ $age }}{{ else }}<1m{{ end }})` }}
+              {{ `{{ else if not $f.EndsAt.IsZero }}{{ printf "%-12s" "Behoben" }}{{ date "15:04" (tz "Europe/Berlin" $f.EndsAt) }} Uhr` }}
+              {{ `{{ end }}{{ if gt (len .Alerts) 1 }}{{ printf "%-12s" "Betroffen" }}{{ if gt (len .Alerts.Firing) 0 }}{{ len .Alerts.Firing }} aktiv{{ if gt (len .Alerts.Resolved) 0 }}, {{ end }}{{ end }}{{ if gt (len .Alerts.Resolved) 0 }}{{ len .Alerts.Resolved }} behoben{{ end }}` }}
+              {{ `{{ end }}{{ if $loc }}{{ printf "%-12s" "Ort" }}{{ $loc }}` }}
+              {{ `{{ end }}{{ if and $f.Annotations.object_label $f.Annotations.object }}────────────────────────────────────────────` }}
+              {{ `{{ range $i, $a := .Alerts }}{{ if lt $i 8 }}{{ if eq $i 0 }}{{ printf "%-12s" $f.Annotations.object_label }}{{ else }}{{ printf "%-12s" "" }}{{ end }}{{ if $loc }}{{ $a.Annotations.object }}{{ else if $a.Annotations.location }}{{ printf "%-23.22s" $a.Annotations.object }}{{ $a.Annotations.location }}{{ else }}{{ $a.Annotations.object }}{{ end }}{{ if eq $a.Status "resolved" }}  (behoben){{ end }}` }}
+              {{ `{{ end }}{{ end }}{{ if gt (len .Alerts) 8 }}{{ printf "%-12s" "" }}… weitere ausgeblendet ({{ len .Alerts }} insgesamt)` }}
+              {{ `{{ end }}{{ end }}{{ if $f.Annotations.check_command }}────────────────────────────────────────────` }}
+              {{ `{{ printf "%-12s" "Prüfen" }}{{ $f.Annotations.check_command }}` }}
+              {{ `{{ end }}` }}```
+              {{ `🔗 [Regel](<{{ $f.GeneratorURL }}>){{ if $f.Annotations.dashboard_url }}  ·  📊 [Dashboard](<{{ $f.Annotations.dashboard_url }}>){{ end }}{{ end }}` }}
       policies.yaml:
         apiVersion: 1
         policies:
