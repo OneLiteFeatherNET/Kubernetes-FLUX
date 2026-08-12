@@ -27,6 +27,10 @@ spec:
       name: grafana-discord
       valuesKey: webhookUrl
       targetPath: alerting.contactpoints\.yaml.secret.contactPoints[0].receivers[0].settings.url
+    - kind: Secret
+      name: grafana-discord
+      valuesKey: webhookUrl
+      targetPath: alerting.contactpoints\.yaml.secret.contactPoints[1].receivers[0].settings.url
   values:
     podLabels:
       logs.onelitefeather.net/env: prod
@@ -27479,6 +27483,17 @@ spec:
                     httpMethod: POST
                     payload:
                       template: '{{ `{{ template "discord.payload" . }}` }}'
+            # Fault-tolerant path for the meta alarms: Grafana default rendering, deliberately
+            # tied to no template, so a template error cannot take this receiver down with it.
+            # Same Discord channel.
+            - orgId: 1
+              name: discord-fallback
+              receivers:
+                - uid: discord_fallback
+                  type: discord
+                  settings:
+                    url: "placeholder-overwritten-by-valuesFrom"
+                    use_discord_username: true
       templates.yaml:
         apiVersion: 1
         templates:
@@ -27563,6 +27578,15 @@ spec:
             group_interval: 5m
             # A repeat carries no new information; two people, no on-call rotation.
             repeat_interval: 24h
+            # The meta alarm must not travel the path it reports as broken, so it goes to the
+            # fault-tolerant discord contact point. Everything else falls through to discord.
+            # Prometheus-style matchers, NOT object_matchers: the chart re-serializes values with
+            # toYaml, which emits the "=" of an object_matchers triple as a bare scalar that YAML
+            # then resolves to the special value tag instead of the string "=".
+            routes:
+              - receiver: discord-fallback
+                matchers:
+                  - alertname = "Alert notifications failing"
       rules.yaml:
         apiVersion: 1
         groups:
@@ -28655,6 +28679,68 @@ spec:
                   problem: "Keine kube-state-metrics-Daten"
                   location: "monitoring"
                   check_command: "kubectl -n monitoring get pods -l app.kubernetes.io/name=kube-state-metrics"
+                labels:
+                  severity: critical
+              - uid: alert-notifications-failing
+                title: Alert notifications failing
+                condition: B
+                data:
+                  - refId: A
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: mimir
+                    model:
+                      editorMode: code
+                      # Both counters are registered WithSkipZeroValueMetrics, so they do not exist
+                      # at all until they were once >0 - a bare sum() would read as NoData instead
+                      # of 0. Hence "or vector(0)" per counter. Both are summed because the webhook
+                      # notifier failure path may bump either one.
+                      expr: (sum(increase(grafana_alerting_notification_requests_failed_total[10m])) or vector(0)) + (sum(increase(grafana_alerting_notifications_failed_total[10m])) or vector(0))
+                      instant: true
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      range: false
+                      refId: A
+                  - refId: B
+                    relativeTimeRange:
+                      from: 600
+                      to: 0
+                    datasourceUid: '-100'
+                    model:
+                      conditions:
+                        - evaluator:
+                            params:
+                              - 0
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                              - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                      datasource:
+                        type: __expr__
+                        uid: '-100'
+                      expression: A
+                      intervalMs: 1000
+                      maxDataPoints: 43200
+                      refId: B
+                      type: threshold
+                # "or vector(0)" always yields a value while Mimir is reachable, so NoData here only
+                # means the datasource itself is down - already covered by observability-pipeline-no-data,
+                # and firing this rule on it would falsely claim notifications are broken.
+                noDataState: OK
+                execErrState: Alerting
+                for: 5m
+                annotations:
+                  summary: "Grafana failed to deliver alert notifications, so Discord messages are being dropped - the webhook notifier does not retry. Alerts themselves keep evaluating and stay visible in the Grafana alerting UI, so use it as the source of truth until this clears."
+                  problem: "Discord-Zustellung schlägt fehl"
+                  location: "grafana"
+                  check_command: "kubectl -n grafana logs -l app.kubernetes.io/name=grafana --tail=200 | grep -i \"Notify for alerts failed\""
                 labels:
                   severity: critical
           - orgId: 1
