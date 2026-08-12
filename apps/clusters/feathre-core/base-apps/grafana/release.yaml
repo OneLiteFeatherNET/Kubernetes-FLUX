@@ -27466,29 +27466,73 @@ spec:
         secret:
           apiVersion: 1
           contactPoints:
+            # type: webhook, not discord - only webhook supports settings.payload.template (Grafana 12.0+).
+            # settings.url stays at this exact YAML position so the Flux valuesFrom targetPath keeps resolving.
+            # No username in the payload, so Discord uses the name configured on the webhook itself.
             - orgId: 1
               name: discord
               receivers:
                 - uid: discord_webhook
-                  type: discord
+                  type: webhook
                   settings:
                     url: "placeholder-overwritten-by-valuesFrom"
-                    use_discord_username: true
-                    title: '{{ `{{ template "discord.title" . }}` }}'
-                    message: '{{ `{{ template "discord.message" . }}` }}'
+                    httpMethod: POST
+                    payload:
+                      template: '{{ `{{ template "discord.payload" . }}` }}'
       templates.yaml:
         apiVersion: 1
         templates:
-          # Static annotations (problem/object_label/object_key/location_key/check_command/location) are read
-          # from (index .Alerts 0), so a rule must never template them per-$labels - a wrong instance would
-          # silently supply the value. The per-instance table columns are read from $a.Labels via the *_key
-          # names, never from a $labels-templated annotation: Grafana 12.3 restores the RAW annotation
-          # template after a restart (grafana#114973), while instance labels are persisted correctly.
-          # The effective template must contain no backtick (it would end the Helm raw string) and no single
-          # quote (toYaml may single-quote a scalar). Discord hard-truncates message at 2000 runes, which would
-          # rip the code fence open - hence the 8-instance cap. printf widths count runes, not bytes.
+          # Static annotations come from (index .Alerts 0) and must never be templated per-$labels in
+          # a rule; per-instance values come from index $a.Labels (Labels, never templated annotations):
+          # after a restart warmStateCache hands back the RAW annotation template (grafana#114973,
+          # fixed in 12.4.x), while instance labels survive correctly.
+          # Three escaping layers (Helm raw string -> chart toYaml/tpl -> Go template): the effective
+          # template must contain no backtick (use "\u0060" - Helm ignores \u in a raw string, Go
+          # string literals do not), no single quote (toYaml may single-quote a scalar), and no line
+          # may end in whitespace.
+          # The payload is built via coll.Dict/coll.Slice and serialized by data.ToJSON (= json.Marshal),
+          # never concatenated, so no value can break the JSON. Every printf precision is a Discord
+          # limit guard; the 12-instance cap follows from field.value <= 1024 (worst case 71 runes/line
+          # x 12 + 38 = 890). printf counts runes. No arithmetic is available (no sprig, no math.Sub).
           - name: discord.title
-            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
+            template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}{{ `{{ if eq (index .CommonLabels "severity") "warning" }}` }}🟠{{ `{{ else }}` }}🔴{{ `{{ end }}` }} FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ index .CommonLabels "alertname" }}` }}{{ `{{ end }}` }}'
+          - name: discord.payload
+            template: |
+              {{ `{{- define "discord.payload" -}}` }}
+              {{ `{{- $f := index .Alerts 0 -}}` }}
+              {{ `{{- $ok := $f.Annotations.object_key -}}` }}
+              {{ `{{- $lk := $f.Annotations.location_key -}}` }}
+              {{ `{{- $loc := or (and $lk (index .CommonLabels $lk)) $f.Annotations.location -}}` }}
+              {{ `{{- $age := reReplaceAll "^(([0-9]+h)?([0-9]+m)?).*$" "$1" (printf "%s" (time.Now.Sub $f.StartsAt)) -}}` }}
+              {{ `{{- $sev := index $f.Labels "severity" -}}` }}
+              {{ `{{- $bt := "\u0060" -}}` }}
+              {{ `{{- $color := 15548997 -}}{{- if eq .Status "resolved" -}}{{- $color = 5763719 -}}{{- else if eq $sev "warning" -}}{{- $color = 16426522 -}}{{- end -}}` }}
+              {{ `{{- $ts := $f.StartsAt -}}{{- if and (eq .Status "resolved") (not $f.EndsAt.IsZero) -}}{{- $ts = $f.EndsAt -}}{{- end -}}` }}
+              {{ `{{- $desc := or $f.Annotations.problem $f.Annotations.summary "(ohne Beschreibung)" -}}` }}
+              {{ `{{- if $f.Annotations.dashboard_url -}}{{- $desc = printf "%s\n\n[📊 Dashboard öffnen](<%s>)" $desc $f.Annotations.dashboard_url -}}{{- end -}}` }}
+              {{ `{{- $fields := coll.Slice -}}` }}
+              {{ `{{- if $sev -}}{{- $fields = coll.Append (coll.Dict "name" "Schwere" "value" $sev "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if $loc -}}{{- $fields = coll.Append (coll.Dict "name" "Ort" "value" (printf "%.60s" $loc) "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if eq .Status "firing" -}}{{- $fields = coll.Append (coll.Dict "name" "Seit" "value" (or $age "<1m") "inline" true) $fields -}}{{- else -}}{{- $fields = coll.Append (coll.Dict "name" "Behoben" "value" (printf "%s Uhr" (date "15:04" (tz "Europe/Berlin" $ts))) "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if and $f.Annotations.object_label $ok -}}` }}
+              {{ `{{- $lines := "" -}}` }}
+              {{ `{{- range $i, $a := .Alerts -}}{{- if lt $i 12 -}}` }}
+              {{ `{{- $o := index $a.Labels $ok -}}{{- if not $o -}}{{- $o = "?" -}}{{- end -}}` }}
+              {{ `{{- $line := printf "%s%.60s%s" $bt $o $bt -}}` }}
+              {{ `{{- if and (not $loc) $lk -}}{{- $line = printf "%s%-27.26s%s %.30s" $bt $o $bt (index $a.Labels $lk) -}}{{- end -}}` }}
+              {{ `{{- if eq $a.Status "resolved" -}}{{- $line = printf "%s  (behoben)" $line -}}{{- end -}}` }}
+              {{ `{{- if eq $i 0 -}}{{- $lines = $line -}}{{- else -}}{{- $lines = printf "%s\n%s" $lines $line -}}{{- end -}}` }}
+              {{ `{{- end -}}{{- end -}}` }}
+              {{ `{{- if gt (len .Alerts) 12 -}}{{- $lines = printf "%s\n… weitere ausgeblendet (%d insgesamt)" $lines (len .Alerts) -}}{{- end -}}` }}
+              {{ `{{- $label := $f.Annotations.object_label -}}{{- if gt (len .Alerts) 1 -}}{{- $label = printf "%s (%d)" $label (len .Alerts) -}}{{- end -}}` }}
+              {{ `{{- $fields = coll.Append (coll.Dict "name" (printf "%.100s" $label) "value" (printf "%.1024s" $lines) "inline" false) $fields -}}` }}
+              {{ `{{- else if gt (len .Alerts) 1 -}}{{- $fields = coll.Append (coll.Dict "name" "Betroffen" "value" (printf "%d Instanzen" (len .Alerts)) "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if $f.Annotations.check_command -}}{{- $fields = coll.Append (coll.Dict "name" "Prüfen" "value" (printf "%.900s" (printf "%s%s%s" $bt $f.Annotations.check_command $bt)) "inline" false) $fields -}}{{- end -}}` }}
+              {{ `{{- $embed := coll.Dict "title" (printf "%.200s" (tmpl.Exec "discord.title" .)) "url" (or $f.GeneratorURL .ExternalURL) "color" $color "description" (printf "%.1000s" $desc) "timestamp" (date "2006-01-02T15:04:05Z07:00" $ts) "fields" $fields "footer" (coll.Dict "text" (printf "%.100s" (or (index $f.Labels "grafana_folder") "Grafana"))) -}}` }}
+              {{ `{{- data.ToJSON (coll.Dict "embeds" (coll.Slice $embed)) }}` }}
+              {{ `{{- end -}}` }}
+          # Unused while the webhook payload template overrides title/message; kept as a rollback
+          # target (type: discord restores it as-is). Delete once the embeds are a week green.
           - name: discord.message
             template: |
               {{ `{{ define "discord.message" }}{{ $f := index .Alerts 0 }}{{ $ok := $f.Annotations.object_key }}{{ $lk := $f.Annotations.location_key }}{{ $loc := or (and $lk (index .CommonLabels $lk)) .CommonAnnotations.location }}{{ $age := reReplaceAll "^(([0-9]+h)?([0-9]+m)?).*$" "$1" (printf "%s" (time.Now.Sub $f.StartsAt)) }}` }}```
