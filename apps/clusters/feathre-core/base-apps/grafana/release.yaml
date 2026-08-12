@@ -27479,8 +27479,11 @@ spec:
       templates.yaml:
         apiVersion: 1
         templates:
-          # Static annotations (problem/object_label/check_command/location) are read from (index .Alerts 0),
-          # so a rule must never template them per-$labels - a wrong instance would silently supply the value.
+          # Static annotations (problem/object_label/object_key/location_key/check_command/location) are read
+          # from (index .Alerts 0), so a rule must never template them per-$labels - a wrong instance would
+          # silently supply the value. The per-instance table columns are read from $a.Labels via the *_key
+          # names, never from a $labels-templated annotation: Grafana 12.3 restores the RAW annotation
+          # template after a restart (grafana#114973), while instance labels are persisted correctly.
           # The effective template must contain no backtick (it would end the Helm raw string) and no single
           # quote (toYaml may single-quote a scalar). Discord hard-truncates message at 2000 runes, which would
           # rip the code fence open - hence the 8-instance cap. printf widths count runes, not bytes.
@@ -27488,15 +27491,15 @@ spec:
             template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}🔴 FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ .CommonLabels.alertname }}` }}{{ `{{ end }}` }}'
           - name: discord.message
             template: |
-              {{ `{{ define "discord.message" }}{{ $f := index .Alerts 0 }}{{ $loc := .CommonAnnotations.location }}{{ $age := reReplaceAll "^(([0-9]+h)?([0-9]+m)?).*$" "$1" (printf "%s" (time.Now.Sub $f.StartsAt)) }}` }}```
+              {{ `{{ define "discord.message" }}{{ $f := index .Alerts 0 }}{{ $ok := $f.Annotations.object_key }}{{ $lk := $f.Annotations.location_key }}{{ $loc := or (and $lk (index .CommonLabels $lk)) .CommonAnnotations.location }}{{ $age := reReplaceAll "^(([0-9]+h)?([0-9]+m)?).*$" "$1" (printf "%s" (time.Now.Sub $f.StartsAt)) }}` }}```
               {{ `{{ printf "%-12s" "Problem" }}{{ if $f.Annotations.problem }}{{ $f.Annotations.problem }}{{ else }}{{ $f.Annotations.summary }}{{ end }}` }}
               {{ `{{ if $f.Labels.severity }}{{ printf "%-12s" "Schwere" }}{{ $f.Labels.severity }}` }}
               {{ `{{ end }}{{ if eq .Status "firing" }}{{ printf "%-12s" "Seit" }}{{ date "15:04" (tz "Europe/Berlin" $f.StartsAt) }} Uhr  ({{ if $age }}{{ $age }}{{ else }}<1m{{ end }})` }}
               {{ `{{ else if not $f.EndsAt.IsZero }}{{ printf "%-12s" "Behoben" }}{{ date "15:04" (tz "Europe/Berlin" $f.EndsAt) }} Uhr` }}
               {{ `{{ end }}{{ if gt (len .Alerts) 1 }}{{ printf "%-12s" "Betroffen" }}{{ if gt (len .Alerts.Firing) 0 }}{{ len .Alerts.Firing }} aktiv{{ if gt (len .Alerts.Resolved) 0 }}, {{ end }}{{ end }}{{ if gt (len .Alerts.Resolved) 0 }}{{ len .Alerts.Resolved }} behoben{{ end }}` }}
               {{ `{{ end }}{{ if $loc }}{{ printf "%-12s" "Ort" }}{{ $loc }}` }}
-              {{ `{{ end }}{{ if and $f.Annotations.object_label $f.Annotations.object }}────────────────────────────────────────────` }}
-              {{ `{{ range $i, $a := .Alerts }}{{ if lt $i 8 }}{{ if eq $i 0 }}{{ printf "%-12s" $f.Annotations.object_label }}{{ else }}{{ printf "%-12s" "" }}{{ end }}{{ if $loc }}{{ $a.Annotations.object }}{{ else if $a.Annotations.location }}{{ printf "%-27.26s" $a.Annotations.object }}{{ $a.Annotations.location }}{{ else }}{{ $a.Annotations.object }}{{ end }}{{ if eq $a.Status "resolved" }}  (behoben){{ end }}` }}
+              {{ `{{ end }}{{ if and $f.Annotations.object_label $ok }}────────────────────────────────────────────` }}
+              {{ `{{ range $i, $a := .Alerts }}{{ if lt $i 8 }}{{ if eq $i 0 }}{{ printf "%-12s" $f.Annotations.object_label }}{{ else }}{{ printf "%-12s" "" }}{{ end }}{{ $o := index $a.Labels $ok }}{{ if $loc }}{{ $o }}{{ else if $lk }}{{ printf "%-27.26s" $o }}{{ index $a.Labels $lk }}{{ else }}{{ $o }}{{ end }}{{ if eq $a.Status "resolved" }}  (behoben){{ end }}` }}
               {{ `{{ end }}{{ end }}{{ if gt (len .Alerts) 8 }}{{ printf "%-12s" "" }}… weitere ausgeblendet ({{ len .Alerts }} insgesamt)` }}
               {{ `{{ end }}{{ end }}{{ if $f.Annotations.check_command }}────────────────────────────────────────────` }}
               {{ `{{ printf "%-12s" "Prüfen" }}{{ $f.Annotations.check_command }}` }}
@@ -27579,8 +27582,8 @@ spec:
                   summary: "Flux Kustomization {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) has not been Ready for 15 minutes."
                   problem: "Kustomization >15 min nicht Ready"
                   object_label: "Layer"
-                  object: "{{ `{{ $labels.name }}` }}"
-                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  object_key: "name"
+                  location_key: "exported_namespace"
                   check_command: "flux get kustomization -A"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
@@ -27640,8 +27643,8 @@ spec:
                   summary: "Flux HelmRelease {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) has not been Ready for 15 minutes."
                   problem: "HelmRelease >15 min nicht Ready"
                   object_label: "Release"
-                  object: "{{ `{{ $labels.name }}` }}"
-                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  object_key: "name"
+                  location_key: "exported_namespace"
                   check_command: "flux get helmrelease -A"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
                 labels:
@@ -27888,8 +27891,8 @@ spec:
                   summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 80% capacity."
                   problem: "PVC über 80 % belegt"
                   object_label: "PVC"
-                  object: "{{ `{{ $labels.persistentvolumeclaim }}` }}"
-                  location: "{{ `{{ $labels.node }}` }}"
+                  object_key: "persistentvolumeclaim"
+                  location_key: "node"
                   check_command: "kubectl -n mariadb-galera get pvc"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
                 labels:
@@ -27946,8 +27949,8 @@ spec:
                   summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 90% capacity and at risk of filling up."
                   problem: "PVC über 90 % belegt"
                   object_label: "PVC"
-                  object: "{{ `{{ $labels.persistentvolumeclaim }}` }}"
-                  location: "{{ `{{ $labels.node }}` }}"
+                  object_key: "persistentvolumeclaim"
+                  location_key: "node"
                   check_command: "kubectl -n mariadb-galera get pvc"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
                 labels:
@@ -28674,7 +28677,7 @@ spec:
                   summary: "Node {{ `{{ $labels.node }}` }} is NotReady or Unreachable."
                   problem: "Node NotReady/Unreachable"
                   object_label: "Node"
-                  object: "{{ `{{ $labels.node }}` }}"
+                  object_key: "node"
                   check_command: "kubectl get nodes -o wide"
                 labels:
                   severity: critical
@@ -28734,7 +28737,7 @@ spec:
                   summary: "Kubelet on node {{ `{{ $labels.node }}` }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired."
                   problem: "Kubelet wird nicht gescrapt"
                   object_label: "Node"
-                  object: "{{ `{{ $labels.node }}` }}"
+                  object_key: "node"
                   check_command: "kubectl get nodes -o wide"
                 labels:
                   severity: critical
@@ -28796,7 +28799,7 @@ spec:
                   summary: "Clock on {{ `{{ $labels.instance }}` }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback."
                   problem: "Uhr nicht synchronisiert"
                   object_label: "Node"
-                  object: "{{ `{{ $labels.instance }}` }}"
+                  object_key: "instance"
                   check_command: "talosctl -n <node> time"
                 labels:
                   severity: warning
@@ -28855,7 +28858,7 @@ spec:
                   summary: "Clock offset on {{ `{{ $labels.instance }}` }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock."
                   problem: "Uhr-Offset über 50 ms"
                   object_label: "Node"
-                  object: "{{ `{{ $labels.instance }}` }}"
+                  object_key: "instance"
                   check_command: "talosctl -n <node> time"
                 labels:
                   severity: warning
@@ -28922,8 +28925,8 @@ spec:
                   summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 14 days and has not renewed."
                   problem: "Zertifikat läuft in <14 Tagen ab"
                   object_label: "Zertifikat"
-                  object: "{{ `{{ $labels.name }}` }}"
-                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  object_key: "name"
+                  location_key: "exported_namespace"
                   check_command: "kubectl get certificate -A | grep -v True"
                 labels:
                   severity: warning
@@ -28979,8 +28982,8 @@ spec:
                   summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 3 days. Renewal has failed."
                   problem: "Zertifikat läuft in <3 Tagen ab"
                   object_label: "Zertifikat"
-                  object: "{{ `{{ $labels.name }}` }}"
-                  location: "{{ `{{ $labels.exported_namespace }}` }}"
+                  object_key: "name"
+                  location_key: "exported_namespace"
                   check_command: "kubectl get certificate -A | grep -v True"
                 labels:
                   severity: critical
