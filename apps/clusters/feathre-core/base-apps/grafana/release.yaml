@@ -27513,6 +27513,8 @@ spec:
             template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}{{ `{{ if eq (index .CommonLabels "severity") "warning" }}` }}🟠{{ `{{ else }}` }}🔴{{ `{{ end }}` }} FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ index .CommonLabels "alertname" }}` }}{{ `{{ end }}` }}'
           # Must open with "{{ define", never "{{- define": Grafana validates with \{\{\s*define, so a
           # trim marker makes it wrap the body in a SECOND define and provisioning crashes the pod.
+          # The embed url is only set when absolute: Grafana's own test alert yields a bare "?orgId=1"
+          # (no GeneratorURL base), and Discord rejects an embed with a relative url with HTTP 400.
           - name: discord.payload
             template: |
               {{ `{{ define "discord.payload" -}}` }}
@@ -27545,7 +27547,13 @@ spec:
               {{ `{{- $fields = coll.Append (coll.Dict "name" (printf "%.100s" $label) "value" (printf "%.1024s" $lines) "inline" false) $fields -}}` }}
               {{ `{{- else if gt (len .Alerts) 1 -}}{{- $fields = coll.Append (coll.Dict "name" "Betroffen" "value" (printf "%d Instanzen" (len .Alerts)) "inline" true) $fields -}}{{- end -}}` }}
               {{ `{{- if $f.Annotations.check_command -}}{{- $fields = coll.Append (coll.Dict "name" "Prüfen" "value" (printf "%.900s" (printf "%s%s%s" $bt $f.Annotations.check_command $bt)) "inline" false) $fields -}}{{- end -}}` }}
-              {{ `{{- $embed := coll.Dict "title" (printf "%.200s" (tmpl.Exec "discord.title" .)) "url" (or $f.GeneratorURL .ExternalURL) "color" $color "description" (printf "%.1000s" $desc) "timestamp" (date "2006-01-02T15:04:05Z07:00" $ts) "fields" $fields "footer" (coll.Dict "text" (printf "%.100s" (or (index $f.Labels "grafana_folder") "Grafana"))) -}}` }}
+              {{ `{{- $url := "" -}}{{- if match "^https?://" $f.GeneratorURL -}}{{- $url = $f.GeneratorURL -}}{{- else if match "^https?://" .ExternalURL -}}{{- $url = .ExternalURL -}}{{- end -}}` }}
+              {{ `{{- $title := printf "%.200s" (tmpl.Exec "discord.title" .) -}}` }}
+              {{ `{{- $desc = printf "%.1000s" $desc -}}` }}
+              {{ `{{- $tss := date "2006-01-02T15:04:05Z07:00" $ts -}}` }}
+              {{ `{{- $footer := coll.Dict "text" (printf "%.100s" (or (index $f.Labels "grafana_folder") "Grafana")) -}}` }}
+              {{ `{{- $embed := coll.Dict "title" $title "color" $color "description" $desc "timestamp" $tss "fields" $fields "footer" $footer -}}` }}
+              {{ `{{- if $url -}}{{- $embed = coll.Dict "title" $title "url" $url "color" $color "description" $desc "timestamp" $tss "fields" $fields "footer" $footer -}}{{- end -}}` }}
               {{ `{{- data.ToJSON (coll.Dict "embeds" (coll.Slice $embed)) }}` }}
               {{ `{{- end -}}` }}
           # Unused while the webhook payload template overrides title/message; kept as a rollback
