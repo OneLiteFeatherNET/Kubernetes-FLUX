@@ -27511,9 +27511,11 @@ spec:
           # x 12 + 38 = 890). printf counts runes. No arithmetic is available (no sprig, no math.Sub).
           - name: discord.title
             template: '{{ `{{ define "discord.title" }}` }}{{ `{{ if eq .Status "firing" }}` }}{{ `{{ if eq (index .CommonLabels "severity") "warning" }}` }}🟠{{ `{{ else }}` }}🔴{{ `{{ end }}` }} FIRING{{ `{{ if gt (len .Alerts.Firing) 1 }}` }} ({{ `{{ len .Alerts.Firing }}` }}x){{ `{{ end }}` }}{{ `{{ else }}` }}✅ RESOLVED{{ `{{ if gt (len .Alerts.Resolved) 1 }}` }} ({{ `{{ len .Alerts.Resolved }}` }}x){{ `{{ end }}` }}{{ `{{ end }}` }} · {{ `{{ index .CommonLabels "alertname" }}` }}{{ `{{ end }}` }}'
+          # Must open with "{{ define", never "{{- define": Grafana validates with \{\{\s*define, so a
+          # trim marker makes it wrap the body in a SECOND define and provisioning crashes the pod.
           - name: discord.payload
             template: |
-              {{ `{{- define "discord.payload" -}}` }}
+              {{ `{{ define "discord.payload" -}}` }}
               {{ `{{- $f := index .Alerts 0 -}}` }}
               {{ `{{- $ok := $f.Annotations.object_key -}}` }}
               {{ `{{- $lk := $f.Annotations.location_key -}}` }}
