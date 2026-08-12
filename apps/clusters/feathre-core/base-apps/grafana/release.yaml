@@ -27496,7 +27496,7 @@ spec:
               {{ `{{ end }}{{ if gt (len .Alerts) 1 }}{{ printf "%-12s" "Betroffen" }}{{ if gt (len .Alerts.Firing) 0 }}{{ len .Alerts.Firing }} aktiv{{ if gt (len .Alerts.Resolved) 0 }}, {{ end }}{{ end }}{{ if gt (len .Alerts.Resolved) 0 }}{{ len .Alerts.Resolved }} behoben{{ end }}` }}
               {{ `{{ end }}{{ if $loc }}{{ printf "%-12s" "Ort" }}{{ $loc }}` }}
               {{ `{{ end }}{{ if and $f.Annotations.object_label $f.Annotations.object }}────────────────────────────────────────────` }}
-              {{ `{{ range $i, $a := .Alerts }}{{ if lt $i 8 }}{{ if eq $i 0 }}{{ printf "%-12s" $f.Annotations.object_label }}{{ else }}{{ printf "%-12s" "" }}{{ end }}{{ if $loc }}{{ $a.Annotations.object }}{{ else if $a.Annotations.location }}{{ printf "%-23.22s" $a.Annotations.object }}{{ $a.Annotations.location }}{{ else }}{{ $a.Annotations.object }}{{ end }}{{ if eq $a.Status "resolved" }}  (behoben){{ end }}` }}
+              {{ `{{ range $i, $a := .Alerts }}{{ if lt $i 8 }}{{ if eq $i 0 }}{{ printf "%-12s" $f.Annotations.object_label }}{{ else }}{{ printf "%-12s" "" }}{{ end }}{{ if $loc }}{{ $a.Annotations.object }}{{ else if $a.Annotations.location }}{{ printf "%-27.26s" $a.Annotations.object }}{{ $a.Annotations.location }}{{ else }}{{ $a.Annotations.object }}{{ end }}{{ if eq $a.Status "resolved" }}  (behoben){{ end }}` }}
               {{ `{{ end }}{{ end }}{{ if gt (len .Alerts) 8 }}{{ printf "%-12s" "" }}… weitere ausgeblendet ({{ len .Alerts }} insgesamt)` }}
               {{ `{{ end }}{{ end }}{{ if $f.Annotations.check_command }}────────────────────────────────────────────` }}
               {{ `{{ printf "%-12s" "Prüfen" }}{{ $f.Annotations.check_command }}` }}
