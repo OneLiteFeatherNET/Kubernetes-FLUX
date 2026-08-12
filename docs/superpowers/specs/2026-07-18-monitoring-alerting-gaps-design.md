@@ -2,7 +2,7 @@
 
 > **Partially stale as of 2026-08-12:** the rule count and the `noDataState` cross-cutting decision
 > below no longer match the live rule set. The 5 rules this document was scoped against have grown
-> to **23 rules across 8 groups** (`core_services`, `backups`, `storage`, `databases`,
+> to **24 rules across 8 groups** (`core_services`, `backups`, `storage`, `databases`,
 > `cluster_health`, `observability`, `node_health`, `certificates`), covering most of the P0/P1
 > items below (implemented outside the commits this note is attached to). More directly: the
 > "every P0/P1 rule uses `noDataState: Alerting`" decision was **revised** for 6 of those rules

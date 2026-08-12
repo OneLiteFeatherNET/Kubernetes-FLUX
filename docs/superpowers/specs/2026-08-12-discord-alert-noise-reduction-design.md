@@ -1,7 +1,7 @@
 # Discord alert noise reduction & table layout — design
 
-**Date:** 2026-08-12
-**Status:** Shipped — commits `1c0ed60`, `8eee395`, `d7ea580`, `55ee41c` on
+**Date:** 2026-08-12 (updated same day after `455edcf`, `959f39a`)
+**Status:** Shipped — commits `1c0ed60`, `8eee395`, `d7ea580`, `55ee41c`, `455edcf`, `959f39a` on
 `apps/clusters/feathre-core/base-apps/grafana/release.yaml` (branch
 `feat/grafana-alert-noise-reduction`).
 
@@ -56,6 +56,12 @@ Expected load: **~13 Discord messages/week instead of ~630** (~98% reduction, co
 grouping-interval changes in Part 3). This is an estimate from replaying historical data against
 the new query — **check it against real traffic around 2026-08-19** (one week after shipping).
 
+**Detection latency: ~15–17 minutes, not 14–16.** `[15m:1m]` is left-open, so it evaluates 15
+points spanning **14 real minutes**, on top of which: `for: 0s` adds nothing; the `interval: 60s`
+evaluation cadence adds up to 60s of jitter; and routing's `group_wait: 1m` adds up to another 60s
+before the message actually sends. Best case ends up ~14–15 minutes, worst case ~16–17 minutes. An
+earlier pass at this number ("14–16 min") missed the `group_wait` contribution.
+
 The same `max by (...)` aggregation was applied to the two Galera PVC rules, so a pod reschedule
 (which changes the `instance` label) no longer spawns a second alert instance for the same PVC.
 
@@ -67,6 +73,35 @@ of the last 100 recorded state changes were MissingSeries/NoData — nearly as m
 `for:` crossings). The anchor term must fall **inside** the `[15m:1m]` subquery window, or the
 `min_over_time` has nothing to average outside of real not-ready samples and the anchor does
 nothing.
+
+### Verified against a real incident: overlapping-series false-alarm concern, cleared
+
+The obvious worry with `max by (exported_namespace, name)`: it collapses *all* series for an
+object, so if a `ready="True"` series and a `ready="False"` series exist for the same object at the
+same instant (e.g. during a kube-state-metrics staleness overlap), `max` returns `1` even though
+the object is healthy — a permanent false positive waiting to happen.
+
+This was checked against a real event, not just reasoned about, and the result clears the design —
+recorded here so the concern doesn't get re-raised from scratch:
+
+- `max_over_time((count by (exported_namespace, name)(gotk_resource_info{customresource_kind="Kustomization"}))[30d:1m])`
+  returns **2** for five objects (`base-apps`, `base-configs`, `base-controllers`, `controllers`,
+  `monitoring`); a 7-day window shows a steady 1 for the same objects — so the overlap event sits
+  between 7 and 30 days back.
+- Localised to **2026-08-04, ~08:30–09:30 UTC**, `revision` label `main@sha1:d50090a7…` —
+  commit `d50090a feat(rook): raise the bakery bucket quota to four`. An ordinary push triggered a
+  cascading reconcile of dependent layers.
+- Raw data for that hour shows exactly the feared pattern: all five objects briefly carried **three
+  co-existing series** (`ready="True"`, `="False"`, `="Unknown"`) with tightly interleaved
+  timestamps.
+- **The production expression, evaluated across 08:00–12:00 (241 points × 13 objects, 60s step):
+  returned 0 for all 13 objects throughout — no firing.** `min_over_time` requires all 15 embedded
+  minutes to be non-`True`; a brief transition overlap doesn't satisfy that.
+- **Open residual risk (suspected, not confirmed):** what was checked was staleness overlap from a
+  *single* kube-state-metrics pod. The other plausible case — two pods running in parallel during a
+  rolling restart, each reporting a contradictory `ready` value at the exact same timestamp — was
+  not resolved down to the second. Over 30 days the maximum concurrent-pod count was 2, but that was
+  never correlated against a concrete `gotk_resource_info` overlap.
 
 ### `keepFiringFor` — the expensive trap
 
@@ -112,8 +147,10 @@ restart, not a real degradation.
 
 ## Part 2 — Structured annotations replace regex-sliced `summary`
 
-All 23 rules touched by `1c0ed60` gain five new annotations: `problem`, `object_label`, `object`,
-`location`, `check_command` (`dashboard_url` already existed on most). The Discord template reads
+All 23 rules that existed at the time of `1c0ed60` gain five new annotations: `problem`,
+`object_label`, `object`, `location`, `check_command` (`dashboard_url` already existed on most).
+The 24th rule (`kube-state-metrics-down`, added later by `455edcf` — see below) was written
+directly against this convention, so all **24** rules now carry it. The Discord template reads
 these directly instead of regex-stripping the trailing `Check: ...` clause out of `summary`, which
 was the old design's approach (see the superseded doc).
 
@@ -130,13 +167,39 @@ firing instance **cannot do that** — it's static. Where that specific value ma
 rules' `flux get kustomization -A` / `flux get helmrelease -A`), the command stays generic and the
 concrete object is read from the row above it in the rendered table instead.
 
-## Part 3 — Grouping/timing (`d7ea580`)
+**Concrete example of what the invariant costs:** the clock-drift rules' `check_command` uses the
+literal placeholder `<node>` rather than `{{ $labels.instance }}`. A reviewer proposed swapping in
+`$labels.instance` for a directly runnable command; that was rejected — `check_command` is read via
+`(index .Alerts 0)`, so templating it against `$labels` would make the whole notification group
+show instance 0's node for every row, silently. `<node>` is the correct static answer; the real
+value per instance is already visible one line up, in the object row.
 
-| Setting | Old | New | Why |
-|---|---|---|---|
-| `group_wait` | 30s | 1m | One full evaluation period, so every instance of a firing rule lands in one message instead of trickling in separately. Costs 30s against a 15-minute detection budget. |
-| `group_interval` | 5m | 15m | Minimum gap between two messages for the same `alertname` when group membership changes. At 5m a single group could re-send up to 12×/hour. |
-| `repeat_interval` | 4h | 24h | A repeat carries no new information. At 4h the (at the time) permanently-Stalled `mimir` HelmRelease alone cost 42 messages/week; at 24h it costs 7. Two people, no on-call rotation — see the related mimir finding below, which is exactly that alert source. |
+## Part 3 — Grouping/timing (`d7ea580`, then corrected by `959f39a`)
+
+Current, final policy: `group_by: ['alertname']`, `group_wait: 1m`, `group_interval: 5m`,
+`repeat_interval: 24h` — ordering `1m ≤ 5m ≤ 24h` holds.
+
+| Setting | Original | `d7ea580` | `959f39a` | Why |
+|---|---|---|---|---|
+| `group_wait` | 30s | **1m** (final) | unchanged | One full evaluation period, so every instance of a firing rule lands in one message instead of trickling in separately. |
+| `group_interval` | 5m | 15m | **5m** (final — reverted) | See below. |
+| `repeat_interval` | 4h | **24h** (final) | unchanged | A repeat carries no new information. At 4h the (at the time) permanently-Stalled `mimir` HelmRelease alone cost 42 messages/week; at 24h it costs 7. Two people, no on-call rotation — see the related mimir finding below, which is exactly that alert source. |
+
+**`group_interval` went to 15m and back to 5m within the same day.** `d7ea580`'s reasoning was
+sound at the time — damp the membership-churn noise the old, non-aggregated Flux queries produced
+(a single group could otherwise re-send up to 12×/hour). But `1c0ed60` fixed that churn at its
+source in the same change set: the sustain check moved into PromQL and the label set went from 17
+labels down to 2, measured at 3 firings/week instead of 1,568. Once the root cause was gone, the
+15m damping was pure cost with no remaining benefit:
+
+- `keepFiringFor: 15m` stacked with `group_interval: 15m` meant a worst case of **~30 minutes**
+  between a real recovery and the RESOLVED message actually going out.
+- Because `group_by: ['alertname']` groups by rule, a newly-affected object (say, a second
+  Kustomization going not-Ready) also waited up to a full `group_interval` for the next flush
+  before being reported **at all** — up to 15 minutes of silence on a brand-new problem.
+
+`959f39a` reverts to 5m, halving both: worst-case RESOLVED delay drops to ~20 minutes, and a new
+object's first report is capped at 5 minutes instead of 15.
 
 **`group_by: ['alertname']` is a hard requirement of the message layout and must not change.**
 `discord.message` assumes a notification group holds exactly the instances of one rule; changing
@@ -160,6 +223,10 @@ location column. It was originally 22 (`%-23.22s`); that truncated the Galera PV
 isn't a corner case: the two-column form is used whenever `location` differs between instances,
 and for the PVC rules `location` is the node label, which differs by definition — the truncating
 path is the *normal* path for that rule, not an edge case.
+
+The separator lines are 44 × U+2500 (`─`, box-drawings light horizontal), and the "instances
+hidden" line uses U+2026 (`…`, horizontal ellipsis) rather than three periods. If Discord ever
+wraps these differently on mobile, `-` and `...` are the two ASCII fallbacks to swap in.
 
 ### Verified template engine limits
 
@@ -218,17 +285,38 @@ on. `mariadb-operator` is a known case that stays under this radar: it flaps for
 minutes/week with individual streaks up to 14 minutes and will never trigger the new 15-minute
 sustain rule. That belongs on a dashboard, not in an alert.
 
-## Open finding: kube-state-metrics outage is a blind spot for both Flux rules
+## Fixed in `455edcf`: kube-state-metrics outage was a blind spot for both Flux rules
 
 If `kube-state-metrics` stops producing data, both Flux rules (`flux-core-layer-not-ready`,
 `core-infra-helmrelease-not-ready`) read as healthy — `noDataState: OK`, and the `* 0` anchor
-disappears along with the real data, so there's nothing left to alert on either. This is **not**
+disappears along with the real data, so there was nothing left to alert on either. This was **not**
 covered by `observability-pipeline-no-data`, which watches `job="kubelet"`, a different scrape
-target. Measured exposure: 1 missing minute in 28 days — small, but not zero.
+target.
 
-A candidate follow-up rule (`absent(up{job="kube-state-metrics"})`, or the same
-`count(...) < 1` pattern `observability-pipeline-no-data` uses) is under review but **not yet
-committed** — treat this as an open item, not a shipped mitigation, until it lands.
+**Closed** by a new rule, `kube-state-metrics-down` (group `observability`, folder `Observability`,
+placed directly after `observability-pipeline-no-data`): `expr: count(up{job="kube-state-metrics"})`
+with a `lt 1` threshold, `for: 5m`, `noDataState: Alerting`, `execErrState: Alerting`,
+`severity: critical`.
+
+**Why `count(...) < 1` and not `absent(up{job="kube-state-metrics"})`:** a reviewer proposed the
+`absent()` form with `noDataState: OK`. Rejected for two reasons. (a) Consistency — the sibling
+rule in the same group, `observability-pipeline-no-data`, already uses the `count()` pattern, and
+its inline comment documents `absent()` as a *past real bug* in this file. (b) Robustness — with
+`absent()`, the rule sits permanently in `NoData` while healthy and depends on `noDataState: OK` to
+stay quiet, which would also swallow a genuine datasource outage or query error instead of
+alerting on it. With `count()`, the rule sits in `Normal` while healthy, and `NoData` stays
+reserved for the failure mode it's actually meant to catch. Both expressions were checked live
+against Mimir: `count(...)` returns `1` in the healthy state (not `< 1`, not firing); `absent(...)`
+returns an empty vector.
+
+Verified facts worth keeping on record: kube-state-metrics runs in namespace **`monitoring`** (not
+`grafana`), single replica, and `job="kube-state-metrics"` is the real label — hence
+`check_command: "kubectl -n monitoring get pods -l app.kubernetes.io/name=kube-state-metrics"`.
+
+**No `dashboard_url`, deliberately:** the kube-state-metrics dashboard exists (uid
+`kubernetes-objects-native`, "Kubernetes Objects"), but isn't linked — it's rendered entirely from
+the same metrics that are missing while this alert fires, so it would just be empty. Same reasoning
+already used for the `mariadb-galera-backup` rule's missing `dashboard_url`.
 
 ## Measurement pitfall for future alert-noise analyses
 
@@ -237,11 +325,11 @@ because anything is actually down, but because Mimir's retention ends at ~29.81 
 (or any no-data check) sees the pre-retention edge and reads it as a ~4.5 hour outage. Measure
 against **28 days**, not 30, to avoid this artifact.
 
-## Alert group count correction
+## Rule and group count correction
 
-The rule set is organised into **8** groups, not 7: `core_services`, `backups`, `storage`,
-`databases`, `cluster_health`, `observability`, `node_health`, `certificates` — all with
-`interval: 60s`.
+The rule set is now **24** rules (not 23 — `455edcf` added `kube-state-metrics-down`), organised
+into **8** groups, not 7: `core_services`, `backups`, `storage`, `databases`, `cluster_health`,
+`observability`, `node_health`, `certificates` — all with `interval: 60s`.
 
 ## Related open finding: `mimir` HelmRelease bookkeeping stall
 
