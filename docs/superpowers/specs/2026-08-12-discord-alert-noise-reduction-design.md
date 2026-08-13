@@ -292,11 +292,11 @@ the message with **no retry** (see Part 5). Every `printf` precision in the temp
 guard sized against one of these numbers.
 
 **Instance cap: 12, computed, not guessed.** The binding limit is `field.value` ≤ 1024. Worst-case
-row length is 71 runes (1 backtick + 27-rune padded object column + 1 backtick + 1 space + 30-rune
-location + 11 runes for ` (behoben)` + 1 newline). `12 × 71 = 852`, plus 38 runes for the overflow
-("N more") line = 890 ≤ 1024, with one more row (13 × 71 = 923 + 38 = 961) still under the limit
+row length is 73 runes (1 backtick + 27-rune padded object column + 1 backtick + 1 space + 30-rune
+location + 12 runes for `  (resolved)` + 1 newline). `12 × 73 = 876`, plus 20 runes for the overflow
+("N more") line = 896 ≤ 1024, with one more row (13 × 73 = 949 + 20 = 969) still under the limit
 but cutting the margin closer — 12 was chosen to keep headroom. Measured worst case across the
-template-test cases run for this change: 723–793 runes of 6000 total across all fields — nowhere
+template-test cases run for this change: 172–758 runes of 6000 total across all fields — nowhere
 near the ceiling day-to-day; the cap exists for the pathological case, not the common one.
 
 ### Layout
@@ -305,10 +305,10 @@ near the ceiling day-to-day; the cap exists for the pathological case, not the c
   made clickable via the embed's top-level `url` (see the PR #120 section below for why that URL
   isn't always set).
 - `description`: the `problem` annotation, plus an optional dashboard link line.
-- Up to 3 inline header fields: `Schwere` (severity), `Ort` (location, when common across
-  instances), `Seit`/`Behoben` (age or resolution time).
+- Up to 3 inline header fields: `Severity`, `Location` (when common across instances),
+  `Since`/`Resolved` (age or resolution time). The resolution time is `HH:MM` in `Europe/Berlin`.
 - The instance list itself: one `inline: false` field, one row per instance (object + location).
-- `Prüfen` (`check_command`, wrapped in the backtick pair above): the last field.
+- `Check` (`check_command`, wrapped in the backtick pair above): the last field.
 - `footer.text`: `grafana_folder`. `timestamp` is passed through `date "2006-01-02T15:04:05Z07:00"`
   — Discord renders this in the *viewer's* local timezone, not Grafana's or UTC, and renders it
   **absolutely** ("Today at 09:20"), not as a relative "x minutes ago". That's the reason the
