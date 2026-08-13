@@ -15,6 +15,44 @@ patches:
 # Names are prefixed grafana-sc- so they cannot collide with the chart's own
 # helm-owned grafana-dashboards-<provider> ConfigMaps.
 configMapGenerator:
+  - name: grafana-sc-dashboards-applications
+    files:
+      - dashboards/applications/harbor.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Applications
+  - name: grafana-sc-dashboards-controllers
+    files:
+      - dashboards/controllers/flux-cluster-stats.json
+      - dashboards/controllers/flux-control-plane.json
+      - dashboards/controllers/metallb.json
+      - dashboards/controllers/spegel.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Controllers
+  - name: grafana-sc-dashboards-databases
+    files:
+      - dashboards/databases/dragonfly.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Databases
+  - name: grafana-sc-dashboards-kubernetes
+    files:
+      - dashboards/kubernetes/api-server.json
+      - dashboards/kubernetes/coredns.json
+      - dashboards/kubernetes/kube-state-metrics.json
+      - dashboards/kubernetes/kube-state-metrics-v2.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Kubernetes
   - name: grafana-sc-dashboards-minecraft
     files:
       - dashboards/minecraft/minecraft-detail.json
@@ -33,6 +71,15 @@ configMapGenerator:
         grafana_dashboard: "1"
       annotations:
         grafana_folder: Observability
+  - name: grafana-sc-dashboards-storage
+    files:
+      - dashboards/storage/ceph-cluster.json
+      - dashboards/storage/ceph-osd.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Storage
 
 secretGenerator:
   - name: grafana-admin
