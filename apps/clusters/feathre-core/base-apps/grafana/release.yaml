@@ -81,10 +81,32 @@ spec:
         secretKeyRef:
           name: grafana-postgresql
           key: password
+    # Keys in grafana-azuread are already named like the env vars, so the whole
+    # secret is injected; rotating it needs `kubectl rollout restart` (stable name).
+    envFromSecret: grafana-azuread
     grafana.ini:
       server:
         domain: grafana.apps.onelite.feather
         root_url: https://grafana.apps.onelite.feather
+      auth:
+        disable_login_form: false
+      auth.azuread:
+        name: Entra ID
+        enabled: true
+        allow_sign_up: true
+        auto_login: false
+        client_authentication: client_secret_post
+        client_id: $__env{GF_AUTH_AZUREAD_CLIENT_ID}
+        client_secret: $__env{GF_AUTH_AZUREAD_CLIENT_SECRET}
+        scopes: openid email profile
+        auth_url: https://login.microsoftonline.com/$__env{GF_AUTH_AZUREAD_TENANT_ID}/oauth2/v2.0/authorize
+        token_url: https://login.microsoftonline.com/$__env{GF_AUTH_AZUREAD_TENANT_ID}/oauth2/v2.0/token
+        # allowed_organizations takes tenant IDs (tid claim); allowed_tenants is not a real key.
+        allowed_organizations: $__env{GF_AUTH_AZUREAD_TENANT_ID}
+        allowed_groups: 29c2994c-95ad-4fb5-af6d-015866f151bc 171f6cc7-644d-457a-85ea-397b9eb70eb1 82f559e3-e191-46e1-a920-a860b906c69e
+        # org_mapping only grants None|Viewer|Editor|Admin, so server admin stays on the local account.
+        org_mapping: 29c2994c-95ad-4fb5-af6d-015866f151bc:1:Admin 171f6cc7-644d-457a-85ea-397b9eb70eb1:1:Editor 82f559e3-e191-46e1-a920-a860b906c69e:1:Viewer
+        use_pkce: true
       unified_alerting:
         enabled: true
         ha_peers: grafana-headless:9094

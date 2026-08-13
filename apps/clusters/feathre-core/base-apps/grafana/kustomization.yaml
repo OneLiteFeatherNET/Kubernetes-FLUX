@@ -19,3 +19,6 @@ secretGenerator:
   - name: grafana-discord
     envs:
       - grafana-discord.sops.env
+  - name: grafana-azuread
+    envs:
+      - grafana-azuread.sops.env
