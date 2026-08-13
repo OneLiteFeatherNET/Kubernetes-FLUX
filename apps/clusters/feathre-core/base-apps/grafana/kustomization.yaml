@@ -28,7 +28,7 @@ configMapGenerator:
       - dashboards/controllers/flux-cluster-stats.json
       - dashboards/controllers/flux-control-plane.json
       - dashboards/controllers/metallb.json
-      - dashboards/controllers/spegel.json
+      - dashboards/controllers/spegel-monitoring.json
     options:
       labels:
         grafana_dashboard: "1"
