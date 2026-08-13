@@ -1,0 +1,30 @@
+apiVersion: 1
+# The webhook URL comes from the grafana-discord Secret via envValueFrom in the
+# HelmRelease. $__env{...} is Grafana's own interpolation (contact point settings
+# are JSONValue and get expanded like grafana.ini). Never use the shell-style
+# dollar-brace form here: Flux' postBuild envsubst runs over this ConfigMap and
+# would replace it with an empty string.
+contactPoints:
+  # type: webhook, not discord - only webhook supports settings.payload.template (Grafana 12.0+).
+  # No username in the payload, so Discord uses the name configured on the webhook itself.
+  - orgId: 1
+    name: discord
+    receivers:
+      - uid: discord_webhook
+        type: webhook
+        settings:
+          url: "$__env{DISCORD_WEBHOOK_URL}"
+          httpMethod: POST
+          payload:
+            template: '{{ template "discord.payload" . }}'
+  # Fault-tolerant path for the meta alarms: Grafana default rendering, deliberately
+  # tied to no template, so a template error cannot take this receiver down with it.
+  # Same Discord channel.
+  - orgId: 1
+    name: discord-fallback
+    receivers:
+      - uid: discord_fallback
+        type: discord
+        settings:
+          url: "$__env{DISCORD_WEBHOOK_URL}"
+          use_discord_username: true
