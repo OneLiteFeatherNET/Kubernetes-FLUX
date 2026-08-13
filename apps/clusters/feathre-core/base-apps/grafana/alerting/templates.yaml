@@ -1,0 +1,78 @@
+apiVersion: 1
+templates:
+  # Static annotations come from (index .Alerts 0) and must never be templated per-$labels in
+  # a rule; per-instance values come from index $a.Labels (Labels, never templated annotations):
+  # after a restart warmStateCache hands back the RAW annotation template (grafana#114973,
+  # fixed in 12.4.x), while instance labels survive correctly.
+  # Grafana reads this file verbatim (Kustomize copies it into a ConfigMap, Helm never sees
+  # it), so the Go template is the only escaping layer left: backticks, single quotes and
+  # trailing whitespace are all allowed again. The "{{ define" rule below is Grafana's own
+  # and still applies.
+  # The payload is built via coll.Dict/coll.Slice and serialized by data.ToJSON (= json.Marshal),
+  # never concatenated, so no value can break the JSON. Every printf precision is a Discord
+  # limit guard; the 12-instance cap follows from field.value <= 1024 (worst case 71 runes/line
+  # x 12 + 38 = 890). printf counts runes. No arithmetic is available (no sprig, no math.Sub).
+  - name: discord.title
+    template: '{{ define "discord.title" }}{{ if eq .Status "firing" }}{{ if eq (index .CommonLabels "severity") "warning" }}🟠{{ else }}🔴{{ end }} FIRING{{ if gt (len .Alerts.Firing) 1 }} ({{ len .Alerts.Firing }}x){{ end }}{{ else }}✅ RESOLVED{{ if gt (len .Alerts.Resolved) 1 }} ({{ len .Alerts.Resolved }}x){{ end }}{{ end }} · {{ index .CommonLabels "alertname" }}{{ end }}'
+  # Must open with "{{ define", never "{{- define": Grafana validates with \{\{\s*define, so a
+  # trim marker makes it wrap the body in a SECOND define and provisioning crashes the pod.
+  # The embed url is only set when absolute: Grafana's own test alert yields a bare "?orgId=1"
+  # (no GeneratorURL base), and Discord rejects an embed with a relative url with HTTP 400.
+  - name: discord.payload
+    template: |
+      {{ define "discord.payload" -}}
+      {{- $f := index .Alerts 0 -}}
+      {{- $ok := $f.Annotations.object_key -}}
+      {{- $lk := $f.Annotations.location_key -}}
+      {{- $loc := or (and $lk (index .CommonLabels $lk)) $f.Annotations.location -}}
+      {{- $sev := index $f.Labels "severity" -}}
+      {{- $bt := "`" -}}
+      {{- $color := 15548997 -}}{{- if eq .Status "resolved" -}}{{- $color = 5763719 -}}{{- else if eq $sev "warning" -}}{{- $color = 16426522 -}}{{- end -}}
+      {{- $ts := $f.StartsAt -}}{{- if and (eq .Status "resolved") (not $f.EndsAt.IsZero) -}}{{- $ts = $f.EndsAt -}}{{- end -}}
+      {{- $desc := or $f.Annotations.problem $f.Annotations.summary "(no description)" -}}
+      {{- if $f.Annotations.dashboard_url -}}{{- $desc = printf "%s\n\n[📊 Open dashboard](<%s>)" $desc $f.Annotations.dashboard_url -}}{{- end -}}
+      {{- $fields := coll.Slice -}}
+      {{- if $sev -}}{{- $fields = coll.Append (coll.Dict "name" "Severity" "value" $sev "inline" true) $fields -}}{{- end -}}
+      {{- if $loc -}}{{- $fields = coll.Append (coll.Dict "name" "Location" "value" (printf "%.60s" $loc) "inline" true) $fields -}}{{- end -}}
+      {{- if eq .Status "firing" -}}{{- $fields = coll.Append (coll.Dict "name" "Since" "value" (printf "<t:%d:R>" $f.StartsAt.Unix) "inline" true) $fields -}}{{- else -}}{{- $fields = coll.Append (coll.Dict "name" "Resolved" "value" (printf "<t:%d:t> (<t:%d:R>)" $ts.Unix $ts.Unix) "inline" true) $fields -}}{{- end -}}
+      {{- if and $f.Annotations.object_label $ok -}}
+      {{- $lines := "" -}}
+      {{- range $i, $a := .Alerts -}}{{- if lt $i 12 -}}
+      {{- $o := index $a.Labels $ok -}}{{- if not $o -}}{{- $o = "?" -}}{{- end -}}
+      {{- $line := printf "%s%.60s%s" $bt $o $bt -}}
+      {{- if and (not $loc) $lk -}}{{- $line = printf "%s%-27.26s%s %.30s" $bt $o $bt (index $a.Labels $lk) -}}{{- end -}}
+      {{- if eq $a.Status "resolved" -}}{{- $line = printf "%s  (resolved)" $line -}}{{- end -}}
+      {{- if eq $i 0 -}}{{- $lines = $line -}}{{- else -}}{{- $lines = printf "%s\n%s" $lines $line -}}{{- end -}}
+      {{- end -}}{{- end -}}
+      {{- if gt (len .Alerts) 12 -}}{{- $lines = printf "%s\n… hidden (%d total)" $lines (len .Alerts) -}}{{- end -}}
+      {{- $label := $f.Annotations.object_label -}}{{- if gt (len .Alerts) 1 -}}{{- $label = printf "%s (%d)" $label (len .Alerts) -}}{{- end -}}
+      {{- $fields = coll.Append (coll.Dict "name" (printf "%.100s" $label) "value" (printf "%.1024s" $lines) "inline" false) $fields -}}
+      {{- else if gt (len .Alerts) 1 -}}{{- $fields = coll.Append (coll.Dict "name" "Affected" "value" (printf "%d instances" (len .Alerts)) "inline" true) $fields -}}{{- end -}}
+      {{- if $f.Annotations.check_command -}}{{- $fields = coll.Append (coll.Dict "name" "Check" "value" (printf "%.900s" (printf "%s%s%s" $bt $f.Annotations.check_command $bt)) "inline" false) $fields -}}{{- end -}}
+      {{- $url := "" -}}{{- if match "^https?://" $f.GeneratorURL -}}{{- $url = $f.GeneratorURL -}}{{- else if match "^https?://" .ExternalURL -}}{{- $url = .ExternalURL -}}{{- end -}}
+      {{- $title := printf "%.200s" (tmpl.Exec "discord.title" .) -}}
+      {{- $desc = printf "%.1000s" $desc -}}
+      {{- $tss := date "2006-01-02T15:04:05Z07:00" $ts -}}
+      {{- $footer := coll.Dict "text" (printf "%.100s" (or (index $f.Labels "grafana_folder") "Grafana")) -}}
+      {{- $embed := coll.Dict "title" $title "color" $color "description" $desc "timestamp" $tss "fields" $fields "footer" $footer -}}
+      {{- if $url -}}{{- $embed = coll.Dict "title" $title "url" $url "color" $color "description" $desc "timestamp" $tss "fields" $fields "footer" $footer -}}{{- end -}}
+      {{- data.ToJSON (coll.Dict "embeds" (coll.Slice $embed)) }}
+      {{- end -}}
+     # Unused while the webhook payload template overrides title/message; kept as a rollback
+          # target (type: discord restores it as-is). Delete once the embeds are a week green.
+  - name: discord.message
+    template: |
+      {{ define "discord.message" }}{{ $f := index .Alerts 0 }}{{ $ok := $f.Annotations.object_key }}{{ $lk := $f.Annotations.location_key }}{{ $loc := or (and $lk (index .CommonLabels $lk)) .CommonAnnotations.location }}{{ $age := reReplaceAll "^(([0-9]+h)?([0-9]+m)?).*$" "$1" (printf "%s" (time.Now.Sub $f.StartsAt)) }}```
+      {{ printf "%-12s" "Problem" }}{{ if $f.Annotations.problem }}{{ $f.Annotations.problem }}{{ else }}{{ $f.Annotations.summary }}{{ end }}
+      {{ if $f.Labels.severity }}{{ printf "%-12s" "Schwere" }}{{ $f.Labels.severity }}
+      {{ end }}{{ if eq .Status "firing" }}{{ printf "%-12s" "Seit" }}{{ date "15:04" (tz "Europe/Berlin" $f.StartsAt) }} Uhr  ({{ if $age }}{{ $age }}{{ else }}<1m{{ end }})
+      {{ else if not $f.EndsAt.IsZero }}{{ printf "%-12s" "Behoben" }}{{ date "15:04" (tz "Europe/Berlin" $f.EndsAt) }} Uhr
+      {{ end }}{{ if gt (len .Alerts) 1 }}{{ printf "%-12s" "Betroffen" }}{{ if gt (len .Alerts.Firing) 0 }}{{ len .Alerts.Firing }} aktiv{{ if gt (len .Alerts.Resolved) 0 }}, {{ end }}{{ end }}{{ if gt (len .Alerts.Resolved) 0 }}{{ len .Alerts.Resolved }} behoben{{ end }}
+      {{ end }}{{ if $loc }}{{ printf "%-12s" "Ort" }}{{ $loc }}
+      {{ end }}{{ if and $f.Annotations.object_label $ok }}────────────────────────────────────────────
+      {{ range $i, $a := .Alerts }}{{ if lt $i 8 }}{{ if eq $i 0 }}{{ printf "%-12s" $f.Annotations.object_label }}{{ else }}{{ printf "%-12s" "" }}{{ end }}{{ $o := index $a.Labels $ok }}{{ if $loc }}{{ $o }}{{ else if $lk }}{{ printf "%-27.26s" $o }}{{ index $a.Labels $lk }}{{ else }}{{ $o }}{{ end }}{{ if eq $a.Status "resolved" }}  (behoben){{ end }}
+      {{ end }}{{ end }}{{ if gt (len .Alerts) 8 }}{{ printf "%-12s" "" }}… weitere ausgeblendet ({{ len .Alerts }} insgesamt)
+      {{ end }}{{ end }}{{ if $f.Annotations.check_command }}────────────────────────────────────────────
+      {{ printf "%-12s" "Prüfen" }}{{ $f.Annotations.check_command }}
+      {{ end }}```
+      🔗 [Regel](<{{ $f.GeneratorURL }}>){{ if $f.Annotations.dashboard_url }}  ·  📊 [Dashboard](<{{ $f.Annotations.dashboard_url }}>){{ end }}{{ end }}

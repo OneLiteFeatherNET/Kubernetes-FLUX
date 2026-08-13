@@ -81,6 +81,20 @@ configMapGenerator:
       annotations:
         grafana_folder: Storage
 
+  # Alerting for the same sidecar collector, label grafana_alert=1. Exactly ONE ConfigMap
+  # for all four files: the sidecar POSTs the provisioning reload once per ConfigMap, after
+  # writing all of its keys, so splitting them up would create intermediate states in which
+  # policies.yaml references a receiver contactpoints.yaml has not delivered yet.
+  - name: grafana-sc-alerting
+    files:
+      - alerting/contactpoints.yaml
+      - alerting/templates.yaml
+      - alerting/policies.yaml
+      - alerting/rules.yaml
+    options:
+      labels:
+        grafana_alert: "1"
+
 secretGenerator:
   - name: grafana-admin
     envs:
