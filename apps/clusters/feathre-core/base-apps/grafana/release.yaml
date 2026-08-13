@@ -27527,26 +27527,26 @@ spec:
               {{ `{{- $bt := "\u0060" -}}` }}
               {{ `{{- $color := 15548997 -}}{{- if eq .Status "resolved" -}}{{- $color = 5763719 -}}{{- else if eq $sev "warning" -}}{{- $color = 16426522 -}}{{- end -}}` }}
               {{ `{{- $ts := $f.StartsAt -}}{{- if and (eq .Status "resolved") (not $f.EndsAt.IsZero) -}}{{- $ts = $f.EndsAt -}}{{- end -}}` }}
-              {{ `{{- $desc := or $f.Annotations.problem $f.Annotations.summary "(ohne Beschreibung)" -}}` }}
-              {{ `{{- if $f.Annotations.dashboard_url -}}{{- $desc = printf "%s\n\n[📊 Dashboard öffnen](<%s>)" $desc $f.Annotations.dashboard_url -}}{{- end -}}` }}
+              {{ `{{- $desc := or $f.Annotations.problem $f.Annotations.summary "(no description)" -}}` }}
+              {{ `{{- if $f.Annotations.dashboard_url -}}{{- $desc = printf "%s\n\n[📊 Open dashboard](<%s>)" $desc $f.Annotations.dashboard_url -}}{{- end -}}` }}
               {{ `{{- $fields := coll.Slice -}}` }}
-              {{ `{{- if $sev -}}{{- $fields = coll.Append (coll.Dict "name" "Schwere" "value" $sev "inline" true) $fields -}}{{- end -}}` }}
-              {{ `{{- if $loc -}}{{- $fields = coll.Append (coll.Dict "name" "Ort" "value" (printf "%.60s" $loc) "inline" true) $fields -}}{{- end -}}` }}
-              {{ `{{- if eq .Status "firing" -}}{{- $fields = coll.Append (coll.Dict "name" "Seit" "value" (or $age "<1m") "inline" true) $fields -}}{{- else -}}{{- $fields = coll.Append (coll.Dict "name" "Behoben" "value" (printf "%s Uhr" (date "15:04" (tz "Europe/Berlin" $ts))) "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if $sev -}}{{- $fields = coll.Append (coll.Dict "name" "Severity" "value" $sev "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if $loc -}}{{- $fields = coll.Append (coll.Dict "name" "Location" "value" (printf "%.60s" $loc) "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if eq .Status "firing" -}}{{- $fields = coll.Append (coll.Dict "name" "Since" "value" (or $age "<1m") "inline" true) $fields -}}{{- else -}}{{- $fields = coll.Append (coll.Dict "name" "Resolved" "value" (date "15:04" (tz "Europe/Berlin" $ts)) "inline" true) $fields -}}{{- end -}}` }}
               {{ `{{- if and $f.Annotations.object_label $ok -}}` }}
               {{ `{{- $lines := "" -}}` }}
               {{ `{{- range $i, $a := .Alerts -}}{{- if lt $i 12 -}}` }}
               {{ `{{- $o := index $a.Labels $ok -}}{{- if not $o -}}{{- $o = "?" -}}{{- end -}}` }}
               {{ `{{- $line := printf "%s%.60s%s" $bt $o $bt -}}` }}
               {{ `{{- if and (not $loc) $lk -}}{{- $line = printf "%s%-27.26s%s %.30s" $bt $o $bt (index $a.Labels $lk) -}}{{- end -}}` }}
-              {{ `{{- if eq $a.Status "resolved" -}}{{- $line = printf "%s  (behoben)" $line -}}{{- end -}}` }}
+              {{ `{{- if eq $a.Status "resolved" -}}{{- $line = printf "%s  (resolved)" $line -}}{{- end -}}` }}
               {{ `{{- if eq $i 0 -}}{{- $lines = $line -}}{{- else -}}{{- $lines = printf "%s\n%s" $lines $line -}}{{- end -}}` }}
               {{ `{{- end -}}{{- end -}}` }}
-              {{ `{{- if gt (len .Alerts) 12 -}}{{- $lines = printf "%s\n… weitere ausgeblendet (%d insgesamt)" $lines (len .Alerts) -}}{{- end -}}` }}
+              {{ `{{- if gt (len .Alerts) 12 -}}{{- $lines = printf "%s\n… hidden (%d total)" $lines (len .Alerts) -}}{{- end -}}` }}
               {{ `{{- $label := $f.Annotations.object_label -}}{{- if gt (len .Alerts) 1 -}}{{- $label = printf "%s (%d)" $label (len .Alerts) -}}{{- end -}}` }}
               {{ `{{- $fields = coll.Append (coll.Dict "name" (printf "%.100s" $label) "value" (printf "%.1024s" $lines) "inline" false) $fields -}}` }}
-              {{ `{{- else if gt (len .Alerts) 1 -}}{{- $fields = coll.Append (coll.Dict "name" "Betroffen" "value" (printf "%d Instanzen" (len .Alerts)) "inline" true) $fields -}}{{- end -}}` }}
-              {{ `{{- if $f.Annotations.check_command -}}{{- $fields = coll.Append (coll.Dict "name" "Prüfen" "value" (printf "%.900s" (printf "%s%s%s" $bt $f.Annotations.check_command $bt)) "inline" false) $fields -}}{{- end -}}` }}
+              {{ `{{- else if gt (len .Alerts) 1 -}}{{- $fields = coll.Append (coll.Dict "name" "Affected" "value" (printf "%d instances" (len .Alerts)) "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if $f.Annotations.check_command -}}{{- $fields = coll.Append (coll.Dict "name" "Check" "value" (printf "%.900s" (printf "%s%s%s" $bt $f.Annotations.check_command $bt)) "inline" false) $fields -}}{{- end -}}` }}
               {{ `{{- $url := "" -}}{{- if match "^https?://" $f.GeneratorURL -}}{{- $url = $f.GeneratorURL -}}{{- else if match "^https?://" .ExternalURL -}}{{- $url = .ExternalURL -}}{{- end -}}` }}
               {{ `{{- $title := printf "%.200s" (tmpl.Exec "discord.title" .) -}}` }}
               {{ `{{- $desc = printf "%.1000s" $desc -}}` }}
@@ -27658,7 +27658,7 @@ spec:
                 keepFiringFor: 15m
                 annotations:
                   summary: "Flux Kustomization {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) has not been Ready for 15 minutes."
-                  problem: "Kustomization >15 min nicht Ready"
+                  problem: "Kustomization not Ready for >15 min"
                   object_label: "Layer"
                   object_key: "name"
                   location_key: "exported_namespace"
@@ -27719,7 +27719,7 @@ spec:
                 keepFiringFor: 15m
                 annotations:
                   summary: "Flux HelmRelease {{ `{{ $labels.name }}` }} (namespace {{ `{{ $labels.exported_namespace }}` }}) has not been Ready for 15 minutes."
-                  problem: "HelmRelease >15 min nicht Ready"
+                  problem: "HelmRelease not Ready for >15 min"
                   object_label: "Release"
                   object_key: "name"
                   location_key: "exported_namespace"
@@ -27787,7 +27787,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "No successful CloudNativePG (Postgres) backup in over 24h."
-                  problem: "Kein Backup seit über 24 h"
+                  problem: "No backup for over 24 h"
                   location: "cnpg-system"
                   check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
@@ -27848,7 +27848,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "CloudNativePG's most recent backup attempt failed (a failure timestamp is newer than the last successful one)."
-                  problem: "Backup-Versuch fehlgeschlagen"
+                  problem: "Backup attempt failed"
                   location: "cnpg-system"
                   check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
@@ -27906,7 +27906,7 @@ spec:
                   # No dashboard_url: the mariadb-galera dashboard (gnetId 13106) covers
                   # cluster health, not backup jobs, so it wouldn't add useful context here.
                   summary: "The mariadb-galera-backup CronJob's most recent Job run failed."
-                  problem: "Backup-CronJob fehlgeschlagen"
+                  problem: "Backup CronJob failed"
                   location: "mariadb-galera"
                   check_command: "kubectl -n mariadb-galera get jobs"
                 labels:
@@ -27967,7 +27967,7 @@ spec:
                 for: 10m
                 annotations:
                   summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 80% capacity."
-                  problem: "PVC über 80 % belegt"
+                  problem: "PVC over 80 % full"
                   object_label: "PVC"
                   object_key: "persistentvolumeclaim"
                   location_key: "node"
@@ -28025,7 +28025,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "MariaDB Galera PVC {{ `{{ $labels.persistentvolumeclaim }}` }} on node {{ `{{ $labels.node }}` }} is above 90% capacity and at risk of filling up."
-                  problem: "PVC über 90 % belegt"
+                  problem: "PVC over 90 % full"
                   object_label: "PVC"
                   object_key: "persistentvolumeclaim"
                   location_key: "node"
@@ -28085,7 +28085,7 @@ spec:
                 for: 10m
                 annotations:
                   summary: "Ceph cluster health is not HEALTH_OK (HEALTH_WARN or worse)."
-                  problem: "Ceph nicht HEALTH_OK"
+                  problem: "Ceph not HEALTH_OK"
                   location: "rook-ceph-fr01"
                   check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
@@ -28200,7 +28200,7 @@ spec:
                   # incident (Rook 1.20 upgrade, S3 access broken for non-owner users) would
                   # show as a sustained multi-request/s error rate, not baseline noise.
                   summary: "RGW failed request rate is elevated (baseline is <1/s). This is the class of failure that broke S3 access for backups/Loki/Mimir/Postgres WAL during the Rook 1.20 upgrade incident."
-                  problem: "RGW-Fehlerrate erhöht"
+                  problem: "RGW failure rate elevated"
                   location: "rook-ceph-fr01"
                   check_command: "kubectl -n rook-ceph-fr01 logs -l app=rook-ceph-rgw --tail=200"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
@@ -28261,7 +28261,7 @@ spec:
                 for: 10m
                 annotations:
                   summary: "The most-full Ceph OSD is above 80% used. Ceph's own nearfull/backfillfull thresholds trip around here and will start rejecting large S3 uploads (InsufficientCapacity) before HEALTH_WARN fires."
-                  problem: "OSD über 80 % belegt"
+                  problem: "OSD over 80 % full"
                   location: "rook-ceph-fr01"
                   check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
@@ -28317,7 +28317,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "The most-full Ceph OSD is above 90% used -- at or past Ceph's backfillfull threshold, new writes to affected pools (including S3/RGW uploads) will start being rejected."
-                  problem: "OSD über 90 % belegt"
+                  problem: "OSD over 90 % full"
                   location: "rook-ceph-fr01"
                   check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
                   dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
@@ -28380,7 +28380,7 @@ spec:
                   # Threshold is against the live max_connections setting (queried dynamically),
                   # not a hardcoded value - stays correct if the setting is changed again.
                   summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before."
-                  problem: "Postgres-Verbindungen über 80 %"
+                  problem: "Postgres connections over 80 %"
                   location: "cnpg-system"
                   check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
@@ -28436,7 +28436,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool."
-                  problem: "Postgres-Verbindungen über 90 %"
+                  problem: "Postgres connections over 90 %"
                   location: "cnpg-system"
                   check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
                   dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
@@ -28498,7 +28498,7 @@ spec:
                   # smaller cluster size on its own, so this catches split-brain, not just a
                   # fully-down node.
                   summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained."
-                  problem: "Galera-Cluster unter 3 Knoten"
+                  problem: "Galera cluster below 3 nodes"
                   location: "mariadb-galera"
                   check_command: "kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%'\""
                   dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
@@ -28560,7 +28560,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before."
-                  problem: "Pods hängen in Terminating"
+                  problem: "Pods stuck in Terminating"
                   check_command: "kubectl get pods -A | grep Terminating"
                 labels:
                   severity: warning
@@ -28627,7 +28627,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires."
-                  problem: "Keine Kubelet-Metriken in Mimir"
+                  problem: "No kubelet metrics in Mimir"
                   location: "grafana"
                   check_command: "kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
                 labels:
@@ -28686,7 +28686,7 @@ spec:
                   # No dashboard_url: the Kubernetes Objects dashboard is built from the same
                   # metrics, so it is empty exactly while this alert fires.
                   summary: "kube-state-metrics has stopped producing metrics. Both Flux alerts read gotk_resource_info from it, so they report healthy while blind for as long as this fires."
-                  problem: "Keine kube-state-metrics-Daten"
+                  problem: "No kube-state-metrics data"
                   location: "monitoring"
                   check_command: "kubectl -n monitoring get pods -l app.kubernetes.io/name=kube-state-metrics"
                 labels:
@@ -28748,7 +28748,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "Grafana failed to deliver alert notifications, so Discord messages are being dropped - the webhook notifier does not retry. Alerts themselves keep evaluating and stay visible in the Grafana alerting UI, so use it as the source of truth until this clears."
-                  problem: "Discord-Zustellung schlägt fehl"
+                  problem: "Discord delivery failing"
                   location: "grafana"
                   check_command: "kubectl -n grafana logs -l app.kubernetes.io/name=grafana --tail=200 | grep -i \"Notify for alerts failed\""
                 labels:
@@ -28875,7 +28875,7 @@ spec:
                 for: 5m
                 annotations:
                   summary: "Kubelet on node {{ `{{ $labels.node }}` }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired."
-                  problem: "Kubelet wird nicht gescrapt"
+                  problem: "Kubelet not being scraped"
                   object_label: "Node"
                   object_key: "node"
                   check_command: "kubectl get nodes -o wide"
@@ -28937,7 +28937,7 @@ spec:
                 for: 15m
                 annotations:
                   summary: "Clock on {{ `{{ $labels.instance }}` }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback."
-                  problem: "Uhr nicht synchronisiert"
+                  problem: "Clock not synchronised"
                   object_label: "Node"
                   object_key: "instance"
                   check_command: "talosctl -n <node> time"
@@ -28996,7 +28996,7 @@ spec:
                 for: 15m
                 annotations:
                   summary: "Clock offset on {{ `{{ $labels.instance }}` }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock."
-                  problem: "Uhr-Offset über 50 ms"
+                  problem: "Clock offset over 50 ms"
                   object_label: "Node"
                   object_key: "instance"
                   check_command: "talosctl -n <node> time"
@@ -29063,8 +29063,8 @@ spec:
                 for: 1h
                 annotations:
                   summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 14 days and has not renewed."
-                  problem: "Zertifikat läuft in <14 Tagen ab"
-                  object_label: "Zertifikat"
+                  problem: "Certificate expires in <14 days"
+                  object_label: "Certificate"
                   object_key: "name"
                   location_key: "exported_namespace"
                   check_command: "kubectl get certificate -A | grep -v True"
@@ -29120,8 +29120,8 @@ spec:
                 for: 15m
                 annotations:
                   summary: "Certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} expires in under 3 days. Renewal has failed."
-                  problem: "Zertifikat läuft in <3 Tagen ab"
-                  object_label: "Zertifikat"
+                  problem: "Certificate expires in <3 days"
+                  object_label: "Certificate"
                   object_key: "name"
                   location_key: "exported_namespace"
                   check_command: "kubectl get certificate -A | grep -v True"
