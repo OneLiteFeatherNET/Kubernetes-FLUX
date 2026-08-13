@@ -113,6 +113,14 @@ spec:
         ha_listen_address: $${POD_IP}:9094
         ha_advertise_address: $${POD_IP}:9094
         rule_version_record_limit: "5"
+        # Provisioning only writes the Alertmanager config to the database; the running
+        # Alertmanager picks it up in this poll loop. At the 1m default a notification can
+        # render against a config that does not know a just-provisioned template yet, which
+        # fails with "template not defined" - and the webhook notifier does not retry, so the
+        # alert is dropped silently. Measured 62.3s between "finished provision alerting" and
+        # the following "Applying new configuration to Alertmanager". ApplyConfig is a no-op
+        # while the config hash is unchanged, so the cost is one small query per interval.
+        alertmanager_config_poll_interval: 10s
       alerting:
         enabled: false
     datasources:
