@@ -313,6 +313,10 @@ spec:
     monitoring:
       dashboards:
         enabled: true
+        # Grafana's sidecar sorts by the folderAnnotation grafana_folder; without
+        # it these ten mixin dashboards land in the root folder "General".
+        annotations:
+          grafana_folder: Observability
       rules:
         enabled: true
       serviceMonitor:
