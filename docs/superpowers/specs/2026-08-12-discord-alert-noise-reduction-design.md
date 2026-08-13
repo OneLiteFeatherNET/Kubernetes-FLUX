@@ -306,16 +306,30 @@ near the ceiling day-to-day; the cap exists for the pathological case, not the c
   isn't always set).
 - `description`: the `problem` annotation, plus an optional dashboard link line.
 - Up to 3 inline header fields: `Severity`, `Location` (when common across instances),
-  `Since`/`Resolved` (age or resolution time). The resolution time is `HH:MM` in `Europe/Berlin`.
+  `Since`/`Resolved`. Both carry Discord's native timestamp markup instead of a pre-rendered
+  string: `Since` is `<t:<unix>:R>` (relative), `Resolved` is `<t:<unix>:t> (<t:<unix>:R>)` (short
+  time plus relative). Discord re-renders the relative form every time the message is viewed, so
+  the age stays correct instead of being frozen at send time, and the absolute time is shown in
+  each *viewer's* timezone rather than a hardcoded `Europe/Berlin`.
 - The instance list itself: one `inline: false` field, one row per instance (object + location).
 - `Check` (`check_command`, wrapped in the backtick pair above): the last field.
 - `footer.text`: `grafana_folder`. `timestamp` is passed through `date "2006-01-02T15:04:05Z07:00"`
   — Discord renders this in the *viewer's* local timezone, not Grafana's or UTC, and renders it
   **absolutely** ("Today at 09:20"), not as a relative "x minutes ago". That's the reason the
   age/resolution field still exists as its own line — the timestamp alone doesn't convey elapsed
-  time the way a relative-time renderer would.
+  time, which is exactly what the `Since`/`Resolved` fields supply via `<t:…:R>`. This key is a
+  separate, native embed mechanism and is unrelated to the `<t:…>` markup in the fields.
 - Colors: `15548997` (red, firing/critical), `16426522` (orange, firing/warning), `5763719`
   (green, resolved).
+
+**Where `<t:…>` renders:** only in `description` and `field.value`. Discord parses its special
+formatting (mentions, masked links, timestamps) in exactly those two embed parts, and *not* in
+`title`, `field.name`, `footer.text`, or `author.name` — a timestamp placed there shows up as the
+raw `<t:…>` literal. Field values are therefore the supported spot for these two fields, and the
+markup must not be moved into the title or footer. Discord's own docs enumerate the style suffixes
+(`t` short time, `T` long time, `d` short date, `D` long date, `f` short date+time — the default
+when no suffix is given, `F` full date+time, `R` relative) but say nothing about which embed parts
+parse them, so treat the description/field-value restriction as the binding constraint.
 
 **The alignment trick:** Discord renders inline code (`` `...` ``) in a monospace font and
 preserves internal spaces, so the object column is padded with `printf "%-27.26s"` *inside* a
@@ -362,12 +376,16 @@ wraps these differently on mobile, `-` and `...` are the two ASCII fallbacks to 
 Tested live against Grafana 12.3.1 via the templates-test endpoint (below). **No Sprig functions,
 no `humanizeDuration`, no arithmetic (`math.Sub` does not exist)** — all three fail with "function
 not defined". Available: `printf`, `date`, `tz`, `reReplaceAll`, `time.Now.Sub`, and methods on
-`time.Time`.
+`time.Time` — including `.Unix`, verified to render as a plain int64 through `printf "%d"`.
 
-Consequence: alert age is derived by regexing `time.Duration.String()` output
-(`^(([0-9]+h)?([0-9]+m)?).*$`), because there's no way to subtract components directly. The
-"instances hidden" overflow line prints the **total** instance count rather than the remainder
-past the cap, for the same reason — there's no subtraction available to compute "N more".
+Consequence for the time fields: none any longer. Emitting `<t:<unix>:R>` hands the arithmetic to
+the Discord client, so `Since`/`Resolved` need neither a duration subtraction nor the
+`reReplaceAll` over `time.Duration.String()` (`^(([0-9]+h)?([0-9]+m)?).*$`) that the first version
+used to fake one, and no `tz` call for the resolution time.
+
+The limitation still binds elsewhere: the "instances hidden" overflow line prints the **total**
+instance count rather than the remainder past the cap, because there is no subtraction available
+to compute "N more".
 
 #### Escaping constraints
 
