@@ -223,12 +223,41 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/minecraft
+    # Collects ConfigMaps labelled grafana_dashboard=1 into one extra file
+    # provider, which runs *alongside* the dashboardProviders above -- the
+    # inline dashboards keep their own providers and are unaffected.
+    sidecar:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        # ALL, not the default own-namespace: spegel-dashboard is in kube-system.
+        searchNamespace:
+          - ALL
+        # Only ConfigMaps carry dashboards here; avoids watching every Secret
+        # cluster-wide (RBAC still grants both, the chart hardcodes that).
+        resource: configmap
+        # Annotation -> subdirectory, and foldersFromFilesStructure turns those
+        # subdirectories into Grafana folders; needed for the later inline move.
+        folderAnnotation: grafana_folder
+        provider:
+          foldersFromFilesStructure: true
     dashboards:
       kubernetes:
-        kubernetes-dashboard:
-          gnetId: 22523
-          revision: 2
-          datasource: Mimir
+        # kubernetes-dashboard (gnetId 22523) removed: it never worked. It
+        # pinned revision 2, which does not exist (the API lists only
+        # revision 1), so the download 404'd and left a 0-byte file that
+        # Grafana rejected with a permanent error=EOF. Bumping to revision 1
+        # is not the fix either -- that revision carries uid
+        # k8s_views_global, which a manually imported, non-provisioned
+        # dashboard already holds, and provisioning adopts an occupied uid
+        # instead of erroring, so it would silently overwrite and rename it.
         kubernetes-cluster:
           gnetId: 7249
           revision: 1
