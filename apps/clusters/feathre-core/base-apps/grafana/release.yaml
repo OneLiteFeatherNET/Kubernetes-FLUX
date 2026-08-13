@@ -250,10 +250,14 @@ spec:
           foldersFromFilesStructure: true
     dashboards:
       kubernetes:
-        kubernetes-dashboard:
-          gnetId: 22523
-          revision: 2
-          datasource: Mimir
+        # kubernetes-dashboard (gnetId 22523) removed: it never worked. It
+        # pinned revision 2, which does not exist (the API lists only
+        # revision 1), so the download 404'd and left a 0-byte file that
+        # Grafana rejected with a permanent error=EOF. Bumping to revision 1
+        # is not the fix either -- that revision carries uid
+        # k8s_views_global, which a manually imported, non-provisioned
+        # dashboard already holds, and provisioning adopts an occupied uid
+        # instead of erroring, so it would silently overwrite and rename it.
         kubernetes-cluster:
           gnetId: 7249
           revision: 1
