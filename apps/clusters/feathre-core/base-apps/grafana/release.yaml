@@ -27522,7 +27522,6 @@ spec:
               {{ `{{- $ok := $f.Annotations.object_key -}}` }}
               {{ `{{- $lk := $f.Annotations.location_key -}}` }}
               {{ `{{- $loc := or (and $lk (index .CommonLabels $lk)) $f.Annotations.location -}}` }}
-              {{ `{{- $age := reReplaceAll "^(([0-9]+h)?([0-9]+m)?).*$" "$1" (printf "%s" (time.Now.Sub $f.StartsAt)) -}}` }}
               {{ `{{- $sev := index $f.Labels "severity" -}}` }}
               {{ `{{- $bt := "\u0060" -}}` }}
               {{ `{{- $color := 15548997 -}}{{- if eq .Status "resolved" -}}{{- $color = 5763719 -}}{{- else if eq $sev "warning" -}}{{- $color = 16426522 -}}{{- end -}}` }}
@@ -27532,7 +27531,7 @@ spec:
               {{ `{{- $fields := coll.Slice -}}` }}
               {{ `{{- if $sev -}}{{- $fields = coll.Append (coll.Dict "name" "Severity" "value" $sev "inline" true) $fields -}}{{- end -}}` }}
               {{ `{{- if $loc -}}{{- $fields = coll.Append (coll.Dict "name" "Location" "value" (printf "%.60s" $loc) "inline" true) $fields -}}{{- end -}}` }}
-              {{ `{{- if eq .Status "firing" -}}{{- $fields = coll.Append (coll.Dict "name" "Since" "value" (or $age "<1m") "inline" true) $fields -}}{{- else -}}{{- $fields = coll.Append (coll.Dict "name" "Resolved" "value" (date "15:04" (tz "Europe/Berlin" $ts)) "inline" true) $fields -}}{{- end -}}` }}
+              {{ `{{- if eq .Status "firing" -}}{{- $fields = coll.Append (coll.Dict "name" "Since" "value" (printf "<t:%d:R>" $f.StartsAt.Unix) "inline" true) $fields -}}{{- else -}}{{- $fields = coll.Append (coll.Dict "name" "Resolved" "value" (printf "<t:%d:t> (<t:%d:R>)" $ts.Unix $ts.Unix) "inline" true) $fields -}}{{- end -}}` }}
               {{ `{{- if and $f.Annotations.object_label $ok -}}` }}
               {{ `{{- $lines := "" -}}` }}
               {{ `{{- range $i, $a := .Alerts -}}{{- if lt $i 12 -}}` }}
