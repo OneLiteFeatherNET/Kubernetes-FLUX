@@ -9,6 +9,31 @@ resources:
 patches:
   - path: release.yaml
 
+# Dashboards for Grafana's sidecar collector: one ConfigMap per Grafana folder,
+# label grafana_dashboard=1 is what the sidecar selects on, annotation
+# grafana_folder is the subdirectory (and therefore folder) it writes them to.
+# Names are prefixed grafana-sc- so they cannot collide with the chart's own
+# helm-owned grafana-dashboards-<provider> ConfigMaps.
+configMapGenerator:
+  - name: grafana-sc-dashboards-minecraft
+    files:
+      - dashboards/minecraft/minecraft-detail.json
+      - dashboards/minecraft/minecraft-fleet.json
+      - dashboards/minecraft/minecraft-jvm.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Minecraft
+  - name: grafana-sc-dashboards-observability
+    files:
+      - dashboards/observability/loki-quick-search.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Observability
+
 secretGenerator:
   - name: grafana-admin
     envs:
