@@ -243,15 +243,22 @@ spec:
         # subdirectories into Grafana folders, reusing an existing folder of the
         # same title -- that is what keeps the moved dashboards in place.
         folderAnnotation: grafana_folder
+        # Native sidecar: the startupProbe holds Grafana back until the initial
+        # LIST wrote every file, so provisioning no longer unprovisions all of
+        # them and churns versions; the watch loop keeps ConfigMap edits live.
+        initDashboards: true
+        restartPolicy: Always
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 8084 # chart default here, and templated into HEALTH_PORT
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 60
         provider:
           foldersFromFilesStructure: true
-          # The sidecar populates /tmp/dashboards only after it has started, so
-          # Grafana's first provisioning pass sees an empty folder. Without this
-          # it deletes every sidecar dashboard and they stay gone until the
-          # sidecar's reload call (~2min on 2026-08-13); unprovisioning instead
-          # keeps them visible. Trade-off: a removed ConfigMap leaves its
-          # dashboard behind as an unmanaged one.
-          disableDelete: true
+          # disableDelete dropped: the directory is complete before Grafana
+          # provisions, so a missing file really is a removed ConfigMap.
     dashboards:
       kubernetes:
         # kubernetes-dashboard (gnetId 22523) removed: it never worked. It
