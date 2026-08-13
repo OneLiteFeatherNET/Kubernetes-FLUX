@@ -44,3 +44,7 @@ spec:
       mode: Sidecar
       labels:
         grafana_dashboard: "1"
+      # Grafana's sidecar sorts by the folderAnnotation grafana_folder; without
+      # it this dashboard lands in the root folder "General".
+      annotations:
+        grafana_folder: Controllers
