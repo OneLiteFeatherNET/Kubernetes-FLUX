@@ -175,6 +175,20 @@ decryption:
 an entry ending in `.agekey` is loaded as an age identity, one ending in `.asc`
 as a PGP key. That is why one secret can hold both during a migration.
 
+**`sops-age` currently holds both** (`age.agekey` and `sops.asc`). The PGP half is
+deliberate and still needed: it is what makes a `git revert` of the age migration
+survivable, because every revision before it carries PGP ciphertext. Removing it
+is safe only once no reachable revision needs it — and it must not be removed
+while a layer might still be reconciling an older revision.
+
+**The migration's one real trap.** A single commit is atomic for git, but not for
+Flux's dependency graph: the root Kustomization rewrites every layer's
+`decryption.secretRef` immediately, while child layers may still be reconciling
+the *previous* revision. For a moment a layer applies old (PGP) ciphertext with
+the new secretRef. If that secret holds only the age key, the layer fails to
+decrypt. Keeping both keys in one secret is what closes that window — not the
+atomicity of the commit.
+
 ### Re-creating `sops-age` on a fresh cluster
 
 ```bash
@@ -226,6 +240,38 @@ Either the file predates you being added (re-run `./scripts/rekey.sh`), or
 **Private key missing on a new machine**
 → Copy `~/.config/sops/age/keys.txt` across over a secure channel and `chmod 600` it.
 There is nothing to import — the file *is* the key.
+
+**A file is encrypted twice (nested sops document)**
+→ Running `sops -e` on a file that is *already* encrypted wraps it in a second
+layer instead of failing. `./scripts/rekey.sh` then only ever re-keys the outer
+layer, so the inner one silently keeps its old recipients — a file that looks
+migrated but is not. Three `cf-origin-tls.sops.crt` files were in this state
+until 2026-08-15.
+
+Detect it — a healthy file decrypts straight to its payload, a nested one
+decrypts to another sops document:
+
+```bash
+./scripts/rekey.sh --list | while read -r f; do
+  sops -d "$f" 2>/dev/null | grep -q '"sops"\|^sops:\|sops_version' && echo "nested: $f"
+done
+```
+
+Fix it by decrypting both layers and re-encrypting once:
+
+```bash
+sops -d "$f" > /tmp/inner.json
+sops -d --input-type json --output-type binary /tmp/inner.json > /tmp/plain
+cp /tmp/plain "$f" && sops -e -i --input-type binary --output-type json "$f"
+```
+
+Verify against what is actually running before you commit — one decryption must
+now equal the live Secret:
+
+```bash
+sops -d "$f" | sha256sum
+kubectl -n <ns> get secret <name> -o jsonpath='{.data.tls\.crt}' | base64 -d | sha256sum
+```
 
 **A Flux layer reports a decryption error after a merge**
 → A file was committed without the `flux` key as a recipient. Revert the merge
