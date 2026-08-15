@@ -1,21 +1,23 @@
-# PGP recipients for SOPS encryption.
+# age recipients for SOPS encryption.
 # To grant a new team member access:
-#   1. Ask them to run: gpg --full-generate-key
-#   2. Get their fingerprint: gpg --list-keys --fingerprint <email>
-#   3. Import their public key: gpg --import <their-key.pub>
-#   4. Add their fingerprint (without spaces) to the pgp field below, comma-separated
-#   5. Re-encrypt all affected files: sops updatekeys <file>
+#   1. Ask them to run: age-keygen -o ~/.config/sops/age/keys.txt
+#   2. Get their public key: age-keygen -y ~/.config/sops/age/keys.txt
+#   3. Add that public key (the age1... string) to the age field below, comma-separated
+#   4. Re-encrypt all affected files: ./scripts/rekey.sh
 #
 # Secrets are ALWAYS whole-file encrypted. There is deliberately no rule for
 # plain `*.yaml`: a Kubernetes Secret manifest must be named `*.sops.yaml` so
 # it matches the rule below and is encrypted in full. `sops -e` on a plain
 # `.yaml` fails with "no matching creation rules found" — that is intentional.
 #
-# Current recipients:
-#   - TheMeinerLP: 0231831CB40B8E587B7353CBA3AF727721205A62
-#   - <member>:    <FINGERPRINT>
+# Current recipients (see docs/sops.md for where each private key lives):
+#   - TheMeinerLP:    age1kfcggatwrwslka8sssdw2sy05jwntft84cw979gkvzp9wksnyy0qllsz8s
+#   - flux (cluster): age10x4xtzptvjztg9jkxr4m5luw3mfyqwww499lgnnqx32h2xytu5nqkjwqaq
+#   - ci:             age1rrus5c38flq6yg6l56d0cecgzap0fhdew64n7ygz7lngjwpzws4qcnge3x
 
 creation_rules:
   - path_regex: .*\.(env|sops\.env|sops\.json|sops\.ya?ml|sops\.conf|sops\.crt|sops\.key|dockerconfigjson|s3\.conf)$
-    pgp: >-
-      0231831CB40B8E587B7353CBA3AF727721205A62
+    age: >-
+      age1kfcggatwrwslka8sssdw2sy05jwntft84cw979gkvzp9wksnyy0qllsz8s,
+      age10x4xtzptvjztg9jkxr4m5luw3mfyqwww499lgnnqx32h2xytu5nqkjwqaq,
+      age1rrus5c38flq6yg6l56d0cecgzap0fhdew64n7ygz7lngjwpzws4qcnge3x
