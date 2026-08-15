@@ -64,12 +64,14 @@ mit dem Endpunkt gearbeitet wird.
   im Zweifel `kubectl -n penpot rollout restart deploy/penpot-mcp`.
 - Der Container läuft mit `PENPOT_MCP_REMOTE_MODE=true`.
 
-## S3-Zugangsdaten nachfüllen
+## S3-Zugangsdaten
 
-Die Datei `penpot-s3.sops.env` wurde initial mit dem Sentinel
-`REPLACE_AFTER_ROOK_CREATES_USER` angelegt, weil Rook die Schlüssel erst
-erzeugt, wenn der `CephObjectStoreUser` `penpot` im Cluster existiert. Sobald
-die Infrastruktur-Layer reconciled hat:
+Die Schlüssel in `penpot-s3.sops.env` stammen aus dem Secret
+`rook-ceph-object-user-feather-s3-penpot` (Namespace `rook-ceph-fr01`), das
+Rook beim Anlegen des `CephObjectStoreUser` erzeugt. Sie sind eingetragen.
+
+Neu kopieren muss man sie nur, wenn dieser User je neu angelegt wird — dann
+ändern sich die Schlüssel:
 
 ```bash
 cd apps/clusters/feathre-core/base-apps/penpot
