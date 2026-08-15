@@ -7,7 +7,7 @@ name: sbom-scan
 #
 # Only images the repo actually pins are visible from CI; whatever a chart
 # resolves on its own is not. The trivy-operator in the cluster covers that
-# side and reaches ~103 images against the ~30 seen here.
+# side and reaches ~103 images against the couple of dozen seen here.
 #
 # Trivy is left to score nothing: DT does its own analysis from the SBOM, so
 # the scan runs with --scanners license and ships the component inventory.

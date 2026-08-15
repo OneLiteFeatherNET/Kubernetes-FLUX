@@ -109,8 +109,8 @@ the `security` layer and scans what is actually running — roughly 103 images �
 `SBOMReport`s. It runs in ClientServer mode against an in-cluster `trivy-server`; standalone
 mode deadlocks on the shared DB lock for multi-container pods.
 
-**In CI.** The [`sbom-scan`](.github/workflows/sbom-scan.yaml) workflow scans the ~30 images
-this repository *pins* and pushes their SBOMs to
+**In CI.** The [`sbom-scan`](.github/workflows/sbom-scan.yaml) workflow scans every image
+this repository *pins* — 27 today — and pushes their SBOMs to
 [Dependency-Track](https://dependencytrack.org/). It runs nightly, on every push to `main`
 that touches a manifest, and on demand. What a chart resolves on its own is invisible to CI
 by definition — that gap is exactly what the in-cluster operator covers.
