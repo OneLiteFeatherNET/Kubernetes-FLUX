@@ -16,6 +16,8 @@ password in secret `dragonfly-auth` / namespace `dragonfly`), separated by Redis
 | 9 | Outline | cache/queues |
 | 10 | Outline | collaboration |
 | 11 | n8n | Bull queue |
-| 12 | Plane | cache/sessions (`REDIS_URL`) |
+| 13 | Penpot | cache/sessions + realtime collaboration (`redis-uri`) |
 
-Free: 3, 4, 13, 14, 15.
+Free: 3, 4, 12, 14, 15.
+
+DB 12 was Plane's; it became free when Plane was removed in favour of Penpot.

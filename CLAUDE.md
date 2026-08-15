@@ -11,7 +11,7 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 - `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `infrastructure/` or `apps/`.
 - `infrastructure/` — cluster plumbing: Flux **sources**, **controllers/operators**, and **configs** (databases, storage, PKI).
 - `apps/` — actual workloads.
-- `helm/` — in-repo Helm charts (`shlink`, `outline`, `leantime`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
+- `helm/` — in-repo Helm charts (`shlink`, `outline`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
 - `scripts/validate.sh` — local/CI manifest validation. `docs/sops.md` — secrets workflow.
 
 **Two-tier Kustomize pattern.** Everything is a `base` + cluster `overlay`:

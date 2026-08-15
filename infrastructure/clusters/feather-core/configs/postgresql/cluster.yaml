@@ -85,11 +85,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-n8n
-      - name: plane
+      - name: penpot
         login: true
         ensure: present
         passwordSecret:
-          name: role-plane
+          name: role-penpot
     services:
       additional:
         - selectorType: rw

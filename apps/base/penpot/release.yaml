@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: penpot
+  namespace: penpot
+spec:
+  releaseName: penpot
+  chart:
+    spec:
+      chart: penpot
+      version: "1.7.0"
+      sourceRef:
+        kind: HelmRepository
+        name: penpot
+        namespace: flux-system
+  install:
+    timeout: 15m0s
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 15m0s
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+  interval: 1m0s
+  # Default values
+  #
+  values: {}

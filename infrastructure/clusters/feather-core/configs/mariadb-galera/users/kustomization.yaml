@@ -7,7 +7,6 @@ resources:
     - plotsquared.yaml
     - discordbot.yaml
     - uptime-kuma.yaml
-    - leantime.yaml
     - reposilite.yaml
     - shlink.yaml
     - cloudnet.yaml

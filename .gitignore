@@ -42,3 +42,6 @@ fabric.properties
 private-key.asc
 *.dec
 *.plain
+
+# Stale byproducts of running sops against a non-secret file.
+.decrypted~*

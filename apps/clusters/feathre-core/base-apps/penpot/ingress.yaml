@@ -1,0 +1,66 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: penpot-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: penpot.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                # The chart names the frontend service after the release, with
+                # no -frontend suffix; only the MCP service gets one.
+                name: penpot
+                port:
+                  number: 8080
+---
+# MCP HTTP/SSE endpoint for AI clients (Claude Code, Claude Desktop, Cursor).
+# The chart's own ingress template routes to the frontend only, so both MCP
+# ports need Ingress objects of their own.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: penpot-mcp-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: penpot-mcp.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: penpot-mcp
+                port:
+                  number: 4401
+---
+# The Penpot MCP plugin runs in the team's browser, not in the cluster, so the
+# WebSocket port has to be reachable from outside just like the HTTP one.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: penpot-mcp-ws-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: penpot-mcp-ws.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: penpot-mcp
+                port:
+                  number: 4402
