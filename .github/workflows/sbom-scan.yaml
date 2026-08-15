@@ -1,0 +1,124 @@
+name: sbom-scan
+
+# Scan every image this repository pins with the Trivy CLI and push the
+# resulting CycloneDX SBOMs to Dependency-Track, one project per image with
+# the tag as its version - that is what lets Dependency-Track compare
+# v2.15.0 against v2.15.2 instead of filing them as unrelated projects.
+#
+# Only images the repo actually pins are visible from CI; whatever a chart
+# resolves on its own is not. The trivy-operator in the cluster covers that
+# side and reaches ~103 images against the ~30 seen here.
+#
+# Trivy is left to score nothing: DT does its own analysis from the SBOM, so
+# the scan runs with --scanners license and ships the component inventory.
+
+on:
+  schedule:
+    # after Renovate's office-hours window, so a merged bump is scanned same day
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Build SBOMs but upload nothing'
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - 'apps/**'
+      - 'infrastructure/**'
+      - 'helm/**'
+      - 'clusters/**'
+      - 'scripts/collect-images.py'
+      - 'scripts/upload-sbom.py'
+      - '.github/workflows/sbom-scan.yaml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  # Never cancel: a half-finished run leaves Dependency-Track with a partial
+  # picture that looks like a real drop in findings.
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    name: trivy sbom + dependency-track
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.x'
+
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+
+      # Same Trivy version the in-cluster trivy-operator runs, so CI numbers
+      # and cluster reports stay comparable.
+      - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+        with:
+          version: v0.73.0
+          cache: true
+
+      - name: Collect pinned images
+        id: images
+        run: |
+          scripts/collect-images.py | tee images.txt
+          echo "count=$(wc -l < images.txt)" >> "$GITHUB_OUTPUT"
+
+      # One shared DB download instead of one per image.
+      - name: Warm Trivy database
+        run: trivy image --download-db-only
+
+      - name: Build SBOMs
+        run: |
+          mkdir -p sbom
+          ok=0 skipped=0
+          while read -r image; do
+            [ -z "$image" ] && continue
+            name=$(printf '%s' "$image" | tr '/:' '__')
+            if trivy image --quiet --scanners license --format cyclonedx \
+                 --timeout 10m -o "sbom/${name}.cdx.json" "$image"; then
+              ok=$((ok + 1))
+            else
+              # A private registry without credentials is expected here and
+              # must not fail the run - the cluster-side operator covers those.
+              echo "::warning title=Image not scannable::${image}"
+              rm -f "sbom/${name}.cdx.json"
+              skipped=$((skipped + 1))
+            fi
+            # Runners have ~14 GB; the layer cache fills it well before image 30.
+            trivy clean --scan-cache >/dev/null 2>&1 || true
+          done < images.txt
+          echo "scanned ${ok}, skipped ${skipped}"
+          [ "$ok" -gt 0 ] || { echo "::error::no image could be scanned"; exit 1; }
+
+      - name: Upload to Dependency-Track
+        env:
+          DT_URL: ${{ vars.DT_URL }}
+          DT_API_KEY: ${{ secrets.DT_API_KEY }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          if [ -z "${DT_API_KEY}" ]; then
+            echo "::warning title=Upload skipped::DT_API_KEY is not set; see README"
+            scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
+          elif [ "${DRY_RUN}" = "true" ]; then
+            scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
+          else
+            scripts/upload-sbom.py 'sbom/*.cdx.json'
+          fi
+
+      - name: Keep the SBOMs
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: sbom
+          path: sbom/
+          retention-days: 30
+          if-no-files-found: warn
