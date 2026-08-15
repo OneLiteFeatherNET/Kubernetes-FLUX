@@ -32,3 +32,8 @@ secretGenerator:
   - name: penpot-core
     envs:
       - penpot-core.sops.env
+  # ⚠️ Still holds REPLACE_WITH_ENTRA_* sentinels. Fill from the Penpot app
+  # registration in the Entra tenant before merging — see docs/penpot-oidc.md.
+  - name: penpot-oidc
+    envs:
+      - penpot-oidc.sops.env

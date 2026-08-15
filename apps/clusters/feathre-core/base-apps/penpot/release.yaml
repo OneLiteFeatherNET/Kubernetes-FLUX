@@ -25,8 +25,30 @@ spec:
       # enable-mcp is the ONLY switch for the MCP component — the chart's
       # penpot.mcpEnabled helper greps exactly this string, there is no
       # mcp.enabled value.
-      flags: "disable-registration enable-login-with-password disable-email-verification enable-mcp"
+      # enable-login-with-password stays on deliberately: it is the fallback if
+      # the Entra app registration ever breaks. Remove it once OIDC has proven
+      # itself in daily use.
+      flags: "disable-registration enable-login-with-password enable-login-with-oidc disable-email-verification enable-mcp"
       telemetryEnabled: false
+
+      # Microsoft Entra ID — the same tenant the rest of the cluster already
+      # authenticates against (dependency-track, apus, grafana). Penpot
+      # auto-discovers the endpoints from baseURI, so authURI/tokenURI/userURI
+      # stay unset.
+      providers:
+        existingSecret: penpot-oidc
+        secretKeys:
+          oidcClientIDKey: oidc-client-id
+          oidcClientSecretKey: oidc-client-secret
+        oidc:
+          enabled: true
+          baseURI: "https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0"
+          # Both of these override chart defaults that would break login:
+          # scopes defaults to the literal placeholder "scope1 scope2", and
+          # roles defaults to "designer developer". Penpot needs at least name
+          # and email on the userinfo response; role gating is off on purpose.
+          scopes: "openid profile email"
+          roles: ""
 
       # The -rw service directly, NOT the PgBouncer pooler — same reasoning as
       # n8n: PgBouncer rejects some startup parameters and Penpot is untested
