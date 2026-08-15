@@ -1,0 +1,10 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: penpot
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: penpot
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: penpot

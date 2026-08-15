@@ -1,0 +1,122 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: penpot
+  namespace: penpot
+spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          # Covers frontend, backend, exporter and mcp — the chart renders all
+          # four as Deployments and none of them carry a priority class.
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+  values:
+    config:
+      publicUri: "https://penpot.onelitefeather.net"
+      # Deviates from the chart default on two points: registration is off
+      # (this is a team instance, not a public one) and enable-smtp is absent
+      # because the cluster has no shared mail relay. Consequence: no invite
+      # mails and no password reset by mail; accounts are created manually.
+      # enable-mcp is the ONLY switch for the MCP component — the chart's
+      # penpot.mcpEnabled helper greps exactly this string, there is no
+      # mcp.enabled value.
+      flags: "disable-registration enable-login-with-password disable-email-verification enable-mcp"
+      telemetryEnabled: false
+
+      # The -rw service directly, NOT the PgBouncer pooler — same reasoning as
+      # n8n: PgBouncer rejects some startup parameters and Penpot is untested
+      # against it here.
+      postgresql:
+        host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
+        port: 5432
+        database: penpot
+        existingSecret: penpot-db
+        secretKeys:
+          usernameKey: username
+          passwordKey: password
+
+      # Shared Dragonfly instance, dedicated DB 13 (see
+      # docs/dragonfly-redis-allocations.md). The chart wants one complete URI
+      # in a single key, not host/port/password split out.
+      redis:
+        existingSecret: penpot-redis
+        secretKeys:
+          redisUriKey: redis-uri
+
+      objectsStorage:
+        storageBackend: s3
+        s3:
+          bucket: penpot
+          region: us-east-1
+          existingSecret: penpot-s3
+          secretKeys:
+            accessKeyIDKey: access-key-id
+            secretAccessKey: secret-access-key
+            endpointURIKey: endpoint-uri
+
+      existingSecret: penpot-core
+      secretKeys:
+        apiSecretKey: api-secret-key
+
+    # Assets live in Ceph S3. The chart default is true, which would otherwise
+    # provision an unused 20Gi RWO volume alongside the S3 backend.
+    persistence:
+      assets:
+        enabled: false
+
+    # Exposed via Cloudflare Tunnel (see ingress.yaml); the chart Ingress only
+    # covers the frontend service anyway and would not reach the MCP ports.
+    ingress:
+      enabled: false
+
+    # Every resources block in this chart defaults to {}, which leaves each
+    # component BestEffort and first in line for eviction. Values below are
+    # starting points, to be revisited against `kubectl top` once real usage
+    # settles.
+    backend:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 250m
+          memory: 1Gi
+        limits:
+          memory: 2Gi
+
+    frontend:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
+
+    # Headless browser for PDF/PNG export — memory-hungry by nature.
+    exporter:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1500Mi
+
+    # The chart's MCP Deployment defines no liveness or readiness probes, so a
+    # wedged pod will not be restarted automatically.
+    mcp:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          memory: 512Mi

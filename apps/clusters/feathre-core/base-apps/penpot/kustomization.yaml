@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: penpot
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/penpot/
+  - ingress.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  # Must carry the same password as the CNPG role-penpot secret.
+  - name: penpot-db
+    envs:
+      - penpot-db.sops.env
+  # One complete URI under redis-uri, pointing at Dragonfly DB 13.
+  - name: penpot-redis
+    envs:
+      - penpot-redis.sops.env
+  # ⚠️ access-key-id / secret-access-key still hold the sentinel
+  # REPLACE_AFTER_ROOK_CREATES_USER. Rook only mints the real keys once the
+  # CephObjectStoreUser `penpot` exists in the cluster, which happens when the
+  # infrastructure layer reconciles. Refill from
+  # rook-ceph-object-user-feather-s3-penpot (namespace rook-ceph-fr01) before
+  # relying on asset uploads — see docs/penpot-mcp.md.
+  - name: penpot-s3
+    envs:
+      - penpot-s3.sops.env
+  # api-secret-key backs persistent user sessions; changing it logs everyone
+  # out, so keep it stable.
+  - name: penpot-core
+    envs:
+      - penpot-core.sops.env

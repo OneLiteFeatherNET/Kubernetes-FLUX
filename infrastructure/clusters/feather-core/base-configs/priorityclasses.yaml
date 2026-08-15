@@ -37,7 +37,7 @@ metadata:
 value: 1000
 globalDefault: false
 preemptionPolicy: PreemptLowerPriority
-description: "Standard applications (outline, leantime, reposilite, dependency-track, shlink, otis)."
+description: "Standard applications (outline, penpot, reposilite, dependency-track, shlink, otis)."
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass

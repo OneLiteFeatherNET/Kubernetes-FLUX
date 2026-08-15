@@ -9,8 +9,7 @@ resources:
   - outline
   - dependency-track
   - uptime-kuma
-  - leantime
-  - plane
+  - penpot
   - grafana
   - n8n
   - ollama

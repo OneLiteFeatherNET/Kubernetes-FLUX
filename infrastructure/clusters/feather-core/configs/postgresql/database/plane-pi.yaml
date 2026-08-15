@@ -1,9 +1,0 @@
-apiVersion: postgresql.cnpg.io/v1
-kind: Database
-metadata:
-  name: plane-pi
-spec:
-  name: plane_pi
-  owner: plane
-  cluster:
-    name: feather-core-cluster-pg

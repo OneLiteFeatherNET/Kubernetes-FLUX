@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: penpot
+spec:
+  name: penpot
+  owner: penpot
+  cluster:
+    name: feather-core-cluster-pg

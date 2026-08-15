@@ -27,7 +27,7 @@ Kustomization every ten.
 | `clusters/feather-core/` | The Flux control plane. `flux-system/` is the bootstrap; every other `*.yaml` is one Flux `Kustomization` — a layer. |
 | `infrastructure/` | Cluster plumbing: Flux sources, controllers and operators, and configs (databases, storage, PKI). |
 | `apps/` | The actual workloads. |
-| `helm/` | Charts maintained in this repo: `leantime`, `outline`, `shlink`, and `micronaut` — the generic chart several Micronaut services share. |
+| `helm/` | Charts maintained in this repo: `outline`, `shlink`, and `micronaut` — the generic chart several Micronaut services share. |
 | `scripts/` | Validation and SBOM tooling, all of it also run by CI. |
 
 Everything follows a **base + overlay** pattern: `*/base/<name>/` holds the portable

@@ -9,9 +9,7 @@ resources:
   - postgresql-cluster-backup.yaml
   - bluemap.yaml
   - reposilite.yaml
-  - leantime.yaml
   - outline.yaml
-  - plane.yaml
   - mimir.yaml
   - reposilite-public.yaml
   - bakery.yaml
@@ -19,3 +17,4 @@ resources:
   - tempo.yaml
   - cygnus-pack.yaml
   - apus.yaml
+  - penpot.yaml
