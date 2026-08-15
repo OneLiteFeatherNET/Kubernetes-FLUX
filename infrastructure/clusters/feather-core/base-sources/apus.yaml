@@ -1,6 +1,6 @@
 ---
 # Apus ships its charts as OCI artifacts from our own Harbor, versioned together with
-# the images they deploy: apus-operator 0.3.0 references apus/operator:0.3.0, because the
+# the images they deploy: apus-operator 0.4.0 references apus/operator:0.4.0, because the
 # chart leaves image.tag empty and falls back to .Chart.AppVersion. Pin both repositories
 # to the same version for that reason -- mixing them defeats the coupling.
 apiVersion: source.toolkit.fluxcd.io/v1
@@ -15,7 +15,7 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-operator
   ref:
-    semver: "=0.3.1"
+    semver: "=0.4.0"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -29,4 +29,4 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-platform
   ref:
-    semver: "=0.3.1"
+    semver: "=0.4.0"
