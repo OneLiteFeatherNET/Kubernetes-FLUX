@@ -15,7 +15,7 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-operator
   ref:
-    semver: "=0.3.0"
+    semver: "=0.3.1"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -29,4 +29,4 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-platform
   ref:
-    semver: "=0.3.0"
+    semver: "=0.3.1"
