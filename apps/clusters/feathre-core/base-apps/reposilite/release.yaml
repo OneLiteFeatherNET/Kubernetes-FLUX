@@ -34,7 +34,7 @@ spec:
       # agent jar into an emptyDir the main container mounts read-only.
       initContainers:
         - name: otel-agent
-          image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.29.0
+          image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.30.0
           command: ["cp", "/javaagent.jar", "/otel/javaagent.jar"]
           resources:
             requests:
