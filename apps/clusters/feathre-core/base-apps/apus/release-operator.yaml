@@ -19,6 +19,12 @@ spec:
       s3Region: us-east-1
       # Rook names the generated secret after the ObjectBucketClaim.
       credentialsSecret: apus-bundles
+    otel:
+      # The cluster's OTLP collector: alloy-receiver in grafana, which fans traces out to
+      # Tempo, logs to Loki and metrics to Mimir. gRPC (4317), not the HTTP port.
+      # serviceName stays unset on purpose -- the chart then defaults it to the release
+      # name, so spans are attributed to "apus-operator".
+      endpoint: http://alloy-receiver.grafana.svc:4317
     metrics:
       enabled: true
       serviceMonitor:
