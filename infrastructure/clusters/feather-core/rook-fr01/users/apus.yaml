@@ -1,0 +1,14 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: apus
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: apus
+  # Apus creates buckets of its own at runtime: the operator provisions one per BlueMapMap
+  # through an ObjectBucketClaim owned by this user, so its whole storage footprint counts
+  # against one quota (design spec §9.1, §10.2).
+  capabilities:
+    bucket: "*"
+    user: "*"

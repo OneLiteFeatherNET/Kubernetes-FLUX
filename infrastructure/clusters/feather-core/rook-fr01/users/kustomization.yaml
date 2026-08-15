@@ -18,3 +18,4 @@ resources:
   - olf.yaml
   - tempo.yaml
   - cygnus-pack.yaml
+  - apus.yaml
