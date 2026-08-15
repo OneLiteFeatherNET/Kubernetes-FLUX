@@ -1,9 +1,8 @@
 ---
 # The operator alone is a usable Apus installation: it reconciles Tenants, WorldSources,
 # WorldIngests, BlueMapMaps, BlueMapRenders and BlueMapHostings from `kubectl` and Git.
-# The dashboard and REST API (apus-platform) sit on top and are deliberately not deployed
-# yet -- they require an OIDC issuer, and which identity broker sits in front of Apus is
-# still an open decision (design spec §15, point 3).
+# The dashboard and REST API sit on top and are deployed alongside it as apus-platform
+# (release-platform.yaml), validating tokens against this cluster's Entra ID tenant.
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:

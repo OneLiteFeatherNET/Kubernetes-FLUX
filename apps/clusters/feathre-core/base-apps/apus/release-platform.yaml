@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: apus-platform
+  namespace: apus-system
+spec:
+  values:
+    auth:
+      # This cluster's OIDC provider is Microsoft Entra ID, the same tenant dependency-track
+      # already authenticates against. Both values are public discovery metadata, read from
+      # https://login.microsoftonline.com/<tenant>/v2.0/.well-known/openid-configuration, and
+      # neither is a secret. The chart's values.schema.json makes both mandatory: an API
+      # started without them would have no issuer to check and no keys to verify signatures
+      # with.
+      issuer: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
+      jwksUri: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/discovery/v2.0/keys
+    otel:
+      # The cluster's OTLP collector: alloy-receiver in grafana, gRPC (4317), the same one
+      # apus-operator exports to.
+      endpoint: http://alloy-receiver.grafana.svc:4317
+      # Only the API emits telemetry - the UI is a static SPA behind nginx with no
+      # instrumentation - so the service is named for the API, next to "apus-operator" in
+      # Tempo and Loki rather than the chart's default "apus-platform-api".
+      serviceName: apus-api

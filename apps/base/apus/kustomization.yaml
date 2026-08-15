@@ -4,3 +4,4 @@ namespace: apus-system
 resources:
   - namespace.yaml
   - release-operator.yaml
+  - release-platform.yaml
