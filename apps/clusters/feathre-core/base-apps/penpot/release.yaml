@@ -110,15 +110,18 @@ spec:
         limits:
           memory: 2Gi
 
+    # nginx plus an entrypoint that rewrites the built JS bundle on every start.
+    # That rewrite spikes well past what steady-state nginx needs: a 256Mi limit
+    # OOMKilled the container four times before it ever served a request.
     frontend:
       podLabels:
         logs.onelitefeather.net/env: prod
       resources:
         requests:
           cpu: 25m
-          memory: 64Mi
+          memory: 128Mi
         limits:
-          memory: 256Mi
+          memory: 1Gi
 
     # Headless browser for PDF/PNG export — memory-hungry by nature.
     exporter:
