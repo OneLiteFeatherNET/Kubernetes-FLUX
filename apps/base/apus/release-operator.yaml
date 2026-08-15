@@ -1,0 +1,28 @@
+---
+# The operator alone is a usable Apus installation: it reconciles Tenants, WorldSources,
+# WorldIngests, BlueMapMaps, BlueMapRenders and BlueMapHostings from `kubectl` and Git.
+# The dashboard and REST API (apus-platform) sit on top and are deliberately not deployed
+# yet -- they require an OIDC issuer, and which identity broker sits in front of Apus is
+# still an open decision (design spec §15, point 3).
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: apus-operator
+  namespace: apus-system
+spec:
+  releaseName: apus-operator
+  chartRef:
+    kind: OCIRepository
+    name: apus-operator
+    namespace: flux-system
+  interval: 1m0s
+  install:
+    remediation:
+      retries: 3
+  # The chart installs six CRDs as templates (not in Helm's crds/ directory) so upgrades
+  # actually update them; they carry helm.sh/resource-policy: keep, so uninstalling the
+  # release never deletes a Tenant or a BlueMapMap along with it.
+  upgrade:
+    remediation:
+      retries: 3
+  values: {}

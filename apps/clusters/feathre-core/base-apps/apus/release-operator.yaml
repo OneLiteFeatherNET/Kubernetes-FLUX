@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: apus-operator
+  namespace: apus-system
+spec:
+  values:
+    # Cluster reality, not the chart's defaults: this cluster's object store is feather-s3
+    # in rook-ceph-fr01, and its bucket class is ceph-bucket-fr01.
+    rook:
+      namespace: rook-ceph-fr01
+      cephObjectStore: feather-s3
+      bucketStorageClass: ceph-bucket-fr01
+    bundles:
+      bucket: apus-bundles
+      # In-cluster RGW service; the chart has no default because a wrong endpoint fails
+      # every ingest at runtime instead of at install time.
+      s3Endpoint: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc
+      s3Region: us-east-1
+      # Rook names the generated secret after the ObjectBucketClaim.
+      credentialsSecret: apus-bundles
+    metrics:
+      enabled: true
+      serviceMonitor:
+        # The operator exports no metrics yet -- that arrives with phase 8. Enabling this
+        # now would only add a scrape target answering with connection refused.
+        enabled: false
