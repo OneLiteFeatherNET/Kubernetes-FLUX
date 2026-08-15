@@ -24,12 +24,19 @@ spec:
       mode: ClientServer
       storageClassName: ceph-rbd-fr01
       storageSize: 5Gi
+      # Reports carrying every severity exceeded etcd's object size limit
+      # ("request is too large") on image-heavy workloads. Unfixable and
+      # LOW findings are what nobody acts on anyway.
+      ignoreUnfixed: true
+      severity: "MEDIUM,HIGH,CRITICAL"
       resources:
         requests:
           cpu: 100m
           memory: 128Mi
         limits:
-          memory: 512Mi
+          # 512Mi OOMKilled the scans of larger images (reposilite, bluemap,
+          # dependency-track). Requests stay low — this is a burst ceiling.
+          memory: 2Gi
 
     operator:
       builtInTrivyServer: true
