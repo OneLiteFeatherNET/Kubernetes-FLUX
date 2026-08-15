@@ -17,20 +17,10 @@ spec:
       requireSafeReplicaSize: true
   preservePoolsOnDelete: true
   hosting:
-    # advertiseEndpoint is used by the Rook operator for RGW admin-ops calls
-    # (user/bucket reconcile) and must be reachable from inside the cluster.
-    # The external name belongs in dnsNames only; omitting advertiseEndpoint
-    # makes Rook default to the internal RGW service. Setting it to the external
-    # s3.onelitefeather.net caused all CephObjectStoreUser reconciles to time out
-    # (no NAT hairpin to the public IP). Virtual-host-style still works via the
-    # Envoy gateway + s3-proxy HTTPRoute, driven by rgw_dns_name from dnsNames.
-    #
-    # A host must be listed here for RGW to treat it as PATH-STYLE; any host not
-    # in dnsNames (nor an internal RGW service name Rook adds automatically) is
-    # parsed as virtual-host-style with the whole hostname as the bucket name.
-    # Hence the path-style endpoints below must be present:
-    #   - s3-path.onelitefeather.net   external path-style via Cloudflare Tunnel
-    #   - s3.apps.onelite.feather      internal path-style via the Envoy gateway
+    # A host listed here is served PATH-STYLE; anything else is parsed as
+    # virtual-host-style with the hostname as the bucket. Do NOT set
+    # advertiseEndpoint to the external name — that times out every user reconcile.
+    # outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
     dnsNames:
       - s3.onelitefeather.net
       - s3-path.onelitefeather.net

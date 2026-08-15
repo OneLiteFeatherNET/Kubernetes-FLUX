@@ -1,16 +1,7 @@
-# External path-style S3 endpoint via Cloudflare Tunnel.
-#
-# Lives in rook-ceph-fr01 because Ingress backends are namespace-local and the
-# RGW service is here. The host s3-path.onelitefeather.net is deliberately NOT
-# in the CephObjectStore dnsNames (which only lists s3.onelitefeather.net), so
-# RGW serves requests to this host as PATH-STYLE (s3-path.onelitefeather.net/<bucket>/<key>).
-# The existing virtual-host-style s3.onelitefeather.net + *.s3.onelitefeather.net
-# on Envoy is untouched.
-#
-# NOTE: Cloudflare's proxy caps request bodies at 100 MB. A single PutObject
-# >100 MB will fail; multipart-capable clients (aws-cli, most SDKs) are fine
-# because each part stays under the limit. For large single-shot uploads use the
-# Envoy endpoint instead.
+# External path-style S3 endpoint via Cloudflare Tunnel. The host is deliberately
+# NOT in the CephObjectStore dnsNames, which is what makes RGW serve it path-style.
+# Cloudflare caps request bodies at 100 MB — large single-shot uploads need Envoy.
+# outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -32,14 +23,9 @@ spec:
                 port:
                   number: 80
 ---
-# Public PATH-STYLE endpoint for the canonical host s3.onelitefeather.net.
-#
-# s3.onelitefeather.net is listed in the CephObjectStore dnsNames, so RGW serves
-# it PATH-STYLE (s3.onelitefeather.net/<bucket>/<key>) — same parsing as the
-# s3-path host above. The Envoy HTTPRoute rgw-external-proxy still claims this
-# host internally, but the Envoy gateway LB is internal-only (10.200.90.1), so
-# the only PUBLIC route is this Cloudflare Tunnel. The tunnel controller creates
-# the public DNS CNAME for the host. Same 100 MB single-request body cap applies.
+# Public path-style endpoint for the canonical host. Envoy claims the same host
+# internally, but its LB is internal-only — this tunnel is the only public route.
+# The same 100 MB body cap applies.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

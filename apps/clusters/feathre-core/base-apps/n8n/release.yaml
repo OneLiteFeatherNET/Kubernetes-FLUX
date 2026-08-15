@@ -19,13 +19,8 @@ spec:
       workerReplicaCount: 2
       workerConcurrency: 10
 
-    # External Postgres on the shared CNPG cluster. Connect to the primary
-    # -rw service directly, NOT the PgBouncer pooler: n8n sends
-    # statement_timeout as a libpq startup parameter, which PgBouncer rejects
-    # ("unsupported startup parameter: statement_timeout") unless it's in
-    # ignore_startup_parameters — and changing that on the shared pooler would
-    # affect every other app. DB + role provisioned via CNPG in
-    # infrastructure/.../configs/postgresql.
+    # The -rw service directly, NOT the PgBouncer pooler: n8n sends
+    # statement_timeout as a startup parameter, which PgBouncer rejects.
     database:
       type: postgresdb
       useExternal: true

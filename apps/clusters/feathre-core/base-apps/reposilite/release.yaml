@@ -18,22 +18,9 @@ spec:
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
   values:
-    # Ingot instead of Reposilite. The fork is a drop-in replacement: same
-    # entrypoint, same paths, same environment variables, same schema in the
-    # same database. Nothing else in this release changes, and
-    # REPOSILITE_LOCAL_DATABASE below keeps working because Ingot reads the
-    # legacy prefix as a fallback.
-    #
-    # Rehearsed against a full copy of this instance, the database plus 19.7
-    # GiB of artifacts across all five buckets: artifacts came back byte
-    # identical, all six access tokens survived, an upload authenticated with
-    # REPOSILITE_OPTS was accepted, and dzikoysk/reposilite:3.5.28 was then
-    # pointed back at the same data and read everything Ingot had written.
-    #
-    # `tag` is mandatory, not cosmetic. The chart renders
-    # `{{ image.name }}:{{ image.tag | default .Chart.AppVersion }}`, so
-    # leaving it out asks for ghcr.io/onelitefeathernet/ingot:3.5.28, which
-    # does not exist. Bump it together with the chart pin above.
+    # Ingot is a drop-in fork of Reposilite. `tag` is mandatory, not cosmetic:
+    # without it the chart asks for a tag that does not exist. Bump it together
+    # with the chart pin above.
     image:
       name: ghcr.io/onelitefeathernet/ingot
       tag: "1.1.0"

@@ -9,6 +9,13 @@ control-plane, storage and worker nodes running Talos. There is no application s
 here, only manifests: Flux `Kustomization`s, Helm values, Kustomize overlays and a handful
 of in-repo charts.
 
+> **Operational documentation lives in Outline**, under
+> [Infrastruktur → Kubernetes-FLUX](https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA).
+> That is where the *why* belongs — in particular
+> [Betriebsfallen](https://outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra),
+> the behaviours that are not visible in the manifests and that mostly cost an outage to
+> learn. Comments in this repository stay short and point there.
+
 The cluster reconciles itself against `main`. A change takes effect **only once it is
 merged**, after which Flux picks it up — the Git source is polled every minute, the root
 Kustomization every ten.

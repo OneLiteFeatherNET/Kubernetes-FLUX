@@ -1,16 +1,8 @@
 name: sbom-scan
 
-# Scan every image this repository pins with the Trivy CLI and push the
-# resulting CycloneDX SBOMs to Dependency-Track, one project per image with
-# the tag as its version - that is what lets Dependency-Track compare
-# v2.15.0 against v2.15.2 instead of filing them as unrelated projects.
-#
-# Only images the repo actually pins are visible from CI; whatever a chart
-# resolves on its own is not. The trivy-operator in the cluster covers that
-# side and reaches ~103 images against the couple of dozen seen here.
-#
-# Trivy is left to score nothing: DT does its own analysis from the SBOM, so
-# the scan runs with --scanners license and ships the component inventory.
+# SBOMs of the images this repo pins -> Dependency-Track. The in-cluster
+# trivy-operator covers what actually runs; this covers what the repo declares.
+# outline.onelitefeather.dev/doc/supply-chain-scanning-trivy-und-dependency-track-sQdPCnAGdO
 
 on:
   schedule:
@@ -38,8 +30,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}
-  # Never cancel: a half-finished run leaves Dependency-Track with a partial
-  # picture that looks like a real drop in findings.
+  # A half-finished run leaves Dependency-Track looking like findings dropped.
   cancel-in-progress: false
 
 jobs:
@@ -59,8 +50,7 @@ jobs:
       - name: Install PyYAML
         run: pip install --quiet pyyaml
 
-      # Same Trivy version the in-cluster trivy-operator runs, so CI numbers
-      # and cluster reports stay comparable.
+      # Match the in-cluster trivy-operator so the numbers stay comparable.
       - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
         with:
           version: v0.73.0
@@ -72,7 +62,6 @@ jobs:
           scripts/collect-images.py | tee images.txt
           echo "count=$(wc -l < images.txt)" >> "$GITHUB_OUTPUT"
 
-      # One shared DB download instead of one per image.
       - name: Warm Trivy database
         run: trivy image --download-db-only
 
@@ -87,13 +76,12 @@ jobs:
                  --timeout 10m -o "sbom/${name}.cdx.json" "$image"; then
               ok=$((ok + 1))
             else
-              # A private registry without credentials is expected here and
-              # must not fail the run - the cluster-side operator covers those.
+              # Private registries have no CI credentials; the operator covers them.
               echo "::warning title=Image not scannable::${image}"
               rm -f "sbom/${name}.cdx.json"
               skipped=$((skipped + 1))
             fi
-            # Runners have ~14 GB; the layer cache fills it well before image 30.
+            # The layer cache fills a runner's disk well before the last image.
             trivy clean --scan-cache >/dev/null 2>&1 || true
           done < images.txt
           echo "scanned ${ok}, skipped ${skipped}"

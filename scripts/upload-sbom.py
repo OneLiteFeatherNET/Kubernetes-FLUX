@@ -1,21 +1,10 @@
 #!/usr/bin/env python3
 """Upload CycloneDX SBOMs to Dependency-Track, one project per image.
 
-Trivy writes CycloneDX 1.7. Dependency-Track 4.13 ships cyclonedx-core-java
-11.x, which validates against 1.6 and rejects 1.7 outright, so every BOM is
-rewritten before upload:
-
-  1. specVersion and $schema are set to 1.6
-  2. license IDs the 1.6 SPDX enum does not know (SMAIL-GPL and friends) move
-     from license.id to license.name, which is where non-SPDX licenses belong
-
-Both steps are lossless for what Dependency-Track actually analyses. Once the
-server runs 4.14 or newer the rewrite becomes a no-op that costs nothing, so it
-stays unconditional rather than sniffing the server version.
-
-Project name is the image repository, project version its tag - that is what
-makes Dependency-Track compare v2.15.0 against v2.15.2 instead of treating them
-as unrelated projects.
+Rewrites 1.7 to 1.6 on the way, because Trivy only emits the former and
+Dependency-Track 4.13 only accepts the latter. Project name is the image
+repository, version its tag, so the server compares tags of one image.
+https://outline.onelitefeather.dev/doc/supply-chain-scanning-trivy-und-dependency-track-sQdPCnAGdO
 
   DT_URL=https://dependency-track.example DT_API_KEY=odt_... \
     scripts/upload-sbom.py sbom/*.cdx.json
@@ -33,7 +22,7 @@ SPDX_1_6 = "https://raw.githubusercontent.com/CycloneDX/specification/1.6/schema
 
 
 def spdx_ids():
-    """The license IDs CycloneDX 1.6 accepts. Empty set means: rewrite nothing."""
+    """License IDs CycloneDX 1.6 accepts. Empty set means: rewrite nothing."""
     try:
         with urllib.request.urlopen(SPDX_1_6, timeout=30) as response:
             return set(json.load(response).get("enum") or [])
@@ -69,8 +58,7 @@ def to_1_6(bom, allowed):
 
 
 def image_of(bom, fallback):
-    """Trivy records the scanned image as the BOM's own metadata component,
-    and puts the tag in the name rather than in version: goharbor/x:v2.15.0."""
+    """Trivy puts the tag in the name, not in version: goharbor/x:v2.15.0."""
     component = (bom.get("metadata") or {}).get("component") or {}
     name = component.get("name") or fallback
     version = component.get("version") or ""
@@ -136,8 +124,7 @@ def main():
         project, version = image_of(bom, os.path.basename(path))
         components = len(bom.get("components") or [])
 
-        # Distroless and busybox-style images carry no package database. Uploading
-        # those would leave empty projects that read as "nothing to fix here".
+        # An empty project would read as "nothing to fix here".
         if not components:
             print(f"empty   {project}:{version}  (no package database)")
             empty += 1

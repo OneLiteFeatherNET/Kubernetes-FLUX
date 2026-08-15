@@ -21,18 +21,10 @@ spec:
     limits:
       memory: 256Mi
 
-  # Spread the 2 MaxScale replicas across nodes, but only against each other
-  # (preferred/soft) — NOT against MariaDB, since there aren't enough nodes to
-  # keep MaxScale and MariaDB fully separated. antiAffinityEnabled would make
-  # it a HARD rule against both maxscale + mariadb, over-constraining the 4
-  # DB-eligible workers (3 MariaDB already occupy 3 of them) and leaving the
-  # 2nd MaxScale pod Pending.
-  #
-  # IMPORTANT: spec.affinity.antiAffinityEnabled is immutable (webhook-enforced).
-  # Going from antiAffinityEnabled:true to this soft rule — and setting
-  # priorityClassName above — requires RECREATING the MaxScale CR:
-  #   kubectl delete maxscale maxscale-galera -n mariadb-galera
-  # Flux then re-applies this manifest fresh (brief rw-router VIP blip).
+  # Soft, and only against the other MaxScale replica — antiAffinityEnabled would
+  # make it hard against MariaDB too and leave the 2nd pod Pending. The field is
+  # immutable, so changing it means deleting and recreating the MaxScale CR:
+  # outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:

@@ -1,17 +1,9 @@
 apiVersion: 1
 templates:
-  # Static annotations come from (index .Alerts 0) and must never be templated per-$labels in
-  # a rule; per-instance values come from index $a.Labels (Labels, never templated annotations):
-  # after a restart warmStateCache hands back the RAW annotation template (grafana#114973,
-  # fixed in 12.4.x), while instance labels survive correctly.
-  # Grafana reads this file verbatim (Kustomize copies it into a ConfigMap, Helm never sees
-  # it), so the Go template is the only escaping layer left: backticks, single quotes and
-  # trailing whitespace are all allowed again. The "{{ define" rule below is Grafana's own
-  # and still applies.
-  # The payload is built via coll.Dict/coll.Slice and serialized by data.ToJSON (= json.Marshal),
-  # never concatenated, so no value can break the JSON. Every printf precision is a Discord
-  # limit guard; the 12-instance cap follows from field.value <= 1024 (worst case 71 runes/line
-  # x 12 + 38 = 890). printf counts runes. No arithmetic is available (no sprig, no math.Sub).
+  # Read per-instance values from .Labels, never from templated annotations —
+  # after a restart warmStateCache hands back the raw template (grafana#114973).
+  # Helm never sees this file, so the Go template is the only escaping layer.
+  # outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
   - name: discord.title
     template: '{{ define "discord.title" }}{{ if eq .Status "firing" }}{{ if eq (index .CommonLabels "severity") "warning" }}🟠{{ else }}🔴{{ end }} FIRING{{ if gt (len .Alerts.Firing) 1 }} ({{ len .Alerts.Firing }}x){{ end }}{{ else }}✅ RESOLVED{{ if gt (len .Alerts.Resolved) 1 }} ({{ len .Alerts.Resolved }}x){{ end }}{{ end }} · {{ index .CommonLabels "alertname" }}{{ end }}'
   # Must open with "{{ define", never "{{- define": Grafana validates with \{\{\s*define, so a
