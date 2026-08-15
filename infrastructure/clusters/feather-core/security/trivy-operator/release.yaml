@@ -45,15 +45,13 @@ spec:
       scanJobTimeout: "10m"
 
     nodeCollector:
-      # Without these it only ever reaches the 4 untainted workers, silently
-      # leaving control-plane and storage nodes out of the infra assessment.
-      tolerations:
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
-          effect: NoSchedule
-        - key: node-role.feather/storage
-          operator: Exists
-          effect: NoSchedule
+      # Disabled: these nodes run Talos, which has no systemd and a
+      # read-only rootfs, so the collector cannot even start
+      # ("mkdir /etc/systemd: read-only file system"). Excluding every
+      # linux node is the only switch the chart offers. The namespaced
+      # InfraAssessmentReports for the control-plane pods are unaffected —
+      # those come from the API, not from this collector.
+      excludeNodes: "kubernetes.io/os=linux"
 
     # Alloy discovers ServiceMonitors cluster-wide, same as the gateway.
     serviceMonitor:
