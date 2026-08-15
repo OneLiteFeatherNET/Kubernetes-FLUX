@@ -18,12 +18,9 @@ secretGenerator:
   - name: penpot-redis
     envs:
       - penpot-redis.sops.env
-  # ⚠️ access-key-id / secret-access-key still hold the sentinel
-  # REPLACE_AFTER_ROOK_CREATES_USER. Rook only mints the real keys once the
-  # CephObjectStoreUser `penpot` exists in the cluster, which happens when the
-  # infrastructure layer reconciles. Refill from
-  # rook-ceph-object-user-feather-s3-penpot (namespace rook-ceph-fr01) before
-  # relying on asset uploads — see docs/penpot-mcp.md.
+  # Rook-minted keys, copied from rook-ceph-object-user-feather-s3-penpot
+  # (namespace rook-ceph-fr01). Re-copy them if that CephObjectStoreUser is
+  # ever recreated — see docs/penpot-mcp.md.
   - name: penpot-s3
     envs:
       - penpot-s3.sops.env
@@ -32,8 +29,9 @@ secretGenerator:
   - name: penpot-core
     envs:
       - penpot-core.sops.env
-  # ⚠️ Still holds REPLACE_WITH_ENTRA_* sentinels. Fill from the Penpot app
-  # registration in the Entra tenant before merging — see docs/penpot-oidc.md.
+  # Client id and secret of the "Penpot" Entra app registration. The secret
+  # expires two years after it was issued — see docs/penpot-oidc.md for the
+  # rotation steps.
   - name: penpot-oidc
     envs:
       - penpot-oidc.sops.env
