@@ -16,10 +16,14 @@ spec:
         memory: 512Mi
 
     trivy:
-      # Standalone keeps this layer PVC-free. The chart's built-in trivy
-      # server is a StatefulSet on ceph storage, but base-controllers
-      # reconciles before rook — that would deadlock a cluster rebuild.
-      mode: Standalone
+      # ClientServer, not Standalone: a Standalone scan job runs one trivy
+      # container per container in the target pod, all sharing one cache dir,
+      # and they deadlock each other on the DB lock. ~25% of pods here are
+      # multi-container. The server also holds the 107 MB DB once instead of
+      # every job re-downloading it.
+      mode: ClientServer
+      storageClassName: ceph-rbd-fr01
+      storageSize: 5Gi
       resources:
         requests:
           cpu: 100m
@@ -28,8 +32,7 @@ spec:
           memory: 512Mi
 
     operator:
-      # 7d instead of the 24h default: every Standalone scan job re-downloads
-      # the trivy DB, and this cluster has ~145 scannable workloads.
+      builtInTrivyServer: true
       scannerReportTTL: "168h"
       scanJobsConcurrentLimit: 5
       scanJobTimeout: "10m"

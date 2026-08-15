@@ -7,7 +7,6 @@ resources:
   - cnpg-operator
   - kube-prometheus-stack
   - metallb
-  - trivy-operator
   - ../../../../infrastructure/base/controllers/spegel
   - ../../../../infrastructure/base/controllers/mariadb-operator-crds
   - ../../../../infrastructure/base/controllers/envoy-crds

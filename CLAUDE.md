@@ -38,6 +38,7 @@ Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` a
 | `base-apps` | apps/clusters/feathre-core/base-apps | configs |
 | `apps` | apps/clusters/feathre-core/apps | base-apps |
 | `monitoring` | apps/clusters/feathre-core/monitoring | configs |
+| `security` | infrastructure/clusters/feather-core/security | configs |
 
 Most layers use `wait: true`, so a layer is only "Ready" once its applied resources are healthy — and its dependents block until then. Flux requires a dependency to be `Ready` **at the same git revision** before a dependent reconciles.
 
