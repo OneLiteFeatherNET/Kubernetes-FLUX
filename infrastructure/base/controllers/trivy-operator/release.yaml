@@ -1,0 +1,26 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+spec:
+  releaseName: trivy-operator
+  chart:
+    spec:
+      chart: trivy-operator
+      sourceRef:
+        kind: HelmRepository
+        name: aquasecurity
+        namespace: flux-system
+  install:
+    crds: Create
+    remediation:
+      retries: 0
+  upgrade:
+    # The chart ships 12 CRDs; without this a Renovate chart bump would
+    # leave them at the old schema.
+    crds: CreateReplace
+  driftDetection:
+    mode: warn
+  interval: 1m0s
+  values: {}
