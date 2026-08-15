@@ -1,0 +1,32 @@
+---
+# The dashboard and REST API on top of the operator. The API validates JWTs against an OIDC
+# issuer, so auth.issuer and auth.jwksUri have no chart defaults and the chart's
+# values.schema.json rejects an install without them - both are set per cluster in the
+# overlay, never here.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: apus-platform
+  namespace: apus-system
+spec:
+  releaseName: apus-platform
+  chartRef:
+    kind: OCIRepository
+    name: apus-platform
+    namespace: flux-system
+  interval: 1m0s
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # No Ingress on purpose, both Services stay ClusterIP. The dashboard image cannot complete
+    # a login: ui/nuxt.config.ts leaves oidcIssuer/oidcClientId empty and ui/Dockerfile runs
+    # `pnpm generate` with no build arguments, so the SPA's OIDC configuration is baked in at
+    # image build time and is empty in the published image. A public hostname would only
+    # publish something that cannot be logged into. Reach the API with `kubectl port-forward`
+    # until the UI image is built with its OIDC configuration.
+    ingress:
+      enabled: false

@@ -6,3 +6,4 @@ resources:
   - bundle-bucket.yaml
 patches:
   - path: release-operator.yaml
+  - path: release-platform.yaml
