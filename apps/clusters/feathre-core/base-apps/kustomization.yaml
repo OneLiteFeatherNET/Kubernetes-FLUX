@@ -21,3 +21,4 @@ resources:
   - alloy-logs
   - alloy-metrics
   - alloy-receiver
+  - apus
