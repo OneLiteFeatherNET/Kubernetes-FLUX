@@ -1,0 +1,51 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+spec:
+  chart:
+    spec:
+      version: "=0.35.0"
+  values:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    trivy:
+      # Standalone keeps this layer PVC-free. The chart's built-in trivy
+      # server is a StatefulSet on ceph storage, but base-controllers
+      # reconciles before rook — that would deadlock a cluster rebuild.
+      mode: Standalone
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+
+    operator:
+      # 7d instead of the 24h default: every Standalone scan job re-downloads
+      # the trivy DB, and this cluster has ~145 scannable workloads.
+      scannerReportTTL: "168h"
+      scanJobsConcurrentLimit: 5
+      scanJobTimeout: "10m"
+
+    nodeCollector:
+      # Without these it only ever reaches the 4 untainted workers, silently
+      # leaving control-plane and storage nodes out of the infra assessment.
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.feather/storage
+          operator: Exists
+          effect: NoSchedule
+
+    # Alloy discovers ServiceMonitors cluster-wide, same as the gateway.
+    serviceMonitor:
+      enabled: true
+      interval: 60s
