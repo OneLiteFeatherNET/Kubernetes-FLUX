@@ -45,7 +45,7 @@ shlink, uptime-kuma, harbor) and the datastores — MariaDB 3306, CNPG 5432,
 Dragonfly 6379, Ceph RGW. A single RCE in any of them has unrestricted reach
 across the pod network, and there is no policy-drop telemetry to alert on.
 
-This does **not** put `flux-system/sops-gpg` or the Flux git SSH credential at
+This does **not** put `flux-system/sops-age` or the Flux git SSH credential at
 network reach. Those are Secrets, gated by RBAC and reachable only through the
 API server or a container escape — neither of which a NetworkPolicy would have
 stopped.

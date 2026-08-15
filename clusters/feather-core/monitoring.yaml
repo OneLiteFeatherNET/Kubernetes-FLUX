@@ -21,7 +21,7 @@ spec:
   decryption:
     provider: sops
     secretRef:
-      name: sops-gpg
+      name: sops-age
   postBuild:
     substitute:
       ALLOWED_CIDRS: "172.16.0.0/16,10.200.0.0/16,192.168.0.0/16"

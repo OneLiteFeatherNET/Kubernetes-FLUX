@@ -73,7 +73,7 @@ PY
 
 # Mirror the repo into a tmp dir and strip sops-encrypted patch
 # references from every kustomization.yaml. Flux decrypts these at apply
-# time via the cluster's sops-gpg key; CI has no key and the encrypted
+# time via the cluster's sops-age key; CI has no key and the encrypted
 # YAML is not parseable by kustomize. Stripping the patch entry lets us
 # still validate the rest of the overlay (siblings, base resources).
 # Encrypted secretGenerator inputs (*.sops.env) are fine: kustomize

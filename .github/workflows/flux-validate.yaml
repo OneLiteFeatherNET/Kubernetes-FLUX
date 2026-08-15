@@ -52,5 +52,5 @@ jobs:
           python-version: '3.x'
       - name: Install PyYAML
         run: pip install --quiet pyyaml
-      - name: Assert sops-matched files are encrypted
+      - name: Assert sops-matched files are encrypted to every recipient
         run: python3 scripts/check-sops-encryption.py

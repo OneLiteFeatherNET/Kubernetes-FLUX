@@ -22,7 +22,7 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 
 ## Flux layer dependency graph
 
-Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` at `./clusters/feather-core`. Layers (all decrypt SOPS via provider `sops` / secret `sops-gpg`, except `internal-certs`):
+Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` at `./clusters/feather-core`. Layers (all decrypt SOPS via provider `sops` / secret `sops-age`, except `internal-certs`):
 
 | Layer | Path | dependsOn |
 |---|---|---|
@@ -64,14 +64,15 @@ sops <file>
 
 ⚠️ **Don't hammer `flux reconcile` in a loop.** Forcing a layer mid-flight flips it to `Reconciling`, which makes every dependent report "dependency not ready" — you create the churn you're trying to clear. After a push, reconcile the changed source once and let the dependency graph settle on its own.
 
-## Secrets — SOPS (PGP)
+## Secrets — SOPS (age)
 
 Full workflow in `docs/sops.md`. Essentials:
 
-- Recipients are listed in exactly **one** file: `.sops.yaml` at the repo root. (`clusters/feather-core/.sops.pub.asc` is the public half of the key and is unrelated.)
+- Recipients are listed in exactly **one** file: `.sops.yaml` at the repo root — three age public keys, one each for the human maintainer, the cluster, and CI. (`clusters/feather-core/.sops.pub.asc` is the public half of the retired PGP key, kept only to read pre-migration git history.)
 - Encrypted file suffixes: `*.sops.env`, `*.sops.yaml`, `*.sops.json`, `*.sops.crt`, `*.sops.key`, `*.sops.conf` — **and plain `*.env`** (the root `.sops.yaml` regex encrypts those too). Everything is whole-file encrypted; there is deliberately no rule for plain `*.yaml`, so `sops -e` on one fails closed. Name a Secret manifest `*.sops.yaml`.
 - Secrets reach pods via Kustomize `secretGenerator` (`envs:`/`files:`) or `generators:` in an overlay's `kustomization.yaml`; Flux decrypts at apply time.
-- Edit in place: `sops path/to/file.sops.env`. Add/remove a member: update `.sops.yaml`, then re-encrypt everything with `sops updatekeys` (one per file).
+- Edit in place: `sops path/to/file.sops.env`. Add/remove a member: update `.sops.yaml`, then re-encrypt **everything** with `./scripts/rekey.sh`.
+- ⚠️ **`.sops.yaml` and the ciphertext must change in the same commit.** A file that is validly encrypted but missing the cluster's key breaks every Flux layer that touches it. `scripts/check-sops-encryption.py` (CI) asserts every matched file carries every listed recipient — run it locally after any recipient change.
 
 ## In-repo Helm charts
 
