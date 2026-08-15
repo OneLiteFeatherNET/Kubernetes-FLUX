@@ -1,14 +1,7 @@
 ---
-# The platform-wide bundle bucket: normalised world snapshots live here, written by ingest
-# jobs and read by render jobs (design spec §5).
-#
-# Deliberately NOT in rook-ceph-fr01 like the other claims in this repository. Rook always
-# creates the credentials secret and the endpoint ConfigMap in the namespace of the claim,
-# and the operator reads them from its own namespace -- a claim in rook-ceph-fr01 would put
-# the secret out of its reach. The design spec calls this deviation out in §9.1.
-#
-# The secret Rook generates carries AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, which is
-# exactly what the operator's ingest and render jobs expect.
+# Deliberately NOT in rook-ceph-fr01 like the other claims: Rook creates the
+# credentials secret in the namespace of the claim, and the operator reads it
+# from its own.
 apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
 metadata:

@@ -52,17 +52,9 @@ spec:
     httpRoute:
       enabled: false
 
-    # Outline services run as stateless Deployments. Only the HTTP/realtime
-    # surface (web, websockets) and the BullMQ services (worker, cron) are run
-    # together in the web component: websockets has no WEBSOCKETS_URL, and an
-    # isolated worker/cron grows memory unbounded (BullMQ leak when run alone),
-    # whereas the proven all-in-one process model is stable. cron duplication
-    # across the 2 web replicas is safe (BullMQ repeatable jobs are idempotent).
-    # collaboration has its own URL/path and runs separately for independent
-    # scaling. The Cloudflare Tunnel Ingress (ingress.yaml) routes:
-    #   /collaboration -> outline-collaboration
-    #   /              -> outline-web (app, API, /realtime, worker, cron)
-    # Multi-replica collaboration requires REDIS_COLLABORATION_URL in outline-env.
+    # websockets, worker and cron must stay inside the web component — none of
+    # them survives being run standalone:
+    # outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
     components:
       web:
         enabled: true

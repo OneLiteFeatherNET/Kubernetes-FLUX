@@ -22,19 +22,10 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
-          # Carried over from the CE cutover: the shared makeplane/backend* image's
-          # docker-entrypoint-worker.sh runs `celery -A plane worker` with no
-          # --concurrency flag, forking one process per *node* CPU core (32 here)
-          # regardless of cpuLimit. Kept as a precaution since this chart's worker
-          # Deployment (plane-worker-wl) execs the same-named entrypoint script on
-          # the "-commercial" variant of the same backend image; verify after
-          # cutover whether the bug still applies (harmless either way — this pins
-          # concurrency to 2 regardless).
-          # services.rabbitmq exposes no resource keys in plane-enterprise 3.0.0,
-          # so the StatefulSet ships with `resources: {}` — BestEffort, and the
-          # first thing the kubelet evicts, despite being the queue every worker
-          # depends on. No CPU limit on purpose: throttling a broker is worse
-          # than letting it burst (observed 453m under normal load).
+          # The image entrypoint runs celery without --concurrency and forks one
+          # process per node core (32 here) regardless of cpuLimit. This pins it.
+          # The chart exposes no resources for rabbitmq, leaving it BestEffort and
+          # first to be evicted. No CPU limit on purpose: never throttle a broker.
           - target:
               kind: StatefulSet
               name: plane-rabbitmq-wl
@@ -125,14 +116,8 @@ spec:
         memoryRequest: 256Mi
         cpuRequest: 50m
 
-      # Pi (the AI assistant) is left at the chart default (disabled): its
-      # migrator job hard-fails without an embedding model configured
-      # (tries to auto-create one via Cohere, errors out if COHERE_API_KEY
-      # or OPENSEARCH_ML_MODEL_ID isn't set), which blocks the whole release
-      # from ever becoming Ready. Re-enable (pi.enabled: true, plus
-      # pi_beat_worker/pi_worker, plus an AI provider key in
-      # external_secrets.pi_api_env_existingSecret) once a provider key is
-      # available.
+      # Left disabled: without an AI provider key the migrator job hard-fails and
+      # blocks the whole release from becoming Ready.
 
     external_secrets:
       app_env_existingSecret: plane-app-env
@@ -143,17 +128,8 @@ spec:
       silo_env_existingSecret: plane-silo
 
     env:
-      # Global storage class for every chart-bundled StatefulSet PVC (rabbitmq,
-      # opensearch, monitor). NOT a per-service field despite matching per-service
-      # value blocks elsewhere in this chart — services.*.storageClass doesn't
-      # exist; every workloads/*.stateful.yaml template reads this single
-      # env.storageClass value. Left unset, opensearch/monitor's PVC templates
-      # render an explicit storageClassName: "" (they `| quote` the empty
-      # default), which blocks the cluster's default-StorageClass admission
-      # behavior and leaves the PVC Pending forever — rabbitmq's template omits
-      # the quote filter, so it degrades to an unset field instead and happens
-      # to pick up the default class by luck. Set explicitly so all three behave
-      # the same way on purpose.
+      # Global, not per-service — services.*.storageClass does not exist. Leaving
+      # it unset renders storageClassName: "" and pins those PVCs Pending forever.
       storageClass: ceph-rbd-fr01
       docstore_bucket: plane
       cors_allowed_origins: "https://tasks.onelitefeather.net"

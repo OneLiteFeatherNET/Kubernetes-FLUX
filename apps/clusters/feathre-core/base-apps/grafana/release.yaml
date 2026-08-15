@@ -112,13 +112,8 @@ spec:
         ha_listen_address: $${POD_IP}:9094
         ha_advertise_address: $${POD_IP}:9094
         rule_version_record_limit: "5"
-        # Provisioning only writes the Alertmanager config to the database; the running
-        # Alertmanager picks it up in this poll loop. At the 1m default a notification can
-        # render against a config that does not know a just-provisioned template yet, which
-        # fails with "template not defined" - and the webhook notifier does not retry, so the
-        # alert is dropped silently. Measured 62.3s between "finished provision alerting" and
-        # the following "Applying new configuration to Alertmanager". ApplyConfig is a no-op
-        # while the config hash is unchanged, so the cost is one small query per interval.
+        # The 1m default let notifications render against a config that did not know
+        # a just-provisioned template yet; the webhook notifier drops those silently.
         alertmanager_config_poll_interval: 10s
       alerting:
         enabled: false
@@ -173,13 +168,8 @@ spec:
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1
-        # Every provider here still serves remote (gnetId/url) dashboards only;
-        # its inline ones moved to sidecar ConfigMaps (see dashboards/ next to
-        # this file). disableDeletion: true is what makes that move safe: Grafana
-        # would otherwise delete the dashboard record once the file disappears
-        # and the sidecar would recreate it under a new id, losing the version
-        # history; with the flag the record is merely unprovisioned, so the
-        # sidecar adopts the existing one by uid.
+        # Remote (gnetId/url) dashboards only — inline ones live in sidecar
+        # ConfigMaps. disableDeletion keeps the version history across that move.
         providers:
           - name: kubernetes
             orgId: 1
@@ -280,23 +270,12 @@ spec:
         searchNamespace:
           - grafana
         watchMethod: WATCH
-        # Deliberately NOT initAlerts/native-sidecar like the dashboards one. Alerting
-        # provisioning never prunes on absence (every Unprovision path needs an explicit
-        # deleteRules/deleteContactPoints/resetPolicies directive), so an empty directory at
-        # startup is a no-op and the churn the dashboards had has no counterpart here. In
-        # exchange, provisioning moves off Grafana's fatal starting() path -- where a bad file
-        # is a CrashLoopBackOff -- onto the reload path, where it is an HTTP 500 and Grafana
-        # keeps serving the previous config.
+        # Deliberately not a native sidecar like the dashboards one: this keeps a bad
+        # provisioning file an HTTP 500 instead of a CrashLoopBackOff.
     dashboards:
       kubernetes:
-        # kubernetes-dashboard (gnetId 22523) removed: it never worked. It
-        # pinned revision 2, which does not exist (the API lists only
-        # revision 1), so the download 404'd and left a 0-byte file that
-        # Grafana rejected with a permanent error=EOF. Bumping to revision 1
-        # is not the fix either -- that revision carries uid
-        # k8s_views_global, which a manually imported, non-provisioned
-        # dashboard already holds, and provisioning adopts an occupied uid
-        # instead of erroring, so it would silently overwrite and rename it.
+        # kubernetes-dashboard (gnetId 22523) removed: it never worked, and
+        # revision 1 would silently overwrite a manually imported dashboard.
         kubernetes-cluster:
           gnetId: 7249
           revision: 1
@@ -362,13 +341,8 @@ spec:
           gnetId: 13106
           revision: 1
           datasource: Mimir
-        # redis-exporter (gnetId 14091) removed: queried redis_exporter-
-        # style redis_* metric names, which nothing in this cluster ever
-        # produced (confirmed dead since the bitnami Redis -> Dragonfly
-        # migration -- no redis_up sample in 21+ days). Replaced with the
-        # official dragonfly-operator dashboard, matched against the
-        # dragonfly_* metrics the new PodMonitor actually scrapes; it now lives
-        # in dashboards/databases/dragonfly.json.
+        # redis-exporter (gnetId 14091) removed: nothing produces redis_* metrics
+        # since the Dragonfly migration. Replaced by dashboards/databases/dragonfly.json.
       storage:
         ceph-pools:
           gnetId: 5342

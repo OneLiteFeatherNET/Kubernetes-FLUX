@@ -7,37 +7,11 @@ metadata:
 #    kustomize.toolkit.fluxcd.io/reconcile: disabled
 spec:
   image: "mariadb:12.3.2"
-  # Without this, the official image's entrypoint silently skips mariadb-upgrade
-  # on every major-version bump (confirmed during the 11.8.8 -> 12.3.2 upgrade:
-  # "MariaDB upgrade ... skipped due to $MARIADB_AUTO_UPGRADE setting"), leaving
-  # stale mysql.* system tables until someone notices and runs it by hand.
+  # Without this the entrypoint silently skips mariadb-upgrade on every major
+  # bump and leaves stale mysql.* system tables behind.
   env:
     - name: MARIADB_AUTO_UPGRADE
       value: "1"
-#  securityContext:
-#    allowPrivilegeEscalation: false
-#    capabilities:
-#      drop: ["ALL"]
-#    runAsNonRoot: true
-#    runAsUser: 999
-#    runAsGroup: 999
-#    seccompProfile:
-#      type: RuntimeDefault
-#  podSecurityContext:
-#    runAsNonRoot: true
-#    runAsUser: 999
-#    runAsGroup: 999
-#    fsGroup: 999
-#    seccompProfile:
-#      type: RuntimeDefault
-#  podSecurityContext:
-#    seccompProfile:
-#      type: RuntimeDefault
-#  securityContext:
-#    allowPrivilegeEscalation: false
-#    capabilities:
-#      drop:
-#        - ALL
   replicas: 3
   livenessProbe:
     failureThreshold: 15
@@ -93,13 +67,8 @@ spec:
     tmp_table_size=64M
     max_heap_table_size=64M
 
-    # Diagnostics (slow_query_log) intentionally left off: with no rotation
-    # configured, it grew mariadb-galera-0's log to 17GB/96% disk over ~6 days
-    # (long_query_time=1 logs every query >1s; Galera only logs
-    # client-originated queries, not applied write-sets, so it lands
-    # disproportionately on whichever node handles write traffic at the
-    # time). Buffer pool hit ratio was already 99.34% with no other perf
-    # signal, so it was disabled rather than given a rotation mechanism.
+    # slow_query_log stays off: without rotation it grew to 17GB / 96% disk in
+    # six days, and there was no performance signal to justify it.
   affinity:
     antiAffinityEnabled: true
     nodeAffinity:

@@ -3,19 +3,10 @@ kind: Namespace
 metadata:
   name: cloudflare-tunnel-ingress-controller
   labels:
-    # `baseline`, not `privileged`. The connector Deployment the controller
-    # generates is indeed not "restricted"-compliant (no runAsNonRoot, no
-    # drop: ALL, no seccompProfile) — but none of that needs `privileged`,
-    # which `baseline` already permits. Verified with a server-side dry-run:
-    # baseline admits all four pods with no warning, restricted rejects them.
-    #
-    # This namespace terminates the tunnel fronting every public hostname and
-    # holds the tunnel token, so it is the last place that should accept a
-    # pod asking for privileged: true or hostPath /.
-    #
-    # Set explicitly rather than deleted, so the intent survives a change to
-    # the Talos cluster-wide default. Re-check after a controller upgrade —
-    # the exemption existed because of what the controller *generates*.
+    # `baseline`, not `privileged`: the generated connector is not restricted-
+    # compliant but needs nothing privileged. This namespace holds the tunnel
+    # token — do not widen it. Set explicitly so the intent survives a change
+    # to the Talos cluster-wide default.
     pod-security.kubernetes.io/enforce: baseline
     pod-security.kubernetes.io/warn: baseline
     pod-security.kubernetes.io/audit: baseline

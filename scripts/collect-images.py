@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
 """Collect every container image this repository pins, for SBOM scanning.
 
-Walks the manifest trees and reports image references in the three shapes
-that actually occur here:
-
-  image: registry/name:tag                    plain string, e.g. a CronJob
-  image: {repository: name, tag: v1}          Helm values inside a HelmRelease
-  images: [{name: x, newName: y, newTag: z}]  a Kustomize image transformer
-
-Images a chart resolves on its own are invisible here by definition - only
-what the repo actually pins can be scanned from CI. Run scripts/collect-images.py
---stats to see how far that reaches.
+Only what the repo pins is visible here; whatever a chart resolves on its own
+is not. Use --stats to see how far that reaches.
 
   scripts/collect-images.py            one image reference per line
   scripts/collect-images.py --json     same, as a JSON array
@@ -30,7 +22,7 @@ SKIP_SUFFIX = (".sops.yaml", ".sops.env", ".sops.json", ".sops.crt", ".sops.key"
 
 
 def is_image_string(value):
-    """A tag or digest is what separates an image ref from an arbitrary string."""
+    """A tag or digest separates an image ref from an arbitrary string."""
     if not isinstance(value, str) or not value or value.startswith(("$", "{")):
         return False
     if "@sha256:" in value:
@@ -50,7 +42,6 @@ def join(registry, repository, tag):
 
 
 def walk(node, out, where):
-    """Depth-first: any dict may carry an image in one of the known shapes."""
     if isinstance(node, dict):
         img = node.get("image")
         if is_image_string(img):
@@ -60,7 +51,7 @@ def walk(node, out, where):
             if ref:
                 out.setdefault(ref, set()).add(where)
 
-        # a HelmRelease often splits registry/repository/tag across the same level
+        # a HelmRelease splits registry/repository/tag across one level
         if "repository" in node and "tag" in node and "image" not in node:
             ref = join(node.get("registry"), node.get("repository"), node.get("tag"))
             if ref:
@@ -98,7 +89,7 @@ def collect(repo_root):
                     with open(os.path.join(repo_root, path), encoding="utf-8") as fh:
                         docs = list(yaml.safe_load_all(fh))
                 except (yaml.YAMLError, UnicodeDecodeError):
-                    continue  # templates and encrypted files are not our business
+                    continue  # templates and encrypted files
                 for doc in docs:
                     walk(doc, out, path)
     return out
@@ -112,7 +103,7 @@ def main():
 
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     found = collect(repo_root)
-    # a floating tag says nothing about what was scanned, so leave it out
+    # a floating tag says nothing about what was scanned
     images = sorted(i for i in found if not i.endswith((":latest", ":stable", ":main")))
 
     if args.stats:

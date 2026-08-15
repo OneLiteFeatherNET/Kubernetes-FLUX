@@ -10,37 +10,10 @@ spec:
     - host: tasks.onelitefeather.net
       http:
         paths:
-          # ============================================================
-          # IMPORTANT — how cloudflare-tunnel-ingress-controller actually
-          # matches these paths (verified against its source, v0.0.23,
-          # pkg/cloudflare-controller/tunnel-client.go):
-          #
-          #   1. Rules for one hostname are sorted by len(path) DESCENDING
-          #      before being pushed to Cloudflare. The order they're
-          #      written in below has NO effect on evaluation order.
-          #   2. Each rule's "path" becomes a Cloudflare Tunnel ingress
-          #      `path`, which is an UNANCHORED regex — it matches if the
-          #      text appears ANYWHERE in the request path, not just as a
-          #      leading prefix. cloudflared evaluates the length-sorted
-          #      list top to bottom; first match wins.
-          #   3. Consequence: any two rules of EQUAL path length race in
-          #      an unspecified (non-deterministic sort) order if both
-          #      match the same request. Every rule below MUST have a
-          #      length distinct from any other rule it could plausibly
-          #      collide with. Two known, deliberately-resolved cases:
-          #        - plane-web's hashed bundle "/assets/*.js" vs
-          #          plane-api's "/api/assets/*" upload endpoints — both
-          #          contain "/assets" as a substring.
-          #        - plane-space's own "/spaces/assets/*.js" bundle vs
-          #          the same generic "/assets" rule.
-          #      Both were live outages/breakage before being split out
-          #      into their own longer, more specific rules below.
-          #      /silo, /live, /auth are still tied at 5 chars — left
-          #      alone since no real path has been found that matches
-          #      more than one of them, but treat any future addition of
-          #      an endpoint containing one of those words as a substring
-          #      as a potential silent misroute until re-verified.
-          # ============================================================
+          # Paths are matched as UNANCHORED regexes, sorted by length, not by the
+          # order below. Equal-length rules race non-deterministically — keep every
+          # length distinct. Two outages came from this:
+          # outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
 
           # plane-space's own hashed JS/CSS bundle, e.g.
           # /spaces/assets/entry.client-*.js — must outrank the generic
@@ -93,13 +66,8 @@ spec:
                 port:
                   number: 3000
 
-          # Integrations backend. The chart's SILO_BASE_PATH/SILO_API_BASE_URL
-          # env vars (plane-silo-vars ConfigMap) already assume this exact
-          # path. Routed to plane-silo-ingress (silo-service.yaml), NOT the
-          # chart's own "plane-silo" Service — that one is headless
-          # (clusterIP: None), which this controller can't parse a backend
-          # for; referencing it directly previously took down the whole
-          # domain (see git history on this file).
+          # Must point at plane-silo-ingress, not the chart's headless plane-silo
+          # Service — a headless backend took the whole domain down once.
           - path: /silo
             pathType: Prefix
             backend:

@@ -980,14 +980,8 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              # count() returns a real value (currently 10, one per kubelet target) when
-              # the pipeline is healthy - evaluated normally against the threshold below,
-              # not firing. If every kubelet target vanishes from Mimir (the whole Alloy
-              # remote-write pipeline going dark), this query returns NO series, which
-              # triggers Grafana's NoData path -> noDataState: Alerting -> fires. Do NOT
-              # use absent() here: it returns empty exactly when healthy (the opposite of
-              # what noDataState: Alerting needs), which was a real bug (empty result +
-              # noDataState: Alerting fired immediately on a healthy cluster).
+              # Do NOT use absent() here: it returns empty when healthy, which is the
+              # opposite of what noDataState: Alerting needs. count() relies on NoData.
               expr: count(up{job="kubelet", metrics_path="/metrics"})
               instant: true
               intervalMs: 1000
@@ -1165,13 +1159,8 @@ groups:
             model:
               editorMode: code
               queryType: instant
-              # Two signatures, because a bad provisioning file surfaces on two paths. The
-              # sidecar reload is the live one: Grafana answers the POST with 500 and logs
-              # msg="Request Completed" ... path=/api/admin/provisioning/alerting/reload
-              # status=500 (verified against grafana/grafana:12.3.1). "Failed to provision
-              # alerting" is the fatal startup path, which only exists if the alerts sidecar
-              # is ever turned back into an init sidecar - matched anyway, it costs nothing.
-              # sum() collapses both replicas into one series, so one message, not two.
+              # Two signatures: the sidecar reload path (HTTP 500) and the fatal startup
+              # path. sum() collapses both replicas into one message.
               expr: 'sum(count_over_time({namespace="grafana", container="grafana"} |~ "Failed to provision alerting|provisioning/alerting/reload.*status=500" [10m]))'
               intervalMs: 1000
               maxDataPoints: 43200
@@ -1233,13 +1222,8 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              # kube_node_status_condition carries all 3 statuses for every
-              # condition (150 series = 10 nodes x 5 conditions x 3 statuses),
-              # so this always has data -> noDataState: OK is correct.
-              # status="false" is NotReady, status="unknown" is Unreachable
-              # (kubelet stopped reporting) - both are pages, one rule.
-              # Do NOT write `{status="true"} == 0`: the filtered value is 0,
-              # so a `gt 0` threshold would never fire.
+              # Always has data, so noDataState: OK is correct. Do NOT write
+              # `{status="true"} == 0` — the filtered value is 0 and gt 0 never fires.
               expr: max by (node) (kube_node_status_condition{condition="Ready", status=~"false|unknown"})
               instant: true
               intervalMs: 1000

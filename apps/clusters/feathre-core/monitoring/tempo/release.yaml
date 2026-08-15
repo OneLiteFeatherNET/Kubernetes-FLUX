@@ -40,15 +40,8 @@ spec:
       # and crashloops on it ("Maximum connections must be greater than 0").
       extraArgs:
         - -config.expand-env=true
-      # Bumped after repeated OOMKills: enabling the local-blocks generator
-      # processor means the compactor now also compacts blocks flushed from
-      # metrics-generator. vParquet4 compaction memory scales with the
-      # number of distinct trace IDs being combined across input blocks
-      # (an in-memory index per trace), not with on-disk block size — three
-      # ~1-17MB blocks totaling ~92k objects still OOMKilled at 1Gi within
-      # seconds of "compacting hash" starting. Matches the same
-      # bytes-on-disk-understates-memory-need pattern already seen on the
-      # ingester above.
+      # vParquet4 compaction memory scales with the number of distinct trace IDs,
+      # not with block size on disk — small blocks still OOMKilled at 1Gi.
       resources:
         requests:
           cpu: 100m
@@ -102,26 +95,15 @@ spec:
                     app.kubernetes.io/component: distributor
                 topologyKey: kubernetes.io/hostname
     ingester:
-      # 3 replicas + replication_factor 3 2026-07-19: every span was going to
-      # a single ingester with zero redundancy - any restart (routine or
-      # OOMKill) meant a real gap in ingestion/query availability, not just
-      # elevated latency. With RF == replica count every ingester holds a
-      # full copy of every trace (simple full mirroring, not sharding) -
-      # appropriate at this scale where a single ingester already handles
-      # the full load comfortably; this is purely for redundancy.
+      # RF == replica count: every ingester holds a full copy of every trace.
+      # Full mirroring for redundancy, not sharding for load.
       replicas: 3
       extraArgs:
         - -config.expand-env=true
       config:
         replication_factor: 3
-      # Bumped after repeated OOMKills: each crash left more WAL blocks to
-      # replay+flush on the next start, so the ingester needed more memory
-      # each time just to get past startup, compounding the crashloop.
-      # Bumped again 2026-07-19: same compounding crashloop recurred at 2Gi
-      # (51 OOMKills in 46m) once span ingestion roughly tripled (48-78/s ->
-      # 100-190/s); working set was plateauing at 1.2-2GB before each kill.
-      # Node has ample headroom (~27% memory used), so going straight to 4Gi
-      # rather than a marginal bump that likely just delays the next round.
+      # Each OOM leaves more WAL to replay on the next start, so an undersized
+      # limit compounds its own crashloop. Do not trim this back marginally.
       resources:
         requests:
           cpu: 100m
@@ -158,14 +140,8 @@ spec:
       replicas: 3
       extraArgs:
         - -config.expand-env=true
-      # Bumped 2026-07-19 after OOMKills: memcached became briefly unreachable
-      # during a tempo-wide rollout ("connect timeout to <clusterIP>:11211"),
-      # so every parquet-footer/bloom/frontend-search cache lookup fell
-      # through to uncached in-memory work; working set jumped from its
-      # normal ~30MB baseline to 394MB+ within seconds and got OOMKilled at
-      # 512Mi. Memcached itself was healthy throughout - this is about
-      # surviving that class of transient cache-miss storm, not a sustained
-      # need for more memory day to day.
+      # Sized to survive a transient cache-miss storm, not for day-to-day need:
+      # a brief memcached outage pushed the working set from ~30MB past 394MB.
       resources:
         requests:
           cpu: 50m
@@ -238,16 +214,8 @@ spec:
           remote_write:
             - url: http://mimir-gateway.grafana.svc.cluster.local/api/v1/push
         processor:
-          # Persist the local-blocks WAL to the trace S3 backend. Without this,
-          # local-blocks only keeps a short in-memory/live window (~query_backend_after,
-          # default 30m), so Grafana Traces Drilldown's TraceQL-metrics panels
-          # (histogram by duration, rate, etc.) show "No data" as soon as the
-          # selected range reaches past the live window — while the plain
-          # "Slow traces" list (a normal trace search) still returns results.
-          # Flushing to S3 lets the query-frontend answer older sub-ranges from
-          # object storage. Note: adds block-build/flush load on the generator
-          # and extra compaction work — watch the 512Mi generator limit and the
-          # compactor (both have prior OOMKill history).
+          # Without this, TraceQL-metrics panels show "No data" past the ~30m live
+          # window. Costs generator and compactor load — both have OOM history.
           local_blocks:
             flush_to_storage: true
       resources:

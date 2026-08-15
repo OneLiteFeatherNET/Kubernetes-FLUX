@@ -10,25 +10,11 @@ spec:
       enabled: false
     alertmanager:
       enabled: false
-    # Scraping + remote_write now happens via a dedicated Alloy instance
-    # (apps/clusters/feathre-core/base-apps/alloy-metrics) instead of the
-    # Prometheus Operator's own Prometheus-Agent StatefulSet. `crds.enabled`
-    # is left at its chart default (true) so the PodMonitor/ServiceMonitor
-    # CRDs — and the chart's own built-in ServiceMonitors below — keep
-    # existing.
-    #
-    # Deliberately staged in two steps, NOT done in one shot:
-    # step 1 (this change) only removes the PrometheusAgent CR while the
-    # operator is still running, so its finalizer-driven reconcile loop
-    # actually tears down the prometheus-agent StatefulSet/PVCs itself.
-    # The generated StatefulSet has no Kubernetes ownerReference back to
-    # the CR, so if the operator were disabled in the same apply, nothing
-    # would be left to clean it up — the old Agent pods would keep running
-    # and double-writing to Mimir alongside alloy-metrics, forever.
-    # Step 2 — set prometheusOperator.enabled: false — only once
-    # `kubectl get statefulset -n monitoring -l operator.prometheus.io/name=kube-prometheus-stack-prometheus`
-    # (or `flux get helmrelease kube-prometheus-stack -n monitoring`) confirms
-    # the agent StatefulSet is actually gone.
+    # Scraping moved to alloy-metrics. Do NOT disable prometheusOperator in the
+    # same change that drops the PrometheusAgent CR — the generated StatefulSet
+    # has no ownerReference, so nothing would clean it up and the old pods would
+    # keep double-writing to Mimir. Two-step teardown:
+    # outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
     prometheus:
       enabled: false
     # Apiserver duration-histogram buckets alone were ~127k of ~275k active
@@ -51,15 +37,9 @@ spec:
         # collector set.
         limits:
           memory: 384Mi
-      # Restores per-object Flux Ready/Suspended status as gotk_resource_info
-      # (the metric the Flux Cluster Stats dashboard was built for -- it's
-      # not a native Flux controller metric, it's this kube-state-metrics
-      # feature, which was simply never configured here). Deliberately
-      # does NOT set collectors/extraArgs --custom-resource-state-only:
-      # both would replace/restrict the chart's existing full resource
-      # collector list, breaking every other kube-state-metrics-backed
-      # dashboard (Kubernetes Views, Objects, Kube State Metrics v2, etc.)
-      # instead of adding Flux metrics alongside them.
+      # gotk_resource_info comes from kube-state-metrics, not from Flux itself.
+      # Do NOT add --custom-resource-state-only: it would replace the chart's
+      # collector list and break every other kube-state-metrics dashboard.
       rbac:
         extraRules:
           - apiGroups:
@@ -279,14 +259,9 @@ spec:
                       ready: [status, conditions, "[type=Ready]", status]
                       suspended: [spec, suspend]
                       webhook_path: [status, webhookPath]
-              # Plugin-based (barman-cloud) backups don't update the CNPG
-              # operator's own cnpg_collector_last_available/failed_backup_timestamp
-              # metrics -- confirmed live they stay 0 forever regardless of
-              # real completed backups. These two gauges read the Backup CR
-              # itself instead. stoppedAt is only ever set once a backup
-              # finishes (completed or failed both leave it unset on error),
-              # so nilIsZero is required or KSM would skip the series for
-              # in-progress/failed backups entirely.
+              # The CNPG operator's own backup metrics stay 0 forever with
+              # barman-cloud, so read the Backup CR instead. nilIsZero is required
+              # or in-progress and failed backups get no series at all.
               - groupVersionKind:
                   group: postgresql.cnpg.io
                   version: v1

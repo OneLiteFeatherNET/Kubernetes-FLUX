@@ -1,25 +1,6 @@
-# Outline ships as a single image whose sub-services are selected via the
-# SERVICES env var. To survive node failures and rolling updates without an
-# outage we run every service as its own stateless Deployment ("component").
-# Nothing here is a StatefulSet: all state lives in Postgres, Redis and S3.
-#
-#   web           -> app, API, static, websockets /realtime, worker AND cron
-#   collaboration -> Hocuspocus realtime editing            (path /collaboration)
-#
-# websockets (socket.io) and the BullMQ services (worker, cron) do not run
-# correctly standalone (websockets has no WEBSOCKETS_URL; an isolated
-# worker/cron grows memory unbounded), so they run inside the web component via
-# SERVICES="web,websockets,worker,cron". cron duplication across web replicas
-# is safe (BullMQ repeatable jobs are idempotent). collaboration scales
-# independently. Each container only serves the routes of its own SERVICES, so
-# the gateway must route:
-#   /collaboration -> <release>-collaboration
-#   /              -> <release>-web   (also serves /realtime)
-#
-# Running collaboration with >1 replica requires Redis sync:
-#   - websockets    uses REDIS_URL (socket.io adapter)            -- already set
-#   - collaboration needs REDIS_COLLABORATION_URL in the .env secret
-# See https://docs.getoutline.com/s/hosting/doc/horizontal-scaling-hkfU5Stao7
+# One image, sub-services selected per component via the SERVICES env var.
+# websockets, worker and cron cannot run standalone and must stay inside web.
+# outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
@@ -44,14 +25,8 @@ extraEnv: []
 # - name: FOO
 #   value: bar
 
-# Components are the per-service Deployments. Each runs the same image but a
-# different SERVICES subset. Disable a component by setting enabled: false.
-# Fields per component:
-#   services   (string)  -> value of the SERVICES env var (required)
-#   http       (bool)    -> exposes the container port + gets a Service
-#   service    (bool)    -> create a Service for this component (defaults to http)
-#   replicaCount, strategy, resources, livenessProbe, readinessProbe,
-#   autoscaling, pdb, nodeSelector, affinity, tolerations, topologySpreadConstraints
+# Per-service Deployments, same image, different SERVICES subset.
+# `services` is required; `http` exposes the port and creates a Service.
 components:
   web:
     enabled: true
