@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sentry
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/sentry/
+  - ingress.yaml
+patches:
+  - path: release.yaml
+  - path: clickhouse.yaml
+
+secretGenerator:
+  # Must carry the same password as the CNPG role-sentry secret.
+  - name: sentry-db
+    envs:
+      - sentry-db.sops.env
+  # The shared Dragonfly password; Sentry selects DB 3 via externalRedis.db.
+  - name: sentry-redis
+    envs:
+      - sentry-redis.sops.env
+  # Rook-minted keys for the sentry bucket. Key names match the chart's
+  # defaults (s3-access-key-id / s3-secret-access-key).
+  - name: sentry-s3
+    envs:
+      - sentry-s3.sops.env
+  # Django SECRET_KEY. Rotating it invalidates every session and signed value,
+  # so keep it stable.
+  - name: sentry-secret
+    envs:
+      - sentry-secret.sops.env
+  # Password for the initial superuser. That account has to exist and work
+  # BEFORE SSO is switched on -- once it is, SSO becomes the only way in.
+  - name: sentry-admin
+    envs:
+      - sentry-admin.sops.env
