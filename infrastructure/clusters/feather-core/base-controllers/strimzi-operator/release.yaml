@@ -1,0 +1,26 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: strimzi-kafka-operator
+  namespace: strimzi-system
+spec:
+  chart:
+    spec:
+      version: "=1.1.0"
+  values:
+    # Cluster-scoped on purpose. The namespace-scoped alternative
+    # (watchNamespaces: [sentry]) makes the chart render RoleBindings into
+    # those namespaces, which must therefore already exist when this layer
+    # applies -- but base-controllers runs well before base-apps creates the
+    # sentry namespace. Watching cluster-wide removes that ordering coupling.
+    watchAnyNamespace: true
+
+    # Chart defaults are already sane here (384Mi/1000m limits, 384Mi/200m
+    # requests); pinned explicitly so a chart bump cannot silently change them.
+    resources:
+      limits:
+        memory: 384Mi
+        cpu: 1000m
+      requests:
+        memory: 384Mi
+        cpu: 200m
