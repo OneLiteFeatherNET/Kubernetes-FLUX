@@ -43,3 +43,11 @@ secretGenerator:
       - sentry-github.sops.env
     files:
       - private-key=sentry-github.sops.key
+  # Discord application for the Sentry integration -- a separate app from the
+  # existing discordbot, since both would otherwise fight over the same
+  # interactions endpoint. Same trap as sentry-github: with
+  # discord.existingSecret set, the chart references all four keys
+  # unconditionally.
+  - name: sentry-discord
+    envs:
+      - sentry-discord.sops.env
