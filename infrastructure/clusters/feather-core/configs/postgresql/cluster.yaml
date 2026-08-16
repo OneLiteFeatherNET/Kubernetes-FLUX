@@ -90,6 +90,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-penpot
+      - name: sentry
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-sentry
     services:
       additional:
         - selectorType: rw

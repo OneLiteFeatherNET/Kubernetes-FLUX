@@ -1,0 +1,10 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: sentry
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: sentry
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: sentry

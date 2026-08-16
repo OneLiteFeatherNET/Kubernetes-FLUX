@@ -21,3 +21,4 @@ resources:
   - bakery.yaml
   - cygnus-pack.yaml
   - penpot.yaml
+  - sentry.yaml

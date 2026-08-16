@@ -18,3 +18,4 @@ resources:
   - cygnus-pack.yaml
   - apus.yaml
   - penpot.yaml
+  - sentry.yaml
