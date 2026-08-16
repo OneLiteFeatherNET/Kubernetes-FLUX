@@ -58,8 +58,21 @@ spec:
       #
       # 10 is ample for this team's usage; raise it if the backend ever reports
       # pool exhaustion.
+      #
+      # The names matter and are not documented upstream: an earlier attempt
+      # with PENPOT_DATABASE_POOL_MAX was silently ignored. The backend prints
+      # the values it actually applied, which is the only reliable check:
+      #
+      #   kubectl -n penpot logs deploy/penpot-backend \
+      #     | grep "initialize connection pool"
+      #   ... min-size=60, max-size=60      <- before, the default
+      #
+      # min-size matters as much as max-size: Penpot opens the minimum eagerly
+      # and holds it, which is why an idle instance sat at exactly 60.
       extraEnvs:
-        - name: PENPOT_DATABASE_POOL_MAX
+        - name: PENPOT_DATABASE_MIN_POOL_SIZE
+          value: "5"
+        - name: PENPOT_DATABASE_MAX_POOL_SIZE
           value: "10"
 
       # Microsoft Entra ID — the same tenant the rest of the cluster already
