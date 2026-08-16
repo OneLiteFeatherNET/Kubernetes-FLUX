@@ -92,6 +92,24 @@ spec:
       existingSecret: sentry-admin
       existingSecretKey: admin-password
 
+    # GitHub App "onelitefeather-sentry" -- it already existed in the org and
+    # was built for this instance (its external_url already pointed at
+    # https://sentry.onelitefeather.net/organizations/onelitefeather).
+    #
+    # appId and appName stay here in plain sight because they are not secrets
+    # and are visible through the public /apps/<slug> API anyway; the private
+    # key, webhook secret, client id and client secret live in the SOPS secret.
+    #
+    # Setting existingSecret makes the chart reference private-key,
+    # webhook-secret, client-id and client-secret unconditionally, so every one
+    # of them has to be present or the pods will not start.
+    github:
+      appId: "196299"
+      appName: "onelitefeather-sentry"
+      existingSecret: sentry-github
+      existingSecretAppIdKey: app-id
+      existingSecretAppNameKey: app-name
+
     sentry:
       singleOrganization: true
       existingSecret: sentry-secret
