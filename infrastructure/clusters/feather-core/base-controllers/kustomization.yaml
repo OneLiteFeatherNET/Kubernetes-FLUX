@@ -5,6 +5,7 @@ resources:
   - cloudflare-tunnel-ingress-controller
   - step-certificates
   - cnpg-operator
+  - strimzi-operator
   - kube-prometheus-stack
   - metallb
   - ../../../../infrastructure/base/controllers/spegel

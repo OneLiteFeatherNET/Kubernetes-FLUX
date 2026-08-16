@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: sentry-kubernetes
+  namespace: flux-system
+spec:
+  interval: 5m
+  # Serves both the `sentry` chart and the `clickhouse` chart that Snuba is
+  # tested against.
+  url: https://sentry-kubernetes.github.io/charts

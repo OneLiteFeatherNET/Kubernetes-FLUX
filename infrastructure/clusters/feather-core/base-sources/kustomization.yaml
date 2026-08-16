@@ -25,3 +25,5 @@ resources:
   - aquasecurity.yml
   - apus.yaml
   - penpot.yaml
+  - strimzi.yaml
+  - sentry-kubernetes.yaml
