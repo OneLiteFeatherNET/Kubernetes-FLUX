@@ -12,9 +12,13 @@ Microsoft Entra ID und unter Nutzung der vorhandenen Datenbanken.
 ## Ausgangslage
 
 Sentry ist keine einzelne App. Das Chart `sentry` 33.3.0 (App **26.7.2**)
-deployt Sentry web/worker/cron, rund ein Dutzend Snuba-Consumer, Relay,
-Symbolicator, Uptime-Checker, Taskworker und Memcached — insgesamt etwa 25–30
-Pods.
+deployt Sentry web/worker/cron, Snuba-Consumer, Relay, Symbolicator,
+Uptime-Checker, Taskworker und Memcached.
+
+Nachgemessen mit `helm template` gegen die tatsächlichen Values: **52
+Deployments** — davon allein 23 Snuba-Consumer — plus 4
+Taskbroker-StatefulSets, also rund **56 Pods**. Die ursprüngliche Schätzung
+von 25–30 in diesem Dokument war deutlich zu niedrig.
 
 Vorhanden im Cluster: CNPG-Postgres, Dragonfly (Redis-kompatibel), MariaDB
 Galera, Ceph RGW, Cloudflare-Tunnel-Ingress, Entra ID als SSO-Provider.
@@ -28,19 +32,36 @@ Speicherauslastung. Sentry braucht geschätzt 16–24 GiB.
 
 | Baustein | Entscheidung |
 |---|---|
-| ClickHouse | `clickhouse`-Chart 4.1.1 aus dem sentry-kubernetes-Repo (ClickHouse 23.8 Altinity-stable) |
+| ClickHouse | `clickhouse`-Chart 4.1.1 aus dem sentry-kubernetes-Repo, Image auf **25.3.6 Altinity-stable** überschrieben |
 | Kafka | Strimzi-Operator, Chart 1.1.0 |
 | Redis | geteilte Dragonfly, **DB 3** |
 | Filestore | Ceph S3 / RGW |
 | Postgres | CNPG, `-rw`-Service direkt |
 
-### ClickHouse: warum das Sentry-eigene Chart
+### ClickHouse: das Chart ja, seine Version nein
 
-Snuba ist an die ClickHouse-Version gebunden, gegen die es getestet wird.
-Das Chart aus dem sentry-kubernetes-Repo pinnt genau diese Version
-(23.8 Altinity-stable). Der Altinity-Operator wäre betrieblich stärker
-(Replikation, Rolling Upgrades), bringt aber einen weiteren Operator und das
-Risiko, dass Snuba mit neueren ClickHouse-Versionen bricht.
+⚠️ **Korrektur nach dem ersten Deployment.** Dieser Abschnitt behauptete
+ursprünglich, das Chart pinne „die Version, gegen die Snuba getestet wird".
+Das war falsch und hat den ersten Install gekostet.
+
+Das Chart trägt appVersion **23.8**. Sentry 26.7 baut upstream jedoch aus
+`altinity/clickhouse-server:25.3.6.10034.altinitystable`. Auf 23.8 sterben die
+`events_analytics_platform`-Migrationen 0049 und 0050 mitten im Lauf und
+bleiben als `in_progress` stehen, was jede weitere Migration blockiert —
+`sentry-snuba-migrate` scheitert dann dauerhaft mit `MigrationInProgress`.
+
+Bleibt es beim Chart, muss das Image also **explizit überschrieben** werden.
+Beim nächsten Chart-Update ist zu prüfen, ob die Version dann noch passt; die
+Kopplung Snuba ↔ ClickHouse ist eng und das Chart hinkt hinterher.
+
+Zweiter Fallstrick: der Replica-StatefulSet hängt an
+`configmap.remote_servers.replica.backup.enabled`, **nicht** an `replicas`.
+`replicas: 1` allein lässt einen zweiten ClickHouse laufen, der ohne Zookeeper
+nie synchron sein kann.
+
+Der Altinity-Operator wäre betrieblich stärker (Replikation, Rolling
+Upgrades). Er bleibt die naheliegende Alternative, falls die Versionspflege
+über das Chart lästig wird.
 
 ### Kafka: Strimzi ohne Topic Operator
 
