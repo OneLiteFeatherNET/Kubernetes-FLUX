@@ -1,0 +1,34 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sentry
+  namespace: sentry
+spec:
+  releaseName: sentry
+  # Snuba refuses to start without a reachable ClickHouse, and the chart runs
+  # its migrations as an install hook. Waiting for the ClickHouse release turns
+  # a guaranteed first-install failure into an ordered rollout.
+  dependsOn:
+    - name: clickhouse
+      namespace: sentry
+  chart:
+    spec:
+      chart: sentry
+      version: "33.3.0"
+      sourceRef:
+        kind: HelmRepository
+        name: sentry-kubernetes
+        namespace: flux-system
+  install:
+    timeout: 30m0s
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 30m0s
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+  interval: 1m0s
+  # Default values
+  #
+  values: {}

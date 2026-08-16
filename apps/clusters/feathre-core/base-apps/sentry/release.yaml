@@ -1,0 +1,142 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sentry
+  namespace: sentry
+spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          - target:
+              kind: StatefulSet
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+  values:
+    # Everything stateful lives outside this release: postgres in CNPG, redis
+    # in the shared Dragonfly, kafka in the Strimzi cluster, clickhouse in its
+    # own release. Only memcached stays bundled -- it is stateless and tiny.
+    postgresql:
+      enabled: false
+    redis:
+      enabled: false
+    kafka:
+      enabled: false
+    nginx:
+      enabled: false
+    ingress:
+      enabled: false
+    # PgBouncer stays off and the CNPG pooler is bypassed: it rejects some
+    # startup parameters, the same reason n8n talks to the -rw service.
+    pgbouncer:
+      enabled: false
+
+    system:
+      url: "https://sentry.onelitefeather.net"
+      adminEmail: "themeinerlp@onelitefeather.net"
+      public: false
+
+    user:
+      create: true
+      email: "themeinerlp@onelitefeather.net"
+      existingSecret: sentry-admin
+      existingSecretKey: admin-password
+
+    sentry:
+      singleOrganization: true
+      existingSecret: sentry-secret
+      existingSecretKey: secret-key
+      # Chart default is {}, which leaves the web pods BestEffort and first to
+      # be evicted. The many Snuba consumers keep chart defaults until
+      # `kubectl top` shows what they actually need.
+      web:
+        resources:
+          requests:
+            cpu: 200m
+            memory: 1Gi
+          limits:
+            memory: 2Gi
+
+    externalPostgresql:
+      host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
+      port: 5432
+      database: sentry
+      existingSecret: sentry-db
+      existingSecretKeys:
+        username: username
+        password: password
+
+    # Shared Dragonfly, dedicated DB 3 (see docs/dragonfly-redis-allocations.md).
+    # Sentry drives this hard -- it is the Celery broker as well as the cache --
+    # so watch the Dragonfly latency alert after this goes live.
+    externalRedis:
+      host: dragonfly.dragonfly.svc.cluster.local
+      port: 6379
+      db: 3
+      existingSecret: sentry-redis
+      existingSecretKey: redis-password
+
+    externalKafka:
+      host: feather-kafka-kafka-bootstrap.kafka.svc
+      port: 9092
+      # Creates Sentry's 116 topics with topicctl. This template is gated on
+      # `not kafka.enabled`, so it runs precisely in this external setup, and
+      # falls back to the chart's full built-in topic list.
+      provisioning:
+        enabled: true
+        replicationFactor: 3
+        numPartitions: 3
+
+    externalClickhouse:
+      host: clickhouse.sentry.svc.cluster.local
+      tcpPort: 9000
+      httpPort: 8123
+      username: default
+      password: ""
+      database: default
+
+    filestore:
+      backend: s3
+      s3:
+        existingSecret: sentry-s3
+        bucketName: sentry
+        endpointUrl: "https://s3.onelitefeather.net"
+        region_name: us-east-1
+        signature_version: s3v4
+        # Ceph RGW is reachable by bucket path, not by virtual-host DNS; the
+        # boto default would resolve sentry.s3.onelitefeather.net and fail.
+        addressing_style: path
+
+    symbolicator:
+      enabled: true
+      api:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+
+    relay:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
+
+    snuba:
+      api:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 1Gi
