@@ -8,6 +8,28 @@ Tenant   1a14dfb5-0eac-41bf-94cb-195c2e387520
 Issuer   https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
 ```
 
+## Zwei Stolpersteine, die den Login zunächst verhindert haben
+
+**`hint=incomplete+user+info`** — Entra liefert den `email`-Claim **nur**, wenn
+die App-Registrierung ihn als *optional claim* führt. Der `email`-Scope allein
+genügt nicht, auch wenn das `mail`-Attribut des Nutzers gefüllt ist. Penpots
+eigener Hinweis „please set correct scopes" führt hier in die Irre. Der Claim
+ist auf ID- und Access-Token gesetzt:
+
+```bash
+az rest --method PATCH \
+  --url "https://graph.microsoft.com/v1.0/applications/c0189833-2572-40b2-b17a-214f107fad54" \
+  --headers "Content-Type=application/json" \
+  --body '{"optionalClaims":{"idToken":[{"name":"email","source":null,"essential":false,"additionalProperties":[]}],"accessToken":[{"name":"email","source":null,"essential":false,"additionalProperties":[]}],"saml2Token":[]}}'
+```
+
+**`error=registration-disabled`** — Penpot legt beim ersten OIDC-Login ein
+Profil an, und das zählt als Registrierung. Mit `disable-registration` wird
+genau das abgelehnt. Registrierung ist ein einziger globaler Schalter; ein
+„nur über OIDC registrieren" gibt es nicht. Deshalb ist `enable-registration`
+gesetzt, dafür aber `enable-login-with-password` entfernt und
+`registrationDomainWhitelist` auf `onelitefeather.net` gesetzt — siehe unten.
+
 ## Chart-Fallstricke
 
 Zwei Defaults des Penpot-Charts brechen den Login, wenn man sie stehen lässt.
@@ -21,9 +43,16 @@ Beide sind in `release.yaml` überschrieben:
 Zusätzlich braucht es `enable-login-with-oidc` in `config.flags` — die
 `providers.oidc.enabled: true` allein reicht nicht.
 
-`enable-login-with-password` bleibt vorerst zusätzlich aktiv, damit ein
-kaputter Entra-Zustand niemanden aussperrt. Nimm es heraus, sobald OIDC im
-Alltag trägt.
+`enable-login-with-password` ist **entfernt** — Entra ist der einzige Weg
+hinein. Das ist kein Schönheitsentscheid: der Cluster hat kein SMTP-Relay,
+deshalb ist `disable-email-verification` zwingend, und Registrierung plus
+Passwort-Login plus fehlende Verifikation zusammen würden es jedem erlauben,
+sich eine fremde `@onelitefeather.net`-Adresse zuzulegen.
+`registrationDomainWhitelist: onelitefeather.net` ist die zweite Schranke.
+
+Falls Entra je ausfällt, sperrt das alle aus. Der Weg zurück ist ein Commit,
+der `enable-login-with-password` wieder in `config.flags` aufnimmt — dann aber
+bitte zusammen mit einer Lösung für die Mailverifikation.
 
 ## Die Registrierung (bereits angelegt)
 

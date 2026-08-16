@@ -46,16 +46,53 @@ claude mcp add --transport http penpot https://penpot-mcp.onelitefeather.net/mcp
 Für Clients ohne HTTP-Transport steht der Legacy-SSE-Endpunkt unter `/sse`
 bereit; `mcp-remote` überbrückt auf stdio.
 
-## ⚠️ Sicherheit
+## Das Plugin verbinden
 
-Der MCP-Endpunkt bringt **keine eigene Authentifizierung** mit. Wer die URL
-kennt, kann Design-Daten lesen **und verändern** — der Server unterstützt
-ausdrücklich auch Schreiboperationen.
+Ein AI-Client allein reicht nicht. Der MCP-Server führt keine Operationen
+selbst aus — er reicht sie an das **Penpot-MCP-Plugin** weiter, das im Browser
+in der geöffneten Design-Datei läuft. Beide Seiten werden über ein
+**User-Token** einander zugeordnet.
 
-Beide MCP-Hosts gehören deshalb hinter **Cloudflare Access**. Das wird in der
-Cloudflare-Konfiguration gesetzt, nicht in diesem Repo — es gibt hier keine
-Cloudflare-Access-Manifeste. Der Schritt ist verpflichtend, bevor produktiv
-mit dem Endpunkt gearbeitet wird.
+Solange kein Plugin verbunden ist, antworten nur die Metawerkzeuge
+(`high_level_overview`, `penpot_api_info`). Alles, was Designdaten anfasst,
+scheitert mit:
+
+```
+No plugin instance connected for user token.
+Please ensure the plugin is running and connected with the correct token.
+```
+
+Serverseitig sieht man dasselbe im Log:
+
+```
+Session initialized with id=… for userTokenFp=…
+Tool execution failed: execute_code; No plugin instance connected for user token
+```
+
+Ablauf: Penpot im Browser öffnen, das MCP-Plugin starten und dort dasselbe
+Token hinterlegen, das auch im AI-Client konfiguriert ist. Danach greifen
+`execute_code` und `export_shape`.
+
+## Sicherheit
+
+Die Zugriffsschichten, von außen nach innen:
+
+1. Eine MCP-Session lässt sich **ohne Token** eröffnen — ein anonymer
+   `initialize` bekommt eine gültige Antwort mit `serverInfo`, und die
+   Metawerkzeuge funktionieren.
+2. Für alles Weitere bindet der Server die Session an ein User-Token.
+3. Designzugriff gibt es erst, wenn unter **demselben** Token ein Plugin
+   verbunden ist.
+
+Das heißt: die URL allein genügt nicht, um Designs zu lesen oder zu
+verändern. Wer aber ein Token erbeutet, zu dem gerade ein Plugin verbunden
+ist, kann darüber schreiben — der Server unterstützt ausdrücklich
+Schreiboperationen.
+
+Beide MCP-Hosts gehören deshalb zusätzlich hinter **Cloudflare Access**, als
+Schranke vor dem Token statt als einziger Schutz. Das wird in der
+Cloudflare-Konfiguration gesetzt, nicht in diesem Repo — Access-Manifeste gibt
+es hier nicht.
 
 ## Betriebshinweise
 
