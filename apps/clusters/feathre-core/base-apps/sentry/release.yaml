@@ -110,6 +110,19 @@ spec:
       existingSecretAppIdKey: app-id
       existingSecretAppNameKey: app-name
 
+    # Discord application dedicated to Sentry. Deliberately not the existing
+    # discordbot: Discord allows one interactions endpoint per application, so
+    # sharing one would make the two integrations fight over it.
+    #
+    # Everything including the application id lives in the secret -- unlike
+    # GitHub, where appId is public anyway, Discord's id is paired with a bot
+    # token whose leak would let someone act as the bot.
+    #
+    # Same trap as github above: existingSecret makes the chart reference
+    # application-id, public-key, client-secret and bot-token unconditionally.
+    discord:
+      existingSecret: sentry-discord
+
     sentry:
       singleOrganization: true
       existingSecret: sentry-secret
