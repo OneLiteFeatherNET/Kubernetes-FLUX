@@ -1,13 +1,17 @@
 ---
 # Apus ships its charts as OCI artifacts from our own Harbor, versioned together with
-# the images they deploy: apus-operator 0.7.0 references apus/operator:0.7.0, because the
+# the images they deploy: apus-operator 0.7.1 references apus/operator:0.7.1, because the
 # chart leaves image.tag empty and falls back to .Chart.AppVersion. Pin both repositories
 # to the same version for that reason -- mixing them defeats the coupling.
 #
-# 0.7.0 brings two things the platform overlay depends on: the dashboard split into a
+# 0.7.0 brought two things the platform overlay depends on: the dashboard split into a
 # tenant application and a separate management console (apus/console, served under
 # /console), and NUXT_PUBLIC_OIDC_SCOPE, without which neither can obtain a token Entra
 # will let through to the API.
+#
+# 0.7.1 is what makes any of it usable: micronaut-http-client was a test-only dependency,
+# so the API fetched an empty JWK Set at runtime and answered every authenticated request
+# with 401 -- silently, for any broker. Do not roll back past this.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -20,7 +24,7 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-operator
   ref:
-    semver: "=0.7.0"
+    semver: "=0.7.1"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -34,4 +38,4 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-platform
   ref:
-    semver: "=0.7.0"
+    semver: "=0.7.1"
