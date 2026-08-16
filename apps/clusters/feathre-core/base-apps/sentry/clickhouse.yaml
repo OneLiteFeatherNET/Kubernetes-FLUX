@@ -15,11 +15,29 @@ spec:
                 value: feather-standard
   values:
     clickhouse:
+      # The chart's own appVersion is 23.8, which is far behind what Sentry
+      # 26.7 needs: upstream self-hosted builds its ClickHouse from
+      # altinity/clickhouse-server:25.3.6.10034.altinitystable. On 23.8 the
+      # events_analytics_platform migrations 0049/0050 died mid-run and left
+      # themselves marked in_progress, which blocks every later migration
+      # attempt. Pin the image the upstream actually uses.
+      image: altinity/clickhouse-server
+      imageVersion: "25.3.6.10034.altinitystable"
+
       # Upstream self-hosted Sentry runs a single ClickHouse. The chart default
       # is 3, but replication here needs Zookeeper, which this cluster does not
       # have -- three nodes without it would be three unsynchronised copies,
       # not a cluster.
       replicas: 1
+      configmap:
+        remote_servers:
+          replica:
+            backup:
+              # Gates a second StatefulSet (clickhouse-replica) plus its
+              # services. Without Zookeeper that replica can never stay in
+              # sync, so it is pure overhead -- and `replicas: 1` alone does
+              # not remove it.
+              enabled: false
       persistentVolumeClaim:
         enabled: true
         dataPersistentVolume:
