@@ -1,0 +1,62 @@
+# Combined controller+broker pool. Three nodes give a real quorum and let the
+# replication settings below (RF 3, min.insync 2) survive losing one node.
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaNodePool
+metadata:
+  name: dual
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: feather-kafka
+spec:
+  replicas: 3
+  roles:
+    - controller
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 200Gi
+        class: ceph-rbd-fr01
+        # Keep the volume if the pool is ever deleted -- these hold the KRaft
+        # metadata log as well as the topic data.
+        deleteClaim: false
+        kraftMetadata: shared
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      memory: 4Gi
+---
+# Strimzi 1.1.0 is KRaft-only; the Kafka CRD has no zookeeper section at all,
+# and it serves exactly one Kafka version (STRIMZI_KAFKA_IMAGES=4.2.0).
+apiVersion: kafka.strimzi.io/v1
+kind: Kafka
+metadata:
+  name: feather-kafka
+  namespace: kafka
+spec:
+  kafka:
+    version: 4.2.0
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+    config:
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      # Sentry's replay-recording topic carries 15 MB messages; the broker has
+      # to accept at least that much or ingest-replay-events is rejected.
+      message.max.bytes: 15728640
+      # Topics are created explicitly by the Sentry chart's provisioning job,
+      # never implicitly by a producer hitting an unknown name.
+      auto.create.topics.enable: "false"
+  # entityOperator is omitted deliberately: enabling the Topic Operator would
+  # put it in competition with the `topicctl` run that creates Sentry's 116
+  # topics. Nothing here manages topics through KafkaTopic CRs.

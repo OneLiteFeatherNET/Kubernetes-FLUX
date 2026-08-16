@@ -22,6 +22,7 @@ resources:
   - database/grafana.yaml
   - database/n8n.yaml
   - database/penpot.yaml
+  - database/sentry.yaml
 
 secretGenerator:
   - name: cnpg-backup
@@ -93,3 +94,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/penpot.sops.env
+  - name: role-sentry
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/sentry.sops.env
