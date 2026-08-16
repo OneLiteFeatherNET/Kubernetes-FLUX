@@ -22,11 +22,14 @@ spec:
     remediation:
       retries: 3
   values:
-    # No Ingress on purpose, both Services stay ClusterIP. The dashboard image cannot complete
-    # a login: ui/nuxt.config.ts leaves oidcIssuer/oidcClientId empty and ui/Dockerfile runs
-    # `pnpm generate` with no build arguments, so the SPA's OIDC configuration is baked in at
-    # image build time and is empty in the published image. A public hostname would only
-    # publish something that cannot be logged into. Reach the API with `kubectl port-forward`
-    # until the UI image is built with its OIDC configuration.
+    # No Ingress in the base: a hostname is a per-cluster decision and there is no sensible
+    # default for one. Overlays that want the applications reachable set ingress.enabled,
+    # className and host themselves.
+    #
+    # The reason this used to say is gone: until 0.5.0 the dashboard image baked its OIDC
+    # configuration in at build time via `pnpm generate`, so a published image could never
+    # complete a login and a hostname would only have exposed something unusable. Since 0.5.0
+    # the images run Nitro and read NUXT_PUBLIC_* at runtime, which is what makes exposing
+    # them worth doing.
     ingress:
       enabled: false
