@@ -1,6 +1,6 @@
 ---
 # Apus ships its charts as OCI artifacts from our own Harbor, versioned together with
-# the images they deploy: apus-operator 0.7.1 references apus/operator:0.7.1, because the
+# the images they deploy: apus-operator 0.7.2 references apus/operator:0.7.2, because the
 # chart leaves image.tag empty and falls back to .Chart.AppVersion. Pin both repositories
 # to the same version for that reason -- mixing them defeats the coupling.
 #
@@ -9,9 +9,12 @@
 # /console), and NUXT_PUBLIC_OIDC_SCOPE, without which neither can obtain a token Entra
 # will let through to the API.
 #
-# 0.7.1 is what makes any of it usable: micronaut-http-client was a test-only dependency,
-# so the API fetched an empty JWK Set at runtime and answered every authenticated request
-# with 401 -- silently, for any broker. Do not roll back past this.
+# 0.7.2 is what makes any of it usable, and is the floor for this cluster. The API named
+# the JWKS endpoint `jwks-uri` in application.yml, a property Micronaut does not bind
+# (JwksSignatureConfigurationProperties has setUrl and no setJwksUri). The bean existed
+# with a null URL, so no fetch was ever attempted, nothing was logged above DEBUG, and
+# every authenticated request was answered 401 for any broker. Do not roll back past this.
+# 0.7.1 was an attempt at the same symptom from a wrong diagnosis and does not fix it.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -24,7 +27,7 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-operator
   ref:
-    semver: "=0.7.1"
+    semver: "=0.7.2"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -38,4 +41,4 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-platform
   ref:
-    semver: "=0.7.1"
+    semver: "=0.7.2"
