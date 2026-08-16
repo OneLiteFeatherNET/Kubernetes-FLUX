@@ -14,11 +14,54 @@ spec:
       # with.
       issuer: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
       jwksUri: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/discovery/v2.0/keys
+
+    # One hostname serves all three: the API under /api, the management console under
+    # /console, and the tenant application everywhere else. Path order is load bearing and
+    # the chart emits it correctly -- the catch-all has to come last or it swallows the other
+    # two.
+    #
+    # Cloudflare terminates TLS at the edge, as it does for every other public service here,
+    # so tls stays disabled and no cert-manager annotation is wanted; the tunnel controller
+    # reaches the Services over plain HTTP inside the cluster.
+    ingress:
+      enabled: true
+      className: cloudflare-tunnel
+      host: apus.onelitefeather.dev
+      annotations:
+        cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+      tls:
+        enabled: false
+
+    # Both SPAs read their configuration at runtime from these variables (since 0.5.0 the
+    # images run Nitro and no longer bake anything in at build time). None of them is a
+    # secret: this is a public OIDC client and every value ends up in the served HTML by
+    # design.
+    #
+    # The two applications share one Entra app registration and differ only in base path, so
+    # every value here is identical between them. Keep them that way -- a client id that
+    # differs between the two would produce two sessions for one person.
+    ui: &uiRuntime
+      env:
+        # Same origin as the SPAs themselves; the ingress routes /api to the API Service.
+        NUXT_PUBLIC_API_BASE_URL: https://apus.onelitefeather.dev/api
+        NUXT_PUBLIC_OIDC_ISSUER: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
+        # App registration "Apus" in the OneLiteFeather tenant.
+        NUXT_PUBLIC_OIDC_CLIENT_ID: 59a9ea74-a98c-4b6b-b60b-3a309128a1cb
+        # Entra-specific and not optional. Asking for only `openid profile email` returns an
+        # access token addressed to Microsoft Graph -- wrong audience, v1 issuer, and none of
+        # Apus's app roles -- so the API rejects every call while the UI has nothing to show
+        # for it. Naming the API's own scope is what makes the token ours.
+        NUXT_PUBLIC_OIDC_SCOPE: >-
+          api://59a9ea74-a98c-4b6b-b60b-3a309128a1cb/access_as_user openid profile email
+
+    # The management console: same runtime configuration, different image and base path.
+    console: *uiRuntime
+
     otel:
       # The cluster's OTLP collector: alloy-receiver in grafana, gRPC (4317), the same one
       # apus-operator exports to.
       endpoint: http://alloy-receiver.grafana.svc:4317
-      # Only the API emits telemetry - the UI is a static SPA behind nginx with no
+      # Only the API emits telemetry - the two SPAs are served by Nitro with no
       # instrumentation - so the service is named for the API, next to "apus-operator" in
       # Tempo and Loki rather than the chart's default "apus-platform-api".
       serviceName: apus-api
