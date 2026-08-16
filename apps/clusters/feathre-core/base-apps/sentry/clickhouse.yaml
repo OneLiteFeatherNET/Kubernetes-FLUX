@@ -13,6 +13,29 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # ClickHouse images from 24.x on run a user-setup step in their
+          # entrypoint: with neither CLICKHOUSE_USER nor CLICKHOUSE_PASSWORD
+          # set, it writes users.d/default-user.xml to disable network access
+          # for `default`. This chart mounts users.d from a ConfigMap, so that
+          # path is read-only and the container dies before the server starts:
+          #
+          #   /entrypoint.sh: line 156:
+          #     /etc/clickhouse-server/users.d/default-user.xml: Read-only file system
+          #
+          # Flux then saw StatefulSet status 'Failed' and rolled back to 23.8
+          # five times over. The chart has no env: block at all -- it only
+          # exports SHARD in the container command -- so this cannot come from
+          # values and has to be patched in here. The chart's own users
+          # ConfigMap already defines `default`, so skipping the step is right.
+          - target:
+              kind: StatefulSet
+              name: clickhouse
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/env
+                value:
+                  - name: CLICKHOUSE_SKIP_USER_SETUP
+                    value: "1"
   values:
     clickhouse:
       # The chart's own appVersion is 23.8, which is far behind what Sentry
