@@ -25,10 +25,23 @@ spec:
       # enable-mcp is the ONLY switch for the MCP component — the chart's
       # penpot.mcpEnabled helper greps exactly this string, there is no
       # mcp.enabled value.
-      # enable-login-with-password stays on deliberately: it is the fallback if
-      # the Entra app registration ever breaks. Remove it once OIDC has proven
-      # itself in daily use.
-      flags: "disable-registration enable-login-with-password enable-login-with-oidc disable-email-verification enable-mcp"
+      # Registration has to be ON: Penpot provisions an OIDC user by *creating*
+      # a profile on first login, and disable-registration rejected exactly that
+      # with error=registration-disabled. There is no "only register via OIDC"
+      # flag -- registration is one global switch.
+      #
+      # So the gate is moved elsewhere: enable-login-with-password is deliberately
+      # absent, which leaves Entra as the only way in. That matters because this
+      # cluster has no SMTP relay, so disable-email-verification is required, and
+      # registration + password login + no verification together would let anyone
+      # claim an @onelitefeather.net address they do not own. Dropping password
+      # login costs nothing -- no password profile exists to fall back to.
+      #
+      # enable-mcp is the ONLY switch for the MCP component; the chart's
+      # penpot.mcpEnabled helper greps exactly this string.
+      flags: "enable-registration enable-login-with-oidc disable-email-verification enable-mcp"
+      # Second gate: even through Entra, only this domain may be provisioned.
+      registrationDomainWhitelist: "onelitefeather.net"
       telemetryEnabled: false
 
       # Microsoft Entra ID — the same tenant the rest of the cluster already
