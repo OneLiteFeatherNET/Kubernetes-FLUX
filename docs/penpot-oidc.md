@@ -43,8 +43,17 @@ Beide sind in `release.yaml` überschrieben:
 Zusätzlich braucht es `enable-login-with-oidc` in `config.flags` — die
 `providers.oidc.enabled: true` allein reicht nicht.
 
-`enable-login-with-password` ist **entfernt** — Entra ist der einzige Weg
-hinein. Das ist kein Schönheitsentscheid: der Cluster hat kein SMTP-Relay,
+`disable-login-with-password` ist gesetzt — Entra ist der einzige Weg hinein.
+
+⚠️ Es muss **explizit** `disable-login-with-password` heißen. Das Chart rendert
+`PENPOT_FLAGS` als `"$PENPOT_FLAGS <unsere>"`, die Flags sind also **additiv zu
+den eingebauten Defaults** des Images — und `login-with-password` ist einer
+dieser Defaults. Es einfach wegzulassen lässt den Passwort-Login aktiv. Prüfen
+lässt sich der tatsächliche Zustand nur am Startup-Log:
+
+```bash
+kubectl -n penpot logs deploy/penpot-backend | grep "welcome to penpot"
+``` Das ist kein Schönheitsentscheid: der Cluster hat kein SMTP-Relay,
 deshalb ist `disable-email-verification` zwingend, und Registrierung plus
 Passwort-Login plus fehlende Verifikation zusammen würden es jedem erlauben,
 sich eine fremde `@onelitefeather.net`-Adresse zuzulegen.
