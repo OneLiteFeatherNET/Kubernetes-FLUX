@@ -34,3 +34,12 @@ secretGenerator:
   - name: sentry-admin
     envs:
       - sentry-admin.sops.env
+  # GitHub App "onelitefeather-sentry" (app id 196299). The chart references
+  # every one of these keys unconditionally once github.existingSecret is set,
+  # so a partial secret would stop the pods from starting. private-key comes
+  # from a file rather than the env: it is a multi-line PEM.
+  - name: sentry-github
+    envs:
+      - sentry-github.sops.env
+    files:
+      - private-key=sentry-github.sops.key
