@@ -43,6 +43,49 @@ spec:
       adminEmail: "themeinerlp@onelitefeather.net"
       public: false
 
+    config:
+      # Makes SAML with Entra ID possible at all.
+      #
+      # Sentry derives its SAML SP entityId from a Django URL, so it always
+      # ends in a slash: https://sentry.onelitefeather.net/saml/metadata/sentry/
+      # Entra refuses to store any identifierUri ending in a slash --
+      # "IdentifierUrisEndsWithSlash", on both the v1.0 and beta Graph APIs --
+      # and python3-saml compares the assertion Audience with `not in`, i.e.
+      # exact string equality with no normalisation. Without this the two can
+      # never agree and every login fails the audience check.
+      #
+      # Dropping the trailing slash lines both sides up: Sentry then sends and
+      # expects the same value Entra is able to store.
+      #
+      # Patched lazily on the first request rather than at import time: this
+      # file is the Django settings module, and importing sentry.auth there
+      # would touch the app registry before it is ready. The try/except is
+      # deliberate -- a broken patch must never stop Sentry from booting; it
+      # would only mean SSO stays unconfigurable.
+      sentryConfPy: |
+        from django.core.signals import request_started
+
+        def _strip_saml_sp_entity_id_slash(*args, **kwargs):
+            request_started.disconnect(_strip_saml_sp_entity_id_slash)
+            try:
+                from sentry.auth.providers.saml2 import provider as _saml2
+
+                _orig_build_saml_config = _saml2.build_saml_config
+
+                def _build_saml_config(provider_config, org):
+                    config = _orig_build_saml_config(provider_config, org)
+                    sp = config.get("sp") or {}
+                    entity_id = sp.get("entityId")
+                    if isinstance(entity_id, str) and entity_id.endswith("/"):
+                        sp["entityId"] = entity_id[:-1]
+                    return config
+
+                _saml2.build_saml_config = _build_saml_config
+            except Exception:
+                pass
+
+        request_started.connect(_strip_saml_sp_entity_id_slash, weak=False)
+
     user:
       create: true
       email: "themeinerlp@onelitefeather.net"
