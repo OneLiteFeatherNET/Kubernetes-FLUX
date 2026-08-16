@@ -49,6 +49,19 @@ spec:
       registrationDomainWhitelist: "onelitefeather.net"
       telemetryEnabled: false
 
+      # Penpot's default connection pool is 60, and it holds all of them open
+      # even while completely idle -- `pg_stat_activity` showed 60/60 in state
+      # `idle`. On a shared cluster with max_connections=200 that is a sixth of
+      # everything for one dormant app, and it helped push the primary to 207
+      # connections, at which point Postgres started refusing new ones with
+      # "remaining connection slots are reserved" and Sentry's login broke.
+      #
+      # 10 is ample for this team's usage; raise it if the backend ever reports
+      # pool exhaustion.
+      extraEnvs:
+        - name: PENPOT_DATABASE_POOL_MAX
+          value: "10"
+
       # Microsoft Entra ID — the same tenant the rest of the cluster already
       # authenticates against (dependency-track, apus, grafana). Penpot
       # auto-discovers the endpoints from baseURI, so authURI/tokenURI/userURI
