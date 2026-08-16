@@ -30,16 +30,21 @@ spec:
       # with error=registration-disabled. There is no "only register via OIDC"
       # flag -- registration is one global switch.
       #
-      # So the gate is moved elsewhere: enable-login-with-password is deliberately
-      # absent, which leaves Entra as the only way in. That matters because this
-      # cluster has no SMTP relay, so disable-email-verification is required, and
-      # registration + password login + no verification together would let anyone
-      # claim an @onelitefeather.net address they do not own. Dropping password
-      # login costs nothing -- no password profile exists to fall back to.
+      # So the gate is moved elsewhere: password login is switched off, leaving
+      # Entra as the only way in. That matters because this cluster has no SMTP
+      # relay, so disable-email-verification is required, and registration +
+      # password login + no verification together would let anyone claim an
+      # @onelitefeather.net address they do not own.
+      #
+      # It has to be spelled `disable-login-with-password`, not merely omitted.
+      # The chart renders PENPOT_FLAGS as "$PENPOT_FLAGS <ours>", so these are
+      # ADDITIVE to the image's built-in defaults -- and login-with-password is
+      # one of those defaults. Leaving it out kept it enabled; the running pod
+      # reported `login-with-password` in its startup flags the whole time.
       #
       # enable-mcp is the ONLY switch for the MCP component; the chart's
       # penpot.mcpEnabled helper greps exactly this string.
-      flags: "enable-registration enable-login-with-oidc disable-email-verification enable-mcp"
+      flags: "enable-registration disable-login-with-password enable-login-with-oidc disable-email-verification enable-mcp"
       # Second gate: even through Entra, only this domain may be provisioned.
       registrationDomainWhitelist: "onelitefeather.net"
       telemetryEnabled: false
