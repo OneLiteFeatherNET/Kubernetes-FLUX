@@ -42,8 +42,12 @@ spec:
     # differs between the two would produce two sessions for one person.
     ui: &uiRuntime
       env:
-        # Same origin as the SPAs themselves; the ingress routes /api to the API Service.
-        NUXT_PUBLIC_API_BASE_URL: https://apus.onelitefeather.dev/api
+        # The origin only, with no /api suffix. Every method of the typed client already asks
+        # for a path that begins with /api (it concatenates baseUrl + '/api/tenants'), so a
+        # suffix here produces /api/api/tenants. The ingress happily routes that to the API,
+        # which has no such route, and the security filter answers a bare 403 -- which reads
+        # exactly like a missing role and sends you looking in entirely the wrong place.
+        NUXT_PUBLIC_API_BASE_URL: https://apus.onelitefeather.dev
         NUXT_PUBLIC_OIDC_ISSUER: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
         # App registration "Apus" in the OneLiteFeather tenant.
         NUXT_PUBLIC_OIDC_CLIENT_ID: 59a9ea74-a98c-4b6b-b60b-3a309128a1cb
