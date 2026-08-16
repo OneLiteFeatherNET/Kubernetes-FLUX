@@ -49,13 +49,23 @@ spec:
         cpu: "20m"
         memory: "40Mi"
     webhook:
+      # The 10m CPU limit that used to sit here throttled the webhook so hard it
+      # could not answer its own /livez within the probe's 1s timeout, so the
+      # kubelet killed it: 406 restarts in 17 days, and an endpointless Service
+      # in between. Every admission dry-run then failed with "failed calling
+      # webhook webhook.cert-manager.io", which stalled the base-controllers
+      # layer and, through dependsOn, every layer behind it.
+      #
+      # No CPU limit on purpose: this sits on the admission path of every Flux
+      # apply, so throttling it stalls reconciliation cluster-wide. Same
+      # reasoning the rabbitmq broker patch used. The request reserves enough to
+      # schedule; memory keeps a limit because a leak should be bounded.
       resources:
         limits:
-          cpu: "10m"
-          memory: "25Mi"
+          memory: "128Mi"
         requests:
-          cpu: "5m"
-          memory: "15Mi"
+          cpu: "50m"
+          memory: "64Mi"
     cainjector:
       resources:
         limits:
