@@ -15,6 +15,14 @@
 # Upgrading the operator chart before the platform chart is not required -- an older api simply
 # ignores the field -- but keeping the pins equal keeps the coupling the comment above describes.
 #
+# 0.9.0 brings the last two pieces of the per-tenant work. The operator now provisions one
+# instance of the tenant application per tenant -- a Deployment, Service and Ingress in the
+# tenant's own namespace, serving https://<host>/t/<tenant>/ -- guarded by tenantUi.host, which
+# is empty by default so the feature stays off until it is configured below. And the api module
+# gains the directory: teams, invitations, password resets and impersonation, plus
+# Tenant.spec.identity.groupId, which is what finally lets a signed-in user resolve to a tenant
+# at all (the `organization` claim it used to read was never emitted by the app registration).
+#
 # 0.7.2 is what makes any of it usable, and is the floor for this cluster. The API named
 # the JWKS endpoint `jwks-uri` in application.yml, a property Micronaut does not bind
 # (JwksSignatureConfigurationProperties has setUrl and no setJwksUri). The bean existed
@@ -33,7 +41,7 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-operator
   ref:
-    semver: "=0.8.0"
+    semver: "=0.9.0"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -47,4 +55,4 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-platform
   ref:
-    semver: "=0.8.0"
+    semver: "=0.9.0"
