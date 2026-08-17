@@ -55,4 +55,17 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-platform
   ref:
-    semver: "=0.9.0"
+    # Held one version behind the operator on purpose, which is the exception to the
+    # keep-the-pins-equal rule above. The api image in 0.9.0 does not start: its new
+    # TenantGroupIndexLoader declares @Scheduled(fixedDelay = "60s"), a spelling Micronaut's
+    # converter rejects, so the context fails at
+    #   SchedulerConfigurationException: Invalid fixed delay definition: 60s
+    # and the single api replica goes into CrashLoopBackOff -- taking the whole API down with it.
+    #
+    # The operator stays on 0.9.0: it is a separate image, it starts fine, and it is what
+    # provisions the per-tenant application instances this release is for. The 0.9.0 CRD changes
+    # are additive, so an 0.8.0 api simply ignores the new fields.
+    #
+    # Move this back to =0.9.1 once the fix is released. Do not "tidy" the two pins back into
+    # agreement before then.
+    semver: "=0.8.0"
