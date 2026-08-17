@@ -15,6 +15,16 @@
 # Upgrading the operator chart before the platform chart is not required -- an older api simply
 # ignores the field -- but keeping the pins equal keeps the coupling the comment above describes.
 #
+# 0.9.1 is the floor now, and 0.9.0 must not be reinstated. The 0.9.0 api image does not
+# start at all: TenantGroupIndexLoader declared @Scheduled(fixedDelay = "60s"), a spelling
+# Micronaut's converter rejects, so the context failed during start() and the single api
+# replica went into CrashLoopBackOff, taking the whole API with it. The 0.9.0 operator starts,
+# but cannot read Rook's own CephObjectStoreUser -- its status model knew only `phase` while
+# Rook had added `info` -- so every tenant reconciliation failed and no tenant ever got the
+# application instance 0.9.0 exists to provision. Both are fixed in 0.9.1, which also adds a
+# build step that boots the shipped jar, because nothing in the test suite could see the first
+# failure.
+#
 # 0.9.0 brings the last two pieces of the per-tenant work. The operator now provisions one
 # instance of the tenant application per tenant -- a Deployment, Service and Ingress in the
 # tenant's own namespace, serving https://<host>/t/<tenant>/ -- guarded by tenantUi.host, which
@@ -41,7 +51,7 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-operator
   ref:
-    semver: "=0.9.0"
+    semver: "=0.9.1"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -55,17 +65,4 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/apus/charts/apus-platform
   ref:
-    # Held one version behind the operator on purpose, which is the exception to the
-    # keep-the-pins-equal rule above. The api image in 0.9.0 does not start: its new
-    # TenantGroupIndexLoader declares @Scheduled(fixedDelay = "60s"), a spelling Micronaut's
-    # converter rejects, so the context fails at
-    #   SchedulerConfigurationException: Invalid fixed delay definition: 60s
-    # and the single api replica goes into CrashLoopBackOff -- taking the whole API down with it.
-    #
-    # The operator stays on 0.9.0: it is a separate image, it starts fine, and it is what
-    # provisions the per-tenant application instances this release is for. The 0.9.0 CRD changes
-    # are additive, so an 0.8.0 api simply ignores the new fields.
-    #
-    # Move this back to =0.9.1 once the fix is released. Do not "tidy" the two pins back into
-    # agreement before then.
-    semver: "=0.8.0"
+    semver: "=0.9.1"
