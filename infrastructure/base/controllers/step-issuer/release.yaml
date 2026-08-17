@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: step-issuer
-      version: ">=1.10.2 <1.11.0"
+      version: "<1.12.0"
       sourceRef:
         kind: HelmRepository
         name: smallstep
