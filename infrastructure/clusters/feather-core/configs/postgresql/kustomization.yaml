@@ -23,6 +23,7 @@ resources:
   - database/n8n.yaml
   - database/penpot.yaml
   - database/sentry.yaml
+  - database/vikunja.yaml
 
 secretGenerator:
   - name: cnpg-backup
@@ -100,3 +101,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/sentry.sops.env
+  - name: role-vikunja
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/vikunja.sops.env

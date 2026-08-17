@@ -1,0 +1,17 @@
+Vikunja {{ .Values.image.tag | default .Chart.AppVersion }} has been deployed as {{ include "vikunja.fullname" . }}.
+
+{{- if .Values.httpRoute.enabled }}
+
+Reachable via the Gateway API route:
+{{- range .Values.httpRoute.hostnames }}
+  https://{{ . }}
+{{- end }}
+{{- end }}
+
+The effective configuration is the ConfigMap {{ include "vikunja.fullname" . }}-config
+mounted at /etc/vikunja/config.yml, with every VIKUNJA_* environment variable
+merged on top of it at startup.
+
+Check what the pod actually loaded:
+
+  kubectl -n {{ .Release.Namespace }} logs deploy/{{ include "vikunja.fullname" . }} | grep "Using config file"

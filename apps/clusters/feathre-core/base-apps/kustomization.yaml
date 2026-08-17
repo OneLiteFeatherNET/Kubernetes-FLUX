@@ -22,3 +22,4 @@ resources:
   - alloy-metrics
   - alloy-receiver
   - apus
+  - vikunja

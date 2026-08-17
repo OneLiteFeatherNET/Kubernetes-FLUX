@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: vikunja
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/vikunja/
+  - ingress.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  # service.secret signs the JWTs. Changing it invalidates every issued token
+  # and logs everyone out — keep it stable.
+  - name: vikunja-core
+    envs:
+      - vikunja-core.sops.env
+  # Must carry the same password as the CNPG role-vikunja secret.
+  - name: vikunja-db
+    envs:
+      - vikunja-db.sops.env
+  # Same key pair as the CephObjectStoreUser `vikunja`, which is created *with*
+  # these credentials (spec.keys) rather than getting operator-generated ones —
+  # see infrastructure/.../rook-fr01/users/vikunja.yaml.
+  - name: vikunja-s3
+    envs:
+      - vikunja-s3.sops.env
+  # Dragonfly password, DB 14 (docs/dragonfly-redis-allocations.md).
+  - name: vikunja-redis
+    envs:
+      - vikunja-redis.sops.env
+  # Client id and secret of the "Vikunja" Entra app registration. The secret
+  # expires two years after it was issued — see docs/vikunja-oidc.md.
+  - name: vikunja-oidc
+    envs:
+      - vikunja-oidc.sops.env
