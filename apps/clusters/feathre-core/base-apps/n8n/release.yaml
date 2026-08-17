@@ -36,7 +36,7 @@ spec:
     # Shared Dragonfly instance (infrastructure/.../controllers/dragonfly),
     # dedicated DB 11 for n8n's Bull queue (operator-managed master endpoint,
     # no Sentinel). Password lives in the n8n-redis secret (now the Dragonfly
-    # password). See docs/dragonfly-redis-cutover.md.
+    # password). See https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te.
     redis:
       enabled: true
       useExternal: true

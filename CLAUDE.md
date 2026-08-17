@@ -11,8 +11,10 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 - `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `infrastructure/` or `apps/`.
 - `infrastructure/` — cluster plumbing: Flux **sources**, **controllers/operators**, and **configs** (databases, storage, PKI).
 - `apps/` — actual workloads.
-- `helm/` — in-repo Helm charts (`shlink`, `outline`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
-- `scripts/validate.sh` — local/CI manifest validation. `docs/sops.md` — secrets workflow.
+- `helm/` — in-repo Helm charts (`shlink`, `outline`, `vikunja`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
+- `scripts/validate.sh` — local/CI manifest validation.
+
+**There is no `docs/` directory.** Prose documentation lives in Outline, collection *Infrastruktur*, under [Kubernetes-FLUX — GitOps für feather-core](https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA) — architecture, runbooks, secrets handling, incidents, and an archive of design documents and implementation plans. Read it via the Outline MCP tools. New operational findings belong there, not as comment blocks in a manifest; keep in-repo comments to a line or two plus a link.
 
 **Two-tier Kustomize pattern.** Everything is a `base` + cluster `overlay`:
 - `infrastructure/base/<kind>/<name>/` and `apps/base/<name>/` — portable definitions (HelmRelease, namespace, etc.).
@@ -67,7 +69,7 @@ sops <file>
 
 ## Secrets — SOPS (age)
 
-Full workflow in `docs/sops.md`. Essentials:
+Full workflow: [SOPS — Secrets im Kubernetes-FLUX-Repo](https://outline.onelitefeather.dev/doc/sops-secrets-im-kubernetes-flux-repo-eC2BagUEa9). Essentials:
 
 - Recipients are listed in exactly **one** file: `.sops.yaml` at the repo root — three age public keys, one each for the human maintainer, the cluster, and CI. (`clusters/feather-core/.sops.pub.asc` is the public half of the retired PGP key, kept only to read pre-migration git history.)
 - Encrypted file suffixes: `*.sops.env`, `*.sops.yaml`, `*.sops.json`, `*.sops.crt`, `*.sops.key`, `*.sops.conf` — **and plain `*.env`** (the root `.sops.yaml` regex encrypts those too). Everything is whole-file encrypted; there is deliberately no rule for plain `*.yaml`, so `sops -e` on one fails closed. Name a Secret manifest `*.sops.yaml`.

@@ -107,7 +107,7 @@ spec:
           passwordKey: password
 
       # Shared Dragonfly instance, dedicated DB 13 (see
-      # docs/dragonfly-redis-allocations.md). The chart wants one complete URI
+      # https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te). The chart wants one complete URI
       # in a single key, not host/port/password split out.
       redis:
         existingSecret: penpot-redis

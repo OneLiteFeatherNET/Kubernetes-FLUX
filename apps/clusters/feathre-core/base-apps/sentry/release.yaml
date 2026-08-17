@@ -147,7 +147,7 @@ spec:
         username: username
         password: password
 
-    # Shared Dragonfly, dedicated DB 3 (see docs/dragonfly-redis-allocations.md).
+    # Shared Dragonfly, dedicated DB 3 (see https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te).
     # Sentry drives this hard -- it is the Celery broker as well as the cache --
     # so watch the Dragonfly latency alert after this goes live.
     externalRedis:

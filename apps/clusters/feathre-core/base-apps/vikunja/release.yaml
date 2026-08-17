@@ -160,7 +160,7 @@ spec:
         maxopenconnections: 10
         maxidleconnections: 2
 
-      # Shared Dragonfly instance, dedicated DB 14 (docs/dragonfly-redis-allocations.md).
+      # Shared Dragonfly instance, dedicated DB 14 (https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te).
       redis:
         enabled: true
         host: dragonfly.dragonfly.svc.cluster.local:6379

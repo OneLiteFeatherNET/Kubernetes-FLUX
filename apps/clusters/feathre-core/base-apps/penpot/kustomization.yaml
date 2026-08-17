@@ -20,7 +20,7 @@ secretGenerator:
       - penpot-redis.sops.env
   # Rook-minted keys, copied from rook-ceph-object-user-feather-s3-penpot
   # (namespace rook-ceph-fr01). Re-copy them if that CephObjectStoreUser is
-  # ever recreated — see docs/penpot-mcp.md.
+  # ever recreated — see https://outline.onelitefeather.dev/doc/penpot-mcp-server-betrieb-und-client-anbindung-fiJJZDF3wN.
   - name: penpot-s3
     envs:
       - penpot-s3.sops.env
@@ -30,7 +30,7 @@ secretGenerator:
     envs:
       - penpot-core.sops.env
   # Client id and secret of the "Penpot" Entra app registration. The secret
-  # expires two years after it was issued — see docs/penpot-oidc.md for the
+  # expires two years after it was issued — see https://outline.onelitefeather.dev/doc/penpot-login-uber-microsoft-entra-id-oidc-cbb6uH9dP6 for the
   # rotation steps.
   - name: penpot-oidc
     envs:
