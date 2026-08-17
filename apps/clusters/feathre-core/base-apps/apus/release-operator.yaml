@@ -31,3 +31,40 @@ spec:
         # The operator exports no metrics yet -- that arrives with phase 8. Enabling this
         # now would only add a scrape target answering with connection refused.
         enabled: false
+
+    # One instance of the tenant application per tenant, at
+    # https://apus.onelitefeather.dev/t/<tenant>/. The operator creates a Deployment, a Service
+    # and an Ingress in each tenant's own namespace -- the Ingress has to live there, because an
+    # Ingress may only reference a Service in its own namespace, so a single operator-owned
+    # Ingress listing every tenant was never an option at any price.
+    #
+    # Separate Ingress objects on the same host are safe here, but not for the reason the platform
+    # chart's own ingress comment gives. This cluster's controller
+    # (strrl.dev/cloudflare-tunnel-ingress-controller) flattens every Ingress in the cluster into
+    # one tunnel rule list and sorts it by path length descending before appending its 404
+    # catch-all, so /t/<tenant> lands ahead of / on its own no matter which object declared it.
+    # Read out of sortIngressRules in the controller's source, because no host in this cluster was
+    # served by two Ingress objects before now.
+    #
+    # Every tenant instance needs two redirect URIs registered in Entra before anyone can sign in
+    # to it. A wildcard is not a shortcut: Entra strips the query string when a wildcard URI
+    # matches, and the authorization code lives in that query string. The operator cannot add
+    # them either -- that would need Graph application permissions on the app registration -- so
+    # they are reported on Tenant.status.redirectUris and shown on the console's tenant page.
+    # For onelitefeather-dev they are already registered.
+    tenantUi:
+      host: apus.onelitefeather.dev
+      ingressClassName: cloudflare-tunnel
+      # The four values below deliberately mirror ui.env in release-platform.yaml exactly. Same
+      # public OIDC client: an id that differed between the platform's own UI and a tenant's
+      # instance would produce two sessions for one person.
+      #
+      # The origin only, with no /api suffix -- every method of the typed client already asks for
+      # a path beginning with /api, so a suffix here produces /api/api/tenants, which the ingress
+      # routes to the API, which has no such route, and the security filter answers a bare 403.
+      apiBaseUrl: https://apus.onelitefeather.dev
+      oidc:
+        issuer: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
+        clientId: 59a9ea74-a98c-4b6b-b60b-3a309128a1cb
+        scope: >-
+          api://59a9ea74-a98c-4b6b-b60b-3a309128a1cb/access_as_user openid profile email
