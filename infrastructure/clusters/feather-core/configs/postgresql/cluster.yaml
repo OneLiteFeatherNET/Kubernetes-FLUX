@@ -95,6 +95,11 @@ spec:
         ensure: present
         passwordSecret:
           name: role-sentry
+      - name: vikunja
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-vikunja
     services:
       additional:
         - selectorType: rw

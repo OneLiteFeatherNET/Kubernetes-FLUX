@@ -1,0 +1,19 @@
+---
+# Deliberately NOT in rook-ceph-fr01 like most other claims: Rook creates the
+# bucket's ConfigMap and credentials Secret in the namespace of the claim, and
+# the pods read both from their own. Same arrangement as apus-bundles.
+#
+# bucketOwner points the bucket at the existing CephObjectStoreUser instead of
+# letting the provisioner mint an anonymous obc-<ns>-<name>-<uuid> one. That
+# keeps the app's whole footprint under one named RGW user — and the generated
+# Secret then carries that user's credentials rather than a second key pair.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: vikunja-bucket
+  namespace: vikunja
+spec:
+  bucketName: vikunja
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: vikunja

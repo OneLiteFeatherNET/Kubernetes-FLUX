@@ -1,0 +1,8 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: vikunja
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: vikunja

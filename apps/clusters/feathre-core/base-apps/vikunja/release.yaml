@@ -1,0 +1,214 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vikunja
+  namespace: vikunja
+spec:
+  values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
+    image:
+      repository: vikunja/vikunja
+      pullPolicy: IfNotPresent
+      tag: "2.5.0"
+
+    # Stateless: files go to Ceph S3, data to the shared CNPG cluster and all
+    # shared runtime state to Dragonfly, so replicas scale freely.
+    replicaCount: 2
+    priorityClassName: feather-standard
+    pdb:
+      enabled: true
+      minAvailable: 1
+
+    # Scraped by kube-prometheus-stack; the endpoint itself is switched on in
+    # config.metrics below. /api/v1/metrics needs no login token, and the
+    # Cloudflare Tunnel publishes every path — hence the basic auth, whose
+    # credentials the container reads from the very same Secret keys.
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        basicAuth:
+          username:
+            name: vikunja-core
+            key: VIKUNJA_METRICS_USERNAME
+          password:
+            name: vikunja-core
+            key: VIKUNJA_METRICS_PASSWORD
+
+    # Internal, Envoy-fronted hostname. This is the only path that produces
+    # traces: the gateway emits OTel spans to Tempo for every request it
+    # handles (infrastructure/.../configs/gateway/envoyproxy.yaml, 10 %
+    # sampling). The public Cloudflare-Tunnel hostname in ingress.yaml goes
+    # straight to the Service and bypasses Envoy, so it is not traced.
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: eg
+          namespace: envoy
+          sectionName: https
+      hostnames:
+        - vikunja.apps.onelite.feather
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+
+    resources:
+      limits:
+        cpu: "1"
+        memory: 768Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
+
+    # Everything secret is merged on top of the config file from the Secrets
+    # below — Vikunja reads VIKUNJA_* env vars into the same config tree at
+    # startup.
+    envFrom:
+      - secretRef:
+          name: vikunja-core
+      - secretRef:
+          name: vikunja-db
+      - secretRef:
+          name: vikunja-redis
+      - secretRef:
+          name: vikunja-oidc
+
+    # Bucket coordinates and credentials come from the ObjectBucketClaim in
+    # bucket.yaml, which Rook answers with a ConfigMap and a Secret of the same
+    # name. Their key names are fixed by the provisioner, so they are remapped
+    # here rather than pulled in wholesale with envFrom.
+    env:
+      # Declared before the endpoint below — Kubernetes only expands $(VAR)
+      # against env entries that precede it in this list.
+      - name: BUCKET_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: vikunja-bucket
+            key: BUCKET_HOST
+      - name: BUCKET_PORT
+        valueFrom:
+          configMapKeyRef:
+            name: vikunja-bucket
+            key: BUCKET_PORT
+      - name: VIKUNJA_FILES_S3_ENDPOINT
+        value: http://$(BUCKET_HOST):$(BUCKET_PORT)
+      - name: VIKUNJA_FILES_S3_BUCKET
+        valueFrom:
+          configMapKeyRef:
+            name: vikunja-bucket
+            key: BUCKET_NAME
+      - name: VIKUNJA_FILES_S3_ACCESSKEY
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-bucket
+            key: AWS_ACCESS_KEY_ID
+      - name: VIKUNJA_FILES_S3_SECRETKEY
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-bucket
+            key: AWS_SECRET_ACCESS_KEY
+
+    config:
+      service:
+        publicurl: https://vikunja.onelitefeather.net
+        timezone: Europe/Berlin
+        # Local sign-up is off anyway (auth.local.enabled below); this closes
+        # the /register API route as well.
+        enableregistration: false
+        # Two proxies in front (cloudflared, or Envoy on the internal route),
+        # both in-cluster. Without this Echo takes the TCP peer address and
+        # every request looks like it came from the same pod IP.
+        ipextractionmethod: xff
+        trustedproxies: 10.244.0.0/16
+        # No SMTP relay in this cluster, so reminder mails would silently queue.
+        enableemailreminders: false
+
+      log:
+        # "structured" is what emits JSON here — "json" is not a valid value
+        # and silently leaves the logger on plain text.
+        format: structured
+        level: INFO
+        # xorm query logging is noisy and off by default; keep it that way.
+        database: "off"
+
+      database:
+        type: postgres
+        # The -rw service directly, not the PgBouncer pooler — same reasoning
+        # as n8n and penpot.
+        host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
+        user: vikunja
+        database: vikunja
+        schema: public
+        sslmode: disable
+        # Vikunja defaults to 100 open / 50 idle connections per instance. The
+        # shared cluster runs at max_connections=200 in total, so two replicas
+        # on the defaults would claim the whole budget on their own.
+        maxopenconnections: 10
+        maxidleconnections: 2
+
+      # Shared Dragonfly instance, dedicated DB 14 (docs/dragonfly-redis-allocations.md).
+      redis:
+        enabled: true
+        host: dragonfly.dragonfly.svc.cluster.local:6379
+        db: 14
+      # With more than one replica the in-memory keyvalue store would give each
+      # pod its own view of caches, rate-limit counters and the OIDC provider
+      # cache. Redis makes it shared.
+      keyvalue:
+        type: redis
+      ratelimit:
+        enabled: true
+        kind: user
+        store: keyvalue
+
+      files:
+        type: s3
+        # Used as the key prefix inside the bucket, not as a local path.
+        basepath: files
+        maxsize: 20MB
+        s3:
+          # endpoint, bucket and the credentials arrive as env vars from the
+          # ObjectBucketClaim — see the `env` block above. What is left here is
+          # what the claim cannot answer: BUCKET_REGION comes back empty, and
+          # the AWS SDK needs *some* region to sign with. Path style because
+          # the bucket name is not part of the RGW dnsNames for this endpoint.
+          region: us-east-1
+          usepathstyle: true
+
+      metrics:
+        enabled: true
+
+      auth:
+        # Entra is the only way in. Existing accounts keep working because
+        # OIDC logins resolve to the same user records.
+        local:
+          enabled: false
+        openid:
+          enabled: true
+          providers:
+            # The key doubles as the URL segment of the redirect URI
+            # (/auth/openid/entra) that is registered in Entra — renaming it
+            # breaks the login. clientid/clientsecret come from the
+            # vikunja-oidc Secret; the key must exist here regardless, Vikunja
+            # only knows providers the config *file* declares.
+            entra:
+              name: Microsoft Entra ID
+              # The issuer, not the authorize endpoint — Vikunja discovers the
+              # endpoints from /.well-known/openid-configuration below it.
+              authurl: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
+              logouturl: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/oauth2/v2.0/logout
+              scope: openid profile email

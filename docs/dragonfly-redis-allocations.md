@@ -18,8 +18,9 @@ password in secret `dragonfly-auth` / namespace `dragonfly`), separated by Redis
 | 3 | Sentry | Celery broker, buffers, quotas, rate limits |
 | 11 | n8n | Bull queue |
 | 13 | Penpot | cache/sessions + realtime collaboration (`redis-uri`) |
+| 14 | Vikunja | keyvalue store: caches, rate-limit counters, OIDC provider cache |
 
-Free: 4, 12, 14, 15.
+Free: 4, 12, 15.
 
 ⚠️ Sentry on DB 3 is the heaviest user here — it drives this instance as a
 Celery broker, not just as a cache. If other apps start seeing Redis latency,

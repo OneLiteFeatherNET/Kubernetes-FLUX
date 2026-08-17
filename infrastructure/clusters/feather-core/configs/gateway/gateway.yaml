@@ -61,3 +61,5 @@ spec:
             name: tempo-apps-onelite-feather-tls
           - kind: Secret
             name: otel-apps-onelite-feather-tls
+          - kind: Secret
+            name: vikunja-apps-onelite-feather-tls
