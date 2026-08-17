@@ -31,23 +31,19 @@ SMTP-Relay auch nicht.
 | Redirect URIs | `https://vikunja.onelitefeather.net/auth/openid/entra`<br>`https://vikunja.apps.onelite.feather/auth/openid/entra` |
 | Graph-Scopes | `openid`, `profile`, `email`, `User.Read` (delegiert) |
 | Optional Claim | `email` auf ID- und Access-Token |
+| Admin-Consent | erteilt (`consentType: AllPrincipals`) |
 | Client Secret | Anzeigename `vikunja-oidc`, **läuft 2 Jahre nach Anlage ab** |
 
 Client ID und Secret liegen verschlüsselt in
 `apps/clusters/feathre-core/base-apps/vikunja/vikunja-oidc.sops.env`.
 
-### Noch offen: Admin-Consent
-
-Der Admin-Consent ist **nicht** erteilt. Praktische Folge: jeder Nutzer
-bekommt beim ersten Login einmalig den Zustimmungsdialog für `openid`,
-`profile`, `email` und `User.Read` zu sehen. Wer das vermeiden will:
+Der Admin-Consent ist tenantweit erteilt, es sieht also niemand einen
+Zustimmungsdialog. Nachprüfen:
 
 ```bash
-az ad app permission admin-consent --id 6971afb6-dd60-465c-89a5-31bcaa2fdd81
+az ad app permission list-grants --id 6971afb6-dd60-465c-89a5-31bcaa2fdd81 \
+  --query '[].{scope:scope,consentType:consentType}'
 ```
-
-Falls der Tenant User-Consent generell verbietet, ist dieser Schritt nicht
-optional, sondern Voraussetzung dafür, dass der Login überhaupt durchläuft.
 
 ## Der Redirect-Pfad hängt am Provider-Schlüssel
 

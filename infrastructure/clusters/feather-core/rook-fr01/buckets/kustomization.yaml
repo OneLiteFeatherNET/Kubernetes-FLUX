@@ -22,4 +22,3 @@ resources:
   - cygnus-pack.yaml
   - penpot.yaml
   - sentry.yaml
-  - vikunja.yaml

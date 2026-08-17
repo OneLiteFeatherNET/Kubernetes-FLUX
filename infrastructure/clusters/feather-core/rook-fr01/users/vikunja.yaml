@@ -6,14 +6,3 @@ metadata:
 spec:
   store: feather-s3
   displayName: vikunja
-  # Unlike the other users here, the credentials are given rather than
-  # generated: Rook creates the RGW user with exactly this key pair, so the
-  # same SOPS-encrypted values can be handed to the app (secret vikunja-s3)
-  # without a manual copy step out of the operator-minted Secret.
-  keys:
-    - accessKeyRef:
-        name: vikunja-s3-keys
-        key: access-key
-      secretKeyRef:
-        name: vikunja-s3-keys
-        key: secret-key

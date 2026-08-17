@@ -39,44 +39,49 @@ Was der Pod tatsächlich geladen hat:
 kubectl -n vikunja logs deploy/vikunja | grep "Using config file"
 ```
 
-## Einmalig: den S3-Bucket anlegen
+## S3: nichts von Hand
 
 Vikunja legt seinen Bucket **nicht** selbst an — der S3-Backend-Code kennt kein
 `CreateBucket`, und beim Start prüft `ValidateFileStorage()` den Schreibzugriff.
-Die `ObjectBucketClaim` in `infrastructure/.../rook-fr01/buckets/vikunja.yaml`
-provisioniert ebenfalls nichts, sie ist nur Namensreservierung (siehe
-`docs/buckets.md`). Nach dem ersten Sync des `security`- bzw. `rook-fr01`-Layers
-also einmal von Hand:
+Das übernimmt die `ObjectBucketClaim` in
+`apps/.../base-apps/vikunja/bucket.yaml`. Sie liegt bewusst im Namespace
+`vikunja` und nicht bei den älteren Claims in `rook-ceph-fr01`: Rook schreibt
+das Ergebnis in den Namespace der Claim, und genau dort brauchen die Pods es
+(siehe `docs/buckets.md`).
+
+Aus der Claim entstehen zwei Objekte namens `vikunja-bucket`, die das Chart
+über `env` in die passenden `VIKUNJA_FILES_S3_*`-Variablen umbenennt:
+
+| Objekt | Schlüssel | wird zu |
+|---|---|---|
+| ConfigMap | `BUCKET_HOST` + `BUCKET_PORT` | `VIKUNJA_FILES_S3_ENDPOINT` |
+| ConfigMap | `BUCKET_NAME` | `VIKUNJA_FILES_S3_BUCKET` |
+| Secret | `AWS_ACCESS_KEY_ID` | `VIKUNJA_FILES_S3_ACCESSKEY` |
+| Secret | `AWS_SECRET_ACCESS_KEY` | `VIKUNJA_FILES_S3_SECRETKEY` |
+
+Der Endpoint wird aus zwei Variablen zusammengesetzt
+(`http://$(BUCKET_HOST):$(BUCKET_PORT)`). Kubernetes löst `$(VAR)` nur gegen
+Einträge auf, die in derselben `env`-Liste **davor** stehen — die Reihenfolge in
+`release.yaml` ist also nicht kosmetisch.
+
+Damit gibt es für S3 kein SOPS-Secret im Repo: die Zugangsdaten sind die des
+`CephObjectStoreUser vikunja`, den `additionalConfig.bucketOwner` als
+Bucket-Eigentümer setzt, und Rook reicht sie selbst durch. Nur `region` und
+`usepathstyle` stehen noch in der ConfigMap-Config — `BUCKET_REGION` kommt leer
+zurück, und das AWS SDK braucht zum Signieren irgendeine.
+
+Der Endpoint aus der Claim zeigt auf den clusterinternen RGW-Service, nicht auf
+`s3.onelitefeather.net`. Das ist hier ein Glücksfall und keine Einstellung:
+über den öffentlichen Host schreibt Cloudflare `Accept-Encoding` um und zerlegt
+damit die SigV4-Signatur.
+
+Falls der Bucket beim ersten Start noch nicht steht, bleiben die Pods in
+`CreateContainerConfigError`, bis ConfigMap und Secret existieren — das heilt
+sich selbst, sobald Rook die Claim gebunden hat:
 
 ```bash
-# wartet, bis Rook den RGW-User mit den vorgegebenen Keys angelegt hat
-kubectl -n rook-ceph-fr01 get cephobjectstoreuser vikunja
-
-kubectl run bucket-init --rm -i --restart=Never -n vikunja \
-  --image=amazon/aws-cli:2.17.60 \
-  --overrides='{"spec":{"containers":[{"name":"bucket-init","image":"amazon/aws-cli:2.17.60","command":["aws","--endpoint-url=http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80","--region=us-east-1","s3","mb","s3://vikunja"],"env":[{"name":"AWS_ACCESS_KEY_ID","valueFrom":{"secretKeyRef":{"name":"vikunja-s3","key":"VIKUNJA_FILES_S3_ACCESSKEY"}}},{"name":"AWS_SECRET_ACCESS_KEY","valueFrom":{"secretKeyRef":{"name":"vikunja-s3","key":"VIKUNJA_FILES_S3_SECRETKEY"}}}]}]}}'
+kubectl -n vikunja get obc vikunja-bucket
 ```
-
-Der Bucket gehört damit dem User `vikunja` — die Voraussetzung dafür, dass er
-über die eigenen Keys erreichbar bleibt (siehe den RGW-`AccessDenied`-Vorfall
-in `docs/incidents/`).
-
-### Warum die S3-Keys im Repo stehen
-
-Der `CephObjectStoreUser` bekommt seine Zugangsdaten über `spec.keys`
-vorgegeben, statt sie sich von Rook generieren zu lassen. Dadurch entfällt der
-sonst übliche Handgriff, die Keys aus dem operator-erzeugten Secret in
-`rook-ceph-fr01` in das App-Secret zu kopieren. Beide Seiten lesen dieselben
-Werte:
-
-- `infrastructure/.../rook-fr01/users/vikunja-s3.sops.env` (`access-key` / `secret-key`)
-- `apps/.../base-apps/vikunja/vikunja-s3.sops.env` (`VIKUNJA_FILES_S3_*`)
-
-Wer eines der beiden dreht, muss das andere mitziehen.
-
-Endpoint ist bewusst der clusterinterne RGW-Service, nicht
-`s3.onelitefeather.net`: Cloudflare schreibt dort `Accept-Encoding` um und
-zerlegt damit die SigV4-Signatur.
 
 ## Observability
 
