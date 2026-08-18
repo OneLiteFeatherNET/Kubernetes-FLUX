@@ -10,7 +10,7 @@
 # it matches the rule below and is encrypted in full. `sops -e` on a plain
 # `.yaml` fails with "no matching creation rules found" — that is intentional.
 #
-# Current recipients (see docs/sops.md for where each private key lives):
+# Current recipients (see https://outline.onelitefeather.dev/doc/sops-secrets-im-kubernetes-flux-repo-eC2BagUEa9 for where each private key lives):
 #   - TheMeinerLP:    age1kfcggatwrwslka8sssdw2sy05jwntft84cw979gkvzp9wksnyy0qllsz8s
 #   - flux (cluster): age10x4xtzptvjztg9jkxr4m5luw3mfyqwww499lgnnqx32h2xytu5nqkjwqaq
 #   - ci:             age1rrus5c38flq6yg6l56d0cecgzap0fhdew64n7ygz7lngjwpzws4qcnge3x

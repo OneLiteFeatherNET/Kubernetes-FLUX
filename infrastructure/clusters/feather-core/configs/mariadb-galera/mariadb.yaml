@@ -37,7 +37,7 @@ spec:
     # at this cluster's measured ~49.5KB/s average write throughput, forcing
     # a slow full SST on any node offline longer than that. 2G extends the
     # safe fast-IST-rejoin window to ~12h. See design doc:
-    # docs/superpowers/specs/2026-07-18-mariadb-galera-gcache-design.md
+    # https://outline.onelitefeather.dev/doc/2026-07-18-mariadb-galera-gcachesize-increase-design-oqMRloPjfa
     providerOptions:
       gcache.size: "2G"
   tls:
