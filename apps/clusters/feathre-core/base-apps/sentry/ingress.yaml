@@ -10,12 +10,37 @@ spec:
     - host: sentry.onelitefeather.net
       http:
         paths:
+          # Everything project-scoped -- SDK envelopes and the OTLP endpoints
+          # under /api/<projectId>/integration/otlp/ -- is served by Relay, not
+          # by the Django web: sentry/web/urls.py has no route for it, only
+          # relay-server/src/endpoints does. This mirrors the chart's own nginx
+          # (`location ~ ^/api/[1-9]\d*/ { proxy_pass http://relay; }`), which
+          # stays disabled so the tunnel keeps talking to the services directly.
+          #
+          # The path is a cloudflared regex, not a Kubernetes prefix: the tunnel
+          # controller hands `path` to Cloudflare unchanged, so the type has to
+          # be ImplementationSpecific -- Prefix would have the API server reject
+          # the regex characters. Ordering is not left to the manifest either;
+          # the controller sorts a host's rules by path length descending, so
+          # this one is always evaluated before the `/` catch-all below.
+          #
+          # /api/0/ is deliberately outside the match: that is the web API the
+          # frontend itself calls, and it belongs to sentry-web.
+          - path: ^/api/[1-9][0-9]*/
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                # Port 3000 is the chart default (`relay.port`), not overridden
+                # in release.yaml.
+                name: sentry-relay
+                port:
+                  number: 3000
           - path: /
             pathType: Prefix
             backend:
               service:
                 # The chart's own nginx is off; this points straight at the
-                # web service, which also serves the SDK ingest endpoints.
+                # web service, which serves the UI and the /api/0/ web API.
                 name: sentry-web
                 port:
                   number: 9000
