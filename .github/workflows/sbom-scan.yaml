@@ -53,7 +53,7 @@ jobs:
       # Match the in-cluster trivy-operator so the numbers stay comparable.
       - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
         with:
-          version: v0.73.0
+          version: v0.74.0
           cache: true
 
       - name: Collect pinned images
