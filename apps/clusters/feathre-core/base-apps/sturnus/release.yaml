@@ -124,13 +124,37 @@ spec:
         # worker waits longer before being retried, which at `replicas: 1`
         # is the only thing the lease actually guards.
         STURNUS_JOB_LEASE_SECONDS: "10800"
+      # Raised again, and the reason is not the model. Since 0.5.0 the worker
+      # passes `clip_timestamps` instead of `vad_filter=True`, and those two
+      # take different paths through faster-whisper: the VAD branch shrinks
+      # the array with `collect_chunks`/`np.concatenate` *before*
+      # `feature_extractor` runs, while the clip_timestamps branch skips that
+      # and extracts log-mel features over the whole padded file.
+      #
+      # Measured on this machine, feature extraction alone:
+      #
+      #     10 min audio ->  0.55 GB peak
+      #     50 min audio ->  2.52 GB peak
+      #    100 min audio ->  4.94 GB peak
+      #
+      # plus ~1.6GB of resident large-v3 weights, so a 100-minute recording
+      # needs about 6.5GB and the previous 6Gi limit would OOMKill it in the
+      # middle of a transcription. It scales linearly with the *padded*
+      # length of a speaker's track, not with how much of it is speech, so a
+      # four-hour session would need more again.
+      #
+      # This is a stopgap. The real fix is to concatenate the gated speech
+      # before handing it over -- exactly what the VAD branch does -- and map
+      # the segment timestamps back afterwards, which bounds the memory by
+      # the speech rather than by the session length. Until that lands, buy
+      # the headroom: the node has 64GB and is under half allocated.
       resources:
         requests:
           cpu: "4"
-          memory: 4Gi
+          memory: 5Gi
         limits:
           cpu: "4"
-          memory: 6Gi
+          memory: 12Gi
       startupProbe:
         httpGet:
           path: /healthz
