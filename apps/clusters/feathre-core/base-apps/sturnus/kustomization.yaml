@@ -17,3 +17,12 @@ secretGenerator:
   - name: sturnus-secrets
     envs:
       - sturnus-secrets.sops.env
+  # The `onelitefeather` Harbor project is private, so pulling needs
+  # credentials. Same shared robot the other apps in that project use --
+  # otis, otis-dev, vulpes-backend and vulpes-backend-dev all reference this
+  # identical file; the `+otis` in its name is where it was first created,
+  # not what it is scoped to.
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json

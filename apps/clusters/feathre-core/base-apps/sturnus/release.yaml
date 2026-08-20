@@ -18,6 +18,18 @@ spec:
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
   values:
+    # The chart defaults to harbor.onelitefeather.dev/sturnus/sturnus, which
+    # does not exist: the release workflow pushes to onelitefeather/sturnus
+    # (`image-name` in .github/workflows/release-please.yml), alongside otis,
+    # blackhole and vulpes. Harbor answers 401 rather than 404 for a missing
+    # repository in a private project, so the wrong path looks like an auth
+    # failure.
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/sturnus
+
+    imagePullSecrets:
+      - name: harbor-pull
+
     podLabels:
       logs.onelitefeather.net/env: prod
 
