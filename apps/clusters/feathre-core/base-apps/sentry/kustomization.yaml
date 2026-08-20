@@ -51,3 +51,9 @@ secretGenerator:
   - name: sentry-discord
     envs:
       - sentry-discord.sops.env
+  # SMTP password for system@onelitefeather.net. The chart wires this through
+  # the shared `sentry.env` helper, so every component gets it -- mail is sent
+  # by the workers, not the web pods.
+  - name: sentry-mail
+    envs:
+      - sentry-mail.sops.env

@@ -43,6 +43,22 @@ spec:
       adminEmail: "themeinerlp@onelitefeather.net"
       public: false
 
+    # The chart writes every mail.* option into SENTRY_OPTIONS unconditionally,
+    # which makes them all immutable in the admin UI ("configured on disk").
+    # Mail is therefore only configurable from here.
+    #
+    # Submission port with STARTTLS -- mail.onelitefeather.net advertises
+    # AUTH PLAIN/LOGIN only after the TLS upgrade, so useTls is not optional.
+    mail:
+      backend: smtp
+      host: mail.onelitefeather.net
+      port: 587
+      useTls: true
+      useSsl: false
+      username: "system@onelitefeather.net"
+      existingSecret: sentry-mail
+      from: "system@onelitefeather.net"
+
     config:
       # Makes SAML with Entra ID possible at all.
       #
