@@ -24,9 +24,20 @@ spec:
           # the controller sorts a host's rules by path length descending, so
           # this one is always evaluated before the `/` catch-all below.
           #
+          # No leading `^`, even though this is a regex and the chart's own
+          # nginx anchors it. The API server requires every ingress path to be
+          # absolute -- for ImplementationSpecific too -- and rejects the whole
+          # Ingress with "must be an absolute path" if it starts with `^`,
+          # which took down the entire base-apps kustomization at dry-run.
+          # Cloudflare matches `path` unanchored (Go regexp), so the leading
+          # `/` both satisfies the API server and keeps the match correct: the
+          # only requests this now catches that the anchored form would not are
+          # ones with `/api/<n>/` in the middle of a longer path, and Sentry
+          # serves none.
+          #
           # /api/0/ is deliberately outside the match: that is the web API the
           # frontend itself calls, and it belongs to sentry-web.
-          - path: ^/api/[1-9][0-9]*/
+          - path: /api/[1-9][0-9]*/
             pathType: ImplementationSpecific
             backend:
               service:
