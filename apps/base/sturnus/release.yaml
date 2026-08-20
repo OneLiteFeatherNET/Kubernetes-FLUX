@@ -8,6 +8,19 @@ spec:
   chart:
     spec:
       chart: ./charts/sturnus
+      # The chart is read from a *branch* (see base-sources/sturnus.yaml), and
+      # the default reconcileStrategy for that is ChartVersion: source-controller
+      # only repackages when Chart.yaml's version changes. Every chart edit that
+      # is not itself a release therefore never reaches the cluster -- silently,
+      # because the GitRepository does fetch the commit and the HelmRelease
+      # reports Ready with the old artifact. That is how a change routing the
+      # Sentry DSN through the Secret sat in main for an hour without any pod
+      # seeing it.
+      #
+      # Revision repackages on every commit to the branch instead, appending the
+      # revision to the chart version (0.4.0+<sha>). The image tag is unaffected:
+      # it comes from .Chart.AppVersion, which release-please still owns.
+      reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
         name: sturnus
