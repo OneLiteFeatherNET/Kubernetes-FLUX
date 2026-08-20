@@ -35,10 +35,10 @@ spec:
       # /oauth/callback).
       STURNUS_OUTLINE_BASE_URL: "https://outline.onelitefeather.dev"
       STURNUS_OUTLINE_REDIRECT_URI: "https://sturnus.onelitefeather.dev/oauth/callback"
-      # Fill in from the Outline OAuth application (Settings -> Applications).
-      # Public, so it stays in plain configuration -- only the matching
-      # client secret goes in the secret.
-      STURNUS_OUTLINE_CLIENT_ID: ""
+      # From the Outline OAuth application (Settings -> Applications). Public
+      # by design, so it stays in plain configuration -- only the matching
+      # client secret goes in the SOPS secret beside it.
+      STURNUS_OUTLINE_CLIENT_ID: "kicsnq6nr7dy56efy4r9"
 
       # Internal RGW Service, not the public s3.onelitefeather.net endpoint
       # (same endpoint the CNPG barman ObjectStore and the bluemap render Job

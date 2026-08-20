@@ -9,15 +9,11 @@ resources:
 patches:
   - path: release.yaml
 
-# secretGenerator is deliberately omitted for now: sturnus-secrets.sops.env
-# does not exist in this repo yet -- SOPS-encrypted secrets cannot be
-# produced by this task (see sturnus-secrets.sops.env.TEMPLATE in this
-# directory and the task-9-report.md it was written for). `kubectl kustomize`
-# on this directory builds cleanly without it; the HelmRelease will simply
-# fail to start pods (CrashLoopBackOff / ContainerCreating on the missing
-# Secret) until the real file exists. Once it does, add:
-#
-# secretGenerator:
-#   - name: sturnus-secrets
-#     envs:
-#       - sturnus-secrets.sops.env
+# The chart references this Secret by name through `existingSecret` and hands
+# each component only the keys its own settings class reads, so a key missing
+# here stops that one pod at CreateContainerConfigError rather than starting
+# it with an empty value.
+secretGenerator:
+  - name: sturnus-secrets
+    envs:
+      - sturnus-secrets.sops.env
