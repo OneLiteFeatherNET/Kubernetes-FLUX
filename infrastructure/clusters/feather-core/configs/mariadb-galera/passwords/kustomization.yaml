@@ -41,3 +41,6 @@ secretGenerator:
     - name: user-prism-secret
       envs:
         - prism.sops.env
+    - name: user-metabase-secret
+      envs:
+        - metabase.sops.env
