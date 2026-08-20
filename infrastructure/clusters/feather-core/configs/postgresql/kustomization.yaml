@@ -25,6 +25,7 @@ resources:
   - database/sentry.yaml
   - database/vikunja.yaml
   - database/sturnus.yaml
+  - database/metabase.yaml
 
 secretGenerator:
   - name: role-sturnus
@@ -114,3 +115,15 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/vikunja.sops.env
+  - name: role-metabase
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/metabase.sops.env
+  - name: role-metabase-ro
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/metabase-ro.sops.env

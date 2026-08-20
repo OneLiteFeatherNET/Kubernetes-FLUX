@@ -16,3 +16,4 @@ resources:
     - playerkits.yaml
     - monitoring.yaml
     - prism.yaml
+    - metabase.yaml

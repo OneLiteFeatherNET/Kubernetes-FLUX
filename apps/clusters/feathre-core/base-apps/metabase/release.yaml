@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: metabase
+  namespace: metabase
+spec:
+  values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
+
+    replicaCount: 1
+
+    # Anwendungsdatenbank über den -rw-Service, nicht über PgBouncer:
+    # Metabase fährt beim Start Liquibase-Migrationen mit Advisory Locks.
+    database:
+      type: postgres
+      existingSecret: metabase-app-db
+      existingSecretUsernameKey: username
+      existingSecretPasswordKey: password
+      existingSecretHostKey: host
+      existingSecretPortKey: port
+      existingSecretDatabaseNameKey: dbname
+      existingSecretEncryptionKeyKey: encryption-key
+
+    # Erreichbarkeit läuft über die eigene HTTPRoute (httproute.yaml).
+    ingress:
+      enabled: false
+    siteUrl: https://metabase.apps.onelite.feather
+
+    timeZone: Europe/Berlin
+
+    # Der geteilte Postgres-Cluster läuft nahe der Sättigung; Standard wären 15.
+    extraEnv:
+      - name: MB_APPLICATION_DB_MAX_CONNECTION_POOL_SIZE
+        value: "10"
+
+    # Metabase spricht die Kubernetes-API nicht an.
+    automountServiceAccountToken: false
+
+    priorityClass: feather-standard
+
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
+
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        memory: 2Gi

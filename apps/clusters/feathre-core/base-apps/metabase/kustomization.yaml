@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: metabase
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/metabase/
+  - httproute.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  # Zugang zur eigenen Anwendungsdatenbank plus MB_ENCRYPTION_SECRET_KEY.
+  # Das Passwort muss dem der CNPG-Rolle metabase entsprechen.
+  - name: metabase-app-db
+    envs:
+      - metabase-app-db.sops.env

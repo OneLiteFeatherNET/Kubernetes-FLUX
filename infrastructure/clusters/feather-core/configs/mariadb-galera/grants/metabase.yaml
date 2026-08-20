@@ -1,0 +1,19 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+  name: metabase-user-grant
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  # Nur lesend, dafür über alle Datenbanken — wie beim monitoring-User.
+  privileges:
+    - "SELECT"
+    - "SHOW VIEW"
+  database: "*"
+  table: "*"
+  username: "metabase"
+  grantOption: false
+  host: "%"
+  cleanupPolicy: Delete
+  requeueInterval: 10h
+  retryInterval: 30s
