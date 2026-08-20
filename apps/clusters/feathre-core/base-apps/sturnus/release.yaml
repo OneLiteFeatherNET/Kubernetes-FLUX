@@ -72,6 +72,50 @@ spec:
       key: topology.kubernetes.io/region
       value: fr-rosenau
 
+    # Brought forward from Sturnus PR #44 ahead of that PR landing, because
+    # it can be: `worker.env` and `worker.resources` touch only the worker
+    # Deployment, so the bot's pod spec renders byte-identical and its
+    # gateway connection -- and any recording in progress with it -- is not
+    # disturbed. Verified by rendering the chart both ways and comparing
+    # each Deployment's pod template.
+    #
+    # `large-v3-turbo` is a distilled decoder, four layers where large-v3
+    # has thirty-two, and what it trades away lands outside English --
+    # which is where these meetings happen. Measured on the same 4.7
+    # minutes of German speech, four CPU threads:
+    #
+    #   large-v3-turbo  int8  beam 5    61.6s  1.96GB  "Der Ender laeuft
+    #                                                   auf dem Kluster"
+    #   large-v3        int8  beam 8   145.0s  4.11GB  "Der Renderer laeuft
+    #                                                   auf dem Cluster"
+    #
+    # 4.11GB is why the memory below moves: the chart's 2560Mi limit was
+    # sized for turbo and would OOMKill this mid-transcription. The
+    # startupProbe budget doubles because the first start after this
+    # re-downloads the checkpoint (~2.8GB, float16) and the health server
+    # only comes up after the engine is built.
+    #
+    # Delete this block once PR #44 is merged -- it sets the same values as
+    # the chart's own defaults will, so leaving it would be a second place
+    # to keep in step.
+    worker:
+      env:
+        STURNUS_MODEL_CACHE_DIR: /data/model-cache
+        STURNUS_WHISPER_MODEL: large-v3
+      resources:
+        requests:
+          cpu: "4"
+          memory: 4Gi
+        limits:
+          cpu: "4"
+          memory: 6Gi
+      startupProbe:
+        httpGet:
+          path: /healthz
+          port: health
+        periodSeconds: 10
+        failureThreshold: 120 # 20 minutes: this checkpoint is ~2.8GB
+
     # Exposed via Cloudflare Tunnel (see ingress.yaml) for the link component
     # only; the chart's own HTTPRoute stays off, same as outline's httpRoute.
     httpRoute:
