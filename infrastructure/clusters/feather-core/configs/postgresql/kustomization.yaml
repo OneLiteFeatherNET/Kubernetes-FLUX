@@ -24,8 +24,15 @@ resources:
   - database/penpot.yaml
   - database/sentry.yaml
   - database/vikunja.yaml
+  - database/sturnus.yaml
 
 secretGenerator:
+  # role-sturnus is deliberately omitted for now: roles/sturnus.sops.env does
+  # not exist yet -- SOPS-encrypted secrets cannot be produced by this task
+  # (see roles/sturnus.sops.env.TEMPLATE and the exact stanza to add once it
+  # is encrypted). `kubectl kustomize` on this directory builds cleanly
+  # without it; CNPG will simply fail to reconcile the "sturnus" role (see
+  # cluster.yaml) until the real file exists.
   - name: cnpg-backup
     envs:
       - s3-backup.env

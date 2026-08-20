@@ -1,0 +1,30 @@
+# Exposes the `link` component ONLY (the OAuth account-link callback) via
+# Cloudflare Tunnel -- same pattern as outline/ingress.yaml. `bot` and
+# `worker` hold the Discord token, the S3 credentials and the audio master
+# key and must never be reachable from outside the cluster; the chart's own
+# httpRoute stays disabled (see release.yaml) precisely so nothing but this
+# Ingress, pointed at the link Service alone, is ever exposed.
+#
+# Hostname is this task's choice, following the app-name.onelitefeather.dev
+# convention (see outline.onelitefeather.dev) -- confirm it against the real
+# DNS record and the Discord OAuth app's registered redirect URI
+# (https://sturnus.onelitefeather.dev/oauth/callback) before relying on it.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sturnus-link-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: sturnus.onelitefeather.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sturnus-link
+                port:
+                  number: 80

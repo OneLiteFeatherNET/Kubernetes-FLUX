@@ -19,4 +19,5 @@ resources:
   - apus.yaml
   - penpot.yaml
   - sentry.yaml
+  - sturnus.yaml
   - vikunja.yaml
