@@ -28,3 +28,4 @@ resources:
   - strimzi.yaml
   - sentry-kubernetes.yaml
   - sturnus.yaml
+  - pmint93.yml
