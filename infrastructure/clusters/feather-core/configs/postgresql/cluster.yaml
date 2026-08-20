@@ -105,6 +105,19 @@ spec:
         ensure: present
         passwordSecret:
           name: role-sturnus
+      - name: metabase
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-metabase
+      # Nur lesend: pg_read_all_data deckt alle Datenbanken ab, auch künftige.
+      - name: metabase_ro
+        login: true
+        ensure: present
+        inRoles:
+          - pg_read_all_data
+        passwordSecret:
+          name: role-metabase-ro
     services:
       additional:
         - selectorType: rw
