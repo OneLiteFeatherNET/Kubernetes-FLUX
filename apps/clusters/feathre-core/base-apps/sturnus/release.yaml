@@ -102,6 +102,28 @@ spec:
       env:
         STURNUS_MODEL_CACHE_DIR: /data/model-cache
         STURNUS_WHISPER_MODEL: large-v3
+        # Raised from the chart's 1800s because 0.5.0 makes the worker
+        # transcribe the speech rather than 1% of it.
+        #
+        # Until 0.5.0 the worker passed `vad_filter=True`, and Silero's
+        # recurrent state collapsed on the bit-exact zero padding written
+        # between packets: on a real 100-minute recording it found 1.1
+        # seconds of speech in a 120-second slice, so every job finished in
+        # under a minute with an empty or hallucinated transcript. The
+        # lease was never under pressure because nothing was being done.
+        #
+        # The stateless gate that replaced it finds 41.2 minutes of speech
+        # in that same recording. At the measured 1.94x real time that is
+        # ~21 minutes for one speaker's track, against a 1800s lease -- and
+        # `max_session_hours` allows four hours, so a talkative speaker can
+        # exceed it outright. An expired lease lets `JobQueue.claim` hand a
+        # still-running job to another worker.
+        #
+        # 3 hours covers a four-hour session in which one person speaks 40%
+        # of the time. It costs only that a job abandoned by a crashed
+        # worker waits longer before being retried, which at `replicas: 1`
+        # is the only thing the lease actually guards.
+        STURNUS_JOB_LEASE_SECONDS: "10800"
       resources:
         requests:
           cpu: "4"
