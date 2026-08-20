@@ -29,6 +29,14 @@ spec:
 
     timeZone: Europe/Berlin
 
+    # Der geteilte Postgres-Cluster läuft nahe der Sättigung; Standard wären 15.
+    extraEnv:
+      - name: MB_APPLICATION_DB_MAX_CONNECTION_POOL_SIZE
+        value: "10"
+
+    # Metabase spricht die Kubernetes-API nicht an.
+    automountServiceAccountToken: false
+
     priorityClass: feather-standard
 
     affinity:
