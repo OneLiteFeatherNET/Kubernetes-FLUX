@@ -22,6 +22,24 @@ spec:
       logs.onelitefeather.net/env: prod
 
     commonEnv:
+      # The three non-secret Outline settings every component or the OAuth
+      # flow needs. None is a credential: an OAuth client id is public by
+      # design and the other two are addresses, so they belong here rather
+      # than in the SOPS secret beside them.
+      #
+      # The redirect URI must match both the host in ingress.yaml in this
+      # directory and the redirect URI registered on the Outline OAuth
+      # application, or the flow fails on a redirect_uri mismatch after the
+      # user has already consented. The path is fixed by the link server's
+      # own route table (sturnus.infrastructure.linkserver: GET
+      # /oauth/callback).
+      STURNUS_OUTLINE_BASE_URL: "https://outline.onelitefeather.dev"
+      STURNUS_OUTLINE_REDIRECT_URI: "https://sturnus.onelitefeather.dev/oauth/callback"
+      # Fill in from the Outline OAuth application (Settings -> Applications).
+      # Public, so it stays in plain configuration -- only the matching
+      # client secret goes in the secret.
+      STURNUS_OUTLINE_CLIENT_ID: ""
+
       # Internal RGW Service, not the public s3.onelitefeather.net endpoint
       # (same endpoint the CNPG barman ObjectStore and the bluemap render Job
       # use -- see infrastructure/clusters/feather-core/configs/postgresql/object-store.yaml).
