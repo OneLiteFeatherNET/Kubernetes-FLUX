@@ -1,0 +1,66 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sturnus
+  namespace: sturnus
+spec:
+  # The chart has no top-level priorityClassName value (unlike outline's/
+  # vikunja's chart) -- inject it post-render the same way bluemap/
+  # dependency-track/grafana/penpot/reposilite/sentry/shlink already do for
+  # their own charts. Applies to all three Deployments (bot, link, worker).
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+  values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
+
+    commonEnv:
+      # The three non-secret Outline settings every component or the OAuth
+      # flow needs. None is a credential: an OAuth client id is public by
+      # design and the other two are addresses, so they belong here rather
+      # than in the SOPS secret beside them.
+      #
+      # The redirect URI must match both the host in ingress.yaml in this
+      # directory and the redirect URI registered on the Outline OAuth
+      # application, or the flow fails on a redirect_uri mismatch after the
+      # user has already consented. The path is fixed by the link server's
+      # own route table (sturnus.infrastructure.linkserver: GET
+      # /oauth/callback).
+      STURNUS_OUTLINE_BASE_URL: "https://outline.onelitefeather.dev"
+      STURNUS_OUTLINE_REDIRECT_URI: "https://sturnus.onelitefeather.dev/oauth/callback"
+      # Fill in from the Outline OAuth application (Settings -> Applications).
+      # Public, so it stays in plain configuration -- only the matching
+      # client secret goes in the secret.
+      STURNUS_OUTLINE_CLIENT_ID: ""
+
+      # Internal RGW Service, not the public s3.onelitefeather.net endpoint
+      # (same endpoint the CNPG barman ObjectStore and the bluemap render Job
+      # use -- see infrastructure/clusters/feather-core/configs/postgresql/object-store.yaml).
+      # bot uploads whole recordings and worker downloads+decrypts them; the
+      # public route runs through the Cloudflare Tunnel, which caps request
+      # bodies at 100 MB (see rook-fr01/s3-external-tunnel.yaml) -- staying
+      # in-cluster avoids that cap entirely. The chart's own default
+      # (s3.onelitefeather.dev) is a placeholder, not this cluster's real
+      # domain.
+      STURNUS_S3_ENDPOINT: "http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80"
+      STURNUS_S3_BUCKET: "sturnus-audio"
+
+    # Chart default (eu-central-1) is a placeholder the chart's own comment
+    # says to override per-cluster. Every other region-pinned pod/PVC here
+    # uses fr-rosenau (see outline's release.yaml `regionAffinity` anchor and
+    # storageclasses/rbd.yaml's allowedTopologies).
+    region:
+      key: topology.kubernetes.io/region
+      value: fr-rosenau
+
+    # Exposed via Cloudflare Tunnel (see ingress.yaml) for the link component
+    # only; the chart's own HTTPRoute stays off, same as outline's httpRoute.
+    httpRoute:
+      enabled: false

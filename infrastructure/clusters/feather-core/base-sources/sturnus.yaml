@@ -1,0 +1,19 @@
+# Sturnus' Helm chart lives in the Sturnus repo itself (charts/sturnus), not
+# vendored under this repo's helm/ dir, and it is not published anywhere
+# (no OCI artifact in Harbor yet, unlike apus -- see apus.yaml in this same
+# directory). This GitRepository is the "chart living in a Git source"
+# pattern applied to a second repo, mirroring helmcharts.yml's own shape
+# (branch checkout of a whole repo, chart referenced by in-repo path from the
+# HelmRelease). Requires the chart to exist on Sturnus' `main` branch --
+# confirm that before relying on this; as of this writing Sturnus' work was
+# still on a feature branch.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: sturnus
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://github.com/OneLiteFeatherNET/Sturnus.git
+  ref:
+    branch: main

@@ -1,0 +1,87 @@
+# ============================================================================
+# Sturnus audio bucket — S3 lifecycle rule (Spec 12.2 second line of defence)
+# ----------------------------------------------------------------------------
+# Ceph RGW on this cluster (Ceph Squid 19.2.5) implements the S3 Bucket
+# Lifecycle API (PutBucketLifecycleConfiguration and friends), but Rook
+# 1.20's ObjectBucketClaim has no field for it -- additionalConfig only
+# exposes bucket quotas (maxObjects/maxSize), never lifecycle rules -- and no
+# other Kubernetes CRD in this cluster covers it either (grep this repo for
+# "lifecycle": nothing else configures one). The only way to set one is a
+# direct S3 API call against the bucket after it exists. That is what this
+# Job does.
+#
+# This Job is NOT wired into any kustomization -- apply it manually, once,
+# after buckets/sturnus.yaml (the ObjectBucketClaim) has reconciled and the
+# sturnus-audio bucket exists, and after sturnus-secrets holds real S3
+# credentials (see sturnus-secrets.sops.env.TEMPLATE). It expires objects 90
+# days after creation: deliberately well past the application's default
+# 30-day `audio_retention_days` sweep (Sturnus docs/operations.md section 6),
+# since this rule exists only to catch what that sweep misses if the worker
+# is down for weeks -- it is a backstop, not the real retention mechanism,
+# and is not wired to the runtime-configurable `audio_retention_days` value
+# at all. If that default is ever raised to something closer to 90 days,
+# revisit the number below too. Re-run this Job if the bucket is ever
+# recreated -- the lifecycle configuration lives on the bucket itself, not in
+# this cluster's state, and is not restored by re-applying kustomize.
+#
+# ---- USAGE -----------------------------------------------------------------
+#   kubectl apply -f audio-lifecycle-job.yaml
+#   kubectl -n sturnus logs -f job/sturnus-audio-lifecycle-apply
+#   kubectl -n sturnus delete job sturnus-audio-lifecycle-apply   # before re-running
+# ============================================================================
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sturnus-audio-lifecycle-apply
+  namespace: sturnus
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sturnus
+        app.kubernetes.io/component: audio-lifecycle-apply
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: apply-lifecycle
+          image: amazon/aws-cli:2.36.27
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sturnus-secrets
+                  key: STURNUS_S3_ACCESS_KEY
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sturnus-secrets
+                  key: STURNUS_S3_SECRET_KEY
+            - name: AWS_DEFAULT_REGION
+              # RGW ignores the value but the CLI refuses to run without one.
+              value: us-east-1
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              cat > /tmp/lifecycle.json <<'EOF'
+              {
+                "Rules": [
+                  {
+                    "ID": "expire-audio-90d",
+                    "Filter": {},
+                    "Status": "Enabled",
+                    "Expiration": { "Days": 90 }
+                  }
+                ]
+              }
+              EOF
+              aws --endpoint-url http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80 \
+                s3api put-bucket-lifecycle-configuration \
+                --bucket sturnus-audio \
+                --lifecycle-configuration file:///tmp/lifecycle.json
+              echo "Applied. Current configuration:"
+              aws --endpoint-url http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80 \
+                s3api get-bucket-lifecycle-configuration --bucket sturnus-audio

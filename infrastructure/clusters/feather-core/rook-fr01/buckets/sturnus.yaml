@@ -1,0 +1,15 @@
+# Dedicated bucket + dedicated CephObjectStoreUser (users/sturnus.yaml) --
+# this bucket holds recorded speech and must not share access (or a bucket
+# owner) with anything else in the cluster, unlike buckets that reuse a
+# shared owner. bucketName matches the chart's commonEnv.STURNUS_S3_BUCKET
+# default (sturnus-audio) -- see apps/clusters/feathre-core/base-apps/sturnus/release.yaml.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: sturnus
+  namespace: rook-ceph-fr01
+spec:
+  bucketName: sturnus-audio
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: sturnus

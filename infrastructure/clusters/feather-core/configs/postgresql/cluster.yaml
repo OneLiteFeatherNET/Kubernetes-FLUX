@@ -100,6 +100,14 @@ spec:
         ensure: present
         passwordSecret:
           name: role-vikunja
+      # role-sturnus does not exist yet -- see roles/sturnus.sops.env.TEMPLATE
+      # in this directory. CNPG will fail to reconcile this role (and the
+      # sturnus Database below stays unusable) until that Secret is created.
+      - name: sturnus
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-sturnus
     services:
       additional:
         - selectorType: rw
