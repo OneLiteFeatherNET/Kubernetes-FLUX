@@ -34,6 +34,18 @@ spec:
       logs.onelitefeather.net/env: prod
 
     commonEnv:
+      # Traces and metrics to the cluster's own collector. `alloy-receiver`
+      # exposes OTLP on 4317 (gRPC) and 4318 (HTTP) and fans out to Tempo;
+      # the base URL carries no /v1/traces suffix, the SDK appends it.
+      #
+      # Empty is the off switch and was the default until now. Turning it on
+      # is what makes 0.6.0's transcription metrics reach anything: the
+      # real-time factor is the number that would have made the defect this
+      # release exists for -- 100 minutes of audio "decoded" in 43 seconds --
+      # visible as an impossible rate rather than as an empty transcript
+      # indistinguishable from a silent participant.
+      STURNUS_OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.grafana.svc:4318"
+
       # The three non-secret Outline settings every component or the OAuth
       # flow needs. None is a credential: an OAuth client id is public by
       # design and the other two are addresses, so they belong here rather
@@ -72,95 +84,23 @@ spec:
       key: topology.kubernetes.io/region
       value: fr-rosenau
 
-    # Brought forward from Sturnus PR #44 ahead of that PR landing, because
-    # it can be: `worker.env` and `worker.resources` touch only the worker
-    # Deployment, so the bot's pod spec renders byte-identical and its
-    # gateway connection -- and any recording in progress with it -- is not
-    # disturbed. Verified by rendering the chart both ways and comparing
-    # each Deployment's pod template.
-    #
-    # `large-v3-turbo` is a distilled decoder, four layers where large-v3
-    # has thirty-two, and what it trades away lands outside English --
-    # which is where these meetings happen. Measured on the same 4.7
-    # minutes of German speech, four CPU threads:
-    #
-    #   large-v3-turbo  int8  beam 5    61.6s  1.96GB  "Der Ender laeuft
-    #                                                   auf dem Kluster"
-    #   large-v3        int8  beam 8   145.0s  4.11GB  "Der Renderer laeuft
-    #                                                   auf dem Cluster"
-    #
-    # 4.11GB is why the memory below moves: the chart's 2560Mi limit was
-    # sized for turbo and would OOMKill this mid-transcription. The
-    # startupProbe budget doubles because the first start after this
-    # re-downloads the checkpoint (~2.8GB, float16) and the health server
-    # only comes up after the engine is built.
-    #
-    # Delete this block once PR #44 is merged -- it sets the same values as
-    # the chart's own defaults will, so leaving it would be a second place
-    # to keep in step.
+    # What is left of the block that carried 0.5.x through. The model and
+    # the resources are gone from here because the chart now sets them
+    # itself: `large-v3` is its default, and 0.6.0's rewrite hands the model
+    # the concatenated speech instead of the padded track, which took peak
+    # RSS from 5025 MB to 2441 MB on the 100-minute recording. The 12Gi
+    # limit bought while log-mel ran over the whole file is no longer
+    # needed; the chart's own 4Gi/6Gi is accurate again, and keeping a
+    # second copy of numbers that now agree is how they drift apart.
     worker:
       env:
-        STURNUS_MODEL_CACHE_DIR: /data/model-cache
-        STURNUS_WHISPER_MODEL: large-v3
-        # Raised from the chart's 1800s because 0.5.0 makes the worker
-        # transcribe the speech rather than 1% of it.
-        #
-        # Until 0.5.0 the worker passed `vad_filter=True`, and Silero's
-        # recurrent state collapsed on the bit-exact zero padding written
-        # between packets: on a real 100-minute recording it found 1.1
-        # seconds of speech in a 120-second slice, so every job finished in
-        # under a minute with an empty or hallucinated transcript. The
-        # lease was never under pressure because nothing was being done.
-        #
-        # The stateless gate that replaced it finds 41.2 minutes of speech
-        # in that same recording. At the measured 1.94x real time that is
-        # ~21 minutes for one speaker's track, against a 1800s lease -- and
-        # `max_session_hours` allows four hours, so a talkative speaker can
-        # exceed it outright. An expired lease lets `JobQueue.claim` hand a
-        # still-running job to another worker.
-        #
-        # 3 hours covers a four-hour session in which one person speaks 40%
-        # of the time. It costs only that a job abandoned by a crashed
-        # worker waits longer before being retried, which at `replicas: 1`
-        # is the only thing the lease actually guards.
+        # The one thing the chart cannot know: how long a job may run here.
+        # 0.5.0 made the worker transcribe the speech rather than 1% of it,
+        # and a real 100-minute recording took 99 minutes -- against the
+        # chart's 1800s default, which would have reclaimed it mid-job and
+        # started a loop that never produces a protocol. 3 hours covers a
+        # four-hour session in which one person speaks 40% of the time.
         STURNUS_JOB_LEASE_SECONDS: "10800"
-      # Raised again, and the reason is not the model. Since 0.5.0 the worker
-      # passes `clip_timestamps` instead of `vad_filter=True`, and those two
-      # take different paths through faster-whisper: the VAD branch shrinks
-      # the array with `collect_chunks`/`np.concatenate` *before*
-      # `feature_extractor` runs, while the clip_timestamps branch skips that
-      # and extracts log-mel features over the whole padded file.
-      #
-      # Measured on this machine, feature extraction alone:
-      #
-      #     10 min audio ->  0.55 GB peak
-      #     50 min audio ->  2.52 GB peak
-      #    100 min audio ->  4.94 GB peak
-      #
-      # plus ~1.6GB of resident large-v3 weights, so a 100-minute recording
-      # needs about 6.5GB and the previous 6Gi limit would OOMKill it in the
-      # middle of a transcription. It scales linearly with the *padded*
-      # length of a speaker's track, not with how much of it is speech, so a
-      # four-hour session would need more again.
-      #
-      # This is a stopgap. The real fix is to concatenate the gated speech
-      # before handing it over -- exactly what the VAD branch does -- and map
-      # the segment timestamps back afterwards, which bounds the memory by
-      # the speech rather than by the session length. Until that lands, buy
-      # the headroom: the node has 64GB and is under half allocated.
-      resources:
-        requests:
-          cpu: "4"
-          memory: 5Gi
-        limits:
-          cpu: "4"
-          memory: 12Gi
-      startupProbe:
-        httpGet:
-          path: /healthz
-          port: health
-        periodSeconds: 10
-        failureThreshold: 120 # 20 minutes: this checkpoint is ~2.8GB
 
     # Exposed via Cloudflare Tunnel (see ingress.yaml) for the link component
     # only; the chart's own HTTPRoute stays off, same as outline's httpRoute.
