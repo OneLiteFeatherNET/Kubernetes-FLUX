@@ -1,0 +1,1012 @@
+{
+  "nodes": [
+    {
+      "id": "tempo_kustomization_tempo_overlay",
+      "label": "Tempo monitoring overlay (grafana namespace)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_kustomization_tempo_s3_secret",
+      "label": "tempo-s3 secretGenerator (from tempo-s3.sops.env)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_release_tempo",
+      "label": "HelmRelease tempo (grafana ns)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_release_s3_trace_backend",
+      "label": "Tempo trace storage on internal RGW S3 (bucket tempo-traces, path-style, http)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_release_config_expand_env",
+      "label": "Per-component -config.expand-env=true (not global.extraArgs, which crashloops memcached)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_release_compactor",
+      "label": "Tempo compactor (2Gi limit after vParquet4 compaction OOMKills; block_retention 168h)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_release_ingester",
+      "label": "Tempo ingester (2Gi limit after WAL-replay OOM crashloop compounding; 10Gi ceph-rbd-fr01 PVC)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_release_metricsgenerator",
+      "label": "Tempo metrics-generator (service-graphs, span-metrics, local-blocks; remote_write to mimir-gateway)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tempo_release_fr01_zone_affinity",
+      "label": "topology.kubernetes.io/zone=fr01 node affinity on every Tempo component",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core__sops_creation_rules",
+      "label": "Cluster .sops.yaml PGP creation_rules (suffix rule + encrypted_regex rule)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/.sops.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_apps",
+      "label": "Flux Kustomization apps",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/apps.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_base_apps",
+      "label": "Flux Kustomization base-apps",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-apps.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_base_configs",
+      "label": "Flux Kustomization base-configs",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-configs.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_base_controllers",
+      "label": "Flux Kustomization base-controllers",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-controllers.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_base_sources",
+      "label": "Flux Kustomization base-sources (root layer, wait:false)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-sources.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_configs",
+      "label": "Flux Kustomization configs",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/configs.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_controllers",
+      "label": "Flux Kustomization controllers",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/controllers.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_internal_certs",
+      "label": "Flux Kustomization internal-certs (wait:false, no SOPS decryption)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/internal-certs.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_monitoring",
+      "label": "Flux Kustomization monitoring (wait:false so RGW quota issues can't block apps)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_rbac",
+      "label": "Flux Kustomization rbac (1h interval, no dependsOn)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rbac.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_rook",
+      "label": "Flux Kustomization rook",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_rook_fr01",
+      "label": "Flux Kustomization rook-fr01",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rook-fr01.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_apps_allowed_cidrs",
+      "label": "ALLOWED_CIDRS postBuild substitution (172.16/16, 10.200/16, 192.168/16)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/apps.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_apps_sops_gpg_decryption",
+      "label": "SOPS decryption provider (secret sops-gpg) attached to every Flux layer",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/apps.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_gotk_sync_gitrepository",
+      "label": "GitRepository flux-system (ssh, branch main, 1m interval)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/gotk-sync.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_gotk_sync_root_kustomization",
+      "label": "Root Kustomization flux-system (./clusters/feather-core, 10m interval)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/gotk-sync.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_gotk_components",
+      "label": "gotk-components (Flux v2.8.7 controllers: source, kustomize, helm, notification, image-reflector, image-automation)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/gotk-components.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_kustomization_bootstrap",
+      "label": "flux-system bootstrap kustomization (components + sync + monitoring)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring_metrics_services",
+      "label": "Flux controller *-metrics ClusterIP Services (label monitoring=flux-metrics)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "label": "ServiceMonitor flux-controllers (scrapes monitoring=flux-metrics every 30s)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "commitlint_config",
+      "label": "commitlint config (Conventional Commits, header<=100, body/footer line length off)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/commitlint.config.mjs",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_obc_never_bound",
+      "label": "ObjectBucketClaims under rook-fr01/buckets never reach Bound",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_provisioner_name_mismatch",
+      "label": "OBC provisioner name derived from CephCluster namespace (rook-ceph-fr01.ceph.rook.io/bucket); StorageClass provisioner immutable",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_cross_namespace_secret_gap",
+      "label": "OBC Secret/ConfigMap lands in rook-ceph-fr01, no cross-namespace secret sync in repo",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_cephobjectstoreuser_ownership",
+      "label": "Real buckets owned by the app's own CephObjectStoreUser, credentials hand-copied into the app's SOPS env",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_tempo_no_autocreate",
+      "label": "Tempo's S3 backend does not auto-create its bucket (only ListObjects) — needs out-of-band mb / bucket link",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops_workflow",
+      "label": "SOPS secrets workflow (PGP keygen, member add/remove, updatekeys, editing)",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops_azure_keyvault_kek",
+      "label": "Azure Key Vault as SOPS KEK with Entra ID / Workload Identity for kustomize-controller",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops_two_recipient_files",
+      "label": "Recipient fingerprints must stay in sync across .sops.yaml and clusters/feather-core/.sops.yaml",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "tempo_kustomization_tempo_overlay",
+      "target": "tempo_release_tempo",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_kustomization_tempo_s3_secret",
+      "target": "tempo_release_s3_trace_backend",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_release_tempo",
+      "target": "tempo_release_s3_trace_backend",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_release_s3_trace_backend",
+      "target": "tempo_release_config_expand_env",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_release_compactor",
+      "target": "tempo_release_metricsgenerator",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_release_compactor",
+      "target": "tempo_release_ingester",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_release_metricsgenerator",
+      "target": "tempo_release_s3_trace_backend",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_release_tempo",
+      "target": "tempo_release_fr01_zone_affinity",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tempo_release_fr01_zone_affinity",
+      "target": "tempo_release_s3_trace_backend",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_tempo_no_autocreate",
+      "target": "tempo_release_s3_trace_backend",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_obc_never_bound",
+      "target": "docs_buckets_provisioner_name_mismatch",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_obc_never_bound",
+      "target": "docs_buckets_cross_namespace_secret_gap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_cephobjectstoreuser_ownership",
+      "target": "docs_buckets_obc_never_bound",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_cephobjectstoreuser_ownership",
+      "target": "tempo_kustomization_tempo_s3_secret",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_apps",
+      "target": "feather_core_base_apps",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/apps.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_base_apps",
+      "target": "feather_core_configs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-apps.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_base_configs",
+      "target": "feather_core_base_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-configs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_base_controllers",
+      "target": "feather_core_base_sources",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-controllers.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_controllers",
+      "target": "feather_core_base_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/controllers.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_configs",
+      "target": "feather_core_base_configs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/configs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_configs",
+      "target": "feather_core_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/configs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_configs",
+      "target": "feather_core_rook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/configs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_base_sources",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_base_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_base_configs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook_fr01",
+      "target": "feather_core_rook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/rook-fr01.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_internal_certs",
+      "target": "feather_core_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/internal-certs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_monitoring",
+      "target": "feather_core_configs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_monitoring",
+      "target": "tempo_kustomization_tempo_overlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_monitoring",
+      "target": "docs_buckets_cephobjectstoreuser_ownership",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_monitoring",
+      "target": "feather_core_internal_certs",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook_fr01",
+      "target": "docs_buckets_provisioner_name_mismatch",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_gotk_sync_root_kustomization",
+      "target": "flux_system_gotk_sync_gitrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/gotk-sync.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_gotk_sync_root_kustomization",
+      "target": "feather_core_base_sources",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/gotk-sync.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_kustomization_bootstrap",
+      "target": "flux_system_gotk_components",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_kustomization_bootstrap",
+      "target": "flux_system_gotk_sync_gitrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_kustomization_bootstrap",
+      "target": "flux_system_monitoring_metrics_services",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "target": "flux_system_monitoring_metrics_services",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_monitoring_metrics_services",
+      "target": "flux_system_gotk_components",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "target": "tempo_release_metricsgenerator",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_apps",
+      "target": "feather_core_apps_allowed_cidrs",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/apps.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_base_apps",
+      "target": "feather_core_apps_allowed_cidrs",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/base-apps.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_monitoring",
+      "target": "feather_core_apps_allowed_cidrs",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_apps_sops_gpg_decryption",
+      "target": "feather_core__sops_creation_rules",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/.sops.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_apps",
+      "target": "feather_core_apps_sops_gpg_decryption",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/apps.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_internal_certs",
+      "target": "feather_core_apps_sops_gpg_decryption",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.2,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/internal-certs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops_workflow",
+      "target": "feather_core__sops_creation_rules",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops_two_recipient_files",
+      "target": "feather_core__sops_creation_rules",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops_azure_keyvault_kek",
+      "target": "feather_core_apps_sops_gpg_decryption",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops_workflow",
+      "target": "docs_buckets_cephobjectstoreuser_ownership",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "commitlint_config",
+      "target": "flux_system_gotk_sync_gitrepository",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/commitlint.config.mjs",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "flux_layer_dependency_chain",
+      "label": "feather-core Flux layer ordering: base-sources -> base-controllers -> {controllers, base-configs} -> rook -> rook-fr01/configs -> base-apps -> apps/monitoring",
+      "nodes": [
+        "feather_core_base_sources",
+        "feather_core_base_controllers",
+        "feather_core_controllers",
+        "feather_core_base_configs",
+        "feather_core_rook",
+        "feather_core_rook_fr01",
+        "feather_core_configs",
+        "feather_core_base_apps",
+        "feather_core_apps",
+        "feather_core_monitoring",
+        "feather_core_internal_certs",
+        "feather_core_rbac",
+        "flux_system_gotk_sync_root_kustomization"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/configs.yaml"
+    },
+    {
+      "id": "tempo_s3_credential_flow",
+      "label": "Tempo S3 credential path: SOPS env -> secretGenerator tempo-s3 -> global.extraEnvFrom -> per-component -config.expand-env -> RGW bucket owned by Tempo's CephObjectStoreUser",
+      "nodes": [
+        "tempo_kustomization_tempo_s3_secret",
+        "tempo_release_tempo",
+        "tempo_release_config_expand_env",
+        "tempo_release_s3_trace_backend",
+        "docs_buckets_cephobjectstoreuser_ownership",
+        "docs_buckets_tempo_no_autocreate"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/clusters/feathre-core/monitoring/tempo/release.yaml"
+    },
+    {
+      "id": "flux_self_observability_pipeline",
+      "label": "Flux self-observability: gotk-components controllers -> per-controller metrics Services -> flux-controllers ServiceMonitor, bundled by the bootstrap kustomization",
+      "nodes": [
+        "flux_system_gotk_components",
+        "flux_system_monitoring_metrics_services",
+        "flux_system_monitoring_flux_controllers_servicemonitor",
+        "flux_system_kustomization_bootstrap"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/clusters/feather-core/flux-system/monitoring.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

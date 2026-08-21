@@ -1,0 +1,865 @@
+{
+  "nodes": [
+    {
+      "id": "minio_operator_namespace_minio_operator",
+      "label": "minio-operator namespace",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/minio-operator/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "proxmox_csi_kustomization_proxmox_csi_plugin",
+      "label": "proxmox-csi-plugin v0.11.0 upstream release manifest",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/proxmox-csi/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "proxmox_csi_storage_class_proxmox_csi",
+      "label": "StorageClass proxmox-csi (cluster default, local-lvm ext4)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/proxmox-csi/storage-class.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "snapshot_controller_kustomization_external_snapshotter",
+      "label": "external-snapshotter v8.2.1 (VolumeSnapshot CRDs + snapshot-controller)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/snapshot-controller/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Exactly one snapshot-controller per cluster; the CRDs must exist or the CSI snapshotter sidecar fails to list volumesnapshotcontents. Version pinned to match the csi-snapshotter v8.2.1 sidecar shipped with Rook's RBD/CephFS CSI driver and must be bumped together with it."
+    },
+    {
+      "id": "snapshot_controller_kustomization_rook_csi_snapshotter_sidecar",
+      "label": "Rook RBD/CephFS csi-snapshotter sidecar",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/snapshot-controller/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spegel_release_spegel",
+      "label": "spegel HelmRelease (kube-system registry mirror)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spegel_release_mirror_resolve_timeout",
+      "label": "spegel mirrorResolveTimeout 200ms",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The 20ms default is too tight for DHT lookups on busy storage/Ceph nodes, so resolves time out and every pull falls back upstream; 200ms matches the hosts.toml dial_timeout and gives the lookup room."
+    },
+    {
+      "id": "spegel_release_storage_node_toleration",
+      "label": "node-role.feather/storage toleration (spegel on storage nodes)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spegel_release_service_monitor_grafana_dashboard",
+      "label": "spegel ServiceMonitor + Grafana dashboard sidecar",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Alloy discovers ServiceMonitors cluster-wide for scraping; the dashboard rides the Grafana sidecar using the same grafana_dashboard label as the Loki dashboards."
+    },
+    {
+      "id": "step_certificates_release_step_ca",
+      "label": "step-ca HelmRelease (step-certificates chart)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-certificates/release.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "step_certificates_namespace_step_ca",
+      "label": "step-ca namespace",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-certificates/namespace.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "step_issuer_release_step_issuer",
+      "label": "step-issuer HelmRelease (>=1.10.2 <1.11.0)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-issuer/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "step_issuer_namespace_step_issuer",
+      "label": "step-issuer namespace",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-issuer/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "smallstep_helmrepository",
+      "label": "smallstep HelmRepository source (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-certificates/release.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "metallb_01_ippool_dc06_lb_dc06",
+      "label": "MetalLB IPAddressPool lb-dc06 (10.200.90.1-10.200.90.15)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/01-ippool-dc06.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "metallb_02_bgp_advertisment_d_local",
+      "label": "MetalLB BGPAdvertisement local (/32, localPref 100)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/02-bgp-advertisment-d.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "metallb_03_bgp_peer_dc06_dc06_peer",
+      "label": "MetalLB BGPPeer dc06-peer (myASN 64606, peerASN 64504, 10.200.3.1)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/03-bgp-peer-dc06.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "metallb_03_bgp_peer_fr01_fr01_peer",
+      "label": "MetalLB BGPPeer fr01-peer (myASN 64606, peerASN 64501, 192.168.15.1)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/03-bgp-peer-fr01.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_priorityclasses_feather_critical",
+      "label": "PriorityClass feather-critical (1000000000, storage layer)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Ceph OSD/mon/mgr underpin every PVC, so their eviction means cluster-wide data unavailability; all feather tiers sit below the built-in system-cluster-critical/system-node-critical which stay reserved for kube-system."
+    },
+    {
+      "id": "base_configs_priorityclasses_feather_platform",
+      "label": "PriorityClass feather-platform (900000000, stateful core)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_priorityclasses_feather_high",
+      "label": "PriorityClass feather-high (100000, observability & shared services)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_priorityclasses_feather_standard",
+      "label": "PriorityClass feather-standard (1000, standard applications)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_priorityclasses_feather_low",
+      "label": "PriorityClass feather-low (-10, best-effort apps evicted first)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_s3_proxy_storage_proxy_namespace",
+      "label": "storage-proxy namespace",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_s3_proxy_allow_s3_proxy",
+      "label": "ReferenceGrant allow-s3-proxy (storage-proxy HTTPRoute -> rook-ceph-fr01 Service)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_s3_proxy_rgw_external_proxy",
+      "label": "HTTPRoute rgw-external-proxy (s3.onelitefeather.net, virtual-hosted style)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_s3_proxy_rgw_internal",
+      "label": "HTTPRoute rgw-internal (s3.apps.onelite.feather, path-style)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "s3.apps.onelite.feather is deliberately NOT in the CephObjectStore dnsNames, so RGW serves it path-style; it reuses the existing allow-s3-proxy ReferenceGrant and resolves via the *.apps.onelite.feather wildcard to the gateway LB, requiring in-cluster clients to trust the step-ca root CA (or use plain RGW over HTTP)."
+    },
+    {
+      "id": "base_configs_s3_proxy_rgw_external_proxy_cors",
+      "label": "SecurityPolicy rgw-external-proxy-cors (Envoy Gateway CORS)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_s3_proxy_rook_ceph_rgw_feather_s3",
+      "label": "Service rook-ceph-rgw-feather-s3 (rook-ceph-fr01, port 80)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_configs_s3_proxy_envoy_gateway_eg",
+      "label": "Envoy Gateway 'eg' https listener (namespace envoy)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline",
+      "label": "Outline (outline.onelitefeather.dev)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_release_cert_manager",
+      "label": "cert-manager HelmRelease (feather-core overlay, >=1.14.4)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_release_enable_gateway_api",
+      "label": "cert-manager enableGatewayAPI ControllerConfiguration",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "cert-manager >=1.15 enables Gateway API via file-based config, not the old ExperimentalGatewayAPISupport feature gate (a no-op since 1.15) which left HTTP-01 gatewayHTTPRoute challenges failing with 'gateway api is not enabled'. Gateway API CRDs must exist before the controller starts; Helm rolls the controller on this config change so the startup check picks them up."
+    },
+    {
+      "id": "cert_manager_release_envoy_crds",
+      "label": "envoy-crds base controller (Gateway API CRDs)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_release_fr_rosenau_node_affinity",
+      "label": "cert-manager preferred node affinity to region fr-rosenau",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "proxmox_csi_storage_class_proxmox_csi",
+      "target": "proxmox_csi_kustomization_proxmox_csi_plugin",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/proxmox-csi/storage-class.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "snapshot_controller_kustomization_external_snapshotter",
+      "target": "snapshot_controller_kustomization_rook_csi_snapshotter_sidecar",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/snapshot-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "snapshot_controller_kustomization_rook_csi_snapshotter_sidecar",
+      "target": "proxmox_csi_storage_class_proxmox_csi",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/snapshot-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spegel_release_spegel",
+      "target": "spegel_release_mirror_resolve_timeout",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spegel_release_spegel",
+      "target": "spegel_release_storage_node_toleration",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spegel_release_mirror_resolve_timeout",
+      "target": "spegel_release_storage_node_toleration",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spegel_release_spegel",
+      "target": "spegel_release_service_monitor_grafana_dashboard",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/spegel/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_certificates_release_step_ca",
+      "target": "smallstep_helmrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-certificates/release.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_issuer_release_step_issuer",
+      "target": "smallstep_helmrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-issuer/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_issuer_release_step_issuer",
+      "target": "step_certificates_release_step_ca",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-issuer/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_issuer_release_step_issuer",
+      "target": "cert_manager_release_cert_manager",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-issuer/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_certificates_release_step_ca",
+      "target": "step_certificates_namespace_step_ca",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-certificates/release.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_issuer_release_step_issuer",
+      "target": "step_issuer_namespace_step_issuer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/step-issuer/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_02_bgp_advertisment_d_local",
+      "target": "metallb_01_ippool_dc06_lb_dc06",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/02-bgp-advertisment-d.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_03_bgp_peer_dc06_dc06_peer",
+      "target": "metallb_02_bgp_advertisment_d_local",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/03-bgp-peer-dc06.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_03_bgp_peer_fr01_fr01_peer",
+      "target": "metallb_02_bgp_advertisment_d_local",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/03-bgp-peer-fr01.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_03_bgp_peer_fr01_fr01_peer",
+      "target": "metallb_03_bgp_peer_dc06_dc06_peer",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/03-bgp-peer-fr01.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_02_bgp_advertisment_d_local",
+      "target": "metallb_03_bgp_peer_dc06_dc06_peer",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/02-bgp-advertisment-d.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_internal",
+      "target": "metallb_01_ippool_dc06_lb_dc06",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_priorityclasses_feather_platform",
+      "target": "step_certificates_release_step_ca",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_priorityclasses_feather_standard",
+      "target": "outline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_priorityclasses_feather_critical",
+      "target": "base_configs_s3_proxy_rook_ceph_rgw_feather_s3",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_external_proxy",
+      "target": "base_configs_s3_proxy_rook_ceph_rgw_feather_s3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_internal",
+      "target": "base_configs_s3_proxy_rook_ceph_rgw_feather_s3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_allow_s3_proxy",
+      "target": "base_configs_s3_proxy_rook_ceph_rgw_feather_s3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_internal",
+      "target": "base_configs_s3_proxy_allow_s3_proxy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_external_proxy",
+      "target": "base_configs_s3_proxy_allow_s3_proxy",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_external_proxy_cors",
+      "target": "base_configs_s3_proxy_rgw_external_proxy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_external_proxy_cors",
+      "target": "outline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_external_proxy",
+      "target": "base_configs_s3_proxy_envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_internal",
+      "target": "base_configs_s3_proxy_envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_internal",
+      "target": "step_certificates_release_step_ca",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_internal",
+      "target": "base_configs_s3_proxy_rgw_external_proxy",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_configs_s3_proxy_rgw_external_proxy",
+      "target": "base_configs_s3_proxy_storage_proxy_namespace",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_cert_manager",
+      "target": "cert_manager_release_enable_gateway_api",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_enable_gateway_api",
+      "target": "cert_manager_release_envoy_crds",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_enable_gateway_api",
+      "target": "base_configs_s3_proxy_envoy_gateway_eg",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_cert_manager",
+      "target": "base_configs_priorityclasses_feather_critical",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_cert_manager",
+      "target": "cert_manager_release_fr_rosenau_node_affinity",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_fr_rosenau_node_affinity",
+      "target": "metallb_03_bgp_peer_fr01_fr01_peer",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_cert_manager",
+      "target": "step_certificates_release_step_ca",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_operator_namespace_minio_operator",
+      "target": "base_configs_s3_proxy_rook_ceph_rgw_feather_s3",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/minio-operator/namespace.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "feather_priority_tier_scheme",
+      "label": "Five-level feather priority tier scheme for preemption/eviction ordering",
+      "nodes": [
+        "base_configs_priorityclasses_feather_critical",
+        "base_configs_priorityclasses_feather_platform",
+        "base_configs_priorityclasses_feather_high",
+        "base_configs_priorityclasses_feather_standard",
+        "base_configs_priorityclasses_feather_low"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/priorityclasses.yaml"
+    },
+    {
+      "id": "s3_gateway_exposure_flow",
+      "label": "Cross-namespace S3/RGW exposure through the Envoy gateway",
+      "nodes": [
+        "base_configs_s3_proxy_envoy_gateway_eg",
+        "base_configs_s3_proxy_rgw_external_proxy",
+        "base_configs_s3_proxy_rgw_internal",
+        "base_configs_s3_proxy_allow_s3_proxy",
+        "base_configs_s3_proxy_rook_ceph_rgw_feather_s3"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/s3-proxy.yaml"
+    },
+    {
+      "id": "metallb_bgp_loadbalancer_advertisement",
+      "label": "MetalLB BGP advertisement of the dc06 LB pool to zone-scoped peers",
+      "nodes": [
+        "metallb_01_ippool_dc06_lb_dc06",
+        "metallb_02_bgp_advertisment_d_local",
+        "metallb_03_bgp_peer_dc06_dc06_peer",
+        "metallb_03_bgp_peer_fr01_fr01_peer"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-configs/metallb/kustomization.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,0 +1,921 @@
+{
+  "nodes": [
+    {
+      "id": "ccm_kustomization_kustomization",
+      "label": "ccm base Kustomization (namespace kube-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/ccm/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ccm_release_proxmox_ccm",
+      "label": "HelmRelease proxmox-ccm",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/ccm/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Proxmox cloud-controller-manager runs in kube-system with no dedicated namespace; installed from an OCIRepository chartRef rather than a HelmRepository, install remediation retries 3."
+    },
+    {
+      "id": "ccm_release_ocirepository_proxmox_ccm",
+      "label": "OCIRepository proxmox-ccm (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/ccm/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_kustomization_kustomization",
+      "label": "cert-manager base Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_namespace_cert_manager",
+      "label": "Namespace cert-manager",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_release_cert_manager",
+      "label": "HelmRelease cert-manager",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Base ships empty values ({}) so all tuning happens in the cluster overlay; chart version is deliberately unpinned in the base and resolved from the jetstack HelmRepository."
+    },
+    {
+      "id": "cert_manager_release_helmrepository_jetstack",
+      "label": "HelmRepository jetstack (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "checkmk_kustomization_kustomization",
+      "label": "checkmk base Kustomization (namespace kube-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/checkmk/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "checkmk_release_checkmk_monitoring",
+      "label": "HelmRelease checkmk-monitoring (releaseName checkmk)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/checkmk/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "HelmRelease object name (checkmk-monitoring) intentionally differs from the Helm releaseName (checkmk); deployed into kube-system with no dedicated namespace."
+    },
+    {
+      "id": "checkmk_release_helmrepository_checkmk_chart",
+      "label": "HelmRepository checkmk-chart (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/checkmk/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_kustomization_kustomization",
+      "label": "cloudflare-tunnel-ingress-controller base Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_namespace_cloudflare_tunnel_ingress_controller",
+      "label": "Namespace cloudflare-tunnel-ingress-controller (PodSecurity privileged)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "pod-security.kubernetes.io enforce/warn/audit are all set to privileged because the cloudflared connector Deployment generated by the controller is not restricted-compliant (privileged caps, runAsRoot). Pinning the namespace makes the exemption intentional and silences the admission warning."
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_release_cloudflare_tunnel_ingress_controller",
+      "label": "HelmRelease cloudflare-tunnel-ingress-controller",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_release_helmrepository_strrl",
+      "label": "HelmRepository strrl (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_release_upstream_values_reference",
+      "label": "STRRL/cloudflare-tunnel-ingress-controller upstream values.yaml",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": "https://github.com/STRRL/cloudflare-tunnel-ingress-controller/blob/main/helm/cloudflare-tunnel-ingress-controller/values.yaml",
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_kustomization_kustomization",
+      "label": "cnpg-operator base Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_kustomization_plugin_barman_cloud",
+      "label": "cloudnative-pg plugin-barman-cloud v0.11.0 remote manifest",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "source_url": "https://github.com/cloudnative-pg/plugin-barman-cloud/releases/download/v0.11.0/manifest.yaml",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The barman-cloud backup plugin is pulled as a version-pinned remote resource URL alongside the operator HelmRelease instead of being vendored, so Renovate can bump the pinned release tag."
+    },
+    {
+      "id": "cnpg_operator_namespace_cnpg_system",
+      "label": "Namespace cnpg-system",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_release_cnpg",
+      "label": "HelmRelease cnpg (cloudnative-pg operator)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "install.remediation.retries is 0 (unlike the retries:3 default used by most controllers) — a failed operator install should surface rather than be retried, since retrying a CRD-owning operator install can leave partial state."
+    },
+    {
+      "id": "cnpg_operator_release_helmrepository_cnpg",
+      "label": "HelmRepository cnpg (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "crossplane_kustomization_kustomization",
+      "label": "crossplane base Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "This Kustomization sets no `namespace:` field (unlike the sibling controller bases), so the namespace comes from each resource's own metadata."
+    },
+    {
+      "id": "crossplane_namespace_crossplane_system",
+      "label": "Namespace crossplane-system",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "crossplane_release_crossplane",
+      "label": "HelmRelease crossplane",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "install.remediation.retries is 0, matching the cnpg operator convention: operator installs are not auto-retried."
+    },
+    {
+      "id": "crossplane_release_helmrepository_crossplane",
+      "label": "HelmRepository crossplane (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "descheduler_kustomization_kustomization",
+      "label": "descheduler base Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "descheduler_namespace_descheduler",
+      "label": "Namespace descheduler",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "descheduler_release_descheduler",
+      "label": "HelmRelease descheduler (chart 0.36.0, CronJob every 15m)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Runs as kind: CronJob on */15 * * * * rather than a Deployment, so no leader election or always-on pod is needed. Priority class system-cluster-critical because the descheduler is itself a cluster maintenance component. Chart version is pinned (0.36.0) here, unlike most other controller bases."
+    },
+    {
+      "id": "descheduler_release_helmrepository_descheduler",
+      "label": "HelmRepository descheduler (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "descheduler_release_defaultevictor",
+      "label": "DefaultEvictor plugin config (nodeFit, priorityThreshold, PodsWithPVC)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "nodeFit:true so eviction never creates Pending pods on a tight cluster. priorityThreshold pinned to the feather-high class as a hard guard rail: only pods strictly below feather-high (100000) are evictable, protecting Ceph, databases/Envoy/step-ca, monitoring/Harbor/Redis and system-*-critical. podProtections extraEnabled: PodsWithPVC so stateful data-backed pods are never evicted, on top of the built-in protections."
+    },
+    {
+      "id": "descheduler_release_feather_priority_classes",
+      "label": "feather-* PriorityClass tiers (critical/platform/high/standard/low)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Cluster-wide priority scheme referenced as the eviction guard rail: feather-critical (Ceph), feather-platform (databases/Envoy/step-ca), feather-high=100000 (monitoring/Harbor/Redis), feather-standard=1000, feather-low=-10. Only the bottom two tiers and unprioritized workloads are rebalanced."
+    },
+    {
+      "id": "descheduler_release_lownodeutilization",
+      "label": "LowNodeUtilization balance plugin (20/50 thresholds)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Bin-pack rebalancing: drains over-utilized nodes (above targetThresholds cpu/memory/pods 50) toward nodes idle below thresholds 20."
+    },
+    {
+      "id": "descheduler_release_deschedule_plugins",
+      "label": "Deschedule plugins (RemovePodsViolatingNodeAffinity, InterPodAntiAffinity)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "NodeAffinity plugin restricted to requiredDuringSchedulingIgnoredDuringExecution, so pods move back when node labels changed after maintenance/reboot; anti-affinity plugin re-spreads pods that ended up co-located."
+    },
+    {
+      "id": "dragonfly_operator_kustomization_kustomization",
+      "label": "dragonfly-operator base Kustomization (pinned v1.6.1 manifest)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/dragonfly-operator/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Installed from a raw upstream manifest URL instead of a Helm chart because the operator manifest already ships its own namespace (dragonfly-operator-system), CRDs, RBAC and controller Deployment. The version is pinned in the URL so Renovate can bump the tag."
+    },
+    {
+      "id": "dragonfly_operator_kustomization_dragonfly_operator_manifest",
+      "label": "dragonflydb/dragonfly-operator v1.6.1 upstream manifest",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/dragonfly-operator/kustomization.yaml",
+      "source_location": null,
+      "source_url": "https://raw.githubusercontent.com/dragonflydb/dragonfly-operator/v1.6.1/manifests/dragonfly-operator.yaml",
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "envoy_crds_kustomization_kustomization",
+      "label": "envoy-crds base Kustomization (vendored CRDs)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Gateway API (standard) + Envoy Gateway CRDs are vendored from gateway-crds-helm v1.7.3 and applied via Flux server-side apply because Helm release storage cannot be used: the rendered CRD set exceeds the 1Mi Kubernetes Secret limit even when split into separate Gateway API and Envoy Gateway HelmReleases (the Envoy half alone is too big). Re-vendor on a minor bump; patch bumps keep the same CRD schema."
+    },
+    {
+      "id": "envoy_crds_crds_gateway_envoyproxy_io",
+      "label": "Envoy Gateway CRDs (gateway.envoyproxy.io group)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/crds.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Includes backends, backendtrafficpolicies, clienttrafficpolicies, envoyextensionpolicies, envoypatchpolicies, envoyproxies, httproutefilters and securitypolicies; this half alone exceeds the 1Mi Secret limit for Helm release storage."
+    },
+    {
+      "id": "envoy_crds_crds_gateway_networking_k8s_io",
+      "label": "Gateway API standard CRDs (gateway.networking.k8s.io group)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/crds.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Includes backendtlspolicies, gatewayclasses, gateways, grpcroutes, httproutes and referencegrants, vendored from gateway-crds-helm v1.7.3."
+    },
+    {
+      "id": "envoy_crds_kustomization_gateway_crds_helm_v1_7_3",
+      "label": "gateway-crds-helm v1.7.3 (vendoring source)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "envoy_crds_kustomization_flux_server_side_apply",
+      "label": "Flux server-side apply for oversized CRD sets",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Chosen delivery mechanism precisely because it bypasses Helm's Secret-backed release storage and therefore the 1Mi object size limit."
+    }
+  ],
+  "edges": [
+    {
+      "source": "ccm_kustomization_kustomization",
+      "target": "ccm_release_proxmox_ccm",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/ccm/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ccm_release_proxmox_ccm",
+      "target": "ccm_release_ocirepository_proxmox_ccm",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/ccm/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_kustomization",
+      "target": "cert_manager_namespace_cert_manager",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_kustomization",
+      "target": "cert_manager_release_cert_manager",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_cert_manager",
+      "target": "cert_manager_release_helmrepository_jetstack",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_cert_manager",
+      "target": "cert_manager_namespace_cert_manager",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "checkmk_kustomization_kustomization",
+      "target": "checkmk_release_checkmk_monitoring",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/checkmk/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "checkmk_release_checkmk_monitoring",
+      "target": "checkmk_release_helmrepository_checkmk_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/checkmk/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "checkmk_kustomization_kustomization",
+      "target": "ccm_kustomization_kustomization",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/checkmk/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_kustomization_kustomization",
+      "target": "cloudflare_tunnel_ingress_controller_namespace_cloudflare_tunnel_ingress_controller",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_kustomization_kustomization",
+      "target": "cloudflare_tunnel_ingress_controller_release_cloudflare_tunnel_ingress_controller",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release_cloudflare_tunnel_ingress_controller",
+      "target": "cloudflare_tunnel_ingress_controller_release_helmrepository_strrl",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release_cloudflare_tunnel_ingress_controller",
+      "target": "cloudflare_tunnel_ingress_controller_release_upstream_values_reference",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release_cloudflare_tunnel_ingress_controller",
+      "target": "cloudflare_tunnel_ingress_controller_namespace_cloudflare_tunnel_ingress_controller",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization_kustomization",
+      "target": "cnpg_operator_namespace_cnpg_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization_kustomization",
+      "target": "cnpg_operator_release_cnpg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization_kustomization",
+      "target": "cnpg_operator_kustomization_plugin_barman_cloud",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_release_cnpg",
+      "target": "cnpg_operator_release_helmrepository_cnpg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization_plugin_barman_cloud",
+      "target": "cnpg_operator_release_cnpg",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "crossplane_kustomization_kustomization",
+      "target": "crossplane_namespace_crossplane_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "crossplane_kustomization_kustomization",
+      "target": "crossplane_release_crossplane",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "crossplane_release_crossplane",
+      "target": "crossplane_release_helmrepository_crossplane",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "crossplane_release_crossplane",
+      "target": "cnpg_operator_release_cnpg",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/crossplane/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_kustomization_kustomization",
+      "target": "descheduler_namespace_descheduler",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_kustomization_kustomization",
+      "target": "descheduler_release_descheduler",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_descheduler",
+      "target": "descheduler_release_helmrepository_descheduler",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_descheduler",
+      "target": "descheduler_release_defaultevictor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_defaultevictor",
+      "target": "descheduler_release_feather_priority_classes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_descheduler",
+      "target": "descheduler_release_lownodeutilization",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_descheduler",
+      "target": "descheduler_release_deschedule_plugins",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_lownodeutilization",
+      "target": "descheduler_release_defaultevictor",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_deschedule_plugins",
+      "target": "descheduler_release_defaultevictor",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_operator_kustomization_kustomization",
+      "target": "dragonfly_operator_kustomization_dragonfly_operator_manifest",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/dragonfly-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_operator_kustomization_kustomization",
+      "target": "cnpg_operator_kustomization_plugin_barman_cloud",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/dragonfly-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "envoy_crds_kustomization_kustomization",
+      "target": "envoy_crds_crds_gateway_envoyproxy_io",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "envoy_crds_kustomization_kustomization",
+      "target": "envoy_crds_crds_gateway_networking_k8s_io",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "envoy_crds_kustomization_kustomization",
+      "target": "envoy_crds_kustomization_gateway_crds_helm_v1_7_3",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "envoy_crds_kustomization_kustomization",
+      "target": "envoy_crds_kustomization_flux_server_side_apply",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "envoy_crds_crds_gateway_envoyproxy_io",
+      "target": "envoy_crds_crds_gateway_networking_k8s_io",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/crds.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release_cloudflare_tunnel_ingress_controller",
+      "target": "envoy_crds_crds_gateway_networking_k8s_io",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release_cert_manager",
+      "target": "cloudflare_tunnel_ingress_controller_release_cloudflare_tunnel_ingress_controller",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "descheduler_release_feather_priority_classes",
+      "target": "descheduler_release_descheduler",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "base_controllers_helmrelease_pattern",
+      "label": "Uniform base controller pattern: Kustomization + Namespace + HelmRelease with empty values, overridden by the cluster overlay",
+      "nodes": [
+        "cert_manager_kustomization_kustomization",
+        "cloudflare_tunnel_ingress_controller_kustomization_kustomization",
+        "cnpg_operator_kustomization_kustomization",
+        "crossplane_kustomization_kustomization",
+        "descheduler_kustomization_kustomization"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/cert-manager/kustomization.yaml"
+    },
+    {
+      "id": "descheduler_eviction_guardrails",
+      "label": "Descheduler eviction guard rails: nodeFit + feather-high priority threshold + PodsWithPVC protection bound the balance/deschedule plugins",
+      "nodes": [
+        "descheduler_release_descheduler",
+        "descheduler_release_defaultevictor",
+        "descheduler_release_feather_priority_classes",
+        "descheduler_release_lownodeutilization",
+        "descheduler_release_deschedule_plugins"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/descheduler/release.yaml"
+    },
+    {
+      "id": "non_helm_delivery_escape_hatches",
+      "label": "Non-Helm delivery escape hatches: vendored CRDs and pinned upstream manifest URLs where Helm release storage or chart packaging does not fit",
+      "nodes": [
+        "envoy_crds_kustomization_kustomization",
+        "envoy_crds_kustomization_flux_server_side_apply",
+        "dragonfly_operator_kustomization_kustomization",
+        "cnpg_operator_kustomization_plugin_barman_cloud"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/envoy-crds/kustomization.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

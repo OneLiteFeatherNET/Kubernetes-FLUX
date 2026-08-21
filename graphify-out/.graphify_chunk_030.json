@@ -1,0 +1,992 @@
+{
+  "nodes": [
+    {
+      "id": "flux_system_kustomization",
+      "label": "flux-system bootstrap Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring",
+      "label": "flux-system monitoring manifest",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring_source_controller_metrics",
+      "label": "source-controller-metrics Service",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring_helm_controller_metrics",
+      "label": "helm-controller-metrics Service",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring_kustomize_controller_metrics",
+      "label": "kustomize-controller-metrics Service",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring_notification_controller_metrics",
+      "label": "notification-controller-metrics Service",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "label": "flux-controllers ServiceMonitor",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_internal_certs",
+      "label": "internal-certs Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/internal-certs.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_monitoring",
+      "label": "monitoring Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_rbac",
+      "label": "rbac Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rbac.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_rook",
+      "label": "rook Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_rook_fr01",
+      "label": "rook-fr01 Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook-fr01.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_base_sources",
+      "label": "base-sources Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/base-sources.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_base_controllers",
+      "label": "base-controllers Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/base-controllers.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_base_configs",
+      "label": "base-configs Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/base-configs.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_controllers",
+      "label": "controllers Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/controllers.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_core_configs",
+      "label": "configs Flux Kustomization layer",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/configs.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_layer_wait_false_gating",
+      "label": "wait:false health-gating opt-out for fragile layers",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "commitlint_config",
+      "label": "commitlint configuration",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/commitlint.config.mjs",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "conventional_commits",
+      "label": "Conventional Commits specification",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/commitlint.config.mjs",
+      "source_location": null,
+      "source_url": "https://www.conventionalcommits.org",
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets",
+      "label": "Ceph RGW buckets documentation",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_objectbucketclaim_never_bound",
+      "label": "ObjectBucketClaims never reach Bound",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_provisioner_name_namespace_derived",
+      "label": "Rook bucket provisioner name derived from CephCluster namespace",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_cephobjectstoreuser_ownership",
+      "label": "Per-app CephObjectStoreUser as bucket owner",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_tempo_no_bucket_autocreate",
+      "label": "Tempo S3 backend does not auto-create its bucket",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_buckets_out_of_band_bucket_creation",
+      "label": "Out-of-band bucket creation and radosgw-admin bucket link",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops",
+      "label": "SOPS secrets management documentation",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops_pgp_recipients",
+      "label": "PGP recipient list in .sops.yaml",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops_updatekeys_rotation",
+      "label": "sops updatekeys re-encryption on member change",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops_azure_keyvault_kek",
+      "label": "Azure Key Vault as SOPS KEK",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_sops_workload_identity_kustomize_controller",
+      "label": "Workload Identity for kustomize-controller DEK unwrap",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_chart",
+      "label": "leantime Chart.yaml",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/Chart.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_values",
+      "label": "leantime values.yaml",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_notes",
+      "label": "leantime NOTES.txt",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/NOTES.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_deployment",
+      "label": "leantime Deployment template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_hpa",
+      "label": "leantime HorizontalPodAutoscaler template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/hpa.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_httproute",
+      "label": "leantime HTTPRoute template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_ingress",
+      "label": "leantime Ingress template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_service",
+      "label": "leantime Service template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/service.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_serviceaccount",
+      "label": "leantime ServiceAccount template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/serviceaccount.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_servicemonitor",
+      "label": "leantime ServiceMonitor template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/servicemonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_test_connection",
+      "label": "leantime test-connection helm test Pod",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "metabase_chart",
+      "label": "metabase Chart.yaml",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/metabase/Chart.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "flux_system_kustomization",
+      "target": "flux_system_monitoring",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "target": "flux_system_monitoring_source_controller_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "target": "flux_system_monitoring_helm_controller_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "target": "flux_system_monitoring_kustomize_controller_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "target": "flux_system_monitoring_notification_controller_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_internal_certs",
+      "target": "feather_core_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/internal-certs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_monitoring",
+      "target": "feather_core_configs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_base_sources",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_base_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_base_configs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "feather_core_controllers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook_fr01",
+      "target": "feather_core_rook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook-fr01.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_layer_wait_false_gating",
+      "target": "feather_core_monitoring",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flux_layer_wait_false_gating",
+      "target": "feather_core_internal_certs",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/internal-certs.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_monitoring",
+      "target": "docs_buckets_tempo_no_bucket_autocreate",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/monitoring.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook",
+      "target": "docs_sops",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rbac",
+      "target": "docs_sops_pgp_recipients",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rbac.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "feather_core_rook_fr01",
+      "target": "docs_buckets",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets",
+      "target": "docs_buckets_objectbucketclaim_never_bound",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_provisioner_name_namespace_derived",
+      "target": "docs_buckets_objectbucketclaim_never_bound",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_cephobjectstoreuser_ownership",
+      "target": "docs_buckets_objectbucketclaim_never_bound",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_tempo_no_bucket_autocreate",
+      "target": "docs_buckets_out_of_band_bucket_creation",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_out_of_band_bucket_creation",
+      "target": "docs_buckets_cephobjectstoreuser_ownership",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_buckets_cephobjectstoreuser_ownership",
+      "target": "docs_sops",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/buckets.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops",
+      "target": "docs_sops_pgp_recipients",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops_updatekeys_rotation",
+      "target": "docs_sops_pgp_recipients",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops",
+      "target": "docs_sops_azure_keyvault_kek",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops_workload_identity_kustomize_controller",
+      "target": "docs_sops_azure_keyvault_kek",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_sops_azure_keyvault_kek",
+      "target": "docs_sops_pgp_recipients",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/docs/sops.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "commitlint_config",
+      "target": "conventional_commits",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/commitlint.config.mjs",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "commitlint_config",
+      "target": "conventional_commits",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/commitlint.config.mjs",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_deployment",
+      "target": "leantime_values",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_deployment",
+      "target": "leantime_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_deployment",
+      "target": "leantime_serviceaccount",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_hpa",
+      "target": "leantime_deployment",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/hpa.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_service",
+      "target": "leantime_deployment",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/service.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_ingress",
+      "target": "leantime_service",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_httproute",
+      "target": "leantime_service",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_servicemonitor",
+      "target": "leantime_service",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/servicemonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_test_connection",
+      "target": "leantime_service",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_notes",
+      "target": "leantime_ingress",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/NOTES.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_notes",
+      "target": "leantime_service",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/NOTES.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_httproute",
+      "target": "leantime_ingress",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_servicemonitor",
+      "target": "flux_system_monitoring_flux_controllers_servicemonitor",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/servicemonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metabase_chart",
+      "target": "leantime_chart",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/metabase/Chart.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_values",
+      "target": "leantime_chart",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "flux_layer_dependency_graph",
+      "label": "feather-core Flux layer dependency ordering",
+      "nodes": [
+        "feather_core_base_sources",
+        "feather_core_base_controllers",
+        "feather_core_base_configs",
+        "feather_core_controllers",
+        "feather_core_rook",
+        "feather_core_rook_fr01",
+        "feather_core_configs",
+        "feather_core_monitoring",
+        "feather_core_internal_certs"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/rook.yaml"
+    },
+    {
+      "id": "flux_controller_metrics_scrape",
+      "label": "Flux controller metrics scrape pipeline via monitoring:flux-metrics label",
+      "nodes": [
+        "flux_system_monitoring_source_controller_metrics",
+        "flux_system_monitoring_helm_controller_metrics",
+        "flux_system_monitoring_kustomize_controller_metrics",
+        "flux_system_monitoring_notification_controller_metrics",
+        "flux_system_monitoring_flux_controllers_servicemonitor"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/clusters/feather-core/flux-system/monitoring.yaml"
+    },
+    {
+      "id": "leantime_http_exposure_chain",
+      "label": "leantime HTTP exposure chain: Deployment to Service to Ingress/HTTPRoute",
+      "nodes": [
+        "leantime_deployment",
+        "leantime_service",
+        "leantime_ingress",
+        "leantime_httproute",
+        "leantime_test_connection"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/leantime/templates/service.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

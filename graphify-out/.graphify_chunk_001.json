@@ -1,0 +1,748 @@
+{
+  "nodes": [
+    {
+      "id": "_claude_settings_local_permissions",
+      "label": "Claude Code local permission allowlist (Kubernetes-FLUX)",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Allowlist reveals the day-to-day operator toolchain for this repo: talosctl against nodes 192.168.15.7-.9 with clusters/feather-core/generated/talosconfig, kubectl (rook-ceph / rook-ceph-fr01 namespaces), flux reconcile/suspend/resume, sops encrypt/updatekeys with PGP fingerprint 0231831CB40B8E587B7353CBA3AF727721205A62, and gh api/search for upstream issue research."
+    },
+    {
+      "id": "workflows_flux_validate_validate",
+      "label": "flux-validate CI job (kustomize build + kubeconform)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.github/workflows/flux-validate.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Renders every Flux Kustomization and schema-checks the output so broken manifests never reach the cluster; triggered on PRs touching clusters/**, infrastructure/**, apps/**, helm/**, scripts/validate.sh and on pushes to main."
+    },
+    {
+      "id": "workflows_pr_lint_pr_title",
+      "label": "pr-lint job: conventional PR title",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.github/workflows/pr-lint.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The PR title is the squash-merge subject, so it is linted with the same Conventional Commit type list and a lowercase-subject pattern (^(?![A-Z]).+$) as the commits themselves."
+    },
+    {
+      "id": "workflows_pr_lint_commits",
+      "label": "pr-lint job: commitlint over branch commit range",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.github/workflows/pr-lint.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": null
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_sops_creation_rules",
+      "label": "SOPS creation_rules (PGP recipients)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.sops.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Two rules: whole-file encryption for *.env/*.sops.*/dockerconfigjson/s3.conf suffixes, and field-level encryption for plain *.yaml restricted to an encrypted_regex of secret keys (ca_password, root_ca_key, .dockerconfigjson, ...). Adding a member means appending their fingerprint and re-running sops updatekeys per file."
+    },
+    {
+      "id": "_vscode_settings_sops_integration",
+      "label": "VSCode native SOPS editing settings",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.vscode/settings.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Files matching a path_regex in .sops.yaml auto-decrypt on open and re-encrypt on save. .conf files have no recognized format so SOPS uses the binary store (JSON wrapper with a data key) — which is how s3.sops.conf and *-ingress-auth.sops.conf are stored."
+    },
+    {
+      "id": "_vscode_extensions_signageos_vscode_sops",
+      "label": "Recommended extension signageos.signageos-vscode-sops",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.vscode/extensions.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_claude_flux_layer_dependency_graph",
+      "label": "Flux layer dependency graph (feather-core)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Root GitRepository flux-system (ssh, main) drives a root Kustomization at ./clusters/feather-core; layers base-sources -> base-controllers -> controllers/base-configs -> rook -> rook-fr01/configs -> base-apps -> apps, plus rbac, internal-certs, monitoring. Most layers set wait:true, so a dependent blocks until its dependency is Ready at the same git revision — which is why forcing flux reconcile in a loop makes every dependent report 'dependency not ready'."
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_claude_two_tier_kustomize_pattern",
+      "label": "Two-tier Kustomize base + cluster overlay pattern",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Portable definitions live in infrastructure/base/<kind>/<name>/ and apps/base/<name>/; cluster overlays under clusters/<cluster>/<layer>/ reference a base, patch it (patches: - path: release.yaml) and attach secrets. Keeps HelmReleases reusable and cluster-specific values isolated."
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_claude_path_spelling_gotcha",
+      "label": "feather-core vs feathre-core path-spelling gotcha",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "infrastructure uses clusters/feather-core/ while apps uses the misspelled clusters/feathre-core/. Both are real, intentional paths referenced by Flux Kustomizations — 'fixing' one silently breaks a layer's path."
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+      "label": "SOPS PGP secret workflow for the cluster",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Secrets reach pods via Kustomize secretGenerator (envs:/files:) or generators: in an overlay kustomization; Flux decrypts at apply time using provider sops / secret sops-gpg on every layer except internal-certs. This worktree copy claims recipients live in TWO files (.sops.yaml plus clusters/feather-core/.sops.yaml) that must stay in sync."
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_claude_helm_chart_version_bump",
+      "label": "In-repo Helm chart version-bump requirement",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Charts under helm/ are pulled by the helmcharts GitRepository pointing back at this repo's main; Flux/Helm caches by chart version, so template/values edits without a Chart.yaml version: bump are never re-rendered onto the cluster."
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_claude_disablenamesuffixhash",
+      "label": "disableNameSuffixHash: stable generated Secret/ConfigMap names",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Overlays set generatorOptions.disableNameSuffixHash: true so names stay stable and overlays can reference them; the trade-off is that changing a secret's contents does not roll the consuming Deployment — an explicit kubectl rollout restart is required."
+    },
+    {
+      "id": "agent_a3ff106175eed2f7a_readme_kubernetes_cluster_management",
+      "label": "README: Kubernetes Cluster Management toolchain",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Declares the tool set for managing the OneLiteFeather cluster: Sops, Helm, Kubectl, Kustomize, FluxCD."
+    },
+    {
+      "id": "action_runner_controller_kustomization_actions_runner_controller",
+      "label": "Kustomization base: actions-runner-controller",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "action_runner_controller_namespace_actions_runner_controller",
+      "label": "Namespace actions-runner-controller",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "action_runner_controller_release_actions_runner_controller",
+      "label": "HelmRelease actions-runner-controller",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Uses chartRef to an OCIRepository (not the chart.spec/HelmRepository form used by the other bases) and install.remediation.retries: 3; base ships empty values so cluster overlays supply GitHub runner config."
+    },
+    {
+      "id": "action_runner_controller_release_gha_runner_scale_set",
+      "label": "OCIRepository gha-runner-scale-set (flux-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_logs_kustomization_alloy_logs",
+      "label": "Kustomization base: alloy-logs (namespace grafana)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-logs/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_logs_release_alloy_logs",
+      "label": "HelmRelease alloy-logs",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-logs/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "install.remediation.retries: 0 — unlike autocert/ARC, a failed Alloy install is not auto-retried, so a bad config surfaces immediately instead of loop-installing."
+    },
+    {
+      "id": "alloy_logs_release_grafana_labs",
+      "label": "HelmRepository grafana-labs (flux-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-logs/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_metrics_kustomization_alloy_metrics",
+      "label": "Kustomization base: alloy-metrics (namespace grafana)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-metrics/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_metrics_release_alloy_metrics",
+      "label": "HelmRelease alloy-metrics",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-metrics/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_receiver_kustomization_alloy_receiver",
+      "label": "Kustomization base: alloy-receiver (namespace grafana)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-receiver/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_receiver_release_alloy_receiver",
+      "label": "HelmRelease alloy-receiver",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-receiver/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "autocert_kustomization_autocert",
+      "label": "Kustomization base: autocert",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "autocert_namespace_autocert",
+      "label": "Namespace autocert",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "autocert_release_autocert",
+      "label": "HelmRelease autocert (smallstep)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "autocert_release_smallstep",
+      "label": "HelmRepository smallstep (flux-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_kustomization_backstage",
+      "label": "Kustomization base: backstage",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/backstage/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_flux_layer_dependency_graph",
+      "target": "workflows_flux_validate_validate",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_flux_layer_dependency_graph",
+      "target": "workflows_pr_lint_pr_title",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "workflows_pr_lint_pr_title",
+      "target": "workflows_pr_lint_commits",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.github/workflows/pr-lint.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+      "target": "agent_a3ff106175eed2f7a_sops_creation_rules",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+      "target": "agent_a3ff106175eed2f7a_claude_two_tier_kustomize_pattern",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_disablenamesuffixhash",
+      "target": "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_path_spelling_gotcha",
+      "target": "agent_a3ff106175eed2f7a_claude_flux_layer_dependency_graph",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_two_tier_kustomize_pattern",
+      "target": "action_runner_controller_kustomization_actions_runner_controller",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_two_tier_kustomize_pattern",
+      "target": "autocert_kustomization_autocert",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "_vscode_settings_sops_integration",
+      "target": "agent_a3ff106175eed2f7a_sops_creation_rules",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.vscode/settings.json",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "_vscode_settings_sops_integration",
+      "target": "_vscode_extensions_signageos_vscode_sops",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.vscode/settings.json",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "_claude_settings_local_permissions",
+      "target": "agent_a3ff106175eed2f7a_sops_creation_rules",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/settings.local.json",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "_claude_settings_local_permissions",
+      "target": "agent_a3ff106175eed2f7a_claude_flux_layer_dependency_graph",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/settings.local.json",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "_vscode_settings_sops_integration",
+      "target": "_claude_settings_local_permissions",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.vscode/settings.json",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "action_runner_controller_kustomization_actions_runner_controller",
+      "target": "action_runner_controller_namespace_actions_runner_controller",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "action_runner_controller_kustomization_actions_runner_controller",
+      "target": "action_runner_controller_release_actions_runner_controller",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "action_runner_controller_release_actions_runner_controller",
+      "target": "action_runner_controller_release_gha_runner_scale_set",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "action_runner_controller_release_actions_runner_controller",
+      "target": "action_runner_controller_namespace_actions_runner_controller",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "action_runner_controller_release_actions_runner_controller",
+      "target": "workflows_flux_validate_validate",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/action-runner-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_logs_kustomization_alloy_logs",
+      "target": "alloy_logs_release_alloy_logs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-logs/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_metrics_kustomization_alloy_metrics",
+      "target": "alloy_metrics_release_alloy_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-metrics/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_receiver_kustomization_alloy_receiver",
+      "target": "alloy_receiver_release_alloy_receiver",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-receiver/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_logs_release_alloy_logs",
+      "target": "alloy_logs_release_grafana_labs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-logs/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_metrics_release_alloy_metrics",
+      "target": "alloy_logs_release_grafana_labs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-metrics/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_receiver_release_alloy_receiver",
+      "target": "alloy_logs_release_grafana_labs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-receiver/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_logs_release_alloy_logs",
+      "target": "alloy_metrics_release_alloy_metrics",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-logs/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_metrics_release_alloy_metrics",
+      "target": "alloy_receiver_release_alloy_receiver",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-metrics/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "autocert_kustomization_autocert",
+      "target": "autocert_namespace_autocert",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "autocert_kustomization_autocert",
+      "target": "autocert_release_autocert",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "autocert_release_autocert",
+      "target": "autocert_release_smallstep",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "autocert_release_autocert",
+      "target": "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/autocert/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_kustomization_backstage",
+      "target": "agent_a3ff106175eed2f7a_claude_two_tier_kustomize_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/backstage/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_readme_kubernetes_cluster_management",
+      "target": "agent_a3ff106175eed2f7a_claude_flux_layer_dependency_graph",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_readme_kubernetes_cluster_management",
+      "target": "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+      "target": "_vscode_settings_sops_integration",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "alloy_split_role_observability_pipeline",
+      "label": "Grafana Alloy split into logs/metrics/receiver releases from one chart in namespace grafana",
+      "nodes": [
+        "alloy_logs_release_alloy_logs",
+        "alloy_metrics_release_alloy_metrics",
+        "alloy_receiver_release_alloy_receiver",
+        "alloy_logs_release_grafana_labs"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/apps/base/alloy-logs/release.yaml"
+    },
+    {
+      "id": "sops_pgp_secret_toolchain",
+      "label": "SOPS PGP secret handling across CLI, VSCode, Kustomize and Flux decryption",
+      "nodes": [
+        "agent_a3ff106175eed2f7a_sops_creation_rules",
+        "_vscode_settings_sops_integration",
+        "_vscode_extensions_signageos_vscode_sops",
+        "agent_a3ff106175eed2f7a_claude_sops_secret_workflow",
+        "_claude_settings_local_permissions"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.sops.yaml"
+    },
+    {
+      "id": "pr_merge_quality_gate",
+      "label": "PR merge gate: conventional title, conventional commits, and rendered-manifest validation",
+      "nodes": [
+        "workflows_pr_lint_pr_title",
+        "workflows_pr_lint_commits",
+        "workflows_flux_validate_validate",
+        "agent_a3ff106175eed2f7a_claude_flux_layer_dependency_graph"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/.github/workflows/pr-lint.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

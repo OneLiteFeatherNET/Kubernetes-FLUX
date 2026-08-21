@@ -1,0 +1,1117 @@
+{
+  "nodes": [
+    {
+      "id": "metallb_kustomization",
+      "label": "metallb configs kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/metallb/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "metallb_podmonitor_metallb",
+      "label": "PodMonitor metallb",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/metallb/podmonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_kustomization",
+      "label": "postgresql configs kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_cluster_feather_core_cluster_pg",
+      "label": "CNPG Cluster feather-core-cluster-pg",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_podmonitor_feather_core_cluster_pg",
+      "label": "PodMonitor feather-core-cluster-pg",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/podmonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_object_store_s3_store",
+      "label": "Barman ObjectStore s3-store",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/object-store.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_backup_backup_fr01_initial",
+      "label": "Backup backup-fr01-initial",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/backup.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_scheduled_backup_feather_core_cluster_pg_daily",
+      "label": "ScheduledBackup feather-core-cluster-pg-daily",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/scheduled-backup.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_pooler_rw_feather_core_cluster_pg_pooler_rw",
+      "label": "Pooler feather-core-cluster-pg-pooler-rw",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_pooler_ro_feather_core_cluster_pg_pooler_ro",
+      "label": "Pooler feather-core-cluster-pg-pooler-ro",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-ro.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_backstage_backstage",
+      "label": "Database backstage",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/backstage.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_dependency_track_dependency_track",
+      "label": "Database dependency-track",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/dependency-track.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_grafana_grafana",
+      "label": "Database grafana",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/grafana.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_harbor_harbor",
+      "label": "Database harbor",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/harbor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_n8n_n8n",
+      "label": "Database n8n",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/n8n.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_otis_otis",
+      "label": "Database otis",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/otis.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_otis_dev_otis_dev",
+      "label": "Database otis-dev",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/otis-dev.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_outline_outline",
+      "label": "Database outline",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/outline.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_vulpes_vulpes",
+      "label": "Database vulpes",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/vulpes.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "database_vulpes_dev_vulpes_dev",
+      "label": "Database vulpes-dev",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/vulpes-dev.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dragonfly_dragonfly_dragonfly",
+      "label": "Dragonfly CR dragonfly",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dragonfly_kustomization",
+      "label": "dragonfly controller kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "postgresql_kustomization_cnpg_backup_secret",
+      "label": "Secret cnpg-backup (S3 credentials)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dragonfly_kustomization_dragonfly_auth_secret",
+      "label": "Secret dragonfly-auth",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ceph_rbd_fr01",
+      "label": "StorageClass ceph-rbd-fr01 (zone-local RBD)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_high",
+      "label": "PriorityClass feather-high",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "feather_platform",
+      "label": "PriorityClass feather-platform",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "fr01_zone_pinning",
+      "label": "fr01 zone pinning",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "ceph-rbd-fr01 is zone-local; RBD can only attach inside fr01, so stateful pods must be pinned to topology.kubernetes.io/zone=fr01. All current workers are in fr01 so the constraint is satisfiable and composes with per-host topology spread."
+    },
+    {
+      "id": "postgresql_cluster_connection_saturation",
+      "label": "Postgres connection saturation mitigation (max_connections=200)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Raised from the CNPG default 100 because the shared cluster sits at saturation (large idle pools, harbor ~26 + dependency-track ~23), starving apps of slots during restart storms. Memory bumped 1Gi -> 2Gi in lockstep (~5-10MB per backend); memory request==limit for OOM safety, CPU request only to avoid throttling the DB. Proper fix is pooler adoption + trimming idle pools."
+    },
+    {
+      "id": "postgresql_pooler_rw_client_conn_ceiling",
+      "label": "pgbouncer max_client_conn ceiling raise",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Default max_client_conn (100) was exhausted by Harbor's oversized pool, blocking new client connections on the shared rw pooler (harbor + dependency-track). Client conns are cheap in pgbouncer so the ceiling is raised to 400; server conns stay bounded by default_pool_size=25 per (user,db) pool, aligned to Harbor's maxOpenConns, keeping total server conns well under PG's 200."
+    },
+    {
+      "id": "postgresql_scheduled_backup_prefer_standby",
+      "label": "Backup target prefer-standby with self owner reference",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/scheduled-backup.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "target: prefer-standby keeps backup I/O off the primary since the cluster runs standbys specifically for HA. backupOwnerReference: self ties each generated Backup to the ScheduledBackup instead of leaving them ownerless like the one-time backup.yaml, which had no owner and only ever ran once (2026-06-11) because no recurring schedule existed. immediate: true proves the schedule works without waiting for 02:00."
+    },
+    {
+      "id": "dragonfly_dragonfly_lua_undeclared_keys",
+      "label": "Dragonfly allow-undeclared-keys Lua flag",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "BullMQ (outline's task queue) runs Lua scripts touching keys not declared in KEYS[], which Dragonfly rejects by default. --default_lua_flags=allow-undeclared-keys restores Redis semantics; trade-off is that each Lua script locks the whole store (acceptable at this scale). Alternative would be hashtag queue names + --lock_on_hashtags."
+    },
+    {
+      "id": "dragonfly_dragonfly_proactor_thread_pinning",
+      "label": "Dragonfly proactor thread pinning and maxmemory",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dragonfly auto-detects all 32 host cores and demands 256MiB per thread (~8GiB), far above the 1536Mi limit, so it refuses to boot. Threads are pinned to 2 with --maxmemory=1gb; rule is maxmemory >= proactor_threads * 256MiB and scale threads and memory together. cache_mode is deliberately off so it behaves as a data store (no silent eviction), matching the Redis appendonly semantics shlink pub/sub and outline queues rely on."
+    },
+    {
+      "id": "dragonfly_dragonfly_operator_pod_labels",
+      "label": "dragonfly-operator pod label selector gotcha",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The operator sets `app: <CR name>` on pods but does NOT set app.kubernetes.io/instance; selecting on the latter makes the topology spread constraint silently no-op and pods co-locate, defeating the one-pod-per-host goal."
+    },
+    {
+      "id": "postgresql_cluster_rw_external_lb",
+      "label": "feather-core-cluster-pg-rw-external LoadBalancer service",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Additional rw-selector service exposed as a MetalLB LoadBalancer pinned to 10.200.90.3 via the metallb.io/loadBalancerIPs annotation, giving external clients a stable primary endpoint."
+    }
+  ],
+  "edges": [
+    {
+      "source": "metallb_kustomization",
+      "target": "metallb_podmonitor_metallb",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/metallb/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_podmonitor_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_object_store_s3_store",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_backup_backup_fr01_initial",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_scheduled_backup_feather_core_cluster_pg_daily",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_pooler_rw_feather_core_cluster_pg_pooler_rw",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_pooler_ro_feather_core_cluster_pg_pooler_ro",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "postgresql_kustomization_cnpg_backup_secret",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_object_store_s3_store",
+      "target": "postgresql_kustomization_cnpg_backup_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/object-store.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_feather_core_cluster_pg",
+      "target": "postgresql_object_store_s3_store",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_backup_backup_fr01_initial",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/backup.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_backup_backup_fr01_initial",
+      "target": "postgresql_object_store_s3_store",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/backup.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_scheduled_backup_feather_core_cluster_pg_daily",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/scheduled-backup.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_scheduled_backup_feather_core_cluster_pg_daily",
+      "target": "postgresql_object_store_s3_store",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/scheduled-backup.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_scheduled_backup_feather_core_cluster_pg_daily",
+      "target": "postgresql_backup_backup_fr01_initial",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/scheduled-backup.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_scheduled_backup_prefer_standby",
+      "target": "postgresql_scheduled_backup_feather_core_cluster_pg_daily",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/scheduled-backup.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_podmonitor_feather_core_cluster_pg",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/podmonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_pooler_rw_feather_core_cluster_pg_pooler_rw",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_pooler_ro_feather_core_cluster_pg_pooler_ro",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-ro.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_pooler_rw_client_conn_ceiling",
+      "target": "postgresql_pooler_rw_feather_core_cluster_pg_pooler_rw",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_connection_saturation",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_pooler_rw_client_conn_ceiling",
+      "target": "postgresql_cluster_connection_saturation",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_harbor_harbor",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/harbor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_outline_outline",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/outline.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_otis_otis",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/otis.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_otis_dev_otis_dev",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/otis-dev.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_vulpes_vulpes",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/vulpes.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_vulpes_dev_vulpes_dev",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/vulpes-dev.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_backstage_backstage",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/backstage.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_dependency_track_dependency_track",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/dependency-track.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_grafana_grafana",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/grafana.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "database_n8n_n8n",
+      "target": "postgresql_cluster_feather_core_cluster_pg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/database/n8n.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_harbor_harbor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_outline_outline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_otis_otis",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_otis_dev_otis_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_vulpes_vulpes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_vulpes_dev_vulpes_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_backstage_backstage",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_dependency_track_dependency_track",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_grafana_grafana",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization",
+      "target": "database_n8n_n8n",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_feather_core_cluster_pg",
+      "target": "postgresql_kustomization",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_feather_core_cluster_pg",
+      "target": "postgresql_cluster_rw_external_lb",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_rw_external_lb",
+      "target": "metallb_kustomization",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_feather_core_cluster_pg",
+      "target": "ceph_rbd_fr01",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_feather_core_cluster_pg",
+      "target": "feather_platform",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_pooler_rw_feather_core_cluster_pg_pooler_rw",
+      "target": "feather_high",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_pooler_ro_feather_core_cluster_pg_pooler_ro",
+      "target": "feather_high",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-ro.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_cluster_feather_core_cluster_pg",
+      "target": "fr01_zone_pinning",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/cluster.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_dragonfly",
+      "target": "fr01_zone_pinning",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "fr01_zone_pinning",
+      "target": "ceph_rbd_fr01",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_kustomization",
+      "target": "dragonfly_dragonfly_dragonfly",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_kustomization",
+      "target": "dragonfly_kustomization_dragonfly_auth_secret",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_dragonfly",
+      "target": "dragonfly_kustomization_dragonfly_auth_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_lua_undeclared_keys",
+      "target": "dragonfly_dragonfly_dragonfly",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_proactor_thread_pinning",
+      "target": "dragonfly_dragonfly_dragonfly",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_operator_pod_labels",
+      "target": "dragonfly_dragonfly_dragonfly",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_dragonfly",
+      "target": "feather_high",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_dragonfly",
+      "target": "ceph_rbd_fr01",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_dragonfly",
+      "target": "database_outline_outline",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_dragonfly",
+      "target": "database_harbor_harbor",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_dragonfly",
+      "target": "database_n8n_n8n",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dragonfly_dragonfly_proactor_thread_pinning",
+      "target": "postgresql_cluster_connection_saturation",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_podmonitor_metallb",
+      "target": "postgresql_podmonitor_feather_core_cluster_pg",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/metallb/podmonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "postgresql_kustomization_cnpg_backup_secret",
+      "target": "postgresql_kustomization",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "cnpg_barman_s3_backup_flow",
+      "label": "CNPG barman-cloud S3 backup flow (cluster WAL archiving, object store, one-time and scheduled backups, credentials)",
+      "nodes": [
+        "postgresql_cluster_feather_core_cluster_pg",
+        "postgresql_object_store_s3_store",
+        "postgresql_backup_backup_fr01_initial",
+        "postgresql_scheduled_backup_feather_core_cluster_pg_daily",
+        "postgresql_kustomization_cnpg_backup_secret"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/kustomization.yaml"
+    },
+    {
+      "id": "shared_postgres_connection_budget",
+      "label": "Shared Postgres connection budget: PG max_connections=200 fronted by rw/ro pgbouncer poolers",
+      "nodes": [
+        "postgresql_cluster_feather_core_cluster_pg",
+        "postgresql_pooler_rw_feather_core_cluster_pg_pooler_rw",
+        "postgresql_pooler_ro_feather_core_cluster_pg_pooler_ro",
+        "postgresql_cluster_connection_saturation",
+        "postgresql_pooler_rw_client_conn_ceiling"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/postgresql/pooler-rw.yaml"
+    },
+    {
+      "id": "fr01_zone_local_stateful_placement",
+      "label": "fr01 zone-local stateful placement: ceph-rbd-fr01 forces node affinity for both Postgres and Dragonfly",
+      "nodes": [
+        "ceph_rbd_fr01",
+        "fr01_zone_pinning",
+        "postgresql_cluster_feather_core_cluster_pg",
+        "dragonfly_dragonfly_dragonfly"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/controllers/dragonfly/dragonfly.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

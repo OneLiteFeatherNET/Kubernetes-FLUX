@@ -1,0 +1,794 @@
+{
+  "nodes": [
+    {
+      "id": "harbor_namespace_harbor",
+      "label": "Namespace harbor",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "harbor_release_harbor",
+      "label": "HelmRelease harbor",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "harbor_release_helmrepository_harbor",
+      "label": "HelmRepository harbor (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_kustomization_leantime",
+      "label": "Kustomization apps/base/leantime",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_namespace_leantime",
+      "label": "Namespace leantime",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_release_leantime",
+      "label": "HelmRelease leantime",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_release_gitrepository_helmcharts",
+      "label": "GitRepository helmcharts (in-repo charts source)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "loki_kustomization_loki",
+      "label": "Kustomization apps/base/loki",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "loki_namespace_grafana",
+      "label": "Namespace grafana",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "loki_release_loki",
+      "label": "HelmRelease loki",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "timeout raised to 20m because Loki SingleBinary plus chunk/result caches exceed the default 5m Helm timeout - the cutover upgrade timed out at ~5m12s; upgrade remediation retries set to 3 so a failed upgrade rolls back instead of wedging."
+    },
+    {
+      "id": "loki_release_helmrepository_grafana_labs",
+      "label": "HelmRepository grafana-labs (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "mimir_kustomization_mimir",
+      "label": "Kustomization apps/base/mimir",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "mimir_release_mimir",
+      "label": "HelmRelease mimir (chart mimir-distributed)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "install remediation retries set to 0 (unlike every other app base, which uses 3) - a failed mimir-distributed install is not retried automatically."
+    },
+    {
+      "id": "minio_kustomization_minio",
+      "label": "Kustomization apps/base/minio",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "minio_namespace_minio",
+      "label": "Namespace minio",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "minio_namespace_minio_onelitefeather",
+      "label": "Namespace minio-onelitefeather",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "minio_release_minio",
+      "label": "HelmRelease minio",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "minio_release_ocirepository_minio",
+      "label": "OCIRepository minio (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_kustomization_n8n",
+      "label": "Kustomization apps/base/n8n",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_namespace_n8n",
+      "label": "Namespace n8n",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_n8n",
+      "label": "HelmRelease n8n",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_ocirepository_n8n",
+      "label": "OCIRepository n8n (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_kustomization_node_red",
+      "label": "Kustomization apps/base/node-red",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_namespace_node_red",
+      "label": "Namespace node-red",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_release_node_red",
+      "label": "HelmRelease node-red",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_release_helmrepository_node_red",
+      "label": "HelmRepository node-red (flux-system, SchwarzIT chart)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_kustomization_ollama",
+      "label": "Kustomization apps/base/ollama",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_namespace_ollama",
+      "label": "Namespace ollama",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_release_ollama",
+      "label": "HelmRelease ollama",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_release_helmrepository_ollama",
+      "label": "HelmRepository ollama (flux-system, otwld chart)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_apps_empty_values_base_pattern",
+      "label": "Empty-values app base pattern (values: {} in base, patched in overlay)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Every app base HelmRelease ships values: {} plus a comment linking upstream values.yaml; real configuration lives only in the cluster overlay patch, so the base stays portable and the overlay owns all cluster-specific settings."
+    }
+  ],
+  "edges": [
+    {
+      "source": "harbor_release_harbor",
+      "target": "harbor_release_helmrepository_harbor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_release_harbor",
+      "target": "harbor_namespace_harbor",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_release_harbor",
+      "target": "loki_release_loki",
+      "relation": "references",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.2,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_kustomization_leantime",
+      "target": "leantime_namespace_leantime",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_kustomization_leantime",
+      "target": "leantime_release_leantime",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_release_leantime",
+      "target": "leantime_release_gitrepository_helmcharts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "loki_kustomization_loki",
+      "target": "loki_release_loki",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "loki_kustomization_loki",
+      "target": "loki_namespace_grafana",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "loki_release_loki",
+      "target": "loki_release_helmrepository_grafana_labs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "mimir_kustomization_mimir",
+      "target": "mimir_release_mimir",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "mimir_kustomization_mimir",
+      "target": "loki_namespace_grafana",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "mimir_release_mimir",
+      "target": "loki_release_helmrepository_grafana_labs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "mimir_release_mimir",
+      "target": "loki_release_loki",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_kustomization_minio",
+      "target": "minio_namespace_minio",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_kustomization_minio",
+      "target": "minio_namespace_minio_onelitefeather",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_kustomization_minio",
+      "target": "minio_release_minio",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_release_minio",
+      "target": "minio_release_ocirepository_minio",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_release_minio",
+      "target": "minio_namespace_minio_onelitefeather",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/namespace.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_release_minio",
+      "target": "loki_release_loki",
+      "relation": "references",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.2,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_kustomization_n8n",
+      "target": "n8n_namespace_n8n",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_kustomization_n8n",
+      "target": "n8n_release_n8n",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_release_ocirepository_n8n",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_kustomization_node_red",
+      "target": "node_red_namespace_node_red",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_kustomization_node_red",
+      "target": "node_red_release_node_red",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_release_node_red",
+      "target": "node_red_release_helmrepository_node_red",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_kustomization_ollama",
+      "target": "ollama_namespace_ollama",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_kustomization_ollama",
+      "target": "ollama_release_ollama",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_ollama",
+      "target": "ollama_release_helmrepository_ollama",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "node_red_release_node_red",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_release_minio",
+      "target": "loki_release_helmrepository_grafana_labs",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.55,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_release_harbor",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_release_leantime",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "loki_release_loki",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/loki/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "mimir_release_mimir",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "minio_release_minio",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/minio/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_release_node_red",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/node-red/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_ollama",
+      "target": "base_apps_empty_values_base_pattern",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_ollama",
+      "target": "n8n_release_n8n",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.55,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "grafana_observability_backends",
+      "label": "Loki and Mimir share the grafana namespace and the grafana-labs Helm source",
+      "nodes": [
+        "loki_release_loki",
+        "mimir_release_mimir",
+        "loki_namespace_grafana",
+        "loki_release_helmrepository_grafana_labs"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/mimir/release.yaml"
+    },
+    {
+      "id": "flux_chart_source_kinds",
+      "label": "App bases resolve charts through three source kinds: HelmRepository, OCIRepository, and the in-repo helmcharts GitRepository",
+      "nodes": [
+        "harbor_release_helmrepository_harbor",
+        "loki_release_helmrepository_grafana_labs",
+        "node_red_release_helmrepository_node_red",
+        "ollama_release_helmrepository_ollama",
+        "minio_release_ocirepository_minio",
+        "n8n_release_ocirepository_n8n",
+        "leantime_release_gitrepository_helmcharts"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/harbor/release.yaml"
+    },
+    {
+      "id": "namespace_plus_release_base_unit",
+      "label": "Each app base is a namespace.yaml + release.yaml pair wired by a kustomization.yaml that also sets the namespace field",
+      "nodes": [
+        "leantime_kustomization_leantime",
+        "leantime_namespace_leantime",
+        "leantime_release_leantime",
+        "n8n_kustomization_n8n",
+        "n8n_namespace_n8n",
+        "n8n_release_n8n",
+        "ollama_kustomization_ollama",
+        "ollama_namespace_ollama",
+        "ollama_release_ollama"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/leantime/kustomization.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

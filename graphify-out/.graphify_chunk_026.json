@@ -1,0 +1,1199 @@
+{
+  "nodes": [
+    {
+      "id": "vulpes_backend_namespace_vulpes",
+      "label": "Namespace vulpes",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/vulpes-backend/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_release_vulpes_backend_base",
+      "label": "HelmRelease vulpes-backend (base)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/vulpes-backend/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "apps_kustomization_apps_layer",
+      "label": "apps layer Kustomization (feathre-core)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_dev_kustomization_otis_dev",
+      "label": "otis-dev overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_dev_namespace_otis_dev",
+      "label": "Namespace otis-dev",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_dev_release_otis_dev",
+      "label": "HelmRelease otis-dev",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_kustomization_otis",
+      "label": "otis overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_release_otis_patch",
+      "label": "HelmRelease otis patch",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_dev_kustomization_vulpes_backend_dev",
+      "label": "vulpes-backend-dev overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_dev_namespace_vulpes_dev",
+      "label": "Namespace vulpes-dev",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "label": "HelmRelease vulpes-backend-dev",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_kustomization_vulpes_backend_overlay",
+      "label": "vulpes-backend overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_release_vulpes_backend_patch",
+      "label": "HelmRelease vulpes-backend patch",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_harbor_dockerconfigjson_sops",
+      "label": "otis harbor dockerconfigjson SOPS secret",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/harbor.onelitefeather.dev.dockerconfigjson.sops.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_dev_harbor_dockerconfigjson_sops",
+      "label": "otis-dev harbor dockerconfigjson SOPS secret",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/harbor.onelitefeather.dev.dockerconfigjson.sops.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_harbor_dockerconfigjson_sops",
+      "label": "vulpes-backend harbor dockerconfigjson SOPS secret",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/harbor.onelitefeather.dev.dockerconfigjson.sops.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_backend_dev_harbor_dockerconfigjson_sops",
+      "label": "vulpes-backend-dev harbor dockerconfigjson SOPS secret",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/harbor.onelitefeather.dev.dockerconfigjson.sops.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "harbor_pull_secret",
+      "label": "harbor-pull imagePullSecret",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_app_db_secret",
+      "label": "otis-app-db secret",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "otis_dev_app_db_secret",
+      "label": "otis-dev-app-db secret",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_app_db_secret",
+      "label": "vulpes-app-db secret",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vulpes_dev_app_db_secret",
+      "label": "vulpes-dev-app-db secret",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "helm_micronaut_chart",
+      "label": "micronaut Helm chart (./helm/micronaut)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/vulpes-backend/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flux_system_helmcharts_gitrepository",
+      "label": "GitRepository helmcharts (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/vulpes-backend/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "envoy_gateway_eg",
+      "label": "Envoy Gateway 'eg' https listener",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "harbor_onelitefeather_dev_registry",
+      "label": "harbor.onelitefeather.dev container registry",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_logs_kustomization_alloy_logs",
+      "label": "alloy-logs overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_logs_release_alloy_logs",
+      "label": "HelmRelease alloy-logs patch",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_metrics_kustomization_alloy_metrics",
+      "label": "alloy-metrics overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-metrics/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_metrics_release_alloy_metrics",
+      "label": "HelmRelease alloy-metrics patch",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-metrics/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "alloy_receiver_grpcroute_alloy_receiver",
+      "label": "GRPCRoute alloy-receiver (otel.apps.onelite.feather)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-receiver/grpcroute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "loki_gateway_push_endpoint",
+      "label": "loki-gateway push endpoint",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "mimir_gateway_remote_write_endpoint",
+      "label": "mimir-gateway remote_write endpoint",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-metrics/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "logs_onelitefeather_net_label_schema",
+      "label": "logs.onelitefeather.net pod-label schema (format/env/scrape/tenant)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Opt-in labels rather than global parsing: format=json enables JSON parsing only for apps that emit it (no parse-error spam / wasted CPU on plain-text apps), env separates prod/dev streams in Loki, and the scrape=false annotation is an explicit opt-out with scraping as the default."
+    },
+    {
+      "id": "loki_label_cardinality_policy",
+      "label": "Loki label cardinality policy (level as index label, logger as structured metadata)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "level is low-cardinality so it becomes a real index label for fast {level=\"ERROR\"} filtering; logger is higher-cardinality and is pushed to structured metadata instead. instance is kept as a label so Helm releases sharing the micronaut chart name stay distinguishable."
+    },
+    {
+      "id": "alloy_ansi_strip_toplevel",
+      "label": "Unconditional top-level ANSI strip stage",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A stage.replace nested inside stage.match was confirmed live not to mutate the line (selector matched but ANSI codes passed through). Root cause never isolated; moving the replace to top level sidesteps it and is a harmless no-op on lines without ANSI codes."
+    },
+    {
+      "id": "alloy_metrics_clustering_shard_dedup",
+      "label": "Alloy clustered metrics sharding replaces Prometheus Agent HA dedup",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-metrics/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The 2 clustered replicas scrape disjoint shards of the discovered PodMonitor/ServiceMonitor targets, so unlike the retired 2x-replica Prometheus Agent there is no sample duplication and no Mimir-side HA dedup needed for this path. Discovery scope (all namespaces, no selector) matches the old agent's namespace selectors."
+    },
+    {
+      "id": "otel_coldstart_startupprobe",
+      "label": "startupProbe for OTel-instrumented JVM cold start",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "OTel bytecode instrumentation adds seconds to JVM cold start, pushing the first successful health check past the livenessProbe deadline; the pod was SIGTERM-looped before it ever finished starting. A startupProbe holds liveness off until startup completes."
+    },
+    {
+      "id": "micronaut_kubernetes_health_indicator_disabled",
+      "label": "KubernetesHealthIndicator disabled under k8s profile",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "client-java bundled with micronaut-kubernetes 7.1.1 cannot deserialize newer API-server pod fields (observedGeneration / PodReadyToStartContainers), so every /health probe logged ERROR+WARN. Service discovery itself is unaffected, so only the health indicator is disabled. The k8s profile must be listed explicitly because an explicit MICRONAUT_ENVIRONMENTS disables auto-deduction, and the chart requires one config file per profile."
+    },
+    {
+      "id": "spegel_mutable_tag_stale_digest",
+      "label": "Immutable image tags due to Spegel P2P cache",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Spegel caches mutable tags P2P, so \"latest\" kept resolving to a stale digest on vulpes-backend-dev; pinning an immutable version tag with pullPolicy IfNotPresent resolves correctly, at the cost of having to bump the tag per dev roll. otis-dev instead keeps latest with pullPolicy Always."
+    },
+    {
+      "id": "ha_prod_rollout_pattern",
+      "label": "HA prod rollout pattern (2 replicas, surge+1, anti-affinity, PDB)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "maxUnavailable 0 / maxSurge 1 gives seamless rollouts, host-topology podAntiAffinity spreads replicas across nodes, and a PDB with maxUnavailable 1 keeps node drains from taking the service down. Expressed entirely in native chart values, no postRenderer patches."
+    },
+    {
+      "id": "dev_besteffort_no_pdb",
+      "label": "Dev best-effort profile (single replica, no PDB, no priorityClass)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dev deliberately omits priorityClassName and PDB so it yields to prod under node pressure; logging/JSON setup mirrors prod so behaviour matches, and only DB, domain and image tag differ."
+    },
+    {
+      "id": "access_logger_probe_exclusions",
+      "label": "Netty access-logger probe/metrics exclusions",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "kubelet hits /health every 5-10s and Prometheus scrapes /prometheus; URI regex exclusions drop that noise. Because root is WARN, HTTP_ACCESS_LOGGER has to be raised to INFO explicitly for the remaining request logs to appear."
+    }
+  ],
+  "edges": [
+    {
+      "source": "apps_kustomization_apps_layer",
+      "target": "otis_kustomization_otis",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "apps_kustomization_apps_layer",
+      "target": "otis_dev_kustomization_otis_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "apps_kustomization_apps_layer",
+      "target": "vulpes_backend_kustomization_vulpes_backend_overlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "apps_kustomization_apps_layer",
+      "target": "vulpes_backend_dev_kustomization_vulpes_backend_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_kustomization_vulpes_backend_overlay",
+      "target": "vulpes_backend_release_vulpes_backend_base",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_kustomization_vulpes_backend_overlay",
+      "target": "vulpes_backend_namespace_vulpes",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_release_vulpes_backend_patch",
+      "target": "vulpes_backend_release_vulpes_backend_base",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_kustomization_otis",
+      "target": "otis_release_otis_patch",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_kustomization_otis_dev",
+      "target": "otis_dev_release_otis_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_kustomization_otis_dev",
+      "target": "otis_dev_namespace_otis_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_kustomization_vulpes_backend_dev",
+      "target": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_kustomization_vulpes_backend_dev",
+      "target": "vulpes_backend_dev_namespace_vulpes_dev",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_release_vulpes_backend_base",
+      "target": "helm_micronaut_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_release_otis_dev",
+      "target": "helm_micronaut_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "target": "helm_micronaut_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "helm_micronaut_chart",
+      "target": "flux_system_helmcharts_gitrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "otis_app_db_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_release_otis_dev",
+      "target": "otis_dev_app_db_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_release_vulpes_backend_patch",
+      "target": "vulpes_app_db_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "target": "vulpes_dev_app_db_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_pull_secret",
+      "target": "otis_harbor_dockerconfigjson_sops",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_pull_secret",
+      "target": "otis_dev_harbor_dockerconfigjson_sops",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_pull_secret",
+      "target": "vulpes_backend_harbor_dockerconfigjson_sops",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_pull_secret",
+      "target": "vulpes_backend_dev_harbor_dockerconfigjson_sops",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "harbor_pull_secret",
+      "target": "harbor_onelitefeather_dev_registry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/harbor.onelitefeather.dev.dockerconfigjson.sops.json",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "harbor_pull_secret",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_release_vulpes_backend_patch",
+      "target": "harbor_pull_secret",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "harbor_onelitefeather_dev_registry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "target": "harbor_onelitefeather_dev_registry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_release_otis_dev",
+      "target": "envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_release_vulpes_backend_patch",
+      "target": "envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "target": "envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_receiver_grpcroute_alloy_receiver",
+      "target": "envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-receiver/grpcroute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_logs_kustomization_alloy_logs",
+      "target": "alloy_logs_release_alloy_logs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_metrics_kustomization_alloy_metrics",
+      "target": "alloy_metrics_release_alloy_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-metrics/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_logs_release_alloy_logs",
+      "target": "loki_gateway_push_endpoint",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_metrics_release_alloy_metrics",
+      "target": "mimir_gateway_remote_write_endpoint",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-metrics/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_logs_release_alloy_logs",
+      "target": "logs_onelitefeather_net_label_schema",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "logs_onelitefeather_net_label_schema",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_release_otis_dev",
+      "target": "logs_onelitefeather_net_label_schema",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_release_vulpes_backend_patch",
+      "target": "logs_onelitefeather_net_label_schema",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "target": "logs_onelitefeather_net_label_schema",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_logs_release_alloy_logs",
+      "target": "loki_label_cardinality_policy",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_ansi_strip_toplevel",
+      "target": "alloy_logs_release_alloy_logs",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_metrics_clustering_shard_dedup",
+      "target": "alloy_metrics_release_alloy_metrics",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-metrics/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otel_coldstart_startupprobe",
+      "target": "otis_release_otis_patch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otel_coldstart_startupprobe",
+      "target": "vulpes_backend_release_vulpes_backend_patch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_kubernetes_health_indicator_disabled",
+      "target": "otis_release_otis_patch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_kubernetes_health_indicator_disabled",
+      "target": "vulpes_backend_release_vulpes_backend_patch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spegel_mutable_tag_stale_digest",
+      "target": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ha_prod_rollout_pattern",
+      "target": "otis_release_otis_patch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ha_prod_rollout_pattern",
+      "target": "vulpes_backend_release_vulpes_backend_patch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dev_besteffort_no_pdb",
+      "target": "otis_dev_release_otis_dev",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dev_besteffort_no_pdb",
+      "target": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "access_logger_probe_exclusions",
+      "target": "otis_release_otis_patch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "alloy_metrics_release_alloy_metrics",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_release_vulpes_backend_patch",
+      "target": "alloy_metrics_release_alloy_metrics",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "alloy_logs_release_alloy_logs",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_release_otis_patch",
+      "target": "vulpes_backend_release_vulpes_backend_patch",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_release_otis_dev",
+      "target": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_release_otis_dev",
+      "target": "otis_release_otis_patch",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "target": "vulpes_backend_release_vulpes_backend_patch",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "otis_dev_release_otis_dev",
+      "target": "spegel_mutable_tag_stale_digest",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis-dev/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "vulpes_backend_dev_release_vulpes_backend_dev",
+      "target": "vulpes_backend_namespace_vulpes",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/vulpes-backend-dev/namespace.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "alloy_receiver_grpcroute_alloy_receiver",
+      "target": "otis_release_otis_patch",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-receiver/grpcroute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "json_log_pipeline_optin",
+      "label": "Opt-in JSON log pipeline: app pod labels -> Alloy relabel/process -> Loki",
+      "nodes": [
+        "otis_release_otis_patch",
+        "vulpes_backend_release_vulpes_backend_patch",
+        "otis_dev_release_otis_dev",
+        "alloy_logs_release_alloy_logs",
+        "loki_gateway_push_endpoint",
+        "logs_onelitefeather_net_label_schema"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/alloy-logs/release.yaml"
+    },
+    {
+      "id": "micronaut_chart_delivery_flow",
+      "label": "Micronaut services delivered from the in-repo chart via the helmcharts GitRepository",
+      "nodes": [
+        "flux_system_helmcharts_gitrepository",
+        "helm_micronaut_chart",
+        "vulpes_backend_release_vulpes_backend_base",
+        "otis_dev_release_otis_dev",
+        "vulpes_backend_dev_release_vulpes_backend_dev"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/base/vulpes-backend/release.yaml"
+    },
+    {
+      "id": "harbor_pull_secret_flow",
+      "label": "SOPS dockerconfigjson -> secretGenerator harbor-pull -> imagePullSecrets on every app",
+      "nodes": [
+        "otis_harbor_dockerconfigjson_sops",
+        "harbor_pull_secret",
+        "otis_kustomization_otis",
+        "otis_release_otis_patch",
+        "harbor_onelitefeather_dev_registry"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/apps/otis/kustomization.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

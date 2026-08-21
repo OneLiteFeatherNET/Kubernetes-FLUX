@@ -1,0 +1,1098 @@
+{
+ "nodes": [
+  {
+   "id": "rbac_kustomization_rbac_kustomization",
+   "label": "rbac overlay Kustomization (feather-core RBAC layer)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "rbac_onelitefeather_oidc_onelitefeather_binding",
+   "label": "ClusterRoleBinding oidc-onelitefeather-binding",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/onelitefeather.yml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "rbac_themeinerlp_oidc_themeinerlp_binding",
+   "label": "ClusterRoleBinding oidc-themeinerlp-binding",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/themeinerlp.yml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "rbac_kustomization_cluster_admin",
+   "label": "cluster-admin ClusterRole (built-in)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "rbac_kustomization_oidc_user_prefix",
+   "label": "oidc: username prefix (OIDC-issued cluster identities)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_kustomization_buckets_kustomization",
+   "label": "rook-fr01 buckets Kustomization (ObjectBucketClaim set, ns rook-ceph-fr01)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_kustomization_ceph_bucket_fr01",
+   "label": "ceph-bucket-fr01 StorageClass (RGW object-bucket provisioner)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "label": "rook-ceph-fr01 namespace",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_feather_core_cluster_pg_backup_feather_core_cluster_pg_backup",
+   "label": "ObjectBucketClaim feather-core-cluster-pg-backup (CNPG Postgres backup target)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/feather-core-cluster-pg-backup.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_mariadb_galera_backup_mariadb_galera_backup",
+   "label": "ObjectBucketClaim mariadb-galera-backup (MariaDB Galera backup target)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mariadb-galera-backup.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_bluemap0_bluemap0",
+   "label": "ObjectBucketClaim bluemap0 (BlueMap render output)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/bluemap0.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_reposilite_onelitefeather_proxy_reposilite_onelitefeather_proxy",
+   "label": "ObjectBucketClaim reposilite-onelitefeather-proxy",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-proxy.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_reposilite_onelitefeather_releases_reposilite_onelitefeather_releases",
+   "label": "ObjectBucketClaim reposilite-onelitefeather-releases",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-releases.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_reposilite_onelitefeather_snapshots_reposilite_onelitefeather_snapshots",
+   "label": "ObjectBucketClaim reposilite-onelitefeather-snapshots",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-snapshots.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_harbor_harbor",
+   "label": "ObjectBucketClaim harbor (container registry blob store)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/harbor.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_loki_chunks_loki_chunks",
+   "label": "ObjectBucketClaim loki-chunks (Loki log chunk store)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/loki-chunks.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_loki_ruler_loki_ruler",
+   "label": "ObjectBucketClaim loki-ruler (Loki ruler state)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/loki-ruler.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_outline_outline",
+   "label": "ObjectBucketClaim outline (Outline wiki attachments)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/outline.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_mimir_alertmanager_mimir_alertmanager",
+   "label": "ObjectBucketClaim mimir-alertmanager (Mimir alertmanager state)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-alertmanager.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_mimir_blocks_mimir_blocks",
+   "label": "ObjectBucketClaim mimir-blocks (Mimir TSDB blocks)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-blocks.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_mimir_ruler_mimir_ruler",
+   "label": "ObjectBucketClaim mimir-ruler (Mimir rule store)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-ruler.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_reposilite_releases_reposilite_releases",
+   "label": "ObjectBucketClaim reposilite-releases",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-releases.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_reposilite_snapshots_reposilite_snapshots",
+   "label": "ObjectBucketClaim reposilite-snapshots",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-snapshots.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "buckets_tempo_traces_tempo_traces",
+   "label": "ObjectBucketClaim tempo-traces (Tempo trace blocks)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/tempo-traces.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "cluster_cluster_rook_ceph_fr01",
+   "label": "CephCluster rook-ceph-fr01 (3-node fr01 storage cluster)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "cluster_blockpool_feather_rbd",
+   "label": "CephBlockPool feather-rbd (replica 3, host failure domain)",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/blockpool.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "cluster_cluster_host_network_provider",
+   "label": "Rook host-network provider with split public/cluster CIDRs (192.168.15.0/24 / 10.10.10.0/24), msgr2 required",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.network",
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "cluster_cluster_storage_node_placement",
+   "label": "Storage-node placement contract: node-role.feather/workload-class=storage affinity + node-role.feather/storage toleration, deviceFilter ^sd[b-e]$ on fr01-str-01..03",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.storage/spec.placement",
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "cluster_cluster_rgw_debug_logging_suppression",
+   "label": "RGW debug-log suppression via exact client.rgw.feather.s3.a section",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.cephConfig",
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "cluster_cluster_osd_recovery_throttle",
+   "label": "OSD recovery/backfill throttle (osd_max_backfills=1, osd_memory_target=4Gi)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.cephConfig.osd",
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "cluster_cluster_feather_critical_priority",
+   "label": "feather-critical / system-node-critical priority classes for Ceph daemons",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.priorityClassNames",
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  }
+ ],
+ "edges": [
+  {
+   "source": "rbac_kustomization_rbac_kustomization",
+   "target": "rbac_themeinerlp_oidc_themeinerlp_binding",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/kustomization.yaml",
+   "source_location": "resources[0]",
+   "weight": 1.0
+  },
+  {
+   "source": "rbac_kustomization_rbac_kustomization",
+   "target": "rbac_onelitefeather_oidc_onelitefeather_binding",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/kustomization.yaml",
+   "source_location": "resources[1]",
+   "weight": 1.0
+  },
+  {
+   "source": "rbac_onelitefeather_oidc_onelitefeather_binding",
+   "target": "rbac_kustomization_cluster_admin",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/onelitefeather.yml",
+   "source_location": "roleRef",
+   "weight": 1.0
+  },
+  {
+   "source": "rbac_themeinerlp_oidc_themeinerlp_binding",
+   "target": "rbac_kustomization_cluster_admin",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/themeinerlp.yml",
+   "source_location": "roleRef",
+   "weight": 1.0
+  },
+  {
+   "source": "rbac_onelitefeather_oidc_onelitefeather_binding",
+   "target": "rbac_kustomization_oidc_user_prefix",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/onelitefeather.yml",
+   "source_location": "subjects[0].name",
+   "weight": 1.0
+  },
+  {
+   "source": "rbac_themeinerlp_oidc_themeinerlp_binding",
+   "target": "rbac_kustomization_oidc_user_prefix",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/themeinerlp.yml",
+   "source_location": "subjects[0].name",
+   "weight": 1.0
+  },
+  {
+   "source": "rbac_themeinerlp_oidc_themeinerlp_binding",
+   "target": "rbac_onelitefeather_oidc_onelitefeather_binding",
+   "relation": "semantically_similar_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.9,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_feather_core_cluster_pg_backup_feather_core_cluster_pg_backup",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_feather_core_cluster_pg_backup_feather_core_cluster_pg_backup",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/feather-core-cluster-pg-backup.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_feather_core_cluster_pg_backup_feather_core_cluster_pg_backup",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/feather-core-cluster-pg-backup.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_mariadb_galera_backup_mariadb_galera_backup",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mariadb_galera_backup_mariadb_galera_backup",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mariadb-galera-backup.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mariadb_galera_backup_mariadb_galera_backup",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mariadb-galera-backup.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_bluemap0_bluemap0",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_bluemap0_bluemap0",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/bluemap0.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_bluemap0_bluemap0",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/bluemap0.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_reposilite_onelitefeather_proxy_reposilite_onelitefeather_proxy",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_onelitefeather_proxy_reposilite_onelitefeather_proxy",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-proxy.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_onelitefeather_proxy_reposilite_onelitefeather_proxy",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-proxy.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_reposilite_onelitefeather_releases_reposilite_onelitefeather_releases",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_onelitefeather_releases_reposilite_onelitefeather_releases",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-releases.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_onelitefeather_releases_reposilite_onelitefeather_releases",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-releases.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_reposilite_onelitefeather_snapshots_reposilite_onelitefeather_snapshots",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_onelitefeather_snapshots_reposilite_onelitefeather_snapshots",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-snapshots.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_onelitefeather_snapshots_reposilite_onelitefeather_snapshots",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-onelitefeather-snapshots.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_harbor_harbor",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_harbor_harbor",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/harbor.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_harbor_harbor",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/harbor.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_loki_chunks_loki_chunks",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_loki_chunks_loki_chunks",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/loki-chunks.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_loki_chunks_loki_chunks",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/loki-chunks.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_loki_ruler_loki_ruler",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_loki_ruler_loki_ruler",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/loki-ruler.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_loki_ruler_loki_ruler",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/loki-ruler.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_outline_outline",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_outline_outline",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/outline.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_outline_outline",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/outline.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_mimir_alertmanager_mimir_alertmanager",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mimir_alertmanager_mimir_alertmanager",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-alertmanager.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mimir_alertmanager_mimir_alertmanager",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-alertmanager.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_mimir_blocks_mimir_blocks",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mimir_blocks_mimir_blocks",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-blocks.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mimir_blocks_mimir_blocks",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-blocks.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_mimir_ruler_mimir_ruler",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mimir_ruler_mimir_ruler",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-ruler.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_mimir_ruler_mimir_ruler",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/mimir-ruler.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_reposilite_releases_reposilite_releases",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_releases_reposilite_releases",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-releases.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_releases_reposilite_releases",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-releases.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_reposilite_snapshots_reposilite_snapshots",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_snapshots_reposilite_snapshots",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-snapshots.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_snapshots_reposilite_snapshots",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/reposilite-snapshots.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_buckets_kustomization",
+   "target": "buckets_tempo_traces_tempo_traces",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": "resources",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_tempo_traces_tempo_traces",
+   "target": "buckets_kustomization_ceph_bucket_fr01",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/tempo-traces.yaml",
+   "source_location": "spec.storageClassName",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_tempo_traces_tempo_traces",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/tempo-traces.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_kustomization_ceph_bucket_fr01",
+   "target": "cluster_cluster_rook_ceph_fr01",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_blockpool_feather_rbd",
+   "target": "cluster_cluster_rook_ceph_fr01",
+   "relation": "references",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/blockpool.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_cluster_rook_ceph_fr01",
+   "target": "buckets_kustomization_rook_ceph_fr01_namespace",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "metadata.namespace",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_cluster_rook_ceph_fr01",
+   "target": "cluster_cluster_host_network_provider",
+   "relation": "implements",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.network",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_cluster_rook_ceph_fr01",
+   "target": "cluster_cluster_storage_node_placement",
+   "relation": "implements",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.storage",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_cluster_rook_ceph_fr01",
+   "target": "cluster_cluster_rgw_debug_logging_suppression",
+   "relation": "implements",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.cephConfig",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_cluster_rook_ceph_fr01",
+   "target": "cluster_cluster_osd_recovery_throttle",
+   "relation": "implements",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.cephConfig.osd",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_cluster_rook_ceph_fr01",
+   "target": "cluster_cluster_feather_critical_priority",
+   "relation": "implements",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.priorityClassNames",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_cluster_rgw_debug_logging_suppression",
+   "target": "buckets_loki_chunks_loki_chunks",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml",
+   "source_location": "spec.cephConfig comment",
+   "weight": 1.0
+  },
+  {
+   "source": "cluster_blockpool_feather_rbd",
+   "target": "cluster_cluster_storage_node_placement",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.75,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/blockpool.yaml",
+   "source_location": "spec.failureDomain",
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_feather_core_cluster_pg_backup_feather_core_cluster_pg_backup",
+   "target": "buckets_mariadb_galera_backup_mariadb_galera_backup",
+   "relation": "semantically_similar_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_releases_reposilite_releases",
+   "target": "buckets_reposilite_onelitefeather_releases_reposilite_onelitefeather_releases",
+   "relation": "semantically_similar_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.8,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_reposilite_snapshots_reposilite_snapshots",
+   "target": "buckets_reposilite_onelitefeather_snapshots_reposilite_onelitefeather_snapshots",
+   "relation": "semantically_similar_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.8,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_loki_ruler_loki_ruler",
+   "target": "buckets_mimir_ruler_mimir_ruler",
+   "relation": "semantically_similar_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.8,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "buckets_loki_chunks_loki_chunks",
+   "target": "buckets_mimir_blocks_mimir_blocks",
+   "relation": "semantically_similar_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.75,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  }
+ ],
+ "hyperedges": [
+  {
+   "id": "observability_object_storage_backends",
+   "label": "Grafana-stack telemetry persisted on Ceph RGW buckets (Loki, Mimir, Tempo)",
+   "nodes": [
+    "buckets_loki_chunks_loki_chunks",
+    "buckets_loki_ruler_loki_ruler",
+    "buckets_mimir_blocks_mimir_blocks",
+    "buckets_mimir_ruler_mimir_ruler",
+    "buckets_mimir_alertmanager_mimir_alertmanager",
+    "buckets_tempo_traces_tempo_traces",
+    "buckets_kustomization_ceph_bucket_fr01"
+   ],
+   "relation": "participate_in",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/buckets/kustomization.yaml"
+  },
+  {
+   "id": "rook_fr01_ceph_storage_stack",
+   "label": "rook-fr01 Ceph stack: cluster + RBD pool + object-bucket StorageClass in one namespace",
+   "nodes": [
+    "cluster_cluster_rook_ceph_fr01",
+    "cluster_blockpool_feather_rbd",
+    "buckets_kustomization_ceph_bucket_fr01",
+    "buckets_kustomization_rook_ceph_fr01_namespace",
+    "cluster_cluster_storage_node_placement"
+   ],
+   "relation": "form",
+   "confidence": "INFERRED",
+   "confidence_score": 0.9,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rook-fr01/cluster/cluster.yaml"
+  },
+  {
+   "id": "oidc_cluster_admin_grants",
+   "label": "OIDC-issued human identities granted cluster-admin via the rbac layer",
+   "nodes": [
+    "rbac_kustomization_rbac_kustomization",
+    "rbac_onelitefeather_oidc_onelitefeather_binding",
+    "rbac_themeinerlp_oidc_themeinerlp_binding",
+    "rbac_kustomization_cluster_admin",
+    "rbac_kustomization_oidc_user_prefix"
+   ],
+   "relation": "participate_in",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/rbac/kustomization.yaml"
+  }
+ ],
+ "input_tokens": 0,
+ "output_tokens": 0
+}

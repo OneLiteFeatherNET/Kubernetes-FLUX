@@ -1,0 +1,1104 @@
+{
+ "nodes": [
+  {
+   "id": "mariadb_galera",
+   "label": "MariaDB Galera cluster (mariaDbRef mariadb-galera)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "mariadb_galera_database_spec_convention",
+   "label": "MariaDB Database spec convention (utf8/utf8_general_ci, cleanupPolicy Delete, requeue 10h, retry 30s)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/leantime.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "mariadb_galera_all_privileges_grant_pattern",
+   "label": "Per-app ALL PRIVILEGES grant pattern (own database, host %, grantOption false)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/leantime.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_monitoring_least_privilege_access",
+   "label": "Least-privilege monitoring access (PROCESS, REPLICATION CLIENT, SELECT on *.*)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/monitoring.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "mariadb_galera_grant_option_delegation",
+   "label": "grantOption delegation (privilege re-granting allowed)",
+   "file_type": "concept",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/plotsquared.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_kustomization",
+   "label": "Kustomization: mariadb-galera databases",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_kustomization",
+   "label": "Kustomization: mariadb-galera grants",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_leantime",
+   "label": "Database leantime",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/leantime.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_luckperms",
+   "label": "Database luckperms",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/luckperms.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_playerkits",
+   "label": "Database playerkits",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/playerkits.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_plotsquared",
+   "label": "Database plotsquared",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/plotsquared.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_prism",
+   "label": "Database prism",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/prism.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_reposilite",
+   "label": "Database reposilite",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/reposilite.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_shlink",
+   "label": "Database shlink",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/shlink.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_stardust",
+   "label": "Database stardust",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/stardust.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "databases_uptime_kuma",
+   "label": "Database uptime-kuma",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/uptime-kuma.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_cloudnet_user_grant",
+   "label": "Grant cloudnet-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/cloudnet.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_coreprotect_user_grant",
+   "label": "Grant coreprotect-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/coreprotect.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_discordbot_user_grant",
+   "label": "Grant discordbot-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/discordbot.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_leantime_user_grant",
+   "label": "Grant leantime-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/leantime.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_luckperms_user_grant",
+   "label": "Grant luckperms-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/luckperms.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_monitoring_user_grant",
+   "label": "Grant monitoring-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/monitoring.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_playerkits_user_grant",
+   "label": "Grant playerkits-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/playerkits.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_plotsquared_user_grant",
+   "label": "Grant plotsquared-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/plotsquared.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_prism_user_grant",
+   "label": "Grant prism-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/prism.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_reposilite_user_grant",
+   "label": "Grant reposilite-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/reposilite.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  },
+  {
+   "id": "grants_shlink_user_grant",
+   "label": "Grant shlink-user-grant",
+   "file_type": "code",
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/shlink.yaml",
+   "source_location": null,
+   "source_url": null,
+   "captured_at": null,
+   "author": null,
+   "contributor": null
+  }
+ ],
+ "edges": [
+  {
+   "source": "databases_kustomization",
+   "target": "databases_leantime",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_leantime",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/leantime.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_leantime",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/leantime.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_luckperms",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_luckperms",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/luckperms.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_luckperms",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/luckperms.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_playerkits",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_playerkits",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/playerkits.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_playerkits",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/playerkits.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_plotsquared",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_plotsquared",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/plotsquared.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_plotsquared",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/plotsquared.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_prism",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_prism",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/prism.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_prism",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/prism.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_reposilite",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_reposilite",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/reposilite.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_reposilite",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/reposilite.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_shlink",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_shlink",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/shlink.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_shlink",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/shlink.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_stardust",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_stardust",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/stardust.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_stardust",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/stardust.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "databases_uptime_kuma",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_uptime_kuma",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/uptime-kuma.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_uptime_kuma",
+   "target": "mariadb_galera_database_spec_convention",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/uptime-kuma.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_cloudnet_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_cloudnet_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/cloudnet.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_cloudnet_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/cloudnet.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_coreprotect_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_coreprotect_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/coreprotect.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_coreprotect_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/coreprotect.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_discordbot_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_discordbot_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/discordbot.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_discordbot_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/discordbot.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_leantime_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_leantime_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/leantime.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_leantime_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/leantime.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_luckperms_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_luckperms_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/luckperms.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_luckperms_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/luckperms.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_monitoring_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_monitoring_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/monitoring.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_playerkits_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_playerkits_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/playerkits.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_playerkits_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/playerkits.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_plotsquared_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_plotsquared_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/plotsquared.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_plotsquared_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/plotsquared.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_prism_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_prism_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/prism.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_prism_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/prism.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_reposilite_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_reposilite_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/reposilite.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_reposilite_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/reposilite.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_kustomization",
+   "target": "grants_shlink_user_grant",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_shlink_user_grant",
+   "target": "mariadb_galera",
+   "relation": "references",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/shlink.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_shlink_user_grant",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "implements",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/shlink.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_monitoring_user_grant",
+   "target": "grants_monitoring_least_privilege_access",
+   "relation": "implements",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/monitoring.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_monitoring_least_privilege_access",
+   "target": "mariadb_galera_all_privileges_grant_pattern",
+   "relation": "semantically_similar_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.7,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/monitoring.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_plotsquared_user_grant",
+   "target": "mariadb_galera_grant_option_delegation",
+   "relation": "implements",
+   "confidence": "AMBIGUOUS",
+   "confidence_score": 0.3,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/plotsquared.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_leantime_user_grant",
+   "target": "databases_leantime",
+   "relation": "shares_data_with",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/leantime.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_luckperms_user_grant",
+   "target": "databases_luckperms",
+   "relation": "shares_data_with",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/luckperms.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_playerkits_user_grant",
+   "target": "databases_playerkits",
+   "relation": "shares_data_with",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/playerkits.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_plotsquared_user_grant",
+   "target": "databases_plotsquared",
+   "relation": "shares_data_with",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/plotsquared.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_prism_user_grant",
+   "target": "databases_prism",
+   "relation": "shares_data_with",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/prism.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_reposilite_user_grant",
+   "target": "databases_reposilite",
+   "relation": "shares_data_with",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/reposilite.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_shlink_user_grant",
+   "target": "databases_shlink",
+   "relation": "shares_data_with",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/shlink.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_cloudnet_user_grant",
+   "target": "databases_kustomization",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/cloudnet.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_coreprotect_user_grant",
+   "target": "databases_kustomization",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/coreprotect.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "grants_discordbot_user_grant",
+   "target": "databases_kustomization",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/grants/discordbot.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_stardust",
+   "target": "grants_kustomization",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/stardust.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_uptime_kuma",
+   "target": "grants_kustomization",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/uptime-kuma.yaml",
+   "source_location": null,
+   "weight": 1.0
+  },
+  {
+   "source": "databases_kustomization",
+   "target": "grants_kustomization",
+   "relation": "conceptually_related_to",
+   "confidence": "INFERRED",
+   "confidence_score": 0.95,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+   "source_location": null,
+   "weight": 1.0
+  }
+ ],
+ "hyperedges": [
+  {
+   "id": "mariadb_galera_tenant_provisioning",
+   "label": "Per-tenant MariaDB provisioning: Database CRs + Grant CRs reconciled against the shared galera cluster",
+   "nodes": [
+    "databases_kustomization",
+    "grants_kustomization",
+    "mariadb_galera",
+    "mariadb_galera_database_spec_convention",
+    "mariadb_galera_all_privileges_grant_pattern"
+   ],
+   "relation": "form",
+   "confidence": "EXTRACTED",
+   "confidence_score": 1.0,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml"
+  },
+  {
+   "id": "minecraft_plugin_datastores",
+   "label": "Minecraft plugin datastores on the galera cluster",
+   "nodes": [
+    "databases_luckperms",
+    "databases_plotsquared",
+    "databases_prism",
+    "databases_playerkits",
+    "databases_stardust",
+    "grants_coreprotect_user_grant",
+    "grants_cloudnet_user_grant"
+   ],
+   "relation": "participate_in",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml"
+  },
+  {
+   "id": "web_service_datastores",
+   "label": "Web/service datastores on the galera cluster",
+   "nodes": [
+    "databases_leantime",
+    "databases_reposilite",
+    "databases_shlink",
+    "databases_uptime_kuma",
+    "grants_discordbot_user_grant"
+   ],
+   "relation": "participate_in",
+   "confidence": "INFERRED",
+   "confidence_score": 0.85,
+   "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml"
+  }
+ ],
+ "input_tokens": 0,
+ "output_tokens": 0
+}

@@ -1,0 +1,954 @@
+{
+  "nodes": [
+    {
+      "id": "templates_notes_micronaut_notes",
+      "label": "micronaut chart NOTES.txt post-install hints",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/NOTES.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_configmap_micronaut_config",
+      "label": "micronaut ConfigMap template (application.yml + per-profile overlays)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/configmap.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_micronaut_deployment",
+      "label": "micronaut Deployment template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_micronaut_otel_initcontainer",
+      "label": "otel-agent initContainer (copies javaagent.jar into emptyDir)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_micronaut_config_files_env",
+      "label": "MICRONAUT_CONFIG_FILES / MICRONAUT_ENVIRONMENTS env wiring",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_micronaut_jdk_java_options",
+      "label": "JDK_JAVA_OPTIONS javaagent attachment",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_hpa_micronaut_hpa",
+      "label": "micronaut HorizontalPodAutoscaler template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/hpa.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_httproute_micronaut_httproute",
+      "label": "micronaut Gateway API HTTPRoute template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_ingress_micronaut_ingress",
+      "label": "micronaut Ingress template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_pdb_micronaut_pdb",
+      "label": "micronaut PodDisruptionBudget template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/pdb.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_rbac_micronaut_discovery_role",
+      "label": "micronaut discovery Role + RoleBinding (services/endpoints/pods read)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/rbac.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_rbac_micronaut_kubernetes_discovery_client",
+      "label": "micronaut-kubernetes discovery client / KubernetesHealthIndicator",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/rbac.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_service_micronaut_service",
+      "label": "micronaut Service template (ClusterIP, http port)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/service.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_serviceaccount_micronaut_serviceaccount",
+      "label": "micronaut ServiceAccount template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/serviceaccount.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_servicemonitor_micronaut_servicemonitor",
+      "label": "micronaut Prometheus ServiceMonitor template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/servicemonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tests_test_connection_micronaut_test_connection",
+      "label": "micronaut helm test hook Pod (wget against Service)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_tracing",
+      "label": "tracing values block (traces-only OTel Java agent)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_startupprobe",
+      "label": "startupProbe values block (off by default)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_readinessprobe",
+      "label": "readinessProbe / livenessProbe values block",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_securitycontext",
+      "label": "securityContext / podSecurityContext / containerSecurityContext values",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_config_profiles",
+      "label": "config.base + config.profiles + profiles list",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_secrets",
+      "label": "secrets values block (per-profile secret overlays mounted at /secrets)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_rbac_create",
+      "label": "rbac.create toggle for Micronaut Kubernetes service discovery",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_tempo_gateway",
+      "label": "tempo-gateway.grafana.svc.cluster.local:4317 OTLP endpoint",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "micronaut_values_autoinstrumentation_java_image",
+      "label": "autoinstrumentation-java:2.29.0 javaagent jar-holder image",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_chart_outline",
+      "label": "outline Helm chart metadata (version 0.5.1, appVersion 0.82.0)",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/Chart.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_notes_outline_notes",
+      "label": "outline chart NOTES.txt post-install hints",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/NOTES.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_outline_deployment",
+      "label": "outline per-component Deployment template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_outline_services_env",
+      "label": "SERVICES env var derived from component definition",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_hpa_outline_hpa",
+      "label": "outline per-component HorizontalPodAutoscaler template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/hpa.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_httproute_outline_httproute",
+      "label": "outline Gateway API HTTPRoute template (routes -> component backends)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_ingress_outline_ingress",
+      "label": "outline Ingress template (routes -> component backends)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_pdb_outline_pdb",
+      "label": "outline per-component PodDisruptionBudget template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/pdb.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_service_outline_service",
+      "label": "outline per-component Service template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/service.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_serviceaccount_outline_serviceaccount",
+      "label": "outline ServiceAccount template",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/serviceaccount.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_outline_component_labels_helper",
+      "label": "outline.componentLabels / outline.componentSelectorLabels helper contract",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_httproute_outline_routes",
+      "label": "Values.routes path-to-component routing table",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "templates_deployment_micronaut_deployment",
+      "target": "templates_configmap_micronaut_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_deployment",
+      "target": "templates_configmap_micronaut_config",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_config_files_env",
+      "target": "templates_configmap_micronaut_config",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_configmap_micronaut_config",
+      "target": "micronaut_values_config_profiles",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/configmap.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_config_files_env",
+      "target": "micronaut_values_secrets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_deployment",
+      "target": "templates_deployment_micronaut_otel_initcontainer",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_jdk_java_options",
+      "target": "templates_deployment_micronaut_otel_initcontainer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_values_tracing",
+      "target": "templates_deployment_micronaut_otel_initcontainer",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_otel_initcontainer",
+      "target": "micronaut_values_autoinstrumentation_java_image",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_values_tracing",
+      "target": "micronaut_values_tempo_gateway",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_values_startupprobe",
+      "target": "micronaut_values_tracing",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_values_startupprobe",
+      "target": "micronaut_values_readinessprobe",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_values_tracing",
+      "target": "templates_servicemonitor_micronaut_servicemonitor",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_deployment",
+      "target": "micronaut_values_readinessprobe",
+      "relation": "references",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_deployment",
+      "target": "micronaut_values_securitycontext",
+      "relation": "references",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_hpa_micronaut_hpa",
+      "target": "templates_deployment_micronaut_deployment",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/hpa.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_pdb_micronaut_pdb",
+      "target": "templates_deployment_micronaut_deployment",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/pdb.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_service_micronaut_service",
+      "target": "templates_deployment_micronaut_deployment",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/service.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_ingress_micronaut_ingress",
+      "target": "templates_service_micronaut_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_httproute_micronaut_httproute",
+      "target": "templates_service_micronaut_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_servicemonitor_micronaut_servicemonitor",
+      "target": "templates_service_micronaut_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/servicemonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_connection_micronaut_test_connection",
+      "target": "templates_service_micronaut_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_rbac_micronaut_discovery_role",
+      "target": "templates_serviceaccount_micronaut_serviceaccount",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/rbac.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_rbac_micronaut_discovery_role",
+      "target": "templates_rbac_micronaut_kubernetes_discovery_client",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/rbac.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_values_rbac_create",
+      "target": "templates_rbac_micronaut_discovery_role",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_rbac_micronaut_kubernetes_discovery_client",
+      "target": "templates_service_micronaut_service",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/rbac.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_micronaut_deployment",
+      "target": "templates_serviceaccount_micronaut_serviceaccount",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_notes_micronaut_notes",
+      "target": "templates_ingress_micronaut_ingress",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/NOTES.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_notes_micronaut_notes",
+      "target": "templates_service_micronaut_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/NOTES.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_ingress_micronaut_ingress",
+      "target": "templates_httproute_micronaut_httproute",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_outline_deployment",
+      "target": "templates_deployment_outline_services_env",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_outline_deployment",
+      "target": "templates_deployment_outline_component_labels_helper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_service_outline_service",
+      "target": "templates_deployment_outline_component_labels_helper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/service.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_pdb_outline_pdb",
+      "target": "templates_deployment_outline_component_labels_helper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/pdb.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_service_outline_service",
+      "target": "templates_deployment_outline_deployment",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/service.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_hpa_outline_hpa",
+      "target": "templates_deployment_outline_deployment",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/hpa.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_pdb_outline_pdb",
+      "target": "templates_deployment_outline_deployment",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/pdb.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_httproute_outline_httproute",
+      "target": "templates_service_outline_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_ingress_outline_ingress",
+      "target": "templates_service_outline_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_httproute_outline_httproute",
+      "target": "templates_httproute_outline_routes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_ingress_outline_ingress",
+      "target": "templates_httproute_outline_routes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_httproute_outline_routes",
+      "target": "templates_deployment_outline_services_env",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_outline_deployment",
+      "target": "templates_serviceaccount_outline_serviceaccount",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_outline_deployment",
+      "target": "outline_chart_outline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_notes_outline_notes",
+      "target": "templates_service_outline_service",
+      "relation": "references",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/NOTES.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_outline_deployment",
+      "target": "templates_deployment_micronaut_deployment",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_ingress_outline_ingress",
+      "target": "templates_httproute_outline_httproute",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_pdb_outline_pdb",
+      "target": "templates_pdb_micronaut_pdb",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/pdb.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "micronaut_values_secrets",
+      "target": "micronaut_values_config_profiles",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "micronaut_workload_exposure_chain",
+      "label": "micronaut chart exposure chain: Deployment pods selected by Service, fronted by Ingress/HTTPRoute and scraped by ServiceMonitor",
+      "nodes": [
+        "templates_deployment_micronaut_deployment",
+        "templates_service_micronaut_service",
+        "templates_ingress_micronaut_ingress",
+        "templates_httproute_micronaut_httproute",
+        "templates_servicemonitor_micronaut_servicemonitor"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/templates/service.yaml"
+    },
+    {
+      "id": "outline_component_fanout_pattern",
+      "label": "outline per-component fan-out: every template ranges over .Values.components and names resources fullname-<component>",
+      "nodes": [
+        "templates_deployment_outline_deployment",
+        "templates_service_outline_service",
+        "templates_hpa_outline_hpa",
+        "templates_pdb_outline_pdb",
+        "templates_deployment_outline_component_labels_helper",
+        "templates_httproute_outline_routes"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/deployment.yaml"
+    },
+    {
+      "id": "micronaut_otel_traces_only_instrumentation",
+      "label": "traces-only OTel javaagent flow: jar-holder initContainer -> emptyDir -> JDK_JAVA_OPTIONS -> tempo-gateway OTLP, with startupProbe covering the added cold-start",
+      "nodes": [
+        "micronaut_values_tracing",
+        "templates_deployment_micronaut_otel_initcontainer",
+        "templates_deployment_micronaut_jdk_java_options",
+        "micronaut_values_tempo_gateway",
+        "micronaut_values_startupprobe",
+        "micronaut_values_autoinstrumentation_java_image"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/micronaut/values.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

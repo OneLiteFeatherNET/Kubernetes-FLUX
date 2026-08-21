@@ -1,0 +1,324 @@
+# ============================================================================
+# BlueMap offline render — PARALLEL template (one Job per world via envsubst)
+# ----------------------------------------------------------------------------
+# Same mechanics as render-offline-job.yaml, but every resource name carries a
+# per-world ${NAME} suffix so all 5 worlds can render in parallel without
+# colliding. Values (${WORLD}, ${WORLD_BUCKET}, ${WORLD_PREFIX}) are baked in at
+# stamp time by envsubst — no shared/params ConfigMap, no name races.
+#
+# Each Job: rclone-copies  s3://<bucket>/<prefix>/<world>  ->  /data/<world>,
+# then renders that one map into bucket bluemap0 (./survival) via s3-conf.
+#
+# ---- USAGE -----------------------------------------------------------------
+# 0) One-time: olf read credentials in the bluemap namespace (see main file):
+#      kubectl -n bluemap create secret generic olf-world-s3 \
+#        --from-literal=AccessKey=... --from-literal=SecretKey=...
+#
+# 1) Stamp + apply one Job per world. ${NAME} must be DNS-safe (no underscores),
+#    so map world_nether -> world-nether for the resource name:
+#
+#      export WORLD_BUCKET=olf
+#      export WORLD_PREFIX=worlds          # no trailing slash
+#      export ROOT_PATH=./test             # subfolder in bluemap0 (NOT ./survival)
+#      for W in world world_nether world_the_end world_op world_op_nether; do
+#        export WORLD="$W"
+#        export NAME="$(echo "$W" | tr '_' '-')"
+#        envsubst '${NAME} ${WORLD} ${WORLD_BUCKET} ${WORLD_PREFIX} ${ROOT_PATH}' \
+#          < render-offline-job.tmpl.yaml | kubectl apply -f -
+#      done
+#
+#    NOTE: the single-quoted var list restricts envsubst to exactly these four
+#    vars, so it never touches other shell text.
+#
+# 2) Watch them all:
+#      kubectl -n bluemap get jobs -l app.kubernetes.io/component=offline-render
+#      kubectl -n bluemap logs -f job/bluemap-render-world-nether
+#
+# 3) Cleanup (TTL also removes them after 24h):
+#      kubectl -n bluemap delete jobs,cm -l app.kubernetes.io/component=offline-render
+#
+#    Running 5 in parallel needs ~5 free render slots: each Job requests 8 CPU /
+#    8Gi and pins to xl workers (2 nodes, ~16 cores each) — so ~3 fit per node.
+#    They queue (Pending) until capacity frees up; that is fine.
+# ============================================================================
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bluemap-render-core-${NAME}
+  namespace: bluemap
+  labels:
+    app.kubernetes.io/component: offline-render
+data:
+  core.conf: |
+    accept-download: true
+    data: "bluemap"
+    render-thread-count: 0
+    scan-for-mod-resources: true
+    metrics: true
+    log: {
+      file: "bluemap/logs/debug.log"
+      append: false
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bluemap-render-maps-${NAME}
+  namespace: bluemap
+  labels:
+    app.kubernetes.io/component: offline-render
+data:
+  world.conf: |
+    world: "/data/world"
+    dimension: "minecraft:overworld"
+    name: "world (overworld)"
+    sorting: 0
+    sky-color: "#7dabff"
+    void-color: "#000000"
+    sky-light: 1
+    ambient-light: 0.1
+    remove-caves-below-y: 55
+    cave-detection-ocean-floor: -5
+    cave-detection-uses-block-light: false
+    min-inhabited-time: 0
+    render-edges: true
+    edge-light-strength: 8
+    enable-perspective-view: true
+    enable-flat-view: true
+    enable-free-flight-view: true
+    enable-hires: true
+    storage: "s3"
+    ignore-missing-light-data: false
+  world_nether.conf: |
+    world: "/data/world_nether"
+    dimension: "minecraft:the_nether"
+    name: "world_nether (the_nether)"
+    sorting: 100
+    sky-color: "#290000"
+    void-color: "#150000"
+    sky-light: 1
+    ambient-light: 0.6
+    remove-caves-below-y: -10000
+    cave-detection-ocean-floor: -5
+    cave-detection-uses-block-light: false
+    min-inhabited-time: 0
+    render-mask: [
+      {
+        subtract: true
+        min-y: 90
+        max-y: 127
+      }
+    ]
+    render-edges: true
+    edge-light-strength: 8
+    enable-perspective-view: true
+    enable-flat-view: true
+    enable-free-flight-view: true
+    enable-hires: true
+    storage: "s3"
+    ignore-missing-light-data: false
+  world_the_end.conf: |
+    world: "/data/world_the_end"
+    dimension: "minecraft:the_end"
+    name: "world_the_end (the_end)"
+    sorting: 200
+    sky-color: "#080010"
+    void-color: "#080010"
+    sky-light: 1
+    ambient-light: 0.6
+    remove-caves-below-y: -10000
+    cave-detection-ocean-floor: -5
+    cave-detection-uses-block-light: false
+    min-inhabited-time: 0
+    render-edges: true
+    edge-light-strength: 8
+    enable-perspective-view: true
+    enable-flat-view: true
+    enable-free-flight-view: true
+    enable-hires: true
+    storage: "s3"
+    ignore-missing-light-data: false
+  world_op.conf: |
+    world: "/data/world_op"
+    dimension: "minecraft:overworld"
+    name: "world_op (overworld)"
+    sorting: 0
+    sky-color: "#7dabff"
+    void-color: "#000000"
+    sky-light: 1
+    ambient-light: 0.1
+    remove-caves-below-y: 55
+    cave-detection-ocean-floor: -5
+    cave-detection-uses-block-light: false
+    min-inhabited-time: 0
+    render-edges: true
+    edge-light-strength: 8
+    enable-perspective-view: true
+    enable-flat-view: true
+    enable-free-flight-view: true
+    enable-hires: true
+    storage: "s3"
+    ignore-missing-light-data: false
+  world_op_nether.conf: |
+    world: "/data/world_op_nether"
+    dimension: "minecraft:overworld"
+    name: "world_op_nether (overworld)"
+    sorting: 0
+    sky-color: "#7dabff"
+    void-color: "#000000"
+    sky-light: 1
+    ambient-light: 0.1
+    remove-caves-below-y: 55
+    cave-detection-ocean-floor: -5
+    cave-detection-uses-block-light: false
+    min-inhabited-time: 0
+    render-edges: true
+    edge-light-strength: 8
+    enable-perspective-view: true
+    enable-flat-view: true
+    enable-free-flight-view: true
+    enable-hires: true
+    storage: "s3"
+    ignore-missing-light-data: false
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bluemap-render-${NAME}
+  namespace: bluemap
+  labels:
+    app.kubernetes.io/name: bluemap
+    app.kubernetes.io/component: offline-render
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bluemap
+        app.kubernetes.io/component: offline-render
+    spec:
+      restartPolicy: Never
+      priorityClassName: feather-low
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.feather/workload-class
+                    operator: In
+                    values: ["xl"]
+      initContainers:
+        - name: prepare-config
+          image: busybox:1.37
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              mkdir -p /app/config/maps /app/config/storages /app/config/packs
+              # fetch-addon (curl) runs as non-root uid 100 — let it write here.
+              chmod 0777 /app/config/packs
+              cp /src/core/core.conf /app/config/core.conf
+              cp "/src/maps/${WORLD}.conf" "/app/config/maps/${WORLD}.conf"
+              cp /src/storage/s3.conf /app/config/storages/s3.conf
+              sed -i 's|^root-path:.*|root-path: "${ROOT_PATH}"|' /app/config/storages/s3.conf
+              echo "Assembled config for world=${WORLD}, root-path=${ROOT_PATH}:"
+              grep -ivE 'secret-access-key|access-key-id' /app/config/storages/s3.conf
+              ls -R /app/config
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+            - name: src-core
+              mountPath: /src/core
+              readOnly: true
+            - name: src-maps
+              mountPath: /src/maps
+              readOnly: true
+            - name: src-storage
+              mountPath: /src/storage
+              readOnly: true
+        - name: fetch-addon
+          image: curlimages/curl:8.11.1
+          args:
+            - "-fSL"
+            - "-o"
+            - "/app/config/packs/BlueMapS3Storage-1.4.0.jar"
+            - "https://github.com/TheMeinerLP/BlueMapS3Storage/releases/download/v1.4.0/BlueMapS3Storage-1.4.0.jar"
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+        - name: fetch-world
+          image: rclone/rclone:1.69.0
+          env:
+            - name: RCLONE_CONFIG_SRC_TYPE
+              value: "s3"
+            - name: RCLONE_CONFIG_SRC_PROVIDER
+              value: "Ceph"
+            - name: RCLONE_CONFIG_SRC_ENDPOINT
+              value: "http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80"
+            - name: RCLONE_CONFIG_SRC_FORCE_PATH_STYLE
+              value: "true"
+            - name: RCLONE_CONFIG_SRC_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: olf-world-s3
+                  key: AccessKey
+            - name: RCLONE_CONFIG_SRC_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: olf-world-s3
+                  key: SecretKey
+          args:
+            - "copy"
+            - "SRC:${WORLD_BUCKET}/${WORLD_PREFIX}/${WORLD}"
+            - "/data/${WORLD}"
+            - "--transfers=16"
+            - "--checkers=32"
+            - "--fast-list"
+            - "--stats=30s"
+            - "-v"
+          volumeMounts:
+            - name: world
+              mountPath: /data
+      containers:
+        - name: render
+          image: ghcr.io/bluemap-minecraft/bluemap:v5.22
+          workingDir: /app
+          args: ["-r"]
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx16G"
+          resources:
+            requests:
+              cpu: "4"
+              memory: 8Gi
+            limits:
+              cpu: "15"
+              memory: 24Gi
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+            - name: world
+              mountPath: /data
+            - name: bluemap-data
+              mountPath: /app/bluemap
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: src-core
+          configMap:
+            name: bluemap-render-core-${NAME}
+        - name: src-maps
+          configMap:
+            name: bluemap-render-maps-${NAME}
+        - name: src-storage
+          secret:
+            secretName: s3-conf
+        - name: bluemap-data
+          emptyDir: {}
+        - name: world
+          emptyDir:
+            sizeLimit: 60Gi

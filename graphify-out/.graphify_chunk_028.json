@@ -1,0 +1,1426 @@
+{
+  "nodes": [
+    {
+      "id": "leantime_release_leantime",
+      "label": "HelmRelease leantime",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/leantime/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_httproute_n8n",
+      "label": "HTTPRoute n8n",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_kustomization_n8n",
+      "label": "n8n overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_n8n",
+      "label": "HelmRelease n8n",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_kustomization_n8n_secrets",
+      "label": "Secret n8n-secrets (N8N_ENCRYPTION_KEY)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_kustomization_n8n_db",
+      "label": "Secret n8n-db",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_kustomization_n8n_redis",
+      "label": "Secret n8n-redis",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_queue_mode",
+      "label": "n8n queue mode (BullMQ main + workers)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_pgbouncer_bypass",
+      "label": "n8n bypasses PgBouncer for the CNPG primary",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_httproute_node_red",
+      "label": "HTTPRoute node-red",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_kustomization_node_red",
+      "label": "node-red overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_release_node_red",
+      "label": "HelmRelease node-red",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_release_pvc_size_pin",
+      "label": "node-red PVC size pinned to existing capacity",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_kustomization_ollama",
+      "label": "ollama overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_release_ollama",
+      "label": "HelmRelease ollama",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_release_gemma4_e4b",
+      "label": "gemma4:e4b model choice",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_release_keep_alive",
+      "label": "OLLAMA_KEEP_ALIVE=-1 warm-model strategy",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_release_no_public_exposure",
+      "label": "Ollama kept cluster-internal (no auth in Ollama)",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_ingress_outline_cloudflare_tunnel",
+      "label": "Ingress outline-cloudflare-tunnel",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_kustomization_outline",
+      "label": "outline overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_release_outline",
+      "label": "HelmRelease outline",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_release_component_split",
+      "label": "Outline web/collaboration component split",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_release_connection_pool_budget",
+      "label": "Per-pod Postgres pool budget (max_connections=100)",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_kustomization_outline_env",
+      "label": "Secret outline-env (.env file mount)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_kustomization_cf_origin_tls",
+      "label": "Secret cf-origin-tls",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_ingress_reposilite_cloudflare_tunnel",
+      "label": "Ingress reposilite-cloudflare-tunnel",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_kustomization_reposilite",
+      "label": "reposilite overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_namespace_reposilite",
+      "label": "Namespace reposilite",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/namespace.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_pdb_reposilite",
+      "label": "PodDisruptionBudget reposilite",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/pdb.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_release_reposilite",
+      "label": "HelmRelease reposilite",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_release_otel_java_agent",
+      "label": "OTel Java agent init-container pattern",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_release_alloy_receiver",
+      "label": "alloy-receiver OTLP gateway",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_release_ansi_log_format",
+      "label": "logs.onelitefeather.net/format=ansi opt-in",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reposilite_kustomization_reposilite_secrets",
+      "label": "Secret reposilite-secrets",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_ingress_shlink_cloudflare_tunnel",
+      "label": "Ingress shlink-cloudflare-tunnel",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_kustomization_shlink",
+      "label": "shlink overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_pdb_shlink",
+      "label": "PodDisruptionBudget shlink",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/pdb.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_release_shlink",
+      "label": "HelmRelease shlink",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_kustomization_shlink_secret",
+      "label": "Secret shlink-secret",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_release_redis_uri_password",
+      "label": "shlink standalone Redis password must live in the URI",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "uptime_kuma_ingress_uptime_kuma_cloudflare_tunnel",
+      "label": "Ingress uptime-kuma-cloudflare-tunnel",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/uptime-kuma/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_ingress_cloudflare_tunnel_ingress_class",
+      "label": "cloudflare-tunnel IngressClass",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_httproute_envoy_gateway_eg",
+      "label": "Envoy Gateway `eg` (envoy namespace, https listener)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_dragonfly",
+      "label": "Shared Dragonfly instance",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_cnpg_cluster",
+      "label": "Shared CNPG cluster feather-core-cluster-pg",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_release_maxscale_galera",
+      "label": "MaxScale/MariaDB Galera cluster",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_release_priority_class_feather_standard",
+      "label": "PriorityClass feather-standard",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/leantime/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "node_red_release_priority_class_feather_low",
+      "label": "PriorityClass feather-low",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "n8n_release_region_pin_fr_rosenau",
+      "label": "fr-rosenau region node affinity pin",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "leantime_release_logs_env_pod_label",
+      "label": "logs.onelitefeather.net/env pod-label convention",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/leantime/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ollama_release_ceph_rbd_fr01",
+      "label": "ceph-rbd-fr01 StorageClass",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "leantime_release_leantime",
+      "target": "leantime_release_priority_class_feather_standard",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/leantime/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_release_leantime",
+      "target": "leantime_release_logs_env_pod_label",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/leantime/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "leantime_release_leantime",
+      "target": "outline_ingress_cloudflare_tunnel_ingress_class",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/leantime/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_kustomization_n8n",
+      "target": "n8n_release_n8n",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_kustomization_n8n",
+      "target": "n8n_httproute_n8n",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_kustomization_n8n",
+      "target": "n8n_kustomization_n8n_secrets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_kustomization_n8n",
+      "target": "n8n_kustomization_n8n_db",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_kustomization_n8n",
+      "target": "n8n_kustomization_n8n_redis",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_kustomization_n8n_secrets",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_kustomization_n8n_db",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_kustomization_n8n_redis",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_release_cnpg_cluster",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_release_dragonfly",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_pgbouncer_bypass",
+      "target": "n8n_release_cnpg_cluster",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_release_queue_mode",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_queue_mode",
+      "target": "n8n_release_dragonfly",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_release_region_pin_fr_rosenau",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_httproute_n8n",
+      "target": "n8n_httproute_envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_httproute_n8n",
+      "target": "n8n_release_n8n",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "n8n_httproute_n8n",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_kustomization_node_red",
+      "target": "node_red_release_node_red",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_kustomization_node_red",
+      "target": "node_red_httproute_node_red",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_httproute_node_red",
+      "target": "n8n_httproute_envoy_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_release_node_red",
+      "target": "node_red_release_priority_class_feather_low",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_release_pvc_size_pin",
+      "target": "node_red_release_node_red",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_release_node_red",
+      "target": "leantime_release_logs_env_pod_label",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "node_red_release_node_red",
+      "target": "n8n_release_n8n",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/node-red/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_kustomization_ollama",
+      "target": "ollama_release_ollama",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_ollama",
+      "target": "ollama_release_gemma4_e4b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_keep_alive",
+      "target": "ollama_release_gemma4_e4b",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_no_public_exposure",
+      "target": "ollama_release_ollama",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_ollama",
+      "target": "ollama_release_ceph_rbd_fr01",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_ollama",
+      "target": "n8n_release_region_pin_fr_rosenau",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "ollama_release_ollama",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_kustomization_outline",
+      "target": "outline_release_outline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_kustomization_outline",
+      "target": "outline_ingress_outline_cloudflare_tunnel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_kustomization_outline",
+      "target": "outline_kustomization_outline_env",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_kustomization_outline",
+      "target": "outline_kustomization_cf_origin_tls",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_release_outline",
+      "target": "outline_kustomization_outline_env",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_release_outline",
+      "target": "outline_release_component_split",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_ingress_outline_cloudflare_tunnel",
+      "target": "outline_release_component_split",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_release_connection_pool_budget",
+      "target": "outline_release_outline",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_release_connection_pool_budget",
+      "target": "n8n_release_cnpg_cluster",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_ingress_outline_cloudflare_tunnel",
+      "target": "outline_ingress_cloudflare_tunnel_ingress_class",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_release_outline",
+      "target": "leantime_release_priority_class_feather_standard",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_release_outline",
+      "target": "n8n_release_region_pin_fr_rosenau",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_release_outline",
+      "target": "leantime_release_logs_env_pod_label",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_kustomization_reposilite",
+      "target": "reposilite_release_reposilite",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_kustomization_reposilite",
+      "target": "reposilite_ingress_reposilite_cloudflare_tunnel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_kustomization_reposilite",
+      "target": "reposilite_pdb_reposilite",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_kustomization_reposilite",
+      "target": "reposilite_kustomization_reposilite_secrets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_reposilite",
+      "target": "reposilite_kustomization_reposilite_secrets",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_reposilite",
+      "target": "reposilite_release_otel_java_agent",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_otel_java_agent",
+      "target": "reposilite_release_alloy_receiver",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_ansi_log_format",
+      "target": "leantime_release_logs_env_pod_label",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_ansi_log_format",
+      "target": "reposilite_release_reposilite",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_reposilite",
+      "target": "leantime_release_priority_class_feather_standard",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_reposilite",
+      "target": "n8n_release_region_pin_fr_rosenau",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_ingress_reposilite_cloudflare_tunnel",
+      "target": "outline_ingress_cloudflare_tunnel_ingress_class",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_pdb_reposilite",
+      "target": "reposilite_release_reposilite",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/pdb.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_namespace_reposilite",
+      "target": "reposilite_release_reposilite",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/namespace.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_kustomization_shlink",
+      "target": "shlink_release_shlink",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_kustomization_shlink",
+      "target": "shlink_ingress_shlink_cloudflare_tunnel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_kustomization_shlink",
+      "target": "shlink_pdb_shlink",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_kustomization_shlink",
+      "target": "shlink_kustomization_shlink_secret",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_release_shlink",
+      "target": "shlink_kustomization_shlink_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_release_shlink",
+      "target": "shlink_release_maxscale_galera",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_release_shlink",
+      "target": "n8n_release_dragonfly",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_release_redis_uri_password",
+      "target": "shlink_kustomization_shlink_secret",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_release_shlink",
+      "target": "leantime_release_priority_class_feather_standard",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_release_shlink",
+      "target": "n8n_release_region_pin_fr_rosenau",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_ingress_shlink_cloudflare_tunnel",
+      "target": "outline_ingress_cloudflare_tunnel_ingress_class",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_pdb_shlink",
+      "target": "shlink_release_shlink",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/pdb.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "uptime_kuma_ingress_uptime_kuma_cloudflare_tunnel",
+      "target": "outline_ingress_cloudflare_tunnel_ingress_class",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/uptime-kuma/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_ingress_cloudflare_tunnel_ingress_class",
+      "target": "n8n_httproute_envoy_gateway_eg",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_dragonfly",
+      "target": "shlink_release_maxscale_galera",
+      "relation": "semantically_similar_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_pdb_shlink",
+      "target": "reposilite_pdb_reposilite",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/pdb.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reposilite_release_alloy_receiver",
+      "target": "reposilite_release_ansi_log_format",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/reposilite/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "n8n_release_n8n",
+      "target": "leantime_release_logs_env_pod_label",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_release_shlink",
+      "target": "leantime_release_logs_env_pod_label",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/shlink/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ollama_release_ollama",
+      "target": "leantime_release_logs_env_pod_label",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "cloudflare_tunnel_public_exposure",
+      "label": "Public app exposure via the cloudflare-tunnel IngressClass",
+      "nodes": [
+        "outline_ingress_outline_cloudflare_tunnel",
+        "reposilite_ingress_reposilite_cloudflare_tunnel",
+        "shlink_ingress_shlink_cloudflare_tunnel",
+        "uptime_kuma_ingress_uptime_kuma_cloudflare_tunnel",
+        "outline_ingress_cloudflare_tunnel_ingress_class"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/outline/ingress.yaml"
+    },
+    {
+      "id": "n8n_local_llm_classification_flow",
+      "label": "n8n forum-application classification against a warm local Ollama model",
+      "nodes": [
+        "n8n_release_n8n",
+        "ollama_release_ollama",
+        "ollama_release_gemma4_e4b",
+        "ollama_release_keep_alive"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/ollama/release.yaml"
+    },
+    {
+      "id": "fr_rosenau_region_pinned_stateful_apps",
+      "label": "Stateful apps pinned to the fr-rosenau region",
+      "nodes": [
+        "n8n_release_n8n",
+        "ollama_release_ollama",
+        "outline_release_outline",
+        "reposilite_release_reposilite",
+        "shlink_release_shlink",
+        "n8n_release_region_pin_fr_rosenau"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/apps/clusters/feathre-core/base-apps/n8n/release.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
