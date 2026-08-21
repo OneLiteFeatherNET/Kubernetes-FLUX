@@ -1,0 +1,517 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": [
+        "sturnus"
+      ],
+      "targetBlank": false,
+      "title": "Sturnus",
+      "tooltip": "Alle Sturnus-Dashboards",
+      "type": "dashboards",
+      "url": ""
+    },
+    {
+      "icon": "external link",
+      "keepTime": true,
+      "targetBlank": false,
+      "title": "Sturnus — Transkription",
+      "tooltip": "Durchsatz, Fortschritt, Warteschlange",
+      "type": "link",
+      "url": "/d/sturnus-transcription"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Speicher gegen Limit — das, was heute schiefging",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "title": "Speicher je Komponente, mit Limit",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Arbeitsspeicher gegen das gesetzte Limit.\n\nDas Panel existiert wegen eines konkreten Vorfalls: Das Worker-Limit wurde von 12Gi auf 6Gi verengt, gestützt auf eine Messung von 2441 MB — die allerdings mit dem **tiny**-Modell lief. In Produktion läuft `large-v3`, das rund 2 GB Gewichte mehr hält. 18 Minuten nach dem nächsten Job kam der OOMKill.\n\nDer Abstand zwischen Kurve und Limit ist das Einzige, was diese Art Fehler vorher sichtbar macht.",
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 1
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (container) (container_memory_working_set_bytes{namespace=\"sturnus\",container!=\"\"})",
+          "legendFormat": "{{container}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        },
+        {
+          "editorMode": "code",
+          "expr": "sum by (container) (kube_pod_container_resource_limits{namespace=\"sturnus\",resource=\"memory\"})",
+          "legendFormat": "Limit {{container}}",
+          "range": true,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "links": [
+        {
+          "title": "Sturnus — Transkription",
+          "type": "link",
+          "url": "/d/sturnus-transcription",
+          "icon": "external link",
+          "targetBlank": false,
+          "tooltip": "Durchsatz, Fortschritt, Warteschlange"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Ausgenutztes Limit",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Wie nah die Komponenten an ihrem Limit stehen. Über 80 % ist ein Grund, vor dem nächsten langen Job hinzusehen.",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "100 * max by (container) (container_memory_working_set_bytes{namespace=\"sturnus\",container!=\"\"}) / max by (container) (kube_pod_container_resource_limits{namespace=\"sturnus\",resource=\"memory\"})",
+          "legendFormat": "{{container}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 10,
+      "title": "Neustarts und Abbrüche",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "panels": []
+    },
+    {
+      "id": 11,
+      "title": "Neustarts",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Der einzige Verlauf, der Abbrüche zuverlässig festhält.\n\n`container_oom_events_total` **nicht** benutzen: Der Zähler stand nach dem OOMKill von heute 11:30 weiterhin auf 0. Und `kube_pod_container_status_last_terminated_reason` beschreibt nur den *laufenden* Pod — ist er ersetzt, ist der Grund fort.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 11
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (container) (increase(kube_pod_container_status_restarts_total{namespace=\"sturnus\"}[1h]))",
+          "legendFormat": "{{container}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 12,
+      "title": "Letzter Abbruchgrund (laufende Pods)",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Warum der Vorgänger des jetzt laufenden Containers starb — `OOMKilled`, `Error`, `Completed`.\n\nMomentaufnahme, keine Historie: Wird der Pod ersetzt, verschwindet der Eintrag. Für den Verlauf das Panel links.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 11
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "kube_pod_container_status_last_terminated_reason{namespace=\"sturnus\"} > 0",
+          "legendFormat": "{{container}} / {{reason}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 20,
+      "title": "CPU",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "panels": []
+    },
+    {
+      "id": 21,
+      "title": "CPU je Komponente, mit Limit",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Der Worker soll beim Transkribieren nahe an seinem Limit stehen — das ist gesund und heißt, dass er rechnet. Interessant ist der umgekehrte Fall: niedrige CPU **und** stehende Stillstandsuhr auf dem Transkriptions-Dashboard bedeutet, dass er hängt.",
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 20
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",container!=\"\"}[5m]))",
+          "legendFormat": "{{container}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        },
+        {
+          "editorMode": "code",
+          "expr": "sum by (container) (kube_pod_container_resource_limits{namespace=\"sturnus\",resource=\"cpu\"})",
+          "legendFormat": "Limit {{container}}",
+          "range": true,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "links": [
+        {
+          "title": "Sturnus — Transkription",
+          "type": "link",
+          "url": "/d/sturnus-transcription",
+          "icon": "external link",
+          "targetBlank": false,
+          "tooltip": "Durchsatz, Fortschritt, Warteschlange"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "title": "CPU-Drosselung",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Anteil der Zeitscheiben, in denen der Kernel den Container ausgebremst hat.\n\nDauerhaft hoch heißt: Das CPU-Limit ist die Bremse, nicht die Arbeit. Beim Worker verlängert das jede Transkription direkt — und die Job-Lease läuft unterdessen weiter.",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 20
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "100 * sum by (container) (rate(container_cpu_cfs_throttled_periods_total{namespace=\"sturnus\",container!=\"\"}[5m])) / clamp_min(sum by (container) (rate(container_cpu_cfs_periods_total{namespace=\"sturnus\",container!=\"\"}[5m])), 1)",
+          "legendFormat": "{{container}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 25
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 30,
+      "title": "Volumes",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "panels": []
+    },
+    {
+      "id": 31,
+      "title": "Belegung der Volumes",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "`sturnus-worker` hält den Modell-Cache — `large-v3` belegt dort rund 2,8 GB als float16-Checkpoint. `sturnus-bot` hält die laufenden Aufnahmen, bis sie verschlüsselt und hochgeladen sind; eine 100-Minuten-Spur sind rund 190 MB je Sprecher.\n\nLäuft das Bot-Volume voll, bricht die laufende Aufnahme ab — deshalb steht es hier und nicht nur im Speicher-Dashboard des Clusters.",
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 29
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "100 * (kubelet_volume_stats_capacity_bytes{namespace=\"sturnus\"} - kubelet_volume_stats_available_bytes{namespace=\"sturnus\"}) / kubelet_volume_stats_capacity_bytes{namespace=\"sturnus\"}",
+          "legendFormat": "{{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 32,
+      "title": "Freier Platz",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Absolut, weil der Prozentwert bei einem 10Gi-Volume anders zu lesen ist als bei einem kleinen.",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 29
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "kubelet_volume_stats_available_bytes{namespace=\"sturnus\"}",
+          "legendFormat": "{{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {}
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "sturnus"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Sturnus — Ressourcen",
+  "uid": "sturnus-resources",
+  "version": 1,
+  "weekStart": ""
+}

@@ -5,7 +5,31 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": [
+        "sturnus"
+      ],
+      "targetBlank": false,
+      "title": "Sturnus",
+      "tooltip": "Alle Sturnus-Dashboards",
+      "type": "dashboards",
+      "url": ""
+    },
+    {
+      "icon": "external link",
+      "keepTime": true,
+      "targetBlank": false,
+      "title": "Sturnus — Ressourcen",
+      "tooltip": "Speicher, CPU, Neustarts, Volumes",
+      "type": "link",
+      "url": "/d/sturnus-resources"
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -228,7 +252,17 @@
         },
         "overrides": []
       },
-      "options": {}
+      "options": {},
+      "links": [
+        {
+          "title": "Sturnus — Ressourcen",
+          "type": "link",
+          "url": "/d/sturnus-resources",
+          "icon": "external link",
+          "targetBlank": false,
+          "tooltip": "Speicher, CPU, Neustarts"
+        }
+      ]
     },
     {
       "id": 13,
@@ -265,7 +299,17 @@
         },
         "overrides": []
       },
-      "options": {}
+      "options": {},
+      "links": [
+        {
+          "title": "Sturnus — Ressourcen",
+          "type": "link",
+          "url": "/d/sturnus-resources",
+          "icon": "external link",
+          "targetBlank": false,
+          "tooltip": "Speicher, CPU, Neustarts"
+        }
+      ]
     },
     {
       "id": 20,
