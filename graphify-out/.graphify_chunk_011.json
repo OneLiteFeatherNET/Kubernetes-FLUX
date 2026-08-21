@@ -1,0 +1,797 @@
+{
+  "nodes": [
+    {
+      "id": "templates_servicemonitor_outline_servicemonitor",
+      "label": "outline ServiceMonitor template (monitoring.coreos.com/v1, scrapes the metrics component)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/servicemonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tests_test_connection_outline_test_connection",
+      "label": "outline helm test Pod (busybox wget against <fullname>-<metrics.component>:service.port)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_values_components",
+      "label": "outline values.components — per-service stateless Deployments selected via the SERVICES env var",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_values_web_component",
+      "label": "outline web component (SERVICES=web,websockets,worker,cron; 2 replicas, PDB minAvailable 1)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_values_collaboration_component",
+      "label": "outline collaboration component (Hocuspocus realtime editing, path /collaboration, scales independently)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_values_routes",
+      "label": "outline values.routes — path-to-component gateway routing (/collaboration -> collaboration, / -> web incl. /realtime)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_values_metrics",
+      "label": "outline values.metrics — which component exposes /metrics (web) plus ServiceMonitor knobs",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_values_component_split_rationale",
+      "label": "Outline component-split design: rationale — websockets and BullMQ worker/cron cannot run standalone (websockets has no WEBSOCKETS_URL, isolated worker/cron grows memory unbounded), so they ride inside web; cron duplication across web replicas is safe because BullMQ repeatable jobs are idempotent; no StatefulSets because all state lives in Postgres, Redis and S3; collaboration >1 replica requires REDIS_COLLABORATION_URL",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "outline_values_horizontal_scaling_doc",
+      "label": "Outline horizontal-scaling hosting doc (docs.getoutline.com/s/hosting/doc/horizontal-scaling-hkfU5Stao7)",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "source_url": "https://docs.getoutline.com/s/hosting/doc/horizontal-scaling-hkfU5Stao7",
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_chart_shlink",
+      "label": "shlink Helm chart metadata (application chart, version 0.5.0, appVersion 1.16.0)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/Chart.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_notes_shlink_notes",
+      "label": "shlink NOTES.txt — post-install URL discovery per service type (Ingress/NodePort/LoadBalancer/ClusterIP)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/NOTES.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_deployment_shlink_deployment",
+      "label": "shlink Deployment template (single container, generic env/envFrom/secrets, checksum/secrets pod annotation)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/deployment.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_hpa_shlink_hpa",
+      "label": "shlink HorizontalPodAutoscaler template (autoscaling/v2, CPU/memory utilization targets)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/hpa.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_httproute_shlink_httproute",
+      "label": "shlink HTTPRoute template (gateway.networking.k8s.io/v1, backendRefs to the shlink Service)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/httproute.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_ingress_shlink_ingress",
+      "label": "shlink Ingress template (apiVersion chosen via semverCompare on KubeVersion, backend = shlink Service)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/ingress.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_service_shlink_service",
+      "label": "shlink Service template (ClusterIP, port -> targetPort http, selectorLabels)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/service.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_serviceaccount_shlink_serviceaccount",
+      "label": "shlink ServiceAccount template (created when serviceAccount.create, automount toggle)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/serviceaccount.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_servicemonitor_shlink_servicemonitor",
+      "label": "shlink ServiceMonitor template (monitoring.coreos.com/v1, selects shlink selectorLabels)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/servicemonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tests_test_connection_shlink_test_connection",
+      "label": "shlink helm test Pod (busybox wget against <fullname>:service.port)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_values_shlink_values",
+      "label": "shlink values.yaml defaults (image shlinkio/shlink:stable, ClusterIP:8080, /rest/health probes)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_values_generic_config",
+      "label": "shlink generic configuration surface: all shlink config passed via env / envFrom / secrets set in the HelmRelease, mounted read-only at /secrets — chart carries no shlink-specific value keys",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "label": "ClusterIssuer letsencrypt-prod-dns (ACME v02 prod, DNS01 via Cloudflare)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-le-dns-cf-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "label": "ClusterIssuer letsencrypt-prod (ACME v02 prod, HTTP01 via nginx ingress class)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-le-http-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+      "label": "ClusterIssuer letsencrypt-staging (ACME staging endpoint, HTTP01 via nginx ingress class)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-le-http-staging-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_olf_http_issuer_step_ca",
+      "label": "ClusterIssuer step-ca (internal ACME against step-ca in-cluster, pinned caBundle, HTTP01 solved via Envoy Gateway API route)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-olf-http-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_kustomization_cert_manager_configs",
+      "label": "cert-manager base kustomization (namespace cert-manager, disableNameSuffixHash, four ClusterIssuers + cloudflare-api-token secretGenerator)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_kustomization_cloudflare_api_token",
+      "label": "Secret cloudflare-api-token generated from cloudflare-api-token.sops.env (key api-token)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_kustomization_backstage",
+      "label": "backstage base kustomization (namespace.yaml + release.yaml)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/backstage/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_namespace_backstage",
+      "label": "Namespace backstage",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/backstage/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_release_backstage",
+      "label": "HelmRelease backstage (chart backstage from HelmRepository backstage in flux-system, install retries 0, empty values)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/backstage/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "templates_servicemonitor_outline_servicemonitor",
+      "target": "outline_values_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/servicemonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_servicemonitor_outline_servicemonitor",
+      "target": "outline_values_web_component",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/servicemonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_connection_outline_test_connection",
+      "target": "outline_values_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_connection_outline_test_connection",
+      "target": "outline_values_components",
+      "relation": "shares_data_with",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_routes",
+      "target": "outline_values_collaboration_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_routes",
+      "target": "outline_values_web_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_components",
+      "target": "outline_values_web_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_components",
+      "target": "outline_values_collaboration_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_component_split_rationale",
+      "target": "outline_values_components",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_component_split_rationale",
+      "target": "outline_values_web_component",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_component_split_rationale",
+      "target": "outline_values_horizontal_scaling_doc",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "outline_values_collaboration_component",
+      "target": "outline_values_web_component",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_hpa_shlink_hpa",
+      "target": "templates_deployment_shlink_deployment",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/hpa.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_service_shlink_service",
+      "target": "templates_deployment_shlink_deployment",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/service.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_ingress_shlink_ingress",
+      "target": "templates_service_shlink_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/ingress.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_httproute_shlink_httproute",
+      "target": "templates_service_shlink_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_servicemonitor_shlink_servicemonitor",
+      "target": "templates_service_shlink_service",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/servicemonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_connection_shlink_test_connection",
+      "target": "templates_service_shlink_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_shlink_deployment",
+      "target": "templates_serviceaccount_shlink_serviceaccount",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_shlink_deployment",
+      "target": "shlink_values_generic_config",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_shlink_deployment",
+      "target": "shlink_values_shlink_values",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_deployment_shlink_deployment",
+      "target": "shlink_chart_shlink",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/deployment.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_notes_shlink_notes",
+      "target": "templates_service_shlink_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/NOTES.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_notes_shlink_notes",
+      "target": "templates_ingress_shlink_ingress",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/NOTES.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_httproute_shlink_httproute",
+      "target": "templates_ingress_shlink_ingress",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/httproute.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "templates_servicemonitor_shlink_servicemonitor",
+      "target": "templates_servicemonitor_outline_servicemonitor",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/servicemonitor.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_connection_shlink_test_connection",
+      "target": "tests_test_connection_outline_test_connection",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_values_shlink_values",
+      "target": "shlink_chart_shlink",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_cert_manager_configs",
+      "target": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_cert_manager_configs",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_cert_manager_configs",
+      "target": "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_cert_manager_configs",
+      "target": "cert_manager_acme_olf_http_issuer_step_ca",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_cert_manager_configs",
+      "target": "cert_manager_kustomization_cloudflare_api_token",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "target": "cert_manager_kustomization_cloudflare_api_token",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-le-dns-cf-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-le-http-staging-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_olf_http_issuer_step_ca",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-olf-http-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-le-dns-cf-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_olf_http_issuer_step_ca",
+      "target": "templates_httproute_shlink_httproute",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/acme-olf-http-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_kustomization_backstage",
+      "target": "backstage_namespace_backstage",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/backstage/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_kustomization_backstage",
+      "target": "backstage_release_backstage",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/backstage/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_release_backstage",
+      "target": "backstage_namespace_backstage",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/controllers/backstage/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "shlink_workload_exposure_stack",
+      "label": "shlink chart workload+exposure stack: Deployment scaled by the HPA, fronted by the Service, published through either Ingress or HTTPRoute",
+      "nodes": [
+        "templates_deployment_shlink_deployment",
+        "templates_hpa_shlink_hpa",
+        "templates_service_shlink_service",
+        "templates_ingress_shlink_ingress",
+        "templates_httproute_shlink_httproute"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/shlink/templates/deployment.yaml"
+    },
+    {
+      "id": "cert_manager_acme_issuer_set",
+      "label": "cert-manager ACME issuance set: prod HTTP01, prod DNS01/Cloudflare, staging HTTP01, and internal step-ca, all bundled by one base kustomization with the Cloudflare token secret",
+      "nodes": [
+        "cert_manager_kustomization_cert_manager_configs",
+        "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+        "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+        "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+        "cert_manager_acme_olf_http_issuer_step_ca",
+        "cert_manager_kustomization_cloudflare_api_token"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/base/configs/cert-manager/kustomization.yaml"
+    },
+    {
+      "id": "outline_component_topology",
+      "label": "Outline component topology: one image split into web (web,websockets,worker,cron) and collaboration Deployments, path-routed by values.routes and scraped via the metrics component",
+      "nodes": [
+        "outline_values_components",
+        "outline_values_web_component",
+        "outline_values_collaboration_component",
+        "outline_values_routes",
+        "outline_values_metrics",
+        "templates_servicemonitor_outline_servicemonitor"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/helm/outline/values.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

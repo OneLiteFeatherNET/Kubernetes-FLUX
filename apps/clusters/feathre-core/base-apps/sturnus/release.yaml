@@ -93,6 +93,28 @@ spec:
     # needed; the chart's own 4Gi/6Gi is accurate again, and keeping a
     # second copy of numbers that now agree is how they drift apart.
     worker:
+      # Put back after an OOMKill in production, 18 minutes into a job.
+      #
+      # The chart's 6Gi was adopted here on the strength of 0.6.0's measured
+      # drop from 5025 MB to 2441 MB peak. That measurement is real, and it
+      # was taken with the **tiny** model -- so the delta between the two
+      # numbers carries over to production and the absolute does not. A
+      # memory limit is an absolute. large-v3 at int8_float32 holds roughly
+      # 2 GB of weights that tiny does not, before a single frame is
+      # extracted.
+      #
+      # Not restored to a measured figure, because the honest number for
+      # this model on this hardware has not been taken yet; 12Gi is the
+      # value that was carrying production before, on a node with 64 GB that
+      # is under half allocated. Measure large-v3 end to end on a real
+      # recording before narrowing it again.
+      resources:
+        requests:
+          cpu: "4"
+          memory: 5Gi
+        limits:
+          cpu: "4"
+          memory: 12Gi
       env:
         # The one thing the chart cannot know: how long a job may run here.
         # 0.5.0 made the worker transcribe the speech rather than 1% of it,

@@ -1,0 +1,798 @@
+{
+  "nodes": [
+    {
+      "id": "tests_test_connection_pod",
+      "label": "shlink test-connection Helm test Pod",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_values",
+      "label": "shlink chart default values",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_values_generic_env_injection",
+      "label": "shlink generic env/envFrom/secrets configuration surface",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shlink_values_rest_health_probe",
+      "label": "shlink /rest/health liveness and readiness probe",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/values.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "label": "ClusterIssuer letsencrypt-prod-dns (ACME DNS01 via Cloudflare)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-le-dns-cf-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "label": "ClusterIssuer letsencrypt-prod (ACME HTTP01 via nginx)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-le-http-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+      "label": "ClusterIssuer letsencrypt-staging (ACME staging directory)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-le-http-staging-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_olf_http_issuer_step_ca",
+      "label": "ClusterIssuer step-ca (internal ACME via step-certificates)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-olf-http-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_acme_olf_http_issuer_envoy_gateway",
+      "label": "Envoy Gateway 'eg' in namespace envoy used as HTTP01 solver target",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-olf-http-issuer.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_kustomization_clusterissuers",
+      "label": "cert-manager ClusterIssuer config kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_kustomization_cloudflare_api_token",
+      "label": "cloudflare-api-token SOPS secretGenerator",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_kustomization",
+      "label": "backstage controller base kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_namespace",
+      "label": "Namespace backstage",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_release",
+      "label": "HelmRelease backstage",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "backstage_release_backstage_helmrepository",
+      "label": "HelmRepository backstage (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ccm_kustomization",
+      "label": "proxmox-ccm controller base kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/ccm/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ccm_release_proxmox_ccm",
+      "label": "HelmRelease proxmox-ccm (kube-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/ccm/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ccm_release_proxmox_ccm_ocirepository",
+      "label": "OCIRepository proxmox-ccm (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/ccm/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_kustomization_controller",
+      "label": "cert-manager controller base kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_namespace",
+      "label": "Namespace cert-manager",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cert-manager/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_release",
+      "label": "HelmRelease cert-manager",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cert_manager_release_jetstack_helmrepository",
+      "label": "HelmRepository jetstack (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "checkmk_kustomization",
+      "label": "checkmk controller base kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/checkmk/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "checkmk_release_checkmk_monitoring",
+      "label": "HelmRelease checkmk-monitoring (kube-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/checkmk/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "checkmk_release_checkmk_chart_helmrepository",
+      "label": "HelmRepository checkmk-chart (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/checkmk/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_kustomization",
+      "label": "cloudflare-tunnel-ingress-controller base kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_namespace",
+      "label": "Namespace cloudflare-tunnel-ingress-controller (PodSecurity privileged)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_namespace_privileged_pss_decision",
+      "label": "Pin namespace to privileged PodSecurity because the generated cloudflared connector Deployment is not restricted-compliant",
+      "file_type": "rationale",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_release",
+      "label": "HelmRelease cloudflare-tunnel-ingress-controller",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_release_strrl_helmrepository",
+      "label": "HelmRepository strrl (flux-system)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_kustomization",
+      "label": "cnpg-operator base kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_kustomization_barman_cloud_plugin",
+      "label": "cloudnative-pg plugin-barman-cloud v0.11.0 remote manifest",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_namespace",
+      "label": "Namespace cnpg-system",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cnpg-operator/namespace.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "tests_test_connection_pod",
+      "target": "shlink_values",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_connection_pod",
+      "target": "shlink_values_rest_health_probe",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/templates/tests/test-connection.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_values",
+      "target": "shlink_values_generic_env_injection",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shlink_values",
+      "target": "shlink_values_rest_health_probe",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/values.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_clusterissuers",
+      "target": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_clusterissuers",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_clusterissuers",
+      "target": "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_clusterissuers",
+      "target": "cert_manager_acme_olf_http_issuer_step_ca",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_clusterissuers",
+      "target": "cert_manager_kustomization_cloudflare_api_token",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "target": "cert_manager_kustomization_cloudflare_api_token",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-le-dns-cf-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_olf_http_issuer_step_ca",
+      "target": "cert_manager_acme_olf_http_issuer_envoy_gateway",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-olf-http-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_olf_http_issuer_step_ca",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-olf-http-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-le-http-staging-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+      "target": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-le-dns-cf-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+      "target": "cert_manager_release",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/acme-le-http-issuer.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_clusterissuers",
+      "target": "cert_manager_namespace",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_kustomization",
+      "target": "backstage_namespace",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_kustomization",
+      "target": "backstage_release",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_release",
+      "target": "backstage_release_backstage_helmrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "backstage_release",
+      "target": "backstage_namespace",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ccm_kustomization",
+      "target": "ccm_release_proxmox_ccm",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/ccm/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ccm_release_proxmox_ccm",
+      "target": "ccm_release_proxmox_ccm_ocirepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/ccm/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ccm_release_proxmox_ccm_ocirepository",
+      "target": "backstage_release_backstage_helmrepository",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/ccm/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_controller",
+      "target": "cert_manager_namespace",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_kustomization_controller",
+      "target": "cert_manager_release",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cert-manager/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cert_manager_release",
+      "target": "cert_manager_release_jetstack_helmrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cert-manager/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "checkmk_kustomization",
+      "target": "checkmk_release_checkmk_monitoring",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/checkmk/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "checkmk_release_checkmk_monitoring",
+      "target": "checkmk_release_checkmk_chart_helmrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/checkmk/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "checkmk_release_checkmk_monitoring",
+      "target": "ccm_release_proxmox_ccm",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/checkmk/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_kustomization",
+      "target": "cloudflare_tunnel_ingress_controller_namespace",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_kustomization",
+      "target": "cloudflare_tunnel_ingress_controller_release",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_namespace_privileged_pss_decision",
+      "target": "cloudflare_tunnel_ingress_controller_namespace",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/namespace.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release",
+      "target": "cloudflare_tunnel_ingress_controller_release_strrl_helmrepository",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release",
+      "target": "cloudflare_tunnel_ingress_controller_namespace",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release",
+      "target": "cert_manager_kustomization_cloudflare_api_token",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization",
+      "target": "cnpg_operator_namespace",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization",
+      "target": "cnpg_operator_kustomization_barman_cloud_plugin",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization_barman_cloud_plugin",
+      "target": "cnpg_operator_namespace",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "cert_manager_acme_issuance_stack",
+      "label": "cert-manager ACME issuance stack: controller release plus public, staging, DNS-01 and internal step-ca ClusterIssuers backed by a SOPS Cloudflare token",
+      "nodes": [
+        "cert_manager_release",
+        "cert_manager_acme_le_http_issuer_letsencrypt_prod",
+        "cert_manager_acme_le_http_staging_issuer_letsencrypt_staging",
+        "cert_manager_acme_le_dns_cf_issuer_letsencrypt_prod_dns",
+        "cert_manager_acme_olf_http_issuer_step_ca",
+        "cert_manager_kustomization_cloudflare_api_token"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/configs/cert-manager/kustomization.yaml"
+    },
+    {
+      "id": "flux_controller_base_overlay_pattern",
+      "label": "Uniform base-controller pattern: kustomization aggregating a Namespace and a HelmRelease with empty values, resolved against a flux-system Helm/OCI source",
+      "nodes": [
+        "backstage_kustomization",
+        "cert_manager_kustomization_controller",
+        "checkmk_kustomization",
+        "cloudflare_tunnel_ingress_controller_kustomization",
+        "ccm_kustomization",
+        "cnpg_operator_kustomization"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/base/controllers/backstage/kustomization.yaml"
+    },
+    {
+      "id": "shlink_chart_runtime_contract",
+      "label": "shlink chart runtime contract: config injected purely via env/envFrom/secrets, health gated on /rest/health, verified by the Helm test Pod hitting the Service port",
+      "nodes": [
+        "shlink_values_generic_env_injection",
+        "shlink_values_rest_health_probe",
+        "tests_test_connection_pod"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/helm/shlink/values.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

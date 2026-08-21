@@ -1,0 +1,798 @@
+{
+  "nodes": [
+    {
+      "id": "gateway_envoyproxy_eg_proxy",
+      "label": "EnvoyProxy eg-proxy",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/envoyproxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_envoyproxy_envoydaemonset_topology",
+      "label": "Envoy data plane as DaemonSet with externalTrafficPolicy Local + MetalLB BGP",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/envoyproxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_envoyproxy_tracing_sampling",
+      "label": "OpenTelemetry tracing at 10% sampling to tempo-gateway",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/envoyproxy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_gateway_class_eg",
+      "label": "GatewayClass eg",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/gateway-class.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_gateway_eg",
+      "label": "Gateway eg (envoy namespace)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/gateway.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_gateway_internal_certs_partial_tls",
+      "label": "Internal *.apps.onelite.feather certs via step-issuer (wait:false internal-certs layer)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/gateway.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_kustomization",
+      "label": "gateway kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_podmonitor_envoy_proxy",
+      "label": "PodMonitor envoy-proxy",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/podmonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_redirect_route_https_redirect",
+      "label": "HTTPRoute https-redirect",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/redirect-route.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gateway_servicemonitor_envoy_gateway",
+      "label": "ServiceMonitor envoy-gateway",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/servicemonitor.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "configs_kustomization",
+      "label": "configs kustomization (feather-core)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_kustomization",
+      "label": "mariadb-galera databases kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_decrypted_kustomization",
+      "label": "decrypted~kustomization (SOPS decrypt artifact of databases kustomization)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/.decrypted~kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_mariadb_galera_ref",
+      "label": "MariaDB galera instance mariadb-galera (shared mariaDbRef target)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_cloudnet_cloudnet",
+      "label": "Database cloudnet",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/cloudnet.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_coreprotect_coreprotect",
+      "label": "Database coreprotect",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/coreprotect.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_discordbot_discordbot",
+      "label": "Database discordbot",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/discordbot.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_leantime_leantime",
+      "label": "Database leantime",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/leantime.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_luckperms_luckperms",
+      "label": "Database luckperms",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/luckperms.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_playerkits_playerkits",
+      "label": "Database playerkits",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/playerkits.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_plotsquared_plotsquared",
+      "label": "Database plotsquared",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/plotsquared.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_prism_prism",
+      "label": "Database prism",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/prism.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_reposilite_reposilite",
+      "label": "Database reposilite",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/reposilite.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_shlink_shlink",
+      "label": "Database shlink",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/shlink.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_stardust_stardust",
+      "label": "Database stardust",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/stardust.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "databases_uptime_kuma_uptime_kuma",
+      "label": "Database uptime-kuma",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/uptime-kuma.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "gateway_gateway_class_eg",
+      "target": "gateway_envoyproxy_eg_proxy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/gateway-class.yaml",
+      "source_location": "spec.parametersRef",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_gateway_eg",
+      "target": "gateway_gateway_class_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/gateway.yaml",
+      "source_location": "spec.gatewayClassName",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_redirect_route_https_redirect",
+      "target": "gateway_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/redirect-route.yaml",
+      "source_location": "spec.parentRefs[0] name=eg sectionName=http",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_kustomization",
+      "target": "gateway_gateway_class_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_kustomization",
+      "target": "gateway_envoyproxy_eg_proxy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_kustomization",
+      "target": "gateway_gateway_eg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_kustomization",
+      "target": "gateway_redirect_route_https_redirect",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_kustomization",
+      "target": "gateway_podmonitor_envoy_proxy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_kustomization",
+      "target": "gateway_servicemonitor_envoy_gateway",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_kustomization",
+      "target": "gateway_gateway_internal_certs_partial_tls",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml",
+      "source_location": "comment: internal certs issued by separate wait:false internal-certs Kustomization so it never blocks configs (wait:true)",
+      "weight": 1.0
+    },
+    {
+      "source": "configs_kustomization",
+      "target": "gateway_kustomization",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/kustomization.yaml",
+      "source_location": "resources: gateway",
+      "weight": 1.0
+    },
+    {
+      "source": "configs_kustomization",
+      "target": "databases_kustomization",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/kustomization.yaml",
+      "source_location": "resources: mariadb-galera (which in turn includes databases/)",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_envoyproxy_envoydaemonset_topology",
+      "target": "gateway_envoyproxy_eg_proxy",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/envoyproxy.yaml",
+      "source_location": "spec.provider.kubernetes.envoyDaemonSet / envoyService",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_envoyproxy_tracing_sampling",
+      "target": "gateway_envoyproxy_eg_proxy",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/envoyproxy.yaml",
+      "source_location": "spec.telemetry.tracing samplingRate: 10 - 100% would OOM-kill tempo-ingester; host/port avoids cross-namespace ReferenceGrant",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_envoyproxy_tracing_sampling",
+      "target": "gateway_servicemonitor_envoy_gateway",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/envoyproxy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_podmonitor_envoy_proxy",
+      "target": "gateway_envoyproxy_eg_proxy",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/podmonitor.yaml",
+      "source_location": "selector matchLabels app.kubernetes.io/name=envoy, component=proxy, managed-by=envoy-gateway - selects the pods created by the EnvoyProxy DaemonSet",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_podmonitor_envoy_proxy",
+      "target": "gateway_servicemonitor_envoy_gateway",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/podmonitor.yaml",
+      "source_location": "both scrape :metrics every 30s - PodMonitor covers the data plane, ServiceMonitor the control plane",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_gateway_internal_certs_partial_tls",
+      "target": "gateway_gateway_eg",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/gateway.yaml",
+      "source_location": "listeners[https].tls.certificateRefs - Envoy reports PartiallyInvalidCertificateRef but keeps serving valid public certs",
+      "weight": 1.0
+    },
+    {
+      "source": "gateway_gateway_eg",
+      "target": "gateway_redirect_route_https_redirect",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/gateway.yaml",
+      "source_location": "listener name 'http' bound by HTTPRoute sectionName: http",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_decrypted_kustomization",
+      "target": "databases_kustomization",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/.decrypted~kustomization.yaml",
+      "source_location": "byte-identical SOPS decryption side-file of kustomization.yaml",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_cloudnet_cloudnet",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_coreprotect_coreprotect",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_discordbot_discordbot",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_leantime_leantime",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_luckperms_luckperms",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_playerkits_playerkits",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_plotsquared_plotsquared",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_prism_prism",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_reposilite_reposilite",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_shlink_shlink",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_stardust_stardust",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_kustomization",
+      "target": "databases_uptime_kuma_uptime_kuma",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml",
+      "source_location": "resources",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_cloudnet_cloudnet",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/cloudnet.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_coreprotect_coreprotect",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/coreprotect.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_discordbot_discordbot",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/discordbot.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_leantime_leantime",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/leantime.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_luckperms_luckperms",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/luckperms.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_playerkits_playerkits",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/playerkits.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_plotsquared_plotsquared",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/plotsquared.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_prism_prism",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/prism.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_reposilite_reposilite",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/reposilite.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_shlink_shlink",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/shlink.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_stardust_stardust",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/stardust.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_uptime_kuma_uptime_kuma",
+      "target": "databases_mariadb_galera_ref",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/uptime-kuma.yaml",
+      "source_location": "spec.mariaDbRef.name",
+      "weight": 1.0
+    },
+    {
+      "source": "databases_shlink_shlink",
+      "target": "databases_leantime_leantime",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/shlink.yaml",
+      "source_location": "identical Database spec template (utf8/utf8_general_ci, cleanupPolicy Delete, 10h requeue) - all 12 DBs are copies of one template",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "envoy_gateway_ingress_stack",
+      "label": "Envoy Gateway ingress stack: GatewayClass + EnvoyProxy params + Gateway listeners + global HTTPS redirect",
+      "nodes": [
+        "gateway_gateway_class_eg",
+        "gateway_envoyproxy_eg_proxy",
+        "gateway_gateway_eg",
+        "gateway_redirect_route_https_redirect"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/kustomization.yaml"
+    },
+    {
+      "id": "envoy_gateway_observability",
+      "label": "Envoy Gateway observability: control-plane ServiceMonitor, data-plane PodMonitor, OTel tracing to Tempo",
+      "nodes": [
+        "gateway_servicemonitor_envoy_gateway",
+        "gateway_podmonitor_envoy_proxy",
+        "gateway_envoyproxy_tracing_sampling",
+        "gateway_envoyproxy_eg_proxy"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/gateway/podmonitor.yaml"
+    },
+    {
+      "id": "mariadb_galera_tenant_databases",
+      "label": "Twelve tenant Databases provisioned on the shared mariadb-galera instance via one kustomization",
+      "nodes": [
+        "databases_kustomization",
+        "databases_mariadb_galera_ref",
+        "databases_cloudnet_cloudnet",
+        "databases_coreprotect_coreprotect",
+        "databases_discordbot_discordbot",
+        "databases_leantime_leantime",
+        "databases_luckperms_luckperms",
+        "databases_playerkits_playerkits",
+        "databases_plotsquared_plotsquared",
+        "databases_prism_prism",
+        "databases_reposilite_reposilite",
+        "databases_shlink_shlink",
+        "databases_stardust_stardust",
+        "databases_uptime_kuma_uptime_kuma"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a3ff106175eed2f7a/infrastructure/clusters/feather-core/configs/mariadb-galera/databases/kustomization.yaml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

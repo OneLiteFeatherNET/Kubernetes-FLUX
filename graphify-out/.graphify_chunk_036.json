@@ -1,0 +1,949 @@
+{
+  "nodes": [
+    {
+      "id": "base_controllers_kustomization",
+      "label": "base-controllers Kustomization (feather-core controller layer aggregator)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_kustomization",
+      "label": "cloudflare-tunnel-ingress-controller overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_release",
+      "label": "HelmRelease cloudflare-tunnel-ingress-controller",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_credentials_secret",
+      "label": "cloudflare-tunnel-credentials Secret (SOPS secretGenerator)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_leader_election_ha",
+      "label": "Active/standby controller HA via leader election (replicaCount 2)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_cloudflared_connector",
+      "label": "cloudflared connector Deployment (controller-generated, not Helm-managed)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_proxy_keepalive_timeout",
+      "label": "cloudflared --proxy-keepalive-timeout=10m (avoid TCP+TLS reconnect on bursty origins)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_cloudflared_servicemonitor",
+      "label": "cloudflaredServiceMonitor (scrape cloudflared metrics on :44483)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cloudflare_tunnel_ingress_controller_cloudflared_issue_671",
+      "label": "cloudflare/cloudflared#671 (OTel traces not exportable externally)",
+      "file_type": "document",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_kustomization",
+      "label": "cnpg-operator overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_release",
+      "label": "HelmRelease cnpg (CloudNativePG operator, cnpg-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cnpg_operator_barman_cloud_plugin",
+      "label": "barman-cloud.cloudnative-pg.io backup plugin",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_kustomization",
+      "label": "kube-prometheus-stack overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_release",
+      "label": "HelmRelease kube-prometheus-stack (monitoring)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_alloy_metrics",
+      "label": "alloy-metrics (dedicated Alloy scrape/remote_write replacing Prometheus-Agent)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_staged_agent_teardown",
+      "label": "Two-step PrometheusAgent teardown (drop CR first, disable operator later)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_apiserver_histogram_drop",
+      "label": "Apiserver duration-histogram bucket drop (Mimir per-tenant series limit)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_customresourcestate",
+      "label": "kube-state-metrics customResourceState config",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_gotk_resource_info",
+      "label": "gotk_resource_info metric (Flux CR Ready/Suspended state)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "kube_prometheus_stack_cnpg_backup_metrics",
+      "label": "cnpg_backup_created_at_seconds / stopped_at_seconds (Backup CR gauges)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "metallb_kustomization",
+      "label": "metallb Kustomization (upstream native manifests + resource injection)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/metallb/kustomization.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_controllers_besteffort_resource_injection",
+      "label": "BestEffort remediation pattern (inject requests/limits into upstream manifests)",
+      "file_type": "concept",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/metallb/kustomization.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "step_certificates_kustomization",
+      "label": "step-certificates overlay Kustomization",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/step-certificates/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "step_certificates_release_sops",
+      "label": "SOPS-encrypted HelmRelease patch for step-certificates (internal CA)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/step-certificates/release.sops.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_kustomization",
+      "label": "base-sources Kustomization (Flux source aggregator, flux-system)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_checkmk_checkmk_chart",
+      "label": "HelmRepository checkmk-chart",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/checkmk.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_cnpg_cnpg",
+      "label": "HelmRepository cnpg (cloudnative-pg charts)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/cnpg.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_dependency_track_dependency_track_chart",
+      "label": "HelmRepository dependency-track-chart",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/dependency-track.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_descheduler_descheduler",
+      "label": "HelmRepository descheduler (kubernetes-sigs)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/descheduler.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_dirsigler_uptime_kuma_chart",
+      "label": "HelmRepository uptime-kuma-chart (dirsigler)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/dirsigler.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_envoy_envoyproxy",
+      "label": "OCIRepository envoyproxy (gateway-helm, semver >=1.7.0 <1.8.0)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/envoy.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_grafana_grafana_labs",
+      "label": "HelmRepository grafana-labs",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/grafana.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_harbor_harbor",
+      "label": "HelmRepository harbor",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/harbor.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_helmcharts_helmcharts",
+      "label": "GitRepository helmcharts (self-referencing Kubernetes-FLUX main)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/helmcharts.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_helmcharts_themeinerlp",
+      "label": "HelmRepository themeinerlp",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/helmcharts.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_jetstack_jetstack",
+      "label": "HelmRepository jetstack (cert-manager charts)",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/jetstack.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "base_sources_mariadb_operator_mariadb_operator",
+      "label": "HelmRepository mariadb-operator",
+      "file_type": "code",
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/mariadb-operator.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "base_controllers_kustomization",
+      "target": "cloudflare_tunnel_ingress_controller_kustomization",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_controllers_kustomization",
+      "target": "cnpg_operator_kustomization",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_controllers_kustomization",
+      "target": "kube_prometheus_stack_kustomization",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_controllers_kustomization",
+      "target": "metallb_kustomization",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_controllers_kustomization",
+      "target": "step_certificates_kustomization",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_kustomization",
+      "target": "cloudflare_tunnel_ingress_controller_release",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_kustomization",
+      "target": "cloudflare_tunnel_ingress_controller_credentials_secret",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release",
+      "target": "cloudflare_tunnel_ingress_controller_credentials_secret",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release",
+      "target": "cloudflare_tunnel_ingress_controller_leader_election_ha",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release",
+      "target": "cloudflare_tunnel_ingress_controller_cloudflared_connector",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_proxy_keepalive_timeout",
+      "target": "cloudflare_tunnel_ingress_controller_cloudflared_connector",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_cloudflared_servicemonitor",
+      "target": "cloudflare_tunnel_ingress_controller_cloudflared_connector",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_release",
+      "target": "cloudflare_tunnel_ingress_controller_cloudflared_issue_671",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cloudflare_tunnel_ingress_controller_cloudflared_servicemonitor",
+      "target": "kube_prometheus_stack_release",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cloudflare-tunnel-ingress-controller/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization",
+      "target": "cnpg_operator_release",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization",
+      "target": "cnpg_operator_barman_cloud_plugin",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_kustomization",
+      "target": "base_controllers_besteffort_resource_injection",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_kustomization",
+      "target": "base_controllers_besteffort_resource_injection",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/metallb/kustomization.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "metallb_kustomization",
+      "target": "cnpg_operator_kustomization",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/metallb/kustomization.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_release",
+      "target": "cnpg_operator_barman_cloud_plugin",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_release",
+      "target": "base_sources_cnpg_cnpg",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cnpg_operator_release",
+      "target": "kube_prometheus_stack_release",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_kustomization",
+      "target": "kube_prometheus_stack_release",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_release",
+      "target": "kube_prometheus_stack_alloy_metrics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_staged_agent_teardown",
+      "target": "kube_prometheus_stack_alloy_metrics",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_release",
+      "target": "kube_prometheus_stack_apiserver_histogram_drop",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_release",
+      "target": "kube_prometheus_stack_customresourcestate",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_customresourcestate",
+      "target": "kube_prometheus_stack_gotk_resource_info",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_customresourcestate",
+      "target": "kube_prometheus_stack_cnpg_backup_metrics",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_cnpg_backup_metrics",
+      "target": "cnpg_operator_barman_cloud_plugin",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "kube_prometheus_stack_gotk_resource_info",
+      "target": "base_sources_helmcharts_helmcharts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_certificates_kustomization",
+      "target": "step_certificates_release_sops",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/step-certificates/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "step_certificates_release_sops",
+      "target": "base_sources_jetstack_jetstack",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/step-certificates/release.sops.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_checkmk_checkmk_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_cnpg_cnpg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_dependency_track_dependency_track_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_descheduler_descheduler",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_dirsigler_uptime_kuma_chart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_envoy_envoyproxy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_grafana_grafana_labs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_harbor_harbor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_helmcharts_helmcharts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_helmcharts_themeinerlp",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_jetstack_jetstack",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_kustomization",
+      "target": "base_sources_mariadb_operator_mariadb_operator",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/kustomization.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_descheduler_descheduler",
+      "target": "base_controllers_kustomization",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/descheduler.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_mariadb_operator_mariadb_operator",
+      "target": "base_controllers_kustomization",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/mariadb-operator.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_helmcharts_helmcharts",
+      "target": "base_sources_helmcharts_themeinerlp",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/helmcharts.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "base_sources_envoy_envoyproxy",
+      "target": "cloudflare_tunnel_ingress_controller_release",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-sources/envoy.yaml",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "flux_source_to_controller_chain",
+      "label": "Flux source -> HelmRelease -> controller-layer overlay chain for CloudNativePG",
+      "nodes": [
+        "base_sources_cnpg_cnpg",
+        "cnpg_operator_release",
+        "cnpg_operator_kustomization",
+        "base_controllers_kustomization"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/cnpg-operator/release.yaml"
+    },
+    {
+      "id": "kube_state_metrics_custom_resource_observability",
+      "label": "kube-state-metrics customResourceState supplies Flux and CNPG-backup metrics that native exporters never emit",
+      "nodes": [
+        "kube_prometheus_stack_customresourcestate",
+        "kube_prometheus_stack_gotk_resource_info",
+        "kube_prometheus_stack_cnpg_backup_metrics",
+        "cnpg_operator_barman_cloud_plugin"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/kube-prometheus-stack/release.yaml"
+    },
+    {
+      "id": "besteffort_qos_remediation_across_controllers",
+      "label": "Injecting requests/limits into upstream manifests that ship BestEffort (metallb, barman-cloud, kube-state-metrics, node-exporter)",
+      "nodes": [
+        "base_controllers_besteffort_resource_injection",
+        "metallb_kustomization",
+        "cnpg_operator_kustomization",
+        "kube_prometheus_stack_release"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/worktrees/agent-a5f46601e4bdeb874/infrastructure/clusters/feather-core/base-controllers/metallb/kustomization.yml"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
