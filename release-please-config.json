@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "simple",
+  "include-component-in-tag": false,
+  "include-v-in-tag": true,
+  "packages": {
+    ".": {
+      "package-name": "Kubernetes-FLUX",
+      "changelog-path": "CHANGELOG.md"
+    }
+  },
+  "bootstrap-sha": "1a944cd01d03dc30e4a7b29f4c32c3b2a4ab6ab4"
+}

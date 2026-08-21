@@ -1,24 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>OneLiteFeatherNET/renovate:default(OneLiteFeatherNET/infrastructure-core-team)",
-    "helpers:pinGitHubActionDigests"
+    "github>OneLiteFeatherNET/renovate:default(OneLiteFeatherNET/infrastructure-core-team)"
   ],
-  "flux": {
-    "managerFilePatterns": [
-      "/^(?:apps|infrastructure|clusters)/.+\\.ya?ml$/"
-    ]
-  },
-  "helm-values": {
-    "managerFilePatterns": [
-      "/(^|/)values\\.ya?ml$/",
-      "/^(?:apps|infrastructure)/.+/release\\.ya?ml$/"
-    ]
-  },
   "packageRules": [
     {
       "description": "Keep chart and image bumps in one PR, otherwise the chart rolls without its matching image tags",
-      "matchFileNames": ["apps/**/harbor/**"],
+      "matchFileNames": [
+        "apps/**/harbor/**"
+      ],
       "groupName": "harbor"
     }
   ]
