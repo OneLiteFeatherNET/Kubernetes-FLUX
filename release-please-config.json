@@ -8,5 +8,6 @@
       "package-name": "Kubernetes-FLUX",
       "changelog-path": "CHANGELOG.md"
     }
-  }
+  },
+  "bootstrap-sha": "1a944cd01d03dc30e4a7b29f4c32c3b2a4ab6ab4"
 }
