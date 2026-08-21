@@ -1,0 +1,480 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Durchsatz — ist das Ergebnis überhaupt plausibel?",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "title": "Echtzeitfaktor",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Dekodierte Audiosekunden je Wanduhrsekunde.\n\nDie wichtigste Zahl auf dieser Seite. Gemessen liegt large-v3 auf dieser Hardware bei etwa 0,5 (also rund zweimal langsamer als Echtzeit).\n\n**Über 10 ist physikalisch unmöglich** und bedeutet, dass nichts dekodiert wurde. Genau so sah der Defekt aus, der dieses Projekt zwei Tage gekostet hat: 100 Minuten Audio in 43 Sekunden \"erledigt\", Ergebnis ein leeres Transkript, das von einem stillen Teilnehmer nicht zu unterscheiden war.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (model) (rate(sturnus_transcription_decoded_seconds_total[5m]))",
+          "legendFormat": "{{model}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 3,
+      "title": "Dekodiertes Audio (kumuliert)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Wie viel Audio im gewählten Zeitraum tatsächlich durch den Decoder ging.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (model) (increase(sturnus_transcription_decoded_seconds_total[$__range]))",
+          "legendFormat": "{{model}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 10,
+      "title": "Laufender Job — läuft er langsam oder gar nicht?",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "panels": []
+    },
+    {
+      "id": 11,
+      "title": "Fortschritt",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Position im Audio, geteilt durch die Sprache, die das Gatter übergeben hat.\n\nKeine Serie heißt: gerade läuft kein Job. Die Instrumente melden im Leerlauf bewusst nichts, damit eine abgeschlossene Transkription nicht für immer als \"fertig\" stehen bleibt.",
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 10
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "100 * sturnus_transcription_position_seconds / clamp_min(sturnus_transcription_total_seconds, 1)",
+          "legendFormat": "{{model}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 12,
+      "title": "Stillstandsuhr",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Sekunden seit dem letzten gemeldeten Segment.\n\n**Diese Zahl allein genügt nicht.** Ein Prozess, der ein 30-Sekunden-Fenster mit beam_size 8 dekodiert, meldet minutenlang nichts und ist trotzdem gesund — beobachtet: 250 s ohne Meldung bei 3462m CPU-Last.\n\nErst zusammen mit dem CPU-Panel rechts wird es eindeutig: hohe Uhr **und** niedrige CPU heißt hängen, hohe Uhr **und** hohe CPU heißt langsam.",
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 10
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sturnus_transcription_seconds_since_progress",
+          "legendFormat": "{{model}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 300
+              },
+              {
+                "color": "red",
+                "value": 900
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 13,
+      "title": "CPU des Workers",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Die Gegenprobe zur Stillstandsuhr links. Das CPU-Limit des Workers ist 4.",
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 10
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",pod=~\"sturnus-worker-.*\",container!=\"\"}[5m]))",
+          "legendFormat": "worker",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 20,
+      "title": "Warteschlange",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "panels": []
+    },
+    {
+      "id": 21,
+      "title": "Jobs nach Status",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Achtung beim Namen: die Metrik heißt `sturnus_queue_depth_ratio`, ist aber eine **Anzahl**, kein Verhältnis. Das `_ratio` hängt der OTel-Prometheus-Export an, weil die Metrik die Einheit `1` deklariert. In Sturnus zu korrigieren, nicht hier zu umschiffen.\n\n`pending` dauerhaft über null bei untätigem Worker ist der Alarm.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (status) (sturnus_queue_depth_ratio)",
+          "legendFormat": "{{status}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 22,
+      "title": "Wartende und laufende Jobs",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Was gerade aussteht. Null bei leerer Warteschlange ist der Normalfall.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(sturnus_queue_depth_ratio{status=~\"pending|running\"})",
+          "legendFormat": "offen",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 30,
+      "title": "Job-Stufen",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "panels": []
+    },
+    {
+      "id": 31,
+      "title": "Dauer je Stufe (p95)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Wo die Zeit hingeht: claim, download, decrypt, transcribe, upload.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le, stage) (rate(sturnus_job_stage_duration_seconds_bucket[10m])))",
+          "legendFormat": "{{stage}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 32,
+      "title": "Ausgänge je Stufe",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Ein anderer Ausgang als `ok` ist der Grund, hier hinzusehen.\n\nBis 0.6.0 meldete die Ausgangsmetrik jeden fehlgeschlagenen Job als erfolgreich, weil sie den Rückgabewert von `process_one` las — der bedeutet \"es wurde gearbeitet\", nicht \"es hat geklappt\".",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 27
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (stage, outcome) (rate(sturnus_job_stage_duration_seconds_count[10m]))",
+          "legendFormat": "{{stage}} / {{outcome}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {}
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "sturnus"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Sturnus — Transkription",
+  "uid": "sturnus-transcription",
+  "version": 1,
+  "weekStart": ""
+}

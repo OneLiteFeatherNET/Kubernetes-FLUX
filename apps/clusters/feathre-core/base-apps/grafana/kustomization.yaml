@@ -18,6 +18,7 @@ configMapGenerator:
   - name: grafana-sc-dashboards-applications
     files:
       - dashboards/applications/harbor.json
+      - dashboards/applications/sturnus.json
     options:
       labels:
         grafana_dashboard: "1"
