@@ -20,6 +20,12 @@
       "description": "Keep chart and image bumps in one PR, otherwise the chart rolls without its matching image tags",
       "matchFileNames": ["apps/**/harbor/**"],
       "groupName": "harbor"
+    },
+    {
+      "description": "commitlint caps the header at 100 chars; the untouched 70-char depName pushes 'chore(deps): update <depName> docker tag to vX.Y.Z' to 112 and makes every bump of this image unmergeable. Only the display name changes.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java"],
+      "overrideDepName": "otel-autoinstrumentation-java"
     }
   ]
 }
