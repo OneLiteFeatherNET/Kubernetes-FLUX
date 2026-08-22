@@ -15,6 +15,21 @@ spec:
     # sentry namespace. Watching cluster-wide removes that ordering coupling.
     watchAnyNamespace: true
 
+    # Chart 1.1.0 ships `securityContext: {}`; upstream added exactly this
+    # block as the default in a later version, which is where these values
+    # come from. The operator already runs as uid 1001, so only the settings
+    # below are new.
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
     # Chart defaults are already sane here (384Mi/1000m limits, 384Mi/200m
     # requests); pinned explicitly so a chart bump cannot silently change them.
     resources:
