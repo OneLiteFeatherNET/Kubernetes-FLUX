@@ -15,6 +15,23 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # The chart already runs every component non-root as uid 1001 with
+          # drop-ALL and no privilege escalation; a pod-level seccomp profile
+          # was the only thing missing (KSV-0104, 5 workloads). Strategic
+          # merge rather than `op: add` so the existing fsGroup 1001 survives.
+          - target:
+              kind: Deployment
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: not-used-target-selects
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      seccompProfile:
+                        type: RuntimeDefault
   values:
     config:
       publicUri: "https://penpot.onelitefeather.net"
