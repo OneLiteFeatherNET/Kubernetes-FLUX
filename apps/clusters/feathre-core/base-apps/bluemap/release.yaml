@@ -23,6 +23,15 @@ spec:
                 path: /spec/template/spec/priorityClassName
                 value: feather-low
   values:
+    # Conservative on purpose. bluemap writes its rendered config and logs
+    # into root-owned /app/config and /app/bluemap/logs on the image layer, so
+    # runAsNonRoot and readOnlyRootFilesystem would break it. Those two
+    # findings stay open until the chart grows a writable data volume.
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
     podLabels:
       logs.onelitefeather.net/env: prod
     image:

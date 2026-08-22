@@ -25,6 +25,27 @@ spec:
       name: ghcr.io/onelitefeathernet/ingot
       tag: "1.1.0"
     deployment:
+      # Probed against ghcr.io/onelitefeathernet/ingot:1.1.0 in-cluster: comes
+      # up 1/1 as uid 1000 with drop-ALL and a read-only rootfs. Data is an
+      # emptyDir here (persistence is off), so there is no volume ownership to
+      # migrate.
+      podSecurityContext:
+        enabled: true
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
       podLabels:
         logs.onelitefeather.net/env: prod
         # Reposilite's console logger emits ANSI SGR color codes with no JSON
@@ -36,6 +57,12 @@ spec:
         - name: otel-agent
           image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.30.0
           command: ["cp", "/javaagent.jar", "/otel/javaagent.jar"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 10m
@@ -49,10 +76,21 @@ spec:
       additionalVolumes:
         - name: otel-agent
           emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        # tinylog's RollingFileWriter writes here; without this the read-only
+        # rootfs turns every start into a "Failed creating service
+        # implementation" error and file logging is silently lost.
+        - name: logging
+          emptyDir: {}
       additionalVolumeMounts:
         - name: otel-agent
           mountPath: /otel
           readOnly: true
+        - name: tmp
+          mountPath: /tmp
+        - name: logging
+          mountPath: /var/log/reposilite/
     ## Readiness and liveness probes
     probes:
       port: 8080 # The port Reposilite is running on inside the pod.
