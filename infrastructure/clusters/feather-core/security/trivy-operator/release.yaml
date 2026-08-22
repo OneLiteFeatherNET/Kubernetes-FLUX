@@ -11,9 +11,21 @@ spec:
     resources:
       requests:
         cpu: 100m
-        memory: 128Mi
+        # The operator sits at ~400Mi steady-state with this many reports.
+        memory: 384Mi
       limits:
-        memory: 512Mi
+        # 512Mi OOMKilled it in a loop (119 restarts/7d), which silently
+        # truncated the reports it had already written.
+        memory: 1Gi
+
+    # The image already declares USER 10000; this only states it so the
+    # admission-level checks (KSV-0012/0118) can see it.
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 10000
+      runAsGroup: 10000
+      seccompProfile:
+        type: RuntimeDefault
 
     trivy:
       # ClientServer, not Standalone: a Standalone scan job runs one trivy
@@ -37,6 +49,24 @@ spec:
           # 512Mi OOMKilled the scans of larger images (reposilite, bluemap,
           # dependency-track). Requests stay low — this is a burst ceiling.
           memory: 2Gi
+
+      server:
+        # Restates the chart defaults (runAsUser/fsGroup 65534) so the added
+        # keys don't drop them — Helm replaces the whole map.
+        podSecurityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          runAsGroup: 65534
+          fsGroup: 65534
+          seccompProfile:
+            type: RuntimeDefault
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
 
     operator:
       builtInTrivyServer: true
