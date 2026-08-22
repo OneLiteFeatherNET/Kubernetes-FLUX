@@ -22,6 +22,15 @@ spec:
   interval: 1m0s
   timeout: 5m
   values:
+    # The chart already ships a fully restricted container context
+    # (drop-ALL, readOnlyRootFilesystem, runAsNonRoot, uid 1000). Only the
+    # pod-level part was missing.
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
     # Run as a CronJob (no leader election / always-on pod needed).
     kind: CronJob
     schedule: "*/15 * * * *"

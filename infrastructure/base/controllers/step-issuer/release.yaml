@@ -20,4 +20,18 @@ spec:
     remediation:
       retries: 3
   interval: 1m0s
-  values: {}
+  values:
+    # The chart sets only runAsUser/runAsGroup 1000 on the container. No
+    # readOnlyRootFilesystem here — untested against this image, and a broken
+    # external issuer stops certificate renewal.
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
