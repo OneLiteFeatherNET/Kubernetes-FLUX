@@ -62,6 +62,10 @@ spec:
         - name: otel-agent
           image: {{ .Values.tracing.image }}
           command: ["cp", "/javaagent.jar", "/otel/javaagent.jar"]
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext:
+            {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.tracing.resources | nindent 12 }}
           volumeMounts:
@@ -134,6 +138,10 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           volumeMounts:
+            # The root filesystem is read-only; the JVM still wants a scratch
+            # dir (java.io.tmpdir, Netty, JIT dumps).
+            - name: tmp
+              mountPath: /tmp
             - name: config
               mountPath: /config
             {{- if and .Values.secrets.enabled .Values.secrets.files }}
@@ -146,6 +154,8 @@ spec:
               readOnly: true
             {{- end }}
       volumes:
+        - name: tmp
+          emptyDir: {}
         - name: config
           configMap:
             name: {{ include "micronaut.fullname" . }}-config
