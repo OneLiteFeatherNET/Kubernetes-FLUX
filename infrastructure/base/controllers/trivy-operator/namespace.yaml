@@ -5,3 +5,7 @@ metadata:
   # hostPID/hostPath, and it is disabled here (see release.yaml) — the
   # operator, trivy-server and scan jobs all run fine under `baseline`.
   name: trivy-system
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted
