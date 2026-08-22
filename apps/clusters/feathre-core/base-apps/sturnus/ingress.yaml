@@ -1,18 +1,36 @@
-# Exposes the `link` component ONLY (the OAuth account-link callback) via
-# Cloudflare Tunnel -- same pattern as outline/ingress.yaml. `bot` and
-# `worker` hold the Discord token, the S3 credentials and the audio master
-# key and must never be reachable from outside the cluster; the chart's own
-# httpRoute stays disabled (see release.yaml) precisely so nothing but this
-# Ingress, pointed at the link Service alone, is ever exposed.
+# Publishes `sturnus.onelitefeather.dev` through the Cloudflare Tunnel --
+# same pattern as outline/ingress.yaml. `bot` and `worker` hold the Discord
+# token, the S3 credentials and the audio master key and are never reachable
+# from outside the cluster; the chart's own httpRoute stays disabled (see
+# release.yaml) precisely so nothing but this Ingress decides what is
+# exposed.
 #
-# Hostname is this task's choice, following the app-name.onelitefeather.dev
-# convention (see outline.onelitefeather.dev) -- confirm it against the real
-# DNS record and the Discord OAuth app's registered redirect URI
-# (https://sturnus.onelitefeather.dev/oauth/callback) before relying on it.
+# **One hostname, three backends, and the order of the rules is what makes
+# it work.** The ingress controller matches the most specific path, so the
+# two exact-prefix rules below win over the catch-all regardless of the
+# order they appear in here -- but they are written most-specific-first
+# anyway, because the next person to add a path will copy the shape of what
+# is already here.
+#
+#   /oauth/callback  ->  link     the Discord account-link callback
+#   /api             ->  api      the console's back end
+#   /                ->  console  the Nuxt application
+#
+# The two callbacks are deliberately different paths on the same host.
+# `/oauth/callback` completes `/link` in Discord; `/api/auth/callback`
+# completes a console sign-in. Registering one URI for both would send an
+# account link into the console and a console sign-in into the link
+# service, and each would fail in a way that looks like the other's bug.
+#
+# Same-origin for the console and its API is not incidental. It is what
+# lets the session cookie stay `HttpOnly` and `SameSite=Lax`: the browser
+# attaches it to same-origin requests and no JavaScript can ever read it. A
+# separate hostname for the API would have forced either a cross-site
+# cookie or a token in local storage, and both are worse.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: sturnus-link-cloudflare-tunnel
+  name: sturnus-cloudflare-tunnel
   annotations:
     cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
 spec:
@@ -21,10 +39,33 @@ spec:
     - host: sturnus.onelitefeather.dev
       http:
         paths:
-          - path: /
+          # The account-link callback, unchanged and still served by the one
+          # component that holds the OAuth client secret for it.
+          - path: /oauth/callback
             pathType: Prefix
             backend:
               service:
                 name: sturnus-link
+                port:
+                  number: 80
+          # The console's API. Holds S3 and the master key because it
+          # decrypts audio on the way to the browser, and never the Discord
+          # token -- see the chart's `_helpers.tpl`, which enforces that
+          # rather than merely documenting it.
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: sturnus-api
+                port:
+                  number: 80
+          # Everything else is the console. Last, and a catch-all: a Nuxt
+          # application owns its own routing, and enumerating its pages here
+          # would mean editing this file every time one is added.
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sturnus-console
                 port:
                   number: 80
