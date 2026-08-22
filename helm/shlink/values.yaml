@@ -31,16 +31,23 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+# uid 1001 / gid 0 is what the shlink image already runs as; this only
+# states it so it is enforced rather than inherited.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 0
+  seccompProfile:
+    type: RuntimeDefault
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# readOnlyRootFilesystem is deliberately absent: shlink writes its 63 MB
+# GeoLite2-City.mmdb, its locks and its cache into /etc/shlink/data, and the
+# chart mounts no volume there.
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
 
 service:
   type: ClusterIP
