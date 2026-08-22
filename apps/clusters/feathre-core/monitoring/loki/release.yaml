@@ -13,6 +13,41 @@ spec:
       name: loki-s3
       valuesKey: secretAccessKey
       targetPath: loki.storage.s3.secretAccessKey
+  # loki and tempo already run non-root with an fsGroup per component; the one
+  # thing missing everywhere is a seccomp profile (KSV-0104, KSV-0030 across
+  # ~25 workloads). Applied by post-render rather than through the charts'
+  # securityContext values, because those are set per component with differing
+  # fsGroups (10001 for the stateful parts, 11211 for the memcached ones) and
+  # a values override would replace them. Strategic merge preserves them.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: not-used-target-selects
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      seccompProfile:
+                        type: RuntimeDefault
+          - target:
+              kind: StatefulSet
+            patch: |
+              apiVersion: apps/v1
+              kind: StatefulSet
+              metadata:
+                name: not-used-target-selects
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      seccompProfile:
+                        type: RuntimeDefault
   values:
     deploymentMode: Distributed
     # SimpleScalable targets default to 3 replicas each in this chart;
