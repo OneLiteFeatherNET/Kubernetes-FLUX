@@ -3,6 +3,10 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: storage-proxy
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted
 ---
 # ReferenceGrant: allows HTTPRoute in storage-proxy to use service in rook-ceph-fr01
 apiVersion: gateway.networking.k8s.io/v1beta1
