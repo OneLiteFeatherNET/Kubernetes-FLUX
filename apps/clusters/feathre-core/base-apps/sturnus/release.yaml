@@ -124,7 +124,30 @@ spec:
         # four-hour session in which one person speaks 40% of the time.
         STURNUS_JOB_LEASE_SECONDS: "10800"
 
-    # Exposed via Cloudflare Tunnel (see ingress.yaml) for the link component
-    # only; the chart's own HTTPRoute stays off, same as outline's httpRoute.
+    api:
+      env:
+        # The console's own OAuth callback, which is deliberately NOT the
+        # account-link one. `/oauth/callback` completes `/link` in Discord;
+        # this completes a console sign-in. Registering one URI for both
+        # would send an account link into the console and a console sign-in
+        # into the link service, and each would fail in a way that looks
+        # like the other's bug.
+        #
+        # Must match the path ingress.yaml routes to `sturnus-api` and the
+        # redirect URI registered on the Outline OAuth application, or the
+        # flow fails on a redirect_uri mismatch after the person has already
+        # consented.
+        STURNUS_CONSOLE_REDIRECT_URI: "https://sturnus.onelitefeather.dev/api/auth/callback"
+        # Where the browser is sent after a completed sign-in, and the
+        # origin the console is served from. Same host as the API above,
+        # which is what lets the session cookie stay HttpOnly and
+        # SameSite=Lax rather than becoming a cross-site cookie or a token
+        # in local storage.
+        STURNUS_CONSOLE_ORIGIN: "https://sturnus.onelitefeather.dev"
+
+    # Exposed via Cloudflare Tunnel (see ingress.yaml): the link callback,
+    # the console's API, and the console itself, all on one hostname. The
+    # chart's own HTTPRoute stays off, same as outline's httpRoute, so that
+    # Ingress is the only thing deciding what is reachable.
     httpRoute:
       enabled: false
