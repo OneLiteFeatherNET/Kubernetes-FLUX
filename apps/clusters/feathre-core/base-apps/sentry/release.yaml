@@ -19,39 +19,6 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
-          # The chart exposes securityContext per component - 58 separate keys,
-          # no global one - and the workloads disagree about the user they run
-          # as (sentry-web and clickhouse are root, snuba is uid 1000). A
-          # pod-level seccomp profile is the one setting that applies to all of
-          # them without touching the user or the capability set. Strategic
-          # merge, not a JSON patch: memcached and symbolicator already carry a
-          # pod securityContext and an `op: add` would replace it.
-          - target:
-              kind: Deployment
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: not-used-target-selects
-              spec:
-                template:
-                  spec:
-                    securityContext:
-                      seccompProfile:
-                        type: RuntimeDefault
-          - target:
-              kind: StatefulSet
-            patch: |
-              apiVersion: apps/v1
-              kind: StatefulSet
-              metadata:
-                name: not-used-target-selects
-              spec:
-                template:
-                  spec:
-                    securityContext:
-                      seccompProfile:
-                        type: RuntimeDefault
   values:
     # Everything stateful lives outside this release: postgres in CNPG, redis
     # in the shared Dragonfly, kafka in the Strimzi cluster, clickhouse in its
