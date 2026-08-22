@@ -59,6 +59,38 @@ spec:
       enabled: true
     volume:
       enabled: false
+
+    # Everything except dropping capabilities. Each setting was probed against
+    # louislam/uptime-kuma:2.3.2 in-cluster before being written here; the
+    # capability drop is the one that breaks ping monitors:
+    #   root + seccomp + allowPrivilegeEscalation:false   -> ping ok
+    #   root + capabilities.drop:[ALL]                    -> ping exits 126
+    #   uid 1000 + noPrivEsc + readOnly, caps untouched   -> ping ok
+    # /usr/bin/ping carries cap_net_raw=ep, so emptying the bounding set makes
+    # the exec itself fail. KSV-0003/0004/0106 stay open on purpose.
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+
+    # The read-only root filesystem needs these two writable; the chart mounts
+    # nothing itself because volume.enabled is false (state lives in MariaDB).
+    additionalVolumes:
+      - name: tmp
+        emptyDir: {}
+      - name: data
+        emptyDir: {}
+    additionalVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: data
+        mountPath: /app/data
     podEnv:
       - name: UPTIME_KUMA_DB_TYPE
         value: "mariadb"
