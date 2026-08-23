@@ -17,7 +17,7 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/onelitefeather/charts/stelaris-ui
   ref:
-    semver: "=1.1.0"
+    semver: "=1.1.1"
   secretRef:
     name: harbor-pull
 ---
@@ -33,6 +33,6 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/onelitefeather/charts/stelaris-ui
   ref:
-    semver: "=1.1.0"
+    semver: "=1.1.1"
   secretRef:
     name: harbor-pull
