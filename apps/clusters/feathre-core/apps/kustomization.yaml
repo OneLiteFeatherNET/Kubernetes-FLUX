@@ -5,3 +5,5 @@ resources:
   - otis-dev
   - vulpes-backend
   - vulpes-backend-dev
+  - stelaris
+  - stelaris-dev

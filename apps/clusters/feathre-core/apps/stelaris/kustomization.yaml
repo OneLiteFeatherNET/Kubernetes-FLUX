@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: stelaris
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - namespace.yaml
+  - release.yaml
+  - httproute.yaml
+
+secretGenerator:
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json
