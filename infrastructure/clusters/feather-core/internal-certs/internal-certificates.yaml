@@ -267,3 +267,39 @@ spec:
     rotationPolicy: Always
   dnsNames:
     - metabase.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: stelaris-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: stelaris-apps-onelite-feather-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - stelaris.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: stelaris-dev-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: stelaris-dev-apps-onelite-feather-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - stelaris-dev.apps.onelite.feather

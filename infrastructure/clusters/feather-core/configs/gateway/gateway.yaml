@@ -65,3 +65,7 @@ spec:
             name: vikunja-apps-onelite-feather-tls
           - kind: Secret
             name: metabase-apps-onelite-feather-tls
+          - kind: Secret
+            name: stelaris-apps-onelite-feather-tls
+          - kind: Secret
+            name: stelaris-dev-apps-onelite-feather-tls
