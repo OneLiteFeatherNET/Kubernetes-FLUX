@@ -1,0 +1,38 @@
+---
+# Stelaris UI ships its chart as an OCI artifact from our own Harbor, versioned
+# together with the image it deploys: the chart leaves image.tag empty and falls
+# back to .Chart.AppVersion, so pinning the chart pins the image.
+#
+# Unlike apus/charts, onelitefeather is a private project - hence secretRef.
+# Two repositories, not one, so dev can run a newer chart than prod.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: stelaris-ui
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/stelaris-ui
+  ref:
+    semver: "=1.1.0"
+  secretRef:
+    name: harbor-pull
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: stelaris-ui-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/stelaris-ui
+  ref:
+    semver: "=1.1.0"
+  secretRef:
+    name: harbor-pull

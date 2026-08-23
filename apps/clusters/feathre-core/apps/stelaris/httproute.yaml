@@ -1,0 +1,21 @@
+# The chart renders an Ingress, not an HTTPRoute; this cluster routes through
+# Envoy Gateway, so the route lives here instead (same shape as n8n/grafana).
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: stelaris-ui
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - stelaris.apps.onelite.feather
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: stelaris-ui
+          port: 80

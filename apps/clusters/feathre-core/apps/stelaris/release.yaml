@@ -1,0 +1,59 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: stelaris-ui
+  namespace: stelaris
+spec:
+  releaseName: stelaris-ui
+  interval: 1m0s
+  install:
+    remediation:
+      retries: 3
+  # Pinned in base-sources; the chart's appVersion decides the image tag, so the
+  # source pin is the only version to bump.
+  chartRef:
+    kind: OCIRepository
+    name: stelaris-ui
+    namespace: flux-system
+  values:
+    # HA: two replicas, spread over nodes by the chart's topology constraint, and
+    # a PDB so a node drain never takes the UI down.
+    replicaCount: 2
+    podDisruptionBudget:
+      enabled: true
+      minAvailable: 1
+    image:
+      registry: harbor.onelitefeather.dev
+      repository: onelitefeather/stelaris
+    imagePullSecrets:
+      - name: harbor-pull
+
+    # Read by the app at startup from /config.json, which the chart mounts as a
+    # Secret. nginx serves that file per request, so changing it needs no rollout.
+    config:
+      backendUrl: https://vulpes-backend.apps.onelite.feather
+      # No generator service runs in this cluster; the app falls back to its
+      # compiled-in default and the generate page stays unusable.
+      generatorUrl: ""
+
+    # The image ships connect-src 'self' https:, because an image that is built
+    # once and promoted cannot know its backend. Naming it turns "any HTTPS host"
+    # into "this one". The unsafe-* entries are Flutter's, not ours - its loader
+    # bootstraps from an inline script and compiles Wasm at runtime.
+    nginx:
+      contentSecurityPolicy: >-
+        default-src 'self'; base-uri 'self'; object-src 'none';
+        frame-ancestors 'none'; form-action 'none';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval';
+        style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;
+        font-src 'self' data:; media-src 'self' data: blob:;
+        worker-src 'self' blob:; child-src 'self' blob:; manifest-src 'self';
+        connect-src 'self' https://vulpes-backend.apps.onelite.feather
+
+    # Routed through Envoy Gateway via httproute.yaml, not an Ingress.
+    ingress:
+      enabled: false
+
+    podLabels:
+      logs.onelitefeather.net/format: json
+      logs.onelitefeather.net/env: prod
