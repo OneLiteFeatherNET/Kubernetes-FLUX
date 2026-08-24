@@ -55,7 +55,17 @@ spec:
             - path:
                 type: PathPrefix
                 value: /
-    profiles: [ "prod" ]
+    # "k8s" is not optional here even though dev discovers nothing: Micronaut
+    # activates the k8s environment on its own inside a cluster, which brings up
+    # the micronaut-kubernetes beans, and they need both the RBAC below and the
+    # k8s config file this list makes load.
+    profiles: [ "prod", "k8s" ]
+
+    # RBAC for in-namespace service discovery (read services/endpoints). Without
+    # it the discovery client gets a 403 and reports its health indicator DOWN,
+    # which fails /health/readiness and holds the pod at 0/1 forever.
+    rbac:
+      create: true
 
     # Alloy log pipeline: JSON parsing + per-env stream label.
     podLabels:
@@ -155,6 +165,25 @@ spec:
               registerMbeans: true
               leakDetectionThreshold: 20000
               transactionIsolation: TRANSACTION_READ_COMMITTED
+        # Loaded only in the Kubernetes (k8s) environment. k8s is listed in
+        # profiles because MICRONAUT_CONFIG_FILES is built from that list -- it
+        # is what makes this file load at all. It does not switch the k8s
+        # environment on: Micronaut deduces that from running in a cluster
+        # regardless of MICRONAUT_ENVIRONMENTS, which is why the discovery beans
+        # come up here whether or not anything asks for them.
+        k8s: |-
+          # Disable the KubernetesHealthIndicator: the client-java bundled with
+          # micronaut-kubernetes 7.1.1 can't deserialize newer API-server pod
+          # fields (observedGeneration / PodReadyToStartContainers), so every
+          # /health probe logs an ERROR+WARN. Service discovery is unaffected.
+          endpoints:
+            health:
+              kubernetes:
+                enabled: false
+          kubernetes:
+            client:
+              discovery:
+                mode: endpoint
     envFrom:
       - secretRef:
           name: vulpes-dev-app-db
