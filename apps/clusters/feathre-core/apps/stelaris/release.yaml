@@ -32,13 +32,11 @@ spec:
     # Secret. nginx serves that file per request, so changing it needs no rollout.
     config:
       backendUrl: https://vulpes-backend.apps.onelite.feather
-      # No generator service runs in this cluster; the app falls back to its
-      # compiled-in default and the generate page stays unusable.
-      generatorUrl: ""
+      generatorUrl: https://vulpes-generator.apps.onelite.feather
 
     # The image ships connect-src 'self' https:, because an image that is built
-    # once and promoted cannot know its backend. Naming it turns "any HTTPS host"
-    # into "this one". The unsafe-* entries are Flutter's, not ours - its loader
+    # once and promoted cannot know its backend. Naming them turns "any HTTPS
+    # host" into "these two". The unsafe-* entries are Flutter's, not ours - its loader
     # bootstraps from an inline script and compiles Wasm at runtime.
     nginx:
       contentSecurityPolicy: >-
@@ -49,6 +47,7 @@ spec:
         font-src 'self' data:; media-src 'self' data: blob:;
         worker-src 'self' blob:; child-src 'self' blob:; manifest-src 'self';
         connect-src 'self' https://vulpes-backend.apps.onelite.feather
+        https://vulpes-generator.apps.onelite.feather
 
     # Routed through Envoy Gateway via httproute.yaml, not an Ingress.
     ingress:
