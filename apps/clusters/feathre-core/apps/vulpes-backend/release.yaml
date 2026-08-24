@@ -164,9 +164,11 @@ spec:
               leakDetectionThreshold: 20000
               transactionIsolation: TRANSACTION_READ_COMMITTED
         # Loaded only in the Kubernetes (k8s) environment. k8s is listed in
-        # profiles so the micronaut-kubernetes discovery beans activate (explicit
-        # MICRONAUT_ENVIRONMENTS disables auto-deduction). The chart requires one
-        # config file per profile, so this file must exist.
+        # profiles because MICRONAUT_CONFIG_FILES is built from that list -- it
+        # is what makes this file load at all. It does not switch the k8s
+        # environment on: Micronaut deduces that from running in a cluster
+        # regardless of MICRONAUT_ENVIRONMENTS, which is why the discovery beans
+        # come up here whether or not anything asks for them.
         k8s: |-
           # Disable the KubernetesHealthIndicator: the client-java bundled with
           # micronaut-kubernetes 7.1.1 can't deserialize newer API-server pod
