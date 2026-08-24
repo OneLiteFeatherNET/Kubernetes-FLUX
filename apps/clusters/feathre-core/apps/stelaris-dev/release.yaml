@@ -9,8 +9,9 @@ spec:
   install:
     remediation:
       retries: 3
-  # Pinned in base-sources; the chart's appVersion decides the image tag, so the
-  # source pin is the only version to bump.
+  # The source in base-sources tracks the newest release rather than an exact
+  # version, and the chart's appVersion decides the image tag - so dev follows
+  # both without anything here being bumped.
   chartRef:
     kind: OCIRepository
     name: stelaris-ui-dev
