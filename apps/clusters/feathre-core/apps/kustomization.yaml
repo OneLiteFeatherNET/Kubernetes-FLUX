@@ -7,3 +7,5 @@ resources:
   - vulpes-backend-dev
   - stelaris
   - stelaris-dev
+  - vulpes-generator
+  - vulpes-generator-dev

@@ -1,0 +1,46 @@
+---
+# The Vulpes generator ships its chart as an OCI artifact from our own Harbor,
+# versioned together with the image it deploys: the chart leaves image.tag empty
+# and falls back to .Chart.AppVersion, so pinning the chart pins the image. Same
+# shape as vulpes-backend.yaml and stelaris-ui.yaml beside this file.
+#
+# Unlike apus/charts, onelitefeather is a private project - hence secretRef.
+# Two repositories, not one, so dev can run a newer chart than prod: prod is
+# pinned to an exact version and moved deliberately, dev follows the newest
+# release on its own.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vulpes-generator
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/vulpes-generator
+  ref:
+    # 0.3.0 is the first release that reads Postgres and answers /health.
+    # 0.2.0 exists in Harbor but talks to a MariaDB database this cluster does
+    # not have, and serves nothing on the path the chart probes, so it would
+    # never turn ready.
+    semver: "=0.3.0"
+  secretRef:
+    name: harbor-pull
+---
+# Floored at 0.3.0 for the reason above: nothing below it can run here.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vulpes-generator-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/vulpes-generator
+  ref:
+    semver: ">=0.3.0"
+  secretRef:
+    name: harbor-pull
