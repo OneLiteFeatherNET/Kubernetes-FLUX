@@ -5,13 +5,13 @@ metadata:
   namespace: vulpes
 spec:
   releaseName: vulpes-backend
-  chart:
-    spec:
-      chart: ./helm/micronaut
-      sourceRef:
-        kind: GitRepository
-        name: helmcharts
-        namespace: flux-system
+  # The chart comes from Harbor, released together with the image it deploys
+  # (see base-sources/vulpes-backend.yaml). The exact version lives on the
+  # OCIRepository, so there is nothing to pin here.
+  chartRef:
+    kind: OCIRepository
+    name: vulpes-backend
+    namespace: flux-system
   install:
     remediation:
       retries: 3

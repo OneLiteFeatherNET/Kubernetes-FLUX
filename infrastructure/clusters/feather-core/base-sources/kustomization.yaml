@@ -30,6 +30,7 @@ resources:
   - sturnus.yaml
   - pmint93.yml
   - stelaris-ui.yaml
+  - vulpes-backend.yaml
 
 # The OCIRepositories above pull from the private onelitefeather Harbor project,
 # so flux-system needs the same pull credential the workloads use.

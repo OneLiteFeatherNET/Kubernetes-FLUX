@@ -9,32 +9,35 @@ spec:
   install:
     remediation:
       retries: 3
-  chart:
-    spec:
-      chart: ./helm/micronaut
-      sourceRef:
-        kind: GitRepository
-        name: helmcharts
-        namespace: flux-system
+  # Tracks the newest chart release rather than an exact version (see
+  # base-sources/vulpes-backend.yaml), and the chart's appVersion decides the
+  # image tag -- so dev follows both without anything here being bumped. That
+  # is the whole point: this file used to carry a hand-edited tag, and it sat
+  # on 2.3.0 while prod ran 2.4.1.
+  chartRef:
+    kind: OCIRepository
+    name: vulpes-backend-dev
+    namespace: flux-system
   values:
     # Single replica, no PDB -> dev is best-effort and yields to prod under
     # pressure (no priorityClassName). Same logging/JSON setup as prod so the
-    # behaviour matches; only the DB, domain and image tag differ.
+    # behaviour matches; only the DB, the domain and which chart release each
+    # tracks differ.
     replicaCount: 1
-    image:
-      repository: harbor.onelitefeather.dev/onelitefeather/vulpes-backend
-      # Pinned to an immutable version tag instead of "latest": Spegel caches
-      # mutable tags P2P, so "latest" kept resolving to a stale digest. Immutable
-      # tags resolve correctly -> bump this when a new dev build should roll.
-      pullPolicy: IfNotPresent
-      tag: "2.3.0"
+    # The chart is named vulpes-backend, the old shared one was named micronaut,
+    # and .Chart.Name reaches app.kubernetes.io/name -- which is in the
+    # Deployment's selector and immutable. Frozen here so moving to the chart
+    # renames nothing on the cluster; undoing this means deleting the
+    # Deployment, not upgrading it.
+    nameOverride: micronaut
+    fullnameOverride: vulpes-backend-dev-micronaut
+
+    # image, service.port and the Prometheus path now come from the chart. The
+    # tag stays immutable -- it is the chart's appVersion, never "latest",
+    # which Spegel caches P2P and kept resolving to a stale digest.
     imagePullSecrets:
       - name: harbor-pull
-    service:
-      port: 8080
     metrics:
-      enabled: true
-      path: /prometheus
       serviceMonitor:
         enabled: true
     ingress:

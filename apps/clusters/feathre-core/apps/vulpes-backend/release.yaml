@@ -27,17 +27,19 @@ spec:
     podDisruptionBudget:
       enabled: true
       maxUnavailable: 1
-    image:
-      repository: harbor.onelitefeather.dev/onelitefeather/vulpes-backend
-      pullPolicy: IfNotPresent
-      tag: "2.4.1"
+    # The chart is named vulpes-backend, the old shared one was named micronaut,
+    # and .Chart.Name reaches app.kubernetes.io/name -- which is in the
+    # Deployment's selector and immutable. Frozen here so moving to the chart
+    # renames nothing on the cluster; undoing this means deleting the
+    # Deployment, not upgrading it.
+    nameOverride: micronaut
+    fullnameOverride: vulpes-backend-micronaut
+
+    # image, service.port and the Prometheus path now come from the chart, which
+    # is released from the application's own repository and knows them.
     imagePullSecrets:
       - name: harbor-pull
-    service:
-      port: 8080
     metrics:
-      enabled: true
-      path: /prometheus
       serviceMonitor:
         enabled: true
     ingress:
