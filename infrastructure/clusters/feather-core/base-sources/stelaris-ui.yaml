@@ -4,7 +4,9 @@
 # back to .Chart.AppVersion, so pinning the chart pins the image.
 #
 # Unlike apus/charts, onelitefeather is a private project - hence secretRef.
-# Two repositories, not one, so dev can run a newer chart than prod.
+# Two repositories, not one, so dev can run a newer chart than prod: prod is
+# pinned to an exact version and moved deliberately, dev follows the newest
+# release on its own.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -21,6 +23,11 @@ spec:
   secretRef:
     name: harbor-pull
 ---
+# Dev takes whatever the newest release is, rather than being bumped by hand -
+# that is the whole point of having a second repository here. The range is open
+# upwards but floored at 1.1.1, because 1.1.0 does not start in a browser (see
+# the commit that pinned it): "newest" must never mean "back to a version known
+# not to boot".
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -33,6 +40,6 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/onelitefeather/charts/stelaris-ui
   ref:
-    semver: "=1.1.1"
+    semver: ">=1.1.1"
   secretRef:
     name: harbor-pull
