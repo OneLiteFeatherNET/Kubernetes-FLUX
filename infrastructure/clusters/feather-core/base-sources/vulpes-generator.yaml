@@ -20,15 +20,14 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/onelitefeather/charts/vulpes-generator
   ref:
-    # 0.3.0 is the first release that reads Postgres and answers /health.
-    # 0.2.0 exists in Harbor but talks to a MariaDB database this cluster does
-    # not have, and serves nothing on the path the chart probes, so it would
-    # never turn ready.
-    semver: "=0.3.0"
+    # 0.3.2 is the first release that actually runs: 0.3.0 ships the wrong
+    # mainClass and never starts, and 0.3.1 resolves the GitHub clone URL
+    # without its scheme, so every generate call answers 500.
+    semver: "=0.3.2"
   secretRef:
     name: harbor-pull
 ---
-# Floored at 0.3.0 for the reason above: nothing below it can run here.
+# Floored at 0.3.2 for the reason above: nothing below it can run here.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -41,6 +40,6 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/onelitefeather/charts/vulpes-generator
   ref:
-    semver: ">=0.3.0"
+    semver: ">=0.3.2"
   secretRef:
     name: harbor-pull
