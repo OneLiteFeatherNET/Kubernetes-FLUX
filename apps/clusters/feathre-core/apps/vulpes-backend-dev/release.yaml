@@ -99,6 +99,15 @@ spec:
                 stelaris-ui:
                   allowed-origins:
                     - https://stelaris-dev.apps.onelite.feather
+                  # Stelaris sends PATCH for partial updates. Listing the set
+                  # explicitly replaces Micronaut's implicit any-method default.
+                  allowed-methods:
+                    - GET
+                    - POST
+                    - PUT
+                    - PATCH
+                    - DELETE
+                    - OPTIONS
             netty:
               access-logger:
                 enabled: true
