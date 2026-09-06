@@ -27,6 +27,14 @@ spec:
           memory: 128Mi
     speaker:
       priorityClassName: feather-platform
+      # Storage nodes carry LoadBalancer endpoints too, and envoy uses
+      # externalTrafficPolicy: Local - without a speaker there, those pods sit
+      # on a node that cannot announce their VIP. Same toleration as spegel.
+      tolerations:
+        - key: node-role.feather/storage
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
       resources:
         requests:
           cpu: 25m
@@ -42,6 +50,11 @@ spec:
     frr-k8s:
       frrk8s:
         priorityClassName: feather-platform
+        tolerations:
+          - key: node-role.feather/storage
+            operator: Equal
+            value: "true"
+            effect: NoSchedule
         resources:
           requests:
             cpu: 10m
