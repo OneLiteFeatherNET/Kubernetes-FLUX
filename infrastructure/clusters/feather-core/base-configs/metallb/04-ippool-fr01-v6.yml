@@ -1,0 +1,15 @@
+# IPv6 counterpart to lb-dc06. Mirrors 10.200.90.0/24 into the site federation
+# per the fourth-hextet convention (90). Announced as /128 like v4 as /32, so
+# the prefix itself is never advertised - only the individual service VIPs.
+#
+# Inert until a Service opts in with ipFamilyPolicy: PreferDualStack. All six
+# existing LoadBalancers are SingleStack IPv4 with pinned addresses and are
+# unaffected by this pool existing.
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: lb-fr01-v6
+  namespace: metallb-system
+spec:
+  addresses:
+    - fd83:4192:3b5e:90::/64
