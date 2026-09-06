@@ -5,3 +5,6 @@ resources:
   - 02-bgp-advertisment-d.yml
   - 03-bgp-peer-dc06.yml
   - 03-bgp-peer-fr01.yml
+  - 04-ippool-fr01-v6.yml
+  - 05-bgp-advertisement-fr01-v6.yml
+  - 06-bgp-peer-fr01-v6.yml

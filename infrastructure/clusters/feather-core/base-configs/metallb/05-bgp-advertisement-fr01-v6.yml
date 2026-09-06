@@ -1,0 +1,14 @@
+# Separate from the v4 "local" advertisement rather than adding the pool there:
+# aggregationLength is per family, and keeping the working v4 path untouched
+# avoids any chance of disturbing the six production VIPs.
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: local-v6
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - lb-fr01-v6
+  aggregationLengthV6: 128
+  localPref: 100
+  communities: []
