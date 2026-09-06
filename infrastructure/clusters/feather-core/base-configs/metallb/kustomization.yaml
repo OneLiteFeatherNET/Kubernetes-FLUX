@@ -6,3 +6,4 @@ resources:
   - 03-bgp-peer-dc06.yml
   - 03-bgp-peer-fr01.yml
   - 06-bgp-peer-fr01-v6.yml
+  - 07-dualstack-admission-policy.yml
