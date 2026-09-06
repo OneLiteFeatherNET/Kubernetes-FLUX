@@ -1,0 +1,78 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: metallb
+  namespace: metallb-system
+spec:
+  chart:
+    spec:
+      version: "=0.16.1"
+  values:
+    crds:
+      enabled: true
+    # frr-k8s, not native: the native speaker rejects IPv6 pools outright and
+    # cannot even parse a v6 peer address ("too many colons"). Default since
+    # 0.16.1, set explicitly so a chart default change cannot move it back.
+    frrk8s:
+      enabled: true
+    # Upstream leaves every component BestEffort at priority 0 - first to be
+    # evicted, which would drop BGP and with it every LoadBalancer IP.
+    controller:
+      priorityClassName: feather-platform
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    speaker:
+      priorityClassName: feather-platform
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+      # The deprecated in-speaker FRR mode, mutually exclusive with frrk8s.
+      frr:
+        enabled: false
+    # Values for the bundled frr-k8s subchart. The frr container carries the
+    # BGP sessions, so it gets room: an OOM there drops every session on the
+    # node, while the sidecars only copy files and reload config.
+    frr-k8s:
+      frrk8s:
+        priorityClassName: feather-platform
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        frr:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+        reloader:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+        frrMetrics:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+        frrStatus:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
