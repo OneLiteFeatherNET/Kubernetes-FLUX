@@ -77,13 +77,18 @@ spec:
         - -config.expand-env=true
       # vParquet4 compaction memory scales with the number of distinct trace IDs,
       # not with block size on disk — small blocks still OOMKilled at 1Gi.
+      # Raised 2Gi -> 6Gi on 2026-09-06: span intake went from ~17/s to 70-95/s
+      # on 2026-09-05 afternoon (Survival-1 and eg.envoy), which multiplies the
+      # distinct-trace count per compaction window by the same factor. The pod
+      # OOMKilled on every cycle at a clipped 1.84Gi, wedged on the same batch,
+      # so compaction throughput and with it block_retention had stopped.
       resources:
         requests:
           cpu: 100m
           memory: 512Mi
         limits:
           cpu: "1"
-          memory: 2Gi
+          memory: 6Gi
       affinity: |
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
