@@ -6,6 +6,8 @@ metadata:
 spec:
   ipAddressPools:
   - lb-dc06
+  # Per family. Both are host routes, no aggregation on either side.
   aggregationLength: 32
+  aggregationLengthV6: 128
   localPref: 100
   communities: []

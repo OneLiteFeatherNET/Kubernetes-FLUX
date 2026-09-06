@@ -1,3 +1,6 @@
+# One pool, both families: MetalLB assigns both addresses to a dual-stack
+# Service only if a single pool carries an IPv4 and an IPv6 range. The name is
+# historical - the cluster moved from Helsinki to fr01, the pool name did not.
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -6,3 +9,4 @@ metadata:
 spec:
   addresses:
   - 10.200.90.1-10.200.90.15
+  - fd83:4192:3b5e:90::/64
