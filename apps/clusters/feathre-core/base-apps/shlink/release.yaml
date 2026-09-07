@@ -36,7 +36,7 @@ spec:
       repository: shlinkio/shlink
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "5.1.5"
+      tag: "5.1.6"
     replicaCount: 3
     ingress:
       enabled: false
