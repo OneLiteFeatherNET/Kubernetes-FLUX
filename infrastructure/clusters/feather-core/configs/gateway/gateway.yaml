@@ -73,3 +73,9 @@ spec:
             name: stelaris-apps-onelite-feather-tls
           - kind: Secret
             name: stelaris-dev-apps-onelite-feather-tls
+          - kind: Secret
+            name: files-apps-onelite-feather-tls
+          - kind: Secret
+            name: jellyfin-apps-onelite-feather-tls
+          - kind: Secret
+            name: kavita-apps-onelite-feather-tls
