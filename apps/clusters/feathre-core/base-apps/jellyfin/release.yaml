@@ -1,0 +1,48 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  values:
+    replicaCount: 1
+
+    # RWO-Config-Volume verträgt kein RollingUpdate.
+    deploymentStrategy:
+      type: Recreate
+
+    podLabels:
+      logs.onelitefeather.net/env: prod
+
+    serviceAccount:
+      automount: false
+
+    priorityClassName: feather-standard
+
+    persistence:
+      config:
+        enabled: true
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        storageClass: ceph-rbd-fr01
+      # Die Bibliothek gehört dem Filebrowser; Jellyfin liest nur.
+      media:
+        enabled: true
+        type: pvc
+        existingClaim: media-library
+        readOnly: true
+      # Transkodier-Cache bleibt flüchtig.
+      cache:
+        enabled: false
+
+    ingress:
+      enabled: false
+
+    # Ohne GPU ist jeder Transkodiervorgang CPU-Last; das Limit deckelt sie.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: "4"
+        memory: 4Gi

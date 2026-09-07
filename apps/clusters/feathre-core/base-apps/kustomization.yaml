@@ -27,3 +27,4 @@ resources:
   - metabase
   - media-library
   - filebrowser
+  - jellyfin
