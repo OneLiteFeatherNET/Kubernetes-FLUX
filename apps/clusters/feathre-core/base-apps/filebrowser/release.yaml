@@ -1,0 +1,64 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: filebrowser
+  namespace: media
+spec:
+  values:
+    controllers:
+      filebrowser:
+        type: deployment
+        replicas: 1
+        strategy: Recreate
+        pod:
+          priorityClassName: feather-standard
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          labels:
+            logs.onelitefeather.net/env: prod
+        containers:
+          app:
+            image:
+              repository: docker.io/filebrowser/filebrowser
+              tag: v2.63.23
+            env:
+              FB_PORT: "8080"
+              FB_ADDRESS: 0.0.0.0
+              FB_ROOT: /srv
+              FB_DATABASE: /database/filebrowser.db
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+    service:
+      app:
+        controller: filebrowser
+        ports:
+          http:
+            port: 8080
+    persistence:
+      database:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        storageClass: ceph-rbd-fr01
+        globalMounts:
+          - path: /database
+      library:
+        type: persistentVolumeClaim
+        existingClaim: media-library
+        globalMounts:
+          - path: /srv
