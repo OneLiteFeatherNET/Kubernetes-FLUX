@@ -27,6 +27,27 @@ spec:
               tag: "0.9.1"
             env:
               TZ: Europe/Berlin
+            # Generous startup budget: Kavita builds its database on first run.
+            probes:
+              liveness:
+                enabled: true
+                type: HTTP
+                path: /api/health
+                port: 5000
+              readiness:
+                enabled: true
+                type: HTTP
+                path: /api/health
+                port: 5000
+              startup:
+                enabled: true
+                type: HTTP
+                path: /api/health
+                port: 5000
+                spec:
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  failureThreshold: 60
             securityContext:
               allowPrivilegeEscalation: false
               capabilities:
@@ -52,10 +73,13 @@ spec:
         storageClass: ceph-rbd-fr01
         globalMounts:
           - path: /kavita/config
+      # Whole volume, not subPath: books/ may not exist yet, and a
+      # subPath mount would make the kubelet create it as root, locking
+      # out the filebrowser (uid 1000). Kavita's library lives at
+      # /library/books once the filebrowser has created it.
       library:
         type: persistentVolumeClaim
         existingClaim: media-library
         globalMounts:
-          - path: /books
-            subPath: books
+          - path: /library
             readOnly: true

@@ -18,6 +18,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
+            # Avoid a recursive chown of the whole library on every start.
+            fsGroupChangePolicy: OnRootMismatch
             seccompProfile:
               type: RuntimeDefault
           labels:
@@ -32,6 +34,31 @@ spec:
               FB_ADDRESS: 0.0.0.0
               FB_ROOT: /srv
               FB_DATABASE: /database/filebrowser.db
+            # First admin account. Without a preset password filebrowser
+            # generates one and logs it in cleartext.
+            envFrom:
+              - secretRef:
+                  name: filebrowser-admin
+            probes:
+              liveness:
+                enabled: true
+                type: HTTP
+                path: /health
+                port: 8080
+              readiness:
+                enabled: true
+                type: HTTP
+                path: /health
+                port: 8080
+              startup:
+                enabled: true
+                type: HTTP
+                path: /health
+                port: 8080
+                spec:
+                  initialDelaySeconds: 10
+                  periodSeconds: 5
+                  failureThreshold: 30
             securityContext:
               allowPrivilegeEscalation: false
               capabilities:
