@@ -6,5 +6,6 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/jellyfin/
   - httproute.yaml
+  - ingress.yaml
 patches:
   - path: release.yaml
