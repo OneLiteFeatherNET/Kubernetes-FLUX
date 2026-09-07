@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: media
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../../../apps/base/filebrowser/
+  - httproute.yaml
+patches:
+  - path: release.yaml
+secretGenerator:
+  # First admin account. Without a preset password filebrowser generates
+  # one and logs it in cleartext.
+  - name: filebrowser-admin
+    envs:
+      - filebrowser-admin.sops.env

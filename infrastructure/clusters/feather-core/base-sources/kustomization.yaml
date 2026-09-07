@@ -33,6 +33,8 @@ resources:
   - vulpes-backend.yaml
   - vulpes-generator.yaml
   - metallb.yaml
+  - jellyfin.yaml
+  - app-template.yaml
 
 # The OCIRepositories above pull from the private onelitefeather Harbor project,
 # so flux-system needs the same pull credential the workloads use.

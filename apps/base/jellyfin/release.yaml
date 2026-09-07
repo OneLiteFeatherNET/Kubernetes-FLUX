@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  releaseName: jellyfin
+  chart:
+    spec:
+      chart: jellyfin
+      version: "3.2.0"
+      sourceRef:
+        kind: HelmRepository
+        name: jellyfin
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  # https://github.com/jellyfin/jellyfin-helm/blob/master/charts/jellyfin/values.yaml
+  values: {}

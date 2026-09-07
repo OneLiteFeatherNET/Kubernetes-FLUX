@@ -25,3 +25,7 @@ resources:
   - vikunja
   - sturnus
   - metabase
+  - media-library
+  - filebrowser
+  - jellyfin
+  - kavita
