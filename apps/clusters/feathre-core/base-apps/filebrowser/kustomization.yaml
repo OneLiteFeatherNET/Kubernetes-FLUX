@@ -8,9 +8,10 @@ resources:
   - httproute.yaml
 patches:
   - path: release.yaml
+
 secretGenerator:
-  # First admin account. Without a preset password filebrowser generates
-  # one and logs it in cleartext.
-  - name: filebrowser-admin
-    envs:
-      - filebrowser-admin.sops.env
+  # Vollstaendige Quantum-Konfiguration inklusive OIDC-Client-Secret der
+  # Entra-App-Registrierung "FileBrowser". Das Secret laeuft ab — siehe Runbook.
+  - name: filebrowser-config
+    files:
+      - config.yaml=filebrowser-config.sops.yaml

@@ -18,7 +18,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
-            # Avoid a recursive chown of the whole library on every start.
+            # Ohne dies chownt das kubelet bei jedem Start rekursiv die ganze Bibliothek.
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile:
               type: RuntimeDefault
@@ -27,38 +27,12 @@ spec:
         containers:
           app:
             image:
-              repository: docker.io/filebrowser/filebrowser
-              tag: v2.63.23
+              repository: ghcr.io/gtsteffaniak/filebrowser
+              tag: 1.5.6-stable
             env:
-              FB_PORT: "8080"
-              FB_ADDRESS: 0.0.0.0
-              FB_ROOT: /srv
-              FB_DATABASE: /database/filebrowser.db
-            # First admin account. Without a preset password filebrowser
-            # generates one and logs it in cleartext.
-            envFrom:
-              - secretRef:
-                  name: filebrowser-admin
-            probes:
-              liveness:
-                enabled: true
-                type: HTTP
-                path: /health
-                port: 8080
-              readiness:
-                enabled: true
-                type: HTTP
-                path: /health
-                port: 8080
-              startup:
-                enabled: true
-                type: HTTP
-                path: /health
-                port: 8080
-                spec:
-                  initialDelaySeconds: 10
-                  periodSeconds: 5
-                  failureThreshold: 30
+              # Getrennt vom Datenverzeichnis, damit das PVC die Datei nicht verdeckt.
+              FILEBROWSER_CONFIG: /etc/filebrowser/config.yaml
+              TZ: Europe/Berlin
             securityContext:
               allowPrivilegeEscalation: false
               capabilities:
@@ -67,9 +41,28 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 64Mi
+                memory: 128Mi
               limits:
-                memory: 256Mi
+                memory: 512Mi
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8080
+                  initialDelaySeconds: 15
+                  periodSeconds: 30
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8080
+                  initialDelaySeconds: 10
+                  periodSeconds: 15
     service:
       app:
         controller: filebrowser
@@ -77,13 +70,19 @@ spec:
           http:
             port: 8080
     persistence:
-      database:
+      data:
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
         size: 1Gi
         storageClass: ceph-rbd-fr01
         globalMounts:
-          - path: /database
+          - path: /home/filebrowser/data
+      config:
+        type: secret
+        name: filebrowser-config
+        globalMounts:
+          - path: /etc/filebrowser
+            readOnly: true
       library:
         type: persistentVolumeClaim
         existingClaim: media-library
