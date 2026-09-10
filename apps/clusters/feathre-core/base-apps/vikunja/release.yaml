@@ -10,7 +10,7 @@ spec:
     image:
       repository: vikunja/vikunja
       pullPolicy: IfNotPresent
-      tag: "2.5.0"
+      tag: "2.6.0"
 
     # Stateless: files go to Ceph S3, data to the shared CNPG cluster and all
     # shared runtime state to Dragonfly, so replicas scale freely.
