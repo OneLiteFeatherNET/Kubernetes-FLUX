@@ -10,6 +10,11 @@ spec:
     replicated:
       size: 3
       requireSafeReplicaSize: true
+    # Der Bucket-Index wird bei jedem PUT und LIST angefasst; mit pg_num 8
+    # landen die 23 Index-Shards von bluemap0 auf höchstens 8 primären PGs.
+    # Gilt für alle Metadaten-Pools, Rook kennt keinen Einzel-Override.
+    parameters:
+      pg_num_min: "32"
   dataPool:
     failureDomain: host
     replicated:
