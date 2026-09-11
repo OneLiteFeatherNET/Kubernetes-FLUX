@@ -79,3 +79,5 @@ spec:
             name: jellyfin-apps-onelite-feather-tls
           - kind: Secret
             name: kavita-apps-onelite-feather-tls
+          - kind: Secret
+            name: opencost-apps-onelite-feather-tls

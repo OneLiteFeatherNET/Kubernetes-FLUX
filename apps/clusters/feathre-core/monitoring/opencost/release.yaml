@@ -1,0 +1,80 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: opencost
+  namespace: opencost
+spec:
+  values:
+    priorityClassName: feather-standard
+    podLabels:
+      logs.onelitefeather.net/env: prod
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    opencost:
+      exporter:
+        defaultClusterId: feather-core
+        extraEnv:
+          CURRENCY_CODE: EUR
+        resources:
+          requests:
+            cpu: 20m
+            memory: 128Mi
+          limits:
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+
+      # Mimir statt Prometheus; multitenancy_enabled ist dort false,
+      # deshalb ohne X-Scope-OrgID-Header.
+      prometheus:
+        internal:
+          enabled: true
+          serviceName: mimir-gateway
+          namespaceName: grafana
+          port: 80
+          path: /prometheus
+          scheme: http
+
+      # EUR/Einheit/Monat, hergeleitet aus den realen Betriebskosten von
+      # centauri + NetApp EF280. Herleitung und Annahmen in Outline:
+      # https://outline.onelitefeather.dev/doc/opencost-kostenmodell-fur-feather-core-acTQY9ctyq
+      customPricing:
+        enabled: true
+        provider: custom
+        costModel:
+          description: feather-core on-prem pricing, EUR per unit per month
+          CPU: 0.42
+          RAM: 0.093
+          storage: 0.047
+          # Keine Spot-Kapazität im Cluster: gleiche Preise statt 0, damit
+          # nichts versehentlich rabattiert wird.
+          spotCPU: 0.42
+          spotRAM: 0.093
+          GPU: 0
+          zoneNetworkEgress: 0
+          regionNetworkEgress: 0
+          internetNetworkEgress: 0
+
+      metrics:
+        serviceMonitor:
+          enabled: true
+
+      ui:
+        enabled: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
