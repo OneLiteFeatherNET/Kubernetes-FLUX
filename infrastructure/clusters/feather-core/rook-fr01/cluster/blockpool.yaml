@@ -8,7 +8,9 @@ spec:
   replicated:
     size: 3
     requireSafeReplicaSize: true
-  # Ohne pg_num_min klemmt der Autoscaler den Pool auf den Ceph-Default 32,
-  # unabhängig von der Last. 128 gibt gleichzeitigen Zugriffen mehr Parallelität.
+  # Autoscaler aus, weil er nach Kapazität dimensioniert und den Pool damit
+  # dauerhaft auf dem Default-Boden 32 hält. pg_num ist ab hier von Hand zu
+  # pflegen: outline.onelitefeather.dev/doc/reference-rook-ceph-fr01-cluster-setup-und-ceph-cli-d5ZGZH6QON
   parameters:
-    pg_num_min: "128"
+    pg_autoscale_mode: "off"
+    pg_num: "128"
