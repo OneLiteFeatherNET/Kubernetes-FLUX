@@ -393,3 +393,21 @@ spec:
     rotationPolicy: Always
   dnsNames:
     - kavita.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opencost-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: opencost-apps-onelite-feather-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - opencost.apps.onelite.feather

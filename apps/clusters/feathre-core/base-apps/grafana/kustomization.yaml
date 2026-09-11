@@ -36,6 +36,17 @@ configMapGenerator:
         grafana_dashboard: "1"
       annotations:
         grafana_folder: Controllers
+  # Upstream opencost/opencost-grafana-dashboard, angepasst: __inputs entfernt,
+  # Datasource auf Mimir gepinnt, currencyUSD -> currencyEUR.
+  - name: grafana-sc-dashboards-cost
+    files:
+      - dashboards/cost/opencost-basic-overview.json
+      - dashboards/cost/opencost-detailed-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Cost
   - name: grafana-sc-dashboards-databases
     files:
       - dashboards/databases/dragonfly.json
