@@ -98,14 +98,14 @@ spec:
   storage:
     resizeInUseVolumes: true
     waitForVolumeResize: true
-    size: 50Gi
+    size: 100Gi
     storageClassName: ceph-rbd-fr01
     volumeClaimTemplate:
       accessModes:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 50Gi
+          storage: 100Gi
       storageClassName: ceph-rbd-fr01
 
   rootPasswordSecretKeyRef:
