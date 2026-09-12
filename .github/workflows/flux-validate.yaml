@@ -54,3 +54,22 @@ jobs:
         run: pip install --quiet pyyaml
       - name: Assert sops-matched files are encrypted to every recipient
         run: python3 scripts/check-sops-encryption.py
+
+  chart-version-bump:
+    name: in-repo chart version bump
+    # pull_request only: on a push to main the chart is already merged, so
+    # failing here would report a problem nobody can still fix in review.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The check compares against the merge base, which needs history.
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.x'
+      - name: Assert a touched chart also bumps its Chart.yaml version
+        run: python3 scripts/check-chart-bump.py "${{ github.event.pull_request.base.sha }}"

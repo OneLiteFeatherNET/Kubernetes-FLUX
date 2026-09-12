@@ -21,5 +21,14 @@
       "matchFileNames": ["apps/**/harbor/**"],
       "groupName": "harbor"
     }
+  ],
+  "bumpVersions": [
+    {
+      "description": "Flux keys the HelmChart artifact by the chart version, so an image-tag bump in an in-repo chart's values.yaml is never rendered onto the cluster unless Chart.yaml moves with it -- and nothing reports an error when it does not",
+      "name": "in-repo helm chart version",
+      "filePatterns": ["{{packageFileDir}}/Chart.yaml"],
+      "matchStrings": ["(?:^|\\n)version:\\s*(?<version>\\S+)"],
+      "bumpType": "patch"
+    }
   ]
 }
