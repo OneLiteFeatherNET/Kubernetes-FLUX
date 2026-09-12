@@ -6,10 +6,6 @@ metadata:
 spec:
   values:
     priorityClassName: feather-standard
-    # VORÜBERGEHEND zur Diagnose der Asset-Kosten von 0: debug protokolliert die
-    # gestellten Prometheus-Abfragen samt Ergebnis. Zurücksetzen auf info, sobald
-    # die Ursache gefunden ist -- siehe PR-Beschreibung.
-    loglevel: debug
     podLabels:
       logs.onelitefeather.net/env: prod
     podSecurityContext:
@@ -22,10 +18,6 @@ spec:
         defaultClusterId: feather-core
         extraEnv:
           CURRENCY_CODE: EUR
-          # Default ist 5 gleichzeitige Abfragen gegen ein Mimir, das im Mittel
-          # 0,04 von 1,0 Kernen nutzt und keine Scheduler-Queue hat. Das
-          # 7-Tage-Fenster der UI brauchte damit 98 s und der Browser gab auf.
-          MAX_QUERY_CONCURRENCY: "20"
           # alloy-metrics hängt cluster an, OpenCost filtert per Default auf
           # cluster_id -- ohne das findet es seine eigenen Metriken nicht.
           PROM_CLUSTER_ID_LABEL: cluster
