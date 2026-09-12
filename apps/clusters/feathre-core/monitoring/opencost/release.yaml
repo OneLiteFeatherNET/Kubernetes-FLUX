@@ -18,6 +18,9 @@ spec:
         defaultClusterId: feather-core
         extraEnv:
           CURRENCY_CODE: EUR
+          # alloy-metrics hängt cluster an, OpenCost filtert per Default auf
+          # cluster_id -- ohne das findet es seine eigenen Metriken nicht.
+          PROM_CLUSTER_ID_LABEL: cluster
         resources:
           requests:
             cpu: 20m
@@ -41,25 +44,27 @@ spec:
           path: /prometheus
           scheme: http
 
-      # EUR/Einheit/Monat, hergeleitet aus den realen Betriebskosten von
-      # centauri + NetApp EF280. Herleitung und Annahmen in Outline:
+      # EUR je Einheit und *Stunde* -- OpenCost reicht diese Werte unverändert
+      # nach node_*_hourly_cost durch. Monatswerte (0,42 / 0,093 / 0,047) geteilt
+      # durch 730 h. Herleitung und Annahmen in Outline:
       # https://outline.onelitefeather.dev/doc/opencost-kostenmodell-fur-feather-core-acTQY9ctyq
       customPricing:
         enabled: true
         provider: custom
         costModel:
-          description: feather-core on-prem pricing, EUR per unit per month
-          CPU: 0.42
-          RAM: 0.093
-          storage: 0.047
+          description: feather-core on-prem pricing, EUR per unit per hour
+          # Als Strings notiert, sonst rendert YAML 0.00006438 als 6.438e-05.
+          CPU: "0.00057534"
+          RAM: "0.00012740"
+          storage: "0.00006438"
           # Keine Spot-Kapazität im Cluster: gleiche Preise statt 0, damit
           # nichts versehentlich rabattiert wird.
-          spotCPU: 0.42
-          spotRAM: 0.093
-          GPU: 0
-          zoneNetworkEgress: 0
-          regionNetworkEgress: 0
-          internetNetworkEgress: 0
+          spotCPU: "0.00057534"
+          spotRAM: "0.00012740"
+          GPU: "0"
+          zoneNetworkEgress: "0"
+          regionNetworkEgress: "0"
+          internetNetworkEgress: "0"
 
       metrics:
         serviceMonitor:
