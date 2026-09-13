@@ -1,0 +1,97 @@
+# Browser access to the outline bucket needs CORS headers from RGW itself:
+# public traffic goes Cloudflare Tunnel -> RGW Service and never passes the
+# Envoy SecurityPolicy, so only the bucket's own CORS config is effective.
+# Add future origins here; the CronJob writes them back idempotently and also
+# restores them if the bucket is ever recreated.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: outline-bucket-cors
+  namespace: rook-ceph-fr01
+data:
+  cors.json: |
+    {
+      "CORSRules": [
+        {
+          "AllowedOrigins": [
+            "https://outline.onelitefeather.dev"
+          ],
+          "AllowedMethods": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+          "AllowedHeaders": ["*"],
+          "ExposeHeaders": [
+            "ETag",
+            "Content-Length",
+            "Content-Type",
+            "Content-Range",
+            "Accept-Ranges"
+          ],
+          "MaxAgeSeconds": 3600
+        }
+      ]
+    }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: outline-bucket-cors
+  namespace: rook-ceph-fr01
+spec:
+  # Konvergenz-Job, kein Zeitplan im eigentlichen Sinn. Nach einer Änderung an
+  # der ConfigMap sofort ausführen:
+  #   kubectl -n rook-ceph-fr01 create job --from=cronjob/outline-bucket-cors outline-cors-now
+  schedule: "17 4 * * 0"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: outline-bucket-cors
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: apply-cors
+              image: amazon/aws-cli:2.36.27
+              env:
+                # Credentials des Bucket-Owners, vom ObjectBucketClaim erzeugt.
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: outline
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: outline
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_DEFAULT_REGION
+                  # RGW ignoriert den Wert, die CLI startet ohne ihn nicht.
+                  value: us-east-1
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  ENDPOINT=http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+                  aws --endpoint-url "$ENDPOINT" s3api put-bucket-cors \
+                    --bucket outline \
+                    --cors-configuration file:///config/cors.json
+                  echo "Applied. Current configuration:"
+                  aws --endpoint-url "$ENDPOINT" s3api get-bucket-cors --bucket outline
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 256Mi
+              volumeMounts:
+                - name: cors
+                  mountPath: /config
+                  readOnly: true
+          volumes:
+            - name: cors
+              configMap:
+                name: outline-bucket-cors
