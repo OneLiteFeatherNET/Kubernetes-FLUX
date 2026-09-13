@@ -1,12 +1,12 @@
-# Browser access to the outline bucket needs CORS headers from RGW itself:
-# public traffic goes Cloudflare Tunnel -> RGW Service and never passes the
-# Envoy SecurityPolicy, so only the bucket's own CORS config is effective.
-# Add future origins here; the CronJob writes them back idempotently and also
-# restores them if the bucket is ever recreated.
+# Bucket-seitige Konfiguration für Outline: CORS und die Public-Read-Policy.
+# Beides kennt der ObjectBucketClaim nicht, und beides muss am Bucket hängen --
+# öffentlicher Traffic läuft Cloudflare Tunnel -> RGW und sieht die Envoy-
+# SecurityPolicy nie. Neue Origins hier eintragen, der CronJob schreibt sie
+# idempotent zurück und stellt sie wieder her, falls der Bucket neu entsteht.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: outline-bucket-cors
+  name: outline-bucket-config
   namespace: rook-ceph-fr01
 data:
   cors.json: |
@@ -29,16 +29,31 @@ data:
         }
       ]
     }
+  # Outline liefert Avatare und Team-Logos unter public/ direkt an den Browser
+  # aus, ohne presigned URL. Alles andere (uploads/) bleibt privat.
+  policy.json: |
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "PublicReadForPublicPrefix",
+          "Effect": "Allow",
+          "Principal": {"AWS": ["*"]},
+          "Action": ["s3:GetObject"],
+          "Resource": ["arn:aws:s3:::outline/public/*"]
+        }
+      ]
+    }
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: outline-bucket-cors
+  name: outline-bucket-config
   namespace: rook-ceph-fr01
 spec:
   # Konvergenz-Job, kein Zeitplan im eigentlichen Sinn. Nach einer Änderung an
   # der ConfigMap sofort ausführen:
-  #   kubectl -n rook-ceph-fr01 create job --from=cronjob/outline-bucket-cors outline-cors-now
+  #   kubectl -n rook-ceph-fr01 create job --from=cronjob/outline-bucket-config outline-bucket-config-now
   schedule: "17 4 * * 0"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
@@ -49,11 +64,11 @@ spec:
       template:
         metadata:
           labels:
-            app.kubernetes.io/name: outline-bucket-cors
+            app.kubernetes.io/name: outline-bucket-config
         spec:
           restartPolicy: Never
           containers:
-            - name: apply-cors
+            - name: apply-config
               image: amazon/aws-cli:2.36.27
               env:
                 # Credentials des Bucket-Owners, vom ObjectBucketClaim erzeugt.
@@ -79,8 +94,12 @@ spec:
                   aws --endpoint-url "$ENDPOINT" s3api put-bucket-cors \
                     --bucket outline \
                     --cors-configuration file:///config/cors.json
+                  aws --endpoint-url "$ENDPOINT" s3api put-bucket-policy \
+                    --bucket outline \
+                    --policy file:///config/policy.json
                   echo "Applied. Current configuration:"
                   aws --endpoint-url "$ENDPOINT" s3api get-bucket-cors --bucket outline
+                  aws --endpoint-url "$ENDPOINT" s3api get-bucket-policy --bucket outline
               resources:
                 requests:
                   cpu: 10m
@@ -88,10 +107,10 @@ spec:
                 limits:
                   memory: 256Mi
               volumeMounts:
-                - name: cors
+                - name: config
                   mountPath: /config
                   readOnly: true
           volumes:
-            - name: cors
+            - name: config
               configMap:
-                name: outline-bucket-cors
+                name: outline-bucket-config

@@ -12,7 +12,7 @@ resources:
   - loki-chunks.yaml
   - loki-ruler.yaml
   - outline.yaml
-  - outline-cors.yaml
+  - outline-bucket-config.yaml
   - mimir-alertmanager.yaml
   - mimir-blocks.yaml
   - mimir-ruler.yaml
