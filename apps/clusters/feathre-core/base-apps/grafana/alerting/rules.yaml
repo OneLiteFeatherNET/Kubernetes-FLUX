@@ -59,9 +59,12 @@ groups:
         annotations:
           summary: "Flux Kustomization {{ $labels.name }} (namespace {{ $labels.exported_namespace }}) has not been Ready for 15 minutes."
           problem: "Kustomization not Ready for >15 min"
+          service: "Flux"
+          threshold: "Ready = True (sustained 15 min)"
           object_label: "Layer"
           object_key: "name"
           location_key: "exported_namespace"
+          check: "Look at the layer's status conditions first - a layer below a stuck dependency only reports that its dependency is not ready and is not the cause."
           check_command: "flux get kustomization -A"
           dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
         labels:
@@ -120,9 +123,12 @@ groups:
         annotations:
           summary: "Flux HelmRelease {{ $labels.name }} (namespace {{ $labels.exported_namespace }}) has not been Ready for 15 minutes."
           problem: "HelmRelease not Ready for >15 min"
+          service: "Flux"
+          threshold: "Ready = True (sustained 15 min)"
           object_label: "Release"
           object_key: "name"
           location_key: "exported_namespace"
+          check: "Read the HelmRelease status; a failed upgrade usually leaves a pending-upgrade lock that has to be cleared before Flux retries."
           check_command: "flux get helmrelease -A"
           dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
         labels:
@@ -188,7 +194,12 @@ groups:
         annotations:
           summary: "No successful CloudNativePG (Postgres) backup in over 24h."
           problem: "No backup for over 24 h"
+          service: "CloudNativePG"
+          threshold: "< 24 h since last backup"
+          value_unit: "h since last backup"
+          value_fmt: "%.1f"
           location: "cnpg-system"
+          check: "Check whether the scheduled backup still runs and whether the S3 target accepts writes."
           check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
           dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
         labels:
@@ -249,7 +260,12 @@ groups:
         annotations:
           summary: "CloudNativePG's most recent backup attempt failed (a failure timestamp is newer than the last successful one)."
           problem: "Backup attempt failed"
+          service: "CloudNativePG"
+          threshold: "0 failures in 24 h"
+          value_unit: "failed backups in 24 h"
+          value_fmt: "%.0f"
           location: "cnpg-system"
+          check: "Read the failed Backup object's error field; S3 credentials and RGW user permissions are the usual cause."
           check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
           dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
         labels:
@@ -307,7 +323,12 @@ groups:
           # cluster health, not backup jobs, so it wouldn't add useful context here.
           summary: "The mariadb-galera-backup CronJob's most recent Job run failed."
           problem: "Backup CronJob failed"
+          service: "MariaDB Galera"
+          threshold: "0 failed jobs"
+          value_unit: "failed jobs"
+          value_fmt: "%.0f"
           location: "mariadb-galera"
+          check: "Read the log of the failed Job's pod."
           check_command: "kubectl -n mariadb-galera get jobs"
         labels:
           severity: warning
@@ -368,9 +389,14 @@ groups:
         annotations:
           summary: "MariaDB Galera PVC {{ $labels.persistentvolumeclaim }} on node {{ $labels.node }} is above 80% capacity."
           problem: "PVC over 80 % full"
+          service: "MariaDB Galera"
+          threshold: "< 80 % used"
+          value_unit: "% used"
+          value_fmt: "%.1f"
           object_label: "PVC"
           object_key: "persistentvolumeclaim"
           location_key: "node"
+          check: "Check binlog and tmp growth before resizing; the volume grows via storage.size in the MariaDB CR."
           check_command: "kubectl -n mariadb-galera get pvc"
           dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
         labels:
@@ -426,9 +452,14 @@ groups:
         annotations:
           summary: "MariaDB Galera PVC {{ $labels.persistentvolumeclaim }} on node {{ $labels.node }} is above 90% capacity and at risk of filling up."
           problem: "PVC over 90 % full"
+          service: "MariaDB Galera"
+          threshold: "< 90 % used"
+          value_unit: "% used"
+          value_fmt: "%.1f"
           object_label: "PVC"
           object_key: "persistentvolumeclaim"
           location_key: "node"
+          check: "Check binlog and tmp growth before resizing; the volume grows via storage.size in the MariaDB CR."
           check_command: "kubectl -n mariadb-galera get pvc"
           dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
         labels:
@@ -486,7 +517,12 @@ groups:
         annotations:
           summary: "Ceph cluster health is not HEALTH_OK (HEALTH_WARN or worse)."
           problem: "Ceph not HEALTH_OK"
+          service: "Rook-Ceph"
+          threshold: "HEALTH_OK"
+          value_unit: "(0 = OK, 1 = WARN, 2 = ERR)"
+          value_fmt: "%.0f"
           location: "rook-ceph-fr01"
+          check: "Read the health detail output; a single failing OSD or a stuck PG is the common case."
           check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail"
           dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
         labels:
@@ -542,7 +578,12 @@ groups:
         annotations:
           summary: "Ceph cluster health is HEALTH_ERR."
           problem: "Ceph HEALTH_ERR"
+          service: "Rook-Ceph"
+          threshold: "not HEALTH_ERR"
+          value_unit: "(0 = OK, 1 = WARN, 2 = ERR)"
+          value_fmt: "%.0f"
           location: "rook-ceph-fr01"
+          check: "Read the health detail output; HEALTH_ERR usually means unfound objects, full OSDs or a down monitor quorum."
           check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail"
           dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
         labels:
@@ -601,7 +642,12 @@ groups:
           # show as a sustained multi-request/s error rate, not baseline noise.
           summary: "RGW failed request rate is elevated (baseline is <1/s). This is the class of failure that broke S3 access for backups/Loki/Mimir/Postgres WAL during the Rook 1.20 upgrade incident."
           problem: "RGW failure rate elevated"
+          service: "Rook-Ceph RGW"
+          threshold: "< 5 failed req/s"
+          value_unit: "failed req/s"
+          value_fmt: "%.2f"
           location: "rook-ceph-fr01"
+          check: "Read the RGW log for the failing status code; 403 on named (non-owner) users is the known Rook 1.20 regression."
           check_command: "kubectl -n rook-ceph-fr01 logs -l app=rook-ceph-rgw --tail=200"
           dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
         labels:
@@ -662,7 +708,12 @@ groups:
         annotations:
           summary: "The most-full Ceph OSD is above 80% used. Ceph's own nearfull/backfillfull thresholds trip around here and will start rejecting large S3 uploads (InsufficientCapacity) before HEALTH_WARN fires."
           problem: "OSD over 80 % full"
+          service: "Rook-Ceph"
+          threshold: "< 80 % on the fullest OSD"
+          value_unit: "% on the fullest OSD"
+          value_fmt: "%.1f"
           location: "rook-ceph-fr01"
+          check: "Compare per-OSD usage; an imbalance is reweighted, a uniformly full cluster needs capacity."
           check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
           dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
         labels:
@@ -718,7 +769,12 @@ groups:
         annotations:
           summary: "The most-full Ceph OSD is above 90% used -- at or past Ceph's backfillfull threshold, new writes to affected pools (including S3/RGW uploads) will start being rejected."
           problem: "OSD over 90 % full"
+          service: "Rook-Ceph"
+          threshold: "< 90 % on the fullest OSD"
+          value_unit: "% on the fullest OSD"
+          value_fmt: "%.1f"
           location: "rook-ceph-fr01"
+          check: "At this level writes to affected pools are already being rejected - free space or add capacity, reweighting alone is unlikely to be enough."
           check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
           dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
         labels:
@@ -781,7 +837,12 @@ groups:
           # not a hardcoded value - stays correct if the setting is changed again.
           summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before."
           problem: "Postgres connections over 80 %"
+          service: "CloudNativePG"
+          threshold: "< 80 % of max_connections"
+          value_unit: "% of max_connections"
+          value_fmt: "%.1f"
           location: "cnpg-system"
+          check: "Find the database with the largest idle pool; Harbor and Dependency-Track hold connections they do not use."
           check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
           dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
         labels:
@@ -837,7 +898,12 @@ groups:
         annotations:
           summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool."
           problem: "Postgres connections over 90 %"
+          service: "CloudNativePG"
+          threshold: "< 90 % of max_connections"
+          value_unit: "% of max_connections"
+          value_fmt: "%.1f"
           location: "cnpg-system"
+          check: "Find the database with the largest idle pool and cap it; a restart storm at this level starves every other consumer."
           check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
           dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
         labels:
@@ -899,7 +965,12 @@ groups:
           # fully-down node.
           summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained."
           problem: "Galera cluster below 3 nodes"
+          service: "MariaDB Galera"
+          threshold: "3 nodes"
+          value_unit: "nodes in the cluster"
+          value_fmt: "%.0f"
           location: "mariadb-galera"
+          check: "Check wsrep_cluster_size and wsrep_cluster_status on each node; a node that reports a different cluster UUID is split-brained."
           check_command: "kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%'\""
           dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
         labels:
@@ -961,6 +1032,11 @@ groups:
         annotations:
           summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before."
           problem: "Pods stuck in Terminating"
+          service: "Kubernetes"
+          threshold: "0 pods stuck > 15 min"
+          value_unit: "pods stuck"
+          value_fmt: "%.0f"
+          check: "Check the containerd shim on the affected node - a task.Delete hang on SIGKILL teardown holds the pod forever."
           check_command: "kubectl get pods -A | grep Terminating"
         labels:
           severity: warning
@@ -1022,7 +1098,12 @@ groups:
         annotations:
           summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires."
           problem: "No kubelet metrics in Mimir"
+          service: "Alloy / Mimir"
+          threshold: ">= 1 kubelet target"
+          value_unit: "kubelet targets"
+          value_fmt: "%.0f"
           location: "grafana"
+          check: "Every other alert reads as falsely healthy while this fires - treat it first. Check alloy-metrics scrape and remote-write."
           check_command: "kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
         labels:
           severity: critical
@@ -1081,7 +1162,12 @@ groups:
           # metrics, so it is empty exactly while this alert fires.
           summary: "kube-state-metrics has stopped producing metrics. Both Flux alerts read gotk_resource_info from it, so they report healthy while blind for as long as this fires."
           problem: "No kube-state-metrics data"
+          service: "kube-state-metrics"
+          threshold: ">= 1 target up"
+          value_unit: "targets up"
+          value_fmt: "%.0f"
           location: "monitoring"
+          check: "Both Flux alerts go blind while this fires. Check the kube-state-metrics pod and its ServiceMonitor."
           check_command: "kubectl -n monitoring get pods -l app.kubernetes.io/name=kube-state-metrics"
         labels:
           severity: critical
@@ -1143,8 +1229,14 @@ groups:
         annotations:
           summary: "Grafana failed to deliver alert notifications, so Discord messages are being dropped - the webhook notifier does not retry. Alerts themselves keep evaluating and stay visible in the Grafana alerting UI, so use it as the source of truth until this clears."
           problem: "Discord delivery failing"
+          service: "Grafana Alerting"
+          threshold: "0 failures in 10 min"
+          value_unit: "failed deliveries"
+          value_fmt: "%.0f"
           location: "grafana"
+          check: "The webhook notifier does not retry, so these messages are gone. Use the Grafana alerting UI as the source of truth until this clears."
           check_command: "kubectl -n grafana logs -l app.kubernetes.io/name=grafana --tail=200 | grep -i \"Notify for alerts failed\""
+          runbook_url: "https://outline.onelitefeather.dev/doc/explanation-betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra"
         labels:
           severity: critical
       - uid: alerting-provisioning-failing
@@ -1202,8 +1294,14 @@ groups:
         annotations:
           summary: "Grafana rejected the provisioned alerting configuration. Alerting comes from a sidecar-collected ConfigMap and is applied through the reload endpoint, so a bad file is an HTTP 500 instead of a crash: Grafana keeps serving the last configuration it accepted, and contact points, templates, notification policies and rules silently no longer match git."
           problem: "Alerting provisioning rejected"
+          service: "Grafana Alerting"
+          threshold: "0 errors in 10 min"
+          value_unit: "provisioning errors"
+          value_fmt: "%.0f"
           location: "grafana"
+          check: "Grafana keeps serving the last accepted configuration, so contact points, templates and rules silently no longer match git."
           check_command: "kubectl -n grafana logs -l app.kubernetes.io/name=grafana --tail=200 | grep -i \"provisioning/alerting/reload\""
+          runbook_url: "https://outline.onelitefeather.dev/doc/explanation-betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra"
         labels:
           severity: critical
   - orgId: 1
@@ -1264,8 +1362,11 @@ groups:
         annotations:
           summary: "Node {{ $labels.node }} is NotReady or Unreachable."
           problem: "Node NotReady/Unreachable"
+          service: "Kubernetes Node"
+          threshold: "Ready = True"
           object_label: "Node"
           object_key: "node"
+          check: "Check the node's conditions and, if it is unreachable, whether the machine itself is up."
           check_command: "kubectl get nodes -o wide"
         labels:
           severity: critical
@@ -1324,8 +1425,11 @@ groups:
         annotations:
           summary: "Kubelet on node {{ $labels.node }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired."
           problem: "Kubelet not being scraped"
+          service: "Kubelet"
+          threshold: "scrape up = 1"
           object_label: "Node"
           object_key: "node"
+          check: "The node is down, the kubelet is dead, or its serving certificate expired - check the certificate before rebooting anything."
           check_command: "kubectl get nodes -o wide"
         labels:
           severity: critical
@@ -1386,8 +1490,11 @@ groups:
         annotations:
           summary: "Clock on {{ $labels.instance }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback."
           problem: "Clock not synchronised"
+          service: "Node clock (PTP)"
+          threshold: "sync status = 1"
           object_label: "Node"
           object_key: "instance"
+          check: "/dev/ptp0 is the only time source and there is no NTP fallback, so an unsynchronised node stays unsynchronised."
           check_command: "talosctl -n <node> time"
         labels:
           severity: warning
@@ -1445,8 +1552,13 @@ groups:
         annotations:
           summary: "Clock offset on {{ $labels.instance }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock."
           problem: "Clock offset over 50 ms"
+          service: "Node clock (PTP)"
+          threshold: "< 50 ms offset"
+          value_unit: "s offset"
+          value_fmt: "%.3f"
           object_label: "Node"
           object_key: "instance"
+          check: "Galera certification, etcd leases and TLS validity all assume a tight cluster clock."
           check_command: "talosctl -n <node> time"
         labels:
           severity: warning
@@ -1512,9 +1624,14 @@ groups:
         annotations:
           summary: "Certificate {{ $labels.name }} in namespace {{ $labels.exported_namespace }} expires in under 14 days and has not renewed."
           problem: "Certificate expires in <14 days"
+          service: "cert-manager"
+          threshold: "> 14 days left"
+          value_unit: "days left"
+          value_fmt: "%.1f"
           object_label: "Certificate"
           object_key: "name"
           location_key: "exported_namespace"
+          check: "Check the Certificate's conditions and the issuer; a renewal that has not started points at the issuer, not the certificate."
           check_command: "kubectl get certificate -A | grep -v True"
         labels:
           severity: warning
@@ -1569,9 +1686,14 @@ groups:
         annotations:
           summary: "Certificate {{ $labels.name }} in namespace {{ $labels.exported_namespace }} expires in under 3 days. Renewal has failed."
           problem: "Certificate expires in <3 days"
+          service: "cert-manager"
+          threshold: "> 3 days left"
+          value_unit: "days left"
+          value_fmt: "%.1f"
           object_label: "Certificate"
           object_key: "name"
           location_key: "exported_namespace"
+          check: "Renewal has already failed - read the CertificateRequest's error before the certificate expires."
           check_command: "kubectl get certificate -A | grep -v True"
         labels:
           severity: critical

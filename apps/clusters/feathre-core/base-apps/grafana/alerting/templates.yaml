@@ -10,6 +10,8 @@ templates:
   # trim marker makes it wrap the body in a SECOND define and provisioning crashes the pod.
   # The embed url is only set when absolute: Grafana's own test alert yields a bare "?orgId=1"
   # (no GeneratorURL base), and Discord rejects an embed with a relative url with HTTP 400.
+  # Per-rule fields come from annotations: service, threshold, check, runbook_url, and
+  # value_unit/value_fmt/value_ref (the refId whose number is rendered as the current value).
   - name: discord.payload
     template: |
       {{ define "discord.payload" -}}
@@ -21,18 +23,26 @@ templates:
       {{- $bt := "`" -}}
       {{- $color := 15548997 -}}{{- if eq .Status "resolved" -}}{{- $color = 5763719 -}}{{- else if eq $sev "warning" -}}{{- $color = 16426522 -}}{{- end -}}
       {{- $ts := $f.StartsAt -}}{{- if and (eq .Status "resolved") (not $f.EndsAt.IsZero) -}}{{- $ts = $f.EndsAt -}}{{- end -}}
-      {{- $desc := or $f.Annotations.problem $f.Annotations.summary "(no description)" -}}
-      {{- if $f.Annotations.dashboard_url -}}{{- $desc = printf "%s\n\n[📊 Open dashboard](<%s>)" $desc $f.Annotations.dashboard_url -}}{{- end -}}
+      {{- $desc := printf "%.1000s" (or $f.Annotations.problem $f.Annotations.summary "(no description)") -}}
+      {{- $vref := or $f.Annotations.value_ref "A" -}}
+      {{- $vfmt := or $f.Annotations.value_fmt "%.1f" -}}
+      {{- $unit := $f.Annotations.value_unit -}}
       {{- $fields := coll.Slice -}}
+      {{- $fields = coll.Append (coll.Dict "name" "Service" "value" (printf "%.100s" (or $f.Annotations.service "unknown")) "inline" true) $fields -}}
+      {{- $fields = coll.Append (coll.Dict "name" "Alert" "value" (printf "%.100s" (or (index .CommonLabels "alertname") "unknown")) "inline" true) $fields -}}
       {{- if $sev -}}{{- $fields = coll.Append (coll.Dict "name" "Severity" "value" $sev "inline" true) $fields -}}{{- end -}}
+      {{- if $f.Annotations.threshold -}}{{- $fields = coll.Append (coll.Dict "name" "Threshold" "value" (printf "%.100s" $f.Annotations.threshold) "inline" true) $fields -}}{{- end -}}
+      {{- if $unit -}}{{- $fields = coll.Append (coll.Dict "name" "Current" "value" (printf "%.100s" (printf "%s %s" (printf $vfmt (index $f.Values $vref)) $unit)) "inline" true) $fields -}}{{- end -}}
+      {{- $fields = coll.Append (coll.Dict "name" "Since" "value" (printf "<t:%d:t> (<t:%d:R>)" $f.StartsAt.Unix $f.StartsAt.Unix) "inline" true) $fields -}}
+      {{- if and (eq .Status "resolved") (not $f.EndsAt.IsZero) -}}{{- $fields = coll.Append (coll.Dict "name" "Resolved" "value" (printf "<t:%d:t> (<t:%d:R>)" $f.EndsAt.Unix $f.EndsAt.Unix) "inline" true) $fields -}}{{- end -}}
       {{- if $loc -}}{{- $fields = coll.Append (coll.Dict "name" "Location" "value" (printf "%.60s" $loc) "inline" true) $fields -}}{{- end -}}
-      {{- if eq .Status "firing" -}}{{- $fields = coll.Append (coll.Dict "name" "Since" "value" (printf "<t:%d:R>" $f.StartsAt.Unix) "inline" true) $fields -}}{{- else -}}{{- $fields = coll.Append (coll.Dict "name" "Resolved" "value" (printf "<t:%d:t> (<t:%d:R>)" $ts.Unix $ts.Unix) "inline" true) $fields -}}{{- end -}}
       {{- if and $f.Annotations.object_label $ok -}}
       {{- $lines := "" -}}
       {{- range $i, $a := .Alerts -}}{{- if lt $i 12 -}}
       {{- $o := index $a.Labels $ok -}}{{- if not $o -}}{{- $o = "?" -}}{{- end -}}
       {{- $line := printf "%s%.60s%s" $bt $o $bt -}}
       {{- if and (not $loc) $lk -}}{{- $line = printf "%s%-27.26s%s %.30s" $bt $o $bt (index $a.Labels $lk) -}}{{- end -}}
+      {{- if $unit -}}{{- $line = printf "%s — %s %s" $line (printf $vfmt (index $a.Values $vref)) $unit -}}{{- end -}}
       {{- if eq $a.Status "resolved" -}}{{- $line = printf "%s  (resolved)" $line -}}{{- end -}}
       {{- if eq $i 0 -}}{{- $lines = $line -}}{{- else -}}{{- $lines = printf "%s\n%s" $lines $line -}}{{- end -}}
       {{- end -}}{{- end -}}
@@ -40,10 +50,20 @@ templates:
       {{- $label := $f.Annotations.object_label -}}{{- if gt (len .Alerts) 1 -}}{{- $label = printf "%s (%d)" $label (len .Alerts) -}}{{- end -}}
       {{- $fields = coll.Append (coll.Dict "name" (printf "%.100s" $label) "value" (printf "%.1024s" $lines) "inline" false) $fields -}}
       {{- else if gt (len .Alerts) 1 -}}{{- $fields = coll.Append (coll.Dict "name" "Affected" "value" (printf "%d instances" (len .Alerts)) "inline" true) $fields -}}{{- end -}}
-      {{- if $f.Annotations.check_command -}}{{- $fields = coll.Append (coll.Dict "name" "Check" "value" (printf "%.900s" (printf "%s%s%s" $bt $f.Annotations.check_command $bt)) "inline" false) $fields -}}{{- end -}}
+      {{- $check := "" -}}
+      {{- if $f.Annotations.check -}}{{- $check = $f.Annotations.check -}}{{- end -}}
+      {{- if $f.Annotations.check_command -}}
+      {{- $cmd := printf "%s%s%s" $bt $f.Annotations.check_command $bt -}}
+      {{- if $check -}}{{- $check = printf "%s\n%s" $check $cmd -}}{{- else -}}{{- $check = $cmd -}}{{- end -}}
+      {{- end -}}
+      {{- if $check -}}{{- $fields = coll.Append (coll.Dict "name" "What to check" "value" (printf "%.1024s" $check) "inline" false) $fields -}}{{- end -}}
       {{- $url := "" -}}{{- if match "^https?://" $f.GeneratorURL -}}{{- $url = $f.GeneratorURL -}}{{- else if match "^https?://" .ExternalURL -}}{{- $url = .ExternalURL -}}{{- end -}}
+      {{- $links := "" -}}
+      {{- if $f.Annotations.dashboard_url -}}{{- $links = printf "[📊 Dashboard](<%s>)" $f.Annotations.dashboard_url -}}{{- end -}}
+      {{- if $f.Annotations.runbook_url -}}{{- $l := printf "[📕 Runbook](<%s>)" $f.Annotations.runbook_url -}}{{- if $links -}}{{- $links = printf "%s · %s" $links $l -}}{{- else -}}{{- $links = $l -}}{{- end -}}{{- end -}}
+      {{- if $url -}}{{- $l := printf "[🔔 Alert rule](<%s>)" $url -}}{{- if $links -}}{{- $links = printf "%s · %s" $links $l -}}{{- else -}}{{- $links = $l -}}{{- end -}}{{- end -}}
+      {{- if $links -}}{{- $fields = coll.Append (coll.Dict "name" "Links" "value" (printf "%.1024s" $links) "inline" false) $fields -}}{{- end -}}
       {{- $title := printf "%.200s" (tmpl.Exec "discord.title" .) -}}
-      {{- $desc = printf "%.1000s" $desc -}}
       {{- $tss := date "2006-01-02T15:04:05Z07:00" $ts -}}
       {{- $footer := coll.Dict "text" (printf "%.100s" (or (index $f.Labels "grafana_folder") "Grafana")) -}}
       {{- $embed := coll.Dict "title" $title "color" $color "description" $desc "timestamp" $tss "fields" $fields "footer" $footer -}}
