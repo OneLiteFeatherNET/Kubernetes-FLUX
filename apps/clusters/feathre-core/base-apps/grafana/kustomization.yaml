@@ -27,6 +27,7 @@ configMapGenerator:
         grafana_folder: Applications
   - name: grafana-sc-dashboards-controllers
     files:
+      - dashboards/controllers/flux.json
       - dashboards/controllers/flux-cluster-stats.json
       - dashboards/controllers/flux-control-plane.json
       - dashboards/controllers/metallb.json
