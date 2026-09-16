@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Landing page for feather-core: cluster CPU, memory, storage and network usage, plus whatever is alerting right now.",
+  "description": "Landing page for feather-core: cluster CPU, memory, Ceph, network, trace and log errors, plus whatever is alerting right now.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -33,7 +33,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
+        "w": 4,
         "x": 0,
         "y": 0
       },
@@ -105,8 +105,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 6,
+        "w": 4,
+        "x": 4,
         "y": 0
       },
       "fieldConfig": {
@@ -169,16 +169,16 @@
     },
     {
       "type": "stat",
-      "title": "Storage used",
-      "description": "Raw Ceph capacity used in rook-ceph-fr01. Ceph starts rejecting writes well before 100 %.",
+      "title": "Ceph used",
+      "description": "Raw Ceph capacity used in rook-ceph-fr01. Ceph's own nearfull thresholds trip around 85 % and start rejecting large writes.",
       "datasource": {
         "type": "prometheus",
         "uid": "mimir"
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 12,
+        "w": 4,
+        "x": 8,
         "y": 0
       },
       "fieldConfig": {
@@ -241,16 +241,88 @@
     },
     {
       "type": "stat",
-      "title": "Network",
-      "description": "Physical NIC throughput across all nodes, receive plus transmit. Virtual interfaces (veth, flannel, cni) are excluded so pod traffic is not double counted.",
+      "title": "Ceph free",
+      "description": "Raw Ceph capacity still free. Red below 1.5 TiB, yellow below 3 TiB.",
       "datasource": {
         "type": "prometheus",
         "uid": "mimir"
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 18,
+        "w": 4,
+        "x": 12,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1649267441664.0
+              },
+              {
+                "color": "green",
+                "value": 3298534883328
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "percentChangeColorMode": "standard",
+        "showPercentChange": false,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(ceph_cluster_total_bytes) - sum(ceph_cluster_total_used_bytes)",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Network",
+      "description": "Physical NIC throughput across all nodes, receive plus transmit. Virtual interfaces (veth, flannel, cni) are excluded so pod traffic is not counted twice.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
         "y": 0
       },
       "fieldConfig": {
@@ -297,6 +369,78 @@
           },
           "editorMode": "code",
           "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) + sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Trace errors (1h)",
+      "description": "Spans Tempo's metrics generator recorded with status ERROR in the last hour, across every traced service.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "percentChangeColorMode": "standard",
+        "showPercentChange": false,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\"}[1h])) or vector(0)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -365,6 +509,7 @@
           "color": {
             "mode": "palette-classic"
           },
+          "min": 0,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 1,
@@ -405,7 +550,6 @@
               }
             ]
           },
-          "min": 0,
           "max": 100
         },
         "overrides": []
@@ -460,6 +604,7 @@
           "color": {
             "mode": "palette-classic"
           },
+          "min": 0,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 1,
@@ -500,7 +645,6 @@
               }
             ]
           },
-          "min": 0,
           "max": 100
         },
         "overrides": []
@@ -545,7 +689,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 8,
         "x": 0,
         "y": 19
       },
@@ -555,6 +699,7 @@
           "color": {
             "mode": "palette-classic"
           },
+          "min": 0,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 1,
@@ -594,8 +739,7 @@
                 "value": null
               }
             ]
-          },
-          "min": 0
+          }
         },
         "overrides": []
       },
@@ -642,24 +786,129 @@
       ]
     },
     {
-      "type": "bargauge",
-      "title": "Fullest volumes",
+      "type": "timeseries",
+      "title": "Ceph capacity",
+      "description": "Raw capacity against what is used, so the fill trend is visible rather than just today's number.",
       "datasource": {
         "type": "prometheus",
         "uid": "mimir"
       },
-      "description": "The ten persistent volumes closest to full. A volume that fills up takes its workload down with it.",
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 8,
+        "x": 8,
+        "y": 19
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never",
+            "pointSize": 5,
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(ceph_cluster_total_bytes)",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "total"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(ceph_cluster_total_used_bytes)",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "used"
+        }
+      ]
+    },
+    {
+      "type": "bargauge",
+      "title": "Fullest volumes",
+      "description": "The ten persistent volumes closest to full. A volume that fills up takes its workload down with it.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
         "y": 19
       },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
           "min": 0,
-          "max": 100,
           "decimals": 1,
           "color": {
             "mode": "thresholds"
@@ -680,7 +929,8 @@
                 "value": 85
               }
             ]
-          }
+          },
+          "max": 100
         },
         "overrides": []
       },
@@ -722,9 +972,266 @@
           "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}"
         }
       ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Trace errors by service",
+      "description": "Error spans per second per traced service. Only services that send traces appear here.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never",
+            "pointSize": 5,
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    },
+    {
+      "type": "bargauge",
+      "title": "Ceph pool usage",
+      "description": "How full each Ceph pool is against the space still available to it.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 27
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          },
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "maxVizHeight": 300,
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "100 * ceph_pool_bytes_used / (ceph_pool_bytes_used + ceph_pool_max_avail) * on(pool_id) group_left(name) ceph_pool_metadata",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "type": "bargauge",
+      "title": "Log errors by namespace (1h)",
+      "description": "Log lines containing \"error\"/\"Error\" in the last hour, per namespace. A plain substring match, not a parsed level: only OTLP logs carry a level label, so matching text is the only way to cover pod logs too. The panel is pinned to one hour and queries instantly, because a regex over the full dashboard range costs Loki seconds per refresh.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "red",
+                "value": 1000
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "maxVizHeight": 300,
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(10, sum by (namespace) (count_over_time({namespace=~\".+\"} |= \"rror\" [1h])))",
+          "queryType": "instant",
+          "refId": "A",
+          "legendFormat": "{{namespace}}"
+        }
+      ],
+      "timeFrom": "1h"
     }
   ],
-  "refresh": "1m",
+  "refresh": "5m",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [
