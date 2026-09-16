@@ -87,6 +87,10 @@ spec:
       server:
         domain: grafana.apps.onelite.feather
         root_url: https://grafana.apps.onelite.feather
+      dashboards:
+        # Path the dashboards sidecar writes to: <folder>/<ConfigMap key>, with the
+        # folder coming from the grafana_folder annotation on the ConfigMap.
+        default_home_dashboard_path: /tmp/dashboards/Overview/cluster-overview.json
       auth:
         disable_login_form: false
       auth.azuread:

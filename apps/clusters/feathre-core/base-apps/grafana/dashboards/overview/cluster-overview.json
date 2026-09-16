@@ -1,0 +1,747 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Landing page for feather-core: cluster CPU, memory, storage and network usage, plus whatever is alerting right now.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "CPU used",
+      "description": "Share of all node CPU that is not idle, averaged over every node.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "percentChangeColorMode": "standard",
+        "showPercentChange": false,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Memory used",
+      "description": "Cluster memory in use: 1 - MemAvailable/MemTotal summed over every node.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "percentChangeColorMode": "standard",
+        "showPercentChange": false,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes))",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Storage used",
+      "description": "Raw Ceph capacity used in rook-ceph-fr01. Ceph starts rejecting writes well before 100 %.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "percentChangeColorMode": "standard",
+        "showPercentChange": false,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "100 * sum(ceph_cluster_total_used_bytes) / sum(ceph_cluster_total_bytes)",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Network",
+      "description": "Physical NIC throughput across all nodes, receive plus transmit. Virtual interfaces (veth, flannel, cni) are excluded so pod traffic is not double counted.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "percentChangeColorMode": "standard",
+        "showPercentChange": false,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) + sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "alertlist",
+      "title": "Active alerts",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "Everything currently firing or pending, most important first. Empty is the healthy state.",
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "options": {
+        "alertInstanceLabelFilter": "",
+        "alertName": "",
+        "dashboardAlerts": false,
+        "dashboardTitle": "",
+        "folder": "",
+        "groupBy": [],
+        "groupMode": "default",
+        "maxItems": 20,
+        "showInactiveAlerts": false,
+        "showInstances": true,
+        "sortOrder": 3,
+        "stateFilter": {
+          "error": true,
+          "firing": true,
+          "noData": false,
+          "normal": false,
+          "pending": true,
+          "recovering": true
+        },
+        "tags": [],
+        "viewMode": "list"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU per node",
+      "description": "Non-idle CPU per node.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 11
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never",
+            "pointSize": 5,
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))) * on(instance) group_left(nodename) node_uname_info",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "{{nodename}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory per node",
+      "description": "Memory in use per node.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 11
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never",
+            "pointSize": 5,
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * on(instance) group_left(nodename) node_uname_info",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "{{nodename}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Network in / out",
+      "description": "Physical NIC throughput across all nodes.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 19
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never",
+            "pointSize": 5,
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "in"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "out"
+        }
+      ]
+    },
+    {
+      "type": "bargauge",
+      "title": "Fullest volumes",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "description": "The ten persistent volumes closest to full. A volume that fills up takes its workload down with it.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 19
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "maxVizHeight": 300,
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "topk(10, 100 * kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}"
+        }
+      ]
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "overview",
+    "cluster"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Cluster Overview",
+  "uid": "cluster-overview",
+  "version": 1,
+  "weekStart": ""
+}
