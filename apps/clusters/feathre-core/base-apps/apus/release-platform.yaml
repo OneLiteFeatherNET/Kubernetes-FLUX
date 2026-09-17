@@ -5,6 +5,9 @@ metadata:
   namespace: apus-system
 spec:
   values:
+    # Scaled to zero, together with the operator. Back to 1 here and 2 on ui to restore.
+    api:
+      replicaCount: 0
     auth:
       # This cluster's OIDC provider is Microsoft Entra ID, the same tenant dependency-track
       # already authenticates against. Both values are public discovery metadata, read from
@@ -41,6 +44,8 @@ spec:
     # every value here is identical between them. Keep them that way -- a client id that
     # differs between the two would produce two sessions for one person.
     ui: &uiRuntime
+      # console reuses this block through the anchor, so both SPAs scale together.
+      replicaCount: 0
       env:
         # The origin only, with no /api suffix. Every method of the typed client already asks
         # for a path that begins with /api (it concatenates baseUrl + '/api/tenants'), so a
