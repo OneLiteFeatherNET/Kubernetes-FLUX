@@ -1,0 +1,50 @@
+# Makes the MetalLB annotation the single switch for dual-stack.
+#
+# A Service needs spec.ipFamilyPolicy to get a second address family, but that
+# is a spec field: most charts render only service.annotations, so the value
+# cannot be set through Helm (step-certificates, envoy-gateway, maxscale and
+# dragonfly all lack it). This policy fills it in whenever the pinned addresses
+# already name an IPv6 one.
+#
+# Coupling the two is deliberate. A v6 in the annotation while the Service is
+# still SingleStack does not degrade to IPv4 - MetalLB rejects the allocation
+# outright and the Service loses every external address:
+#   requested loadBalancer IP(s) [...] does not match the ipFamily of the service
+# Deriving the spec from the annotation makes that state unrepresentable.
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: loadbalancer-dualstack
+spec:
+  # Ignore, not Fail: a broken expression then costs one Service its second
+  # family, visibly, instead of blocking every Service write in the cluster.
+  failurePolicy: Ignore
+  reinvocationPolicy: Never
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["services"]
+  matchConditions:
+    - name: loadbalancer-pinning-a-v6-address
+      expression: >
+        object.spec.type == 'LoadBalancer' &&
+        has(object.metadata.annotations) &&
+        'metallb.io/loadBalancerIPs' in object.metadata.annotations &&
+        object.metadata.annotations['metallb.io/loadBalancerIPs'].contains(':')
+  mutations:
+    # ipFamilies is left alone on purpose - the apiserver derives it and keeps
+    # the primary family, so an IPv6-primary Service is not flipped to IPv4.
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{ spec: Object.spec{ ipFamilyPolicy: "PreferDualStack" } }
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: loadbalancer-dualstack
+spec:
+  policyName: loadbalancer-dualstack
+  matchResources: {}
