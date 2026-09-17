@@ -5,6 +5,9 @@ metadata:
   namespace: apus-system
 spec:
   values:
+    # Scaled to zero: Apus runs nothing until this goes back to 1. The CRDs and every
+    # Tenant/BlueMapMap survive (helm.sh/resource-policy: keep), so nothing is lost.
+    replicaCount: 0
     # Cluster reality, not the chart's defaults: this cluster's object store is feather-s3
     # in rook-ceph-fr01, and its bucket class is ceph-bucket-fr01.
     rook:
