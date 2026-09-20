@@ -58,7 +58,9 @@ spec:
                 cpu: 50m
                 memory: 256Mi
               limits:
-                memory: 1Gi
+                # Der Bibliotheksscan zieht Cover und Wortzahlen aus jeder EPUB;
+                # bei 123 Buechern (groesste 205 MB) reichte 1Gi nicht.
+                memory: 4Gi
     service:
       app:
         controller: kavita
