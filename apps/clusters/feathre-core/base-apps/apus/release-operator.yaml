@@ -4,10 +4,23 @@ metadata:
   name: apus-operator
   namespace: apus-system
 spec:
+  # Scaled to zero: Apus runs nothing until this patch is removed. The CRDs and every
+  # Tenant/BlueMapMap survive (helm.sh/resource-policy: keep), so nothing is lost.
+  # Not via replicaCount -- values.schema.json pins that to exactly 1, because two
+  # operators would reconcile the same resources at once. The schema forbids two, not
+  # zero, so the pause belongs on the Deployment.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: apus-operator
+            patch: |
+              - op: replace
+                path: /spec/replicas
+                value: 0
   values:
-    # Scaled to zero: Apus runs nothing until this goes back to 1. The CRDs and every
-    # Tenant/BlueMapMap survive (helm.sh/resource-policy: keep), so nothing is lost.
-    replicaCount: 0
+    replicaCount: 1
     # Cluster reality, not the chart's defaults: this cluster's object store is feather-s3
     # in rook-ceph-fr01, and its bucket class is ceph-bucket-fr01.
     rook:
