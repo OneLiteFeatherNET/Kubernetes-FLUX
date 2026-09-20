@@ -19,6 +19,16 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # Das Chart setzt hier keine strategy, also greift RollingUpdate. Mit
+          # replicas 1 und dem RWO-Volume blockiert das jedes Upgrade.
+          - target:
+              kind: Deployment
+              name: sentry-symbolicator-api
+            patch: |
+              - op: add
+                path: /spec/strategy
+                value:
+                  type: Recreate
   values:
     # Everything stateful lives outside this release: postgres in CNPG, redis
     # in the shared Dragonfly, kafka in the Strimzi cluster, clickhouse in its
