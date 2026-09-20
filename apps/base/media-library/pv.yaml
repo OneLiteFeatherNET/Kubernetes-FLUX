@@ -1,0 +1,36 @@
+# Handgepflegter PV statt dynamischer Bereitstellung: der urspruengliche PV trug
+# mounter: fuse in den volumeAttributes, und die sind unveraenderlich (#274).
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: media-library-static
+spec:
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ceph-cephfs-fr01
+  volumeMode: Filesystem
+  mountOptions:
+    - noatime
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    namespace: media
+    name: media-library
+  csi:
+    driver: rook-ceph.cephfs.csi.ceph.com
+    volumeHandle: 0001-000e-rook-ceph-fr01-0000000000000001-54f9e61c-38e4-4631-a533-c615d8d02bff
+    nodeStageSecretRef:
+      name: rook-csi-cephfs-node
+      namespace: rook-ceph-fr01
+    controllerExpandSecretRef:
+      name: rook-csi-cephfs-provisioner
+      namespace: rook-ceph-fr01
+    volumeAttributes:
+      clusterID: rook-ceph-fr01
+      fsName: feather-cephfs
+      pool: feather-cephfs-data0
+      subvolumeName: csi-vol-54f9e61c-38e4-4631-a533-c615d8d02bff
+      subvolumePath: /volumes/csi/csi-vol-54f9e61c-38e4-4631-a533-c615d8d02bff/ec6412c4-1e6b-4f42-bdc4-6e01f5e06038
