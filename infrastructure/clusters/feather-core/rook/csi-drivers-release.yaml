@@ -111,7 +111,7 @@ spec:
                 memory: 512Mi
               limits:
                 cpu: 500m
-                memory: 1Gi
+                memory: 4Gi
         controllerPlugin:
           replicas: 2
           resources:
