@@ -21,3 +21,4 @@ resources:
   - sentry.yaml
   - sturnus.yaml
   - vikunja.yaml
+  - mongodb.yaml

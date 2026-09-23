@@ -24,3 +24,4 @@ resources:
   - penpot.yaml
   - sentry.yaml
   - sturnus.yaml
+  - mongodb-backup.yaml
