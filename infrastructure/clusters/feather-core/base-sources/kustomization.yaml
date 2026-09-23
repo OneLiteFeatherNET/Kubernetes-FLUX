@@ -36,6 +36,7 @@ resources:
   - jellyfin.yaml
   - app-template.yaml
   - opencost.yaml
+  - mongodb.yaml
 
 # The OCIRepositories above pull from the private onelitefeather Harbor project,
 # so flux-system needs the same pull credential the workloads use.
