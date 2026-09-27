@@ -96,7 +96,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(minecraft_players_online_ratio{job!~\"Proxy|Bedrock-Proxy-1\", job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "sum(minecraft_players_online_ratio{job!~\"(minecraft/)?(Proxy|Bedrock-Proxy-1)\", job=~\"$job\", instance=~\"$instance\"})",
           "range": true,
           "refId": "A"
         }
