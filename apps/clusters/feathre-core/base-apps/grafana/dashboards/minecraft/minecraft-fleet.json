@@ -50,7 +50,7 @@
     },
     {
       "datasource": "Mimir",
-      "description": "Total players across backend servers. Excludes proxy jobs (Proxy, Bedrock-Proxy-1): those also emit minecraft_players_online_ratio (their own player count), which would double count on top of each backend's count.",
+      "description": "Total players across backend servers. Excludes proxy jobs (identified by also emitting minecraft_proxy_players_online_ratio): proxies also emit minecraft_players_online_ratio (their own player count), which would double count on top of each backend's count.",
       "fieldConfig": {
         "defaults": {
           "decimals": 0,
@@ -96,7 +96,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(minecraft_players_online_ratio{job!~\"Proxy|Bedrock-Proxy-1\", job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "sum(minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"} unless on (job) minecraft_proxy_players_online_ratio)",
           "range": true,
           "refId": "A"
         }
@@ -1038,7 +1038,7 @@
     },
     {
       "datasource": "Mimir",
-      "description": "Every Minecraft workload (namespace-less JVM, i.e. not a k8s-deployed microservice, excluding reposilite) and whether it currently emits TPS/game metrics. Not filtered by $job - always shows the full fleet so missing metrics are visible.",
+      "description": "Every Minecraft workload (namespace-less JVM, i.e. not a k8s-deployed microservice, excluding reposilite) and whether it currently emits TPS/game metrics or is a Velocity proxy. Not filtered by $job - always shows the full fleet so missing metrics are visible.",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1120,6 +1120,40 @@
                 ]
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Proxy"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "Yes",
+                        "color": "blue",
+                        "index": 0
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "text": "No",
+                        "color": "text",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -1159,6 +1193,14 @@
           "instant": true,
           "range": false,
           "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "group by (job) (minecraft_proxy_players_online_ratio)",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "C"
         }
       ],
       "title": "Server inventory",
@@ -1176,13 +1218,15 @@
             "excludeByName": {
               "Time": true,
               "Time 1": true,
-              "Time 2": true
+              "Time 2": true,
+              "Time 3": true
             },
             "indexByName": {},
             "renameByName": {
               "job": "Job",
               "Value #A": "Has JVM metrics",
-              "Value #B": "Emits TPS/game metrics"
+              "Value #B": "Emits TPS/game metrics",
+              "Value #C": "Proxy"
             }
           }
         }
@@ -1216,7 +1260,7 @@
         "multi": true,
         "name": "job",
         "options": [],
-        "query": "label_values(minecraft_server_tps_ratio, job)",
+        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\"}, job)",
         "refresh": 2,
         "type": "query"
       },
@@ -1237,7 +1281,7 @@
         "multi": true,
         "name": "instance",
         "options": [],
-        "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
+        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\", job=~\"$job\"}, instance)",
         "refresh": 2,
         "type": "query"
       },
