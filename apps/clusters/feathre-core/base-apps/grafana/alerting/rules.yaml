@@ -1253,7 +1253,8 @@ groups:
               queryType: instant
               # Two signatures: the sidecar reload path (HTTP 500) and the fatal startup
               # path. sum() collapses both replicas into one message.
-              expr: 'sum(count_over_time({namespace="grafana", container="grafana"} |~ "Failed to provision alerting|provisioning/alerting/reload.*status=500" [10m]))'
+              # != "tsdb.loki" excludes Grafana's own query-evaluation log line (self-match).
+              expr: 'sum(count_over_time({namespace="grafana", container="grafana"} != "tsdb.loki" |~ "Failed to provision alerting|provisioning/alerting/reload.*status=500" [10m]))'
               intervalMs: 1000
               maxDataPoints: 43200
               refId: A
