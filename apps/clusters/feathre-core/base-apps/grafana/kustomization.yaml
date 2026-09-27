@@ -72,6 +72,7 @@ configMapGenerator:
       - dashboards/minecraft/minecraft-detail.json
       - dashboards/minecraft/minecraft-fleet.json
       - dashboards/minecraft/minecraft-jvm.json
+      - dashboards/minecraft/minecraft-logs-traces.json
     options:
       labels:
         grafana_dashboard: "1"
