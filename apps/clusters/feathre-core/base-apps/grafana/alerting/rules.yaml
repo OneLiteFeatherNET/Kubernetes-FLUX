@@ -1698,3 +1698,263 @@ groups:
           check_command: "kubectl get certificate -A | grep -v True"
         labels:
           severity: critical
+  - orgId: 1
+    name: minecraft
+    folder: Minecraft
+    interval: 60s
+    rules:
+      - uid: minecraft-tps-low
+        title: Minecraft TPS low
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: min by (job) (minecraft_server_tps_ratio{window="1m"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 15
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Server {{ $labels.job }} 1m TPS has dropped below 15 - players will notice lag."
+          problem: "TPS below 15"
+          service: "MinecraftOTEL"
+          threshold: ">= 15 TPS (1m)"
+          value_unit: "TPS"
+          value_fmt: "%.2f"
+          object_label: "Server"
+          object_key: "job"
+          check: "Check the JVM dashboard for GC pauses and the detail dashboard for entity/chunk counts on this server."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-main/minecraftotel-main"
+        labels:
+          severity: warning
+      - uid: minecraft-mspt-high
+        title: Minecraft MSPT p95 high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max by (job) (minecraft_server_mspt_p95_milliseconds)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 50
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "Server {{ $labels.job }} p95 tick time is above the 50ms (20 TPS) budget."
+          problem: "MSPT p95 over 50 ms"
+          service: "MinecraftOTEL"
+          threshold: "< 50 ms p95"
+          value_unit: "ms"
+          value_fmt: "%.1f"
+          object_label: "Server"
+          object_key: "job"
+          check: "Check the JVM dashboard for GC pauses and the detail dashboard's tick duration heatmap for spike patterns."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-main/minecraftotel-main"
+        labels:
+          severity: warning
+      - uid: minecraft-heap-high
+        title: Minecraft JVM heap usage high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # ">0" on the limit series drops any pool that reports an unbounded/unknown max
+              # (JVM MemoryUsage.getMax() == -1), so a job never divides by a non-positive limit.
+              expr: sum by (job) (jvm_memory_used_bytes{jvm_memory_type="heap", namespace="", job!~"reposilite|ingot-rehearsal"}) / sum by (job) (jvm_memory_limit_bytes{jvm_memory_type="heap", namespace="", job!~"reposilite|ingot-rehearsal"} > 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.9
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Server {{ $labels.job }} heap usage is above 90% of its limit - risks GC pressure or OOM."
+          problem: "Heap usage over 90 %"
+          service: "MinecraftOTEL"
+          threshold: "< 90 % of heap limit"
+          value_unit: "% of heap limit"
+          value_fmt: "%.1f"
+          object_label: "Server"
+          object_key: "job"
+          check: "Check the JVM dashboard's heap used vs limit and GC pause rate panels for this server."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-jvm/minecraftotel-jvm"
+        labels:
+          severity: warning
+      - uid: minecraft-server-down
+        title: Core Minecraft server down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Compares "which core servers had JVM metrics 1h ago" against "now", keyed on a
+              # name with any minecraft/ prefix stripped - so the in-flight job=minecraft/<name>
+              # rename (old name disappearing while the new one appears) does NOT look like a
+              # server going down. Only a real gap (present 1h ago, gone now under the same
+              # stripped name) produces a row here.
+              expr: count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"(minecraft/)?(Proxy|Lobby|Survival-1)"} offset 1h, "name", "$1", "job", "(?:minecraft/)?(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"(minecraft/)?(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:minecraft/)?(Proxy|Lobby|Survival-1)"))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Empty (no row) is the healthy case here (every name seen 1h ago is still seen now), so
+        # NoData must stay OK - only a non-empty result (a real gap) should alert.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Core server {{ $labels.name }} (Proxy, Lobby or Survival-1) had JVM metrics an hour ago and has none now."
+          problem: "Core server stopped reporting telemetry"
+          service: "MinecraftOTEL"
+          threshold: "JVM metrics present"
+          object_label: "Server"
+          object_key: "name"
+          check: "Check whether the server process/pod is actually down, or whether only its OTel/metrics agent died - the game server itself may still be reachable."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the Fleet Overview dashboard's Server inventory table"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-fleet/minecraftotel-fleet"
+        labels:
+          severity: critical
