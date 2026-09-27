@@ -53,7 +53,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "### How to read this dashboard\n- **TPS** (Ticks Per Second) ranges **0–20**. **20** is best. Below **15** is urgent.\n- **MSPT** (Milliseconds Per Tick) is the inverse view of TPS: **50ms** is the tick budget for **20 TPS**.\n- If **MSPT p95 > 50ms**, the server cannot sustain 20 TPS.\n- Use the **heatmap** to spot spike patterns, then drill down by **world** and **entity_type**.",
+        "content": "### How to read this dashboard\n- **Primary filter** is **$job** (server). **$instance** is hidden by default (it's a random UUID that changes on every restart) - only touch it to isolate one restart.\n- **TPS** (Ticks Per Second) ranges **0-20**. **20** is best. Below **15** is urgent.\n- **MSPT** (Milliseconds Per Tick) is the inverse view of TPS: **50ms** is the tick budget for **20 TPS**.\n- If **MSPT p95 > 50ms**, the server cannot sustain 20 TPS.\n- Use the **heatmap** to spot spike patterns, then drill down by **$world** and **$entity_type** in the Detail view row below.\n- Only servers that run the Minecraft OTel agent's game metrics (currently Survival-1, ElytraRace-1) show TPS/MSPT/chunks/entities here - see the Fleet Overview dashboard's Server inventory table for who emits what.",
         "mode": "markdown"
       },
       "pluginVersion": "12.3.1",
@@ -90,7 +90,7 @@
                 "value": 0
               },
               {
-                "color": "yellow",
+                "color": "orange",
                 "value": 15
               },
               {
@@ -99,7 +99,7 @@
               },
               {
                 "color": "green",
-                "value": 19
+                "value": 19.5
               }
             ]
           },
@@ -135,7 +135,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "(minecraft_server_tps_ratio{window=\"1m\"})",
+          "expr": "min by (job) (minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
         }
@@ -159,7 +160,7 @@
               },
               {
                 "color": "yellow",
-                "value": 45
+                "value": 40
               },
               {
                 "color": "red",
@@ -201,7 +202,8 @@
           "editorMode": "code",
           "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "legendFormat": "{{job}}"
         }
       ],
       "title": "MSPT p95",
@@ -311,7 +313,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(minecraft_tick_duration_milliseconds_bucket{job=~\"$job\", instance=~\"$instance\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (job, le) (rate(minecraft_tick_duration_milliseconds_bucket{job=~\"$job\", instance=~\"$instance\"}[5m])))",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
         }
@@ -382,16 +385,20 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 15
               },
               {
                 "color": "yellow",
                 "value": 18
               },
               {
-                "color": "red",
-                "value": 15
+                "color": "green",
+                "value": 19.5
               }
             ]
           },
@@ -526,7 +533,7 @@
               },
               {
                 "color": "yellow",
-                "value": 45
+                "value": 40
               },
               {
                 "color": "red",
@@ -932,7 +939,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job, world) (minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job, world) (minecraft_chunks_loaded_ratio{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"})",
           "legendFormat": "{{job}}/{{world}}",
           "range": true,
           "refId": "A"
@@ -1023,21 +1030,21 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "L {{job}}/{{world}}",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_chunks_unload_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_chunks_unload_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "UL {{job}}/{{world}}",
           "range": true,
           "refId": "B"
         },
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_chunks_generated_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_chunks_generated_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "G {{job}}/{{world}}",
           "range": true,
           "refId": "C"
@@ -1128,7 +1135,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job, world) (minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job, world) (minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"})",
           "legendFormat": "{{job}}/{{world}}",
           "range": true,
           "refId": "A"
@@ -1144,40 +1151,6 @@
         "defaults": {
           "color": {
             "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
           },
           "mappings": [],
           "thresholds": {
@@ -1201,35 +1174,34 @@
       },
       "id": 16,
       "options": {
-        "legend": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": true
+          "fields": "",
+          "values": false
         },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "text"
       },
       "pluginVersion": "12.3.1",
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job, entity_type) (minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\"})",
-          "interval": "",
-          "legendFormat": "{{entity_type}}",
+          "expr": "topk(15, max by (job, entity_type) (minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\", entity_type=~\"$entity_type\"}))",
+          "legendFormat": "{{job}} · {{entity_type}}",
           "range": true,
           "refId": "A"
         }
       ],
       "title": "Entities loaded by type",
-      "type": "timeseries"
+      "type": "bargauge"
     },
     {
       "datasource": "Mimir",
@@ -1313,14 +1285,14 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_entities_added_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_entities_added_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "+{{job}}/{{world}}",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_entities_removed_total{job=~\"$job\", instance=~\"$instance\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_entities_removed_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "-{{job}}/{{world}}",
           "range": true,
           "refId": "B"
@@ -1360,18 +1332,23 @@
       {
         "allValue": ".*",
         "current": {
-          "text": "All",
-          "value": "$__all"
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Mimir",
         "hide": 1,
-        "includeAll": false,
+        "includeAll": true,
         "label": "instance (optional)",
         "name": "instance",
         "options": [],
         "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
         "refresh": 2,
-        "type": "query"
+        "type": "query",
+        "multi": true
       },
       {
         "allValue": ".*",
