@@ -96,7 +96,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"} unless on (job) minecraft_proxy_players_online_ratio)",
+          "expr": "sum(minecraft_players_online_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"} unless on (job) minecraft_proxy_players_online_ratio)",
           "range": true,
           "refId": "A"
         }
@@ -214,7 +214,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "min by (job) (\n  minecraft_server_tps_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
+          "expr": "min by (job) (\n  minecraft_server_tps_ratio{\n    job=~\"((minecraft|proxy)/)?$job\",\n    instance=~\"$instance\",\n    window=\"1m\"\n  }\n)\n",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -314,7 +314,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -414,7 +414,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -506,7 +506,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job) (\n  minecraft_entities_loaded_ratio{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }\n)\n",
+          "expr": "max by (job) (\n  minecraft_entities_loaded_ratio{\n    job=~\"((minecraft|proxy)/)?$job\",\n    instance=~\"$instance\"\n  }\n)\n",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -598,7 +598,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job) (minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job) (minecraft_players_online_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -711,7 +711,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "topk($topk, max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"}))",
+          "expr": "topk($topk, max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"}))",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -817,7 +817,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "bottomk(\n  $topk,\n  min by (job) (\n    minecraft_server_tps_ratio{\n      job=~\"$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
+          "expr": "bottomk(\n  $topk,\n  min by (job) (\n    minecraft_server_tps_ratio{\n      job=~\"((minecraft|proxy)/)?$job\",\n      instance=~\"$instance\"\n    }\n  )\n)\n",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -922,7 +922,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job) (minecraft_proxy_players_online_ratio{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job) (minecraft_proxy_players_online_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -1014,7 +1014,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job, server) (minecraft_proxy_servers_registered_ratio{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job, server) (minecraft_proxy_servers_registered_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}/{{server}}",
           "range": true,
           "refId": "A"
@@ -1261,6 +1261,7 @@
         "name": "job",
         "options": [],
         "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\"}, job)",
+        "regex": "/^(?:minecraft\\/|proxy\\/)?(.+)$/",
         "refresh": 2,
         "type": "query"
       },
@@ -1281,7 +1282,7 @@
         "multi": true,
         "name": "instance",
         "options": [],
-        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\", job=~\"$job\"}, instance)",
+        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\", job=~\"((minecraft|proxy)/)?$job\"}, instance)",
         "refresh": 2,
         "type": "query"
       },

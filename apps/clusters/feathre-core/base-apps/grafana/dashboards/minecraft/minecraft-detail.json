@@ -135,7 +135,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "min by (job) (minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
+          "expr": "min by (job) (minecraft_server_tps_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", window=\"1m\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -200,7 +200,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "range": true,
           "refId": "A",
           "legendFormat": "{{job}}"
@@ -257,7 +257,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(minecraft_players_online_ratio{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "sum(minecraft_players_online_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "range": true,
           "refId": "A"
         }
@@ -313,7 +313,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (job, le) (rate(minecraft_tick_duration_milliseconds_bucket{job=~\"$job\", instance=~\"$instance\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (job, le) (rate(minecraft_tick_duration_milliseconds_bucket{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"}[5m])))",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -457,21 +457,21 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"1m\"})",
+          "expr": "(minecraft_server_tps_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", window=\"1m\"})",
           "legendFormat": "1m",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\", window=\"5m\"})",
+          "expr": "(minecraft_server_tps_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", window=\"5m\"})",
           "legendFormat": "5m",
           "range": true,
           "refId": "B"
         },
         {
           "editorMode": "code",
-          "expr": "(minecraft_server_tps_ratio{job=~\"$job\", instance=~\"$instance\",window=\"15m\"})",
+          "expr": "(minecraft_server_tps_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\",window=\"15m\"})",
           "legendFormat": "15m",
           "range": true,
           "refId": "C"
@@ -569,14 +569,14 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "avg by (job) (minecraft_server_mspt_avg_milliseconds{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "max by (job) (minecraft_server_mspt_p95_milliseconds{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "B"
@@ -656,7 +656,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (le) (\n  rate(minecraft_tick_duration_milliseconds_bucket{\n    job=~\"$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
+          "expr": "sum by (le) (\n  rate(minecraft_tick_duration_milliseconds_bucket{\n    job=~\"((minecraft|proxy)/)?$job\",\n    instance=~\"$instance\"\n  }[5m])\n)\n",
           "format": "heatmap",
           "legendFormat": "{{job}}",
           "range": true,
@@ -746,7 +746,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(minecraft_chunks_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "sum(minecraft_chunks_loaded_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -835,7 +835,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\"})",
+          "expr": "sum(minecraft_entities_loaded_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"})",
           "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
@@ -939,7 +939,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job, world) (minecraft_chunks_loaded_ratio{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"})",
+          "expr": "max by (job, world) (minecraft_chunks_loaded_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", world=~\"$world\"})",
           "legendFormat": "{{job}}/{{world}}",
           "range": true,
           "refId": "A"
@@ -1030,21 +1030,21 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_chunks_load_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_chunks_load_total{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "L {{job}}/{{world}}",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_chunks_unload_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_chunks_unload_total{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "UL {{job}}/{{world}}",
           "range": true,
           "refId": "B"
         },
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_chunks_generated_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_chunks_generated_total{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "G {{job}}/{{world}}",
           "range": true,
           "refId": "C"
@@ -1135,7 +1135,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (job, world) (minecraft_entities_loaded_ratio{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"})",
+          "expr": "max by (job, world) (minecraft_entities_loaded_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", world=~\"$world\"})",
           "legendFormat": "{{job}}/{{world}}",
           "range": true,
           "refId": "A"
@@ -1194,7 +1194,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "topk(15, max by (job, entity_type) (minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\", entity_type=~\"$entity_type\"}))",
+          "expr": "topk(15, max by (job, entity_type) (minecraft_entities_loaded_by_type_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", entity_type=~\"$entity_type\"}))",
           "legendFormat": "{{job}} · {{entity_type}}",
           "range": true,
           "refId": "A"
@@ -1285,14 +1285,14 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_entities_added_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_entities_added_total{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "+{{job}}/{{world}}",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "sum by (job, world) (rate(minecraft_entities_removed_total{job=~\"$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
+          "expr": "sum by (job, world) (rate(minecraft_entities_removed_total{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\", world=~\"$world\"}[5m]))",
           "legendFormat": "-{{job}}/{{world}}",
           "range": true,
           "refId": "B"
@@ -1326,6 +1326,7 @@
         "name": "job",
         "options": [],
         "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\"}, job)",
+        "regex": "/^(?:minecraft\\/|proxy\\/)?(.+)$/",
         "refresh": 2,
         "type": "query"
       },
@@ -1345,7 +1346,7 @@
         "label": "instance (optional)",
         "name": "instance",
         "options": [],
-        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\", job=~\"$job\"}, instance)",
+        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\", job=~\"((minecraft|proxy)/)?$job\"}, instance)",
         "refresh": 2,
         "type": "query",
         "multi": true
@@ -1361,7 +1362,7 @@
         "multi": true,
         "name": "world",
         "options": [],
-        "query": "label_values(minecraft_chunks_loaded_ratio{job=~\"$job\", instance=~\"$instance\"}, world)",
+        "query": "label_values(minecraft_chunks_loaded_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"}, world)",
         "refresh": 2,
         "type": "query"
       },
@@ -1376,7 +1377,7 @@
         "multi": true,
         "name": "entity_type",
         "options": [],
-        "query": "label_values(minecraft_entities_loaded_by_type_ratio{job=~\"$job\", instance=~\"$instance\"}, entity_type)",
+        "query": "label_values(minecraft_entities_loaded_by_type_ratio{job=~\"((minecraft|proxy)/)?$job\", instance=~\"$instance\"}, entity_type)",
         "refresh": 2,
         "type": "query"
       }
