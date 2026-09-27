@@ -1902,12 +1902,9 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              # Compares "which core servers had JVM metrics 1h ago" against "now", keyed on a
-              # name with any minecraft/ or proxy/ prefix stripped - so the in-flight
-              # job=(minecraft|proxy)/<name> rename (old name disappearing while the new one
-              # appears) does NOT look like a server going down. Only a real gap (present 1h ago,
-              # gone now under the same stripped name) produces a row here.
-              expr: count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"} offset 1h, "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"))
+              # Servers seen in the last 24h but not now, keyed on the name without the
+              # minecraft/ or proxy/ prefix so the job rename can't look like an outage.
+              expr: count by (name) (label_replace(max_over_time(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"}[24h]), "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"))
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -1941,13 +1938,13 @@ groups:
               maxDataPoints: 43200
               refId: B
               type: threshold
-        # Empty (no row) is the healthy case here (every name seen 1h ago is still seen now), so
+        # Empty (no row) is the healthy case here (every name seen in the last 24h is still seen now), so
         # NoData must stay OK - only a non-empty result (a real gap) should alert.
         noDataState: OK
         execErrState: Alerting
         for: 5m
         annotations:
-          summary: "Core server {{ $labels.name }} (Proxy, Lobby or Survival-1) had JVM metrics an hour ago and has none now."
+          summary: "Core server {{ $labels.name }} (Proxy, Lobby or Survival-1) sent JVM metrics in the last 24h and has none now."
           problem: "Core server stopped reporting telemetry"
           service: "MinecraftOTEL"
           threshold: "JVM metrics present"
