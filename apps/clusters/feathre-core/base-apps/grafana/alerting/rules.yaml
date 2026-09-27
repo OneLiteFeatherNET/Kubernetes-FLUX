@@ -1762,7 +1762,7 @@ groups:
           object_key: "job"
           check: "Check the JVM dashboard for GC pauses and the detail dashboard for entity/chunk counts on this server."
           check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
-          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-main/minecraftotel-main"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-fleet/minecraftotel-fleet"
         labels:
           severity: warning
       - uid: minecraft-mspt-high
@@ -1824,7 +1824,7 @@ groups:
           object_key: "job"
           check: "Check the JVM dashboard for GC pauses and the detail dashboard's tick duration heatmap for spike patterns."
           check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
-          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-main/minecraftotel-main"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-fleet/minecraftotel-fleet"
         labels:
           severity: warning
       - uid: minecraft-heap-high
