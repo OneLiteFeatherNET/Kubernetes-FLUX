@@ -5,3 +5,4 @@ resources:
   - dragonfly
   - step-issuer
   - ../../../../infrastructure/base/controllers/mariadb-operator
+  - ../../../../infrastructure/base/controllers/mongodb-operator
