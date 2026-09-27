@@ -53,7 +53,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "### How to read this dashboard\n- **Primary filter** is **$job** (server). **$instance** is hidden by default (it's a random UUID that changes on every restart) - only touch it to isolate one restart.\n- **TPS** (Ticks Per Second) ranges **0-20**. **20** is best. Below **15** is urgent.\n- **MSPT** (Milliseconds Per Tick) is the inverse view of TPS: **50ms** is the tick budget for **20 TPS**.\n- If **MSPT p95 > 50ms**, the server cannot sustain 20 TPS.\n- Use the **heatmap** to spot spike patterns, then drill down by **$world** and **$entity_type** in the Detail view row below.\n- Only servers that run the Minecraft OTel agent's game metrics (currently Survival-1, ElytraRace-1) show TPS/MSPT/chunks/entities here - see the Fleet Overview dashboard's Server inventory table for who emits what.",
+        "content": "### How to read this dashboard\n- **Primary filter** is **$job** (server). **$instance** is hidden by default (it's a random UUID that changes on every restart) - only touch it to isolate one restart.\n- **TPS** (Ticks Per Second) ranges **0-20**. **20** is best. Below **15** is urgent.\n- **MSPT** (Milliseconds Per Tick) is the inverse view of TPS: **50ms** is the tick budget for **20 TPS**.\n- If **MSPT p95 > 50ms**, the server cannot sustain 20 TPS.\n- Use the **heatmap** to spot spike patterns, then drill down by **$world** and **$entity_type** in the Detail view row below.\n- Only servers that run the Minecraft OTel agent's game metrics (currently Survival-1, ElytraRace-1) show TPS/MSPT/chunks/entities here - see the Fleet Overview dashboard's Server inventory table for who emits what.\n- Velocity proxies (e.g. Proxy, Bedrock-Proxy-1) don't emit TPS/MSPT/chunks, so their panels here stay empty - they're covered on the Fleet Overview dashboard's Proxies row instead.",
         "mode": "markdown"
       },
       "pluginVersion": "12.3.1",
@@ -1325,7 +1325,7 @@
         "multi": true,
         "name": "job",
         "options": [],
-        "query": "label_values(minecraft_server_tps_ratio, job)",
+        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\"}, job)",
         "refresh": 2,
         "type": "query"
       },
@@ -1345,7 +1345,7 @@
         "label": "instance (optional)",
         "name": "instance",
         "options": [],
-        "query": "label_values(minecraft_server_tps_ratio{job=~\"$job\"}, instance)",
+        "query": "label_values({__name__=~\"minecraft_players_online_ratio|minecraft_proxy_players_online_ratio\", job=~\"$job\"}, instance)",
         "refresh": 2,
         "type": "query",
         "multi": true
