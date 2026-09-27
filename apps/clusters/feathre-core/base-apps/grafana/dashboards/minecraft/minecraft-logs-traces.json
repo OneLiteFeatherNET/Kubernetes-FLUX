@@ -49,7 +49,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "### How to read this dashboard\n- **Primary filter** is **$job** (server), sourced from Loki's `job` label restricted to Minecraft log streams (`exporter=\"OTLP\"`). **$level** filters by detected log level (`detected_level`).\n- **Caveat:** servers are migrating their job label from bare names (e.g. `TeamBuild`) to `minecraft/<name>`. Tempo's `service.name` and the spanmetrics `service` label do **not** carry this prefix yet. If **$job** includes a `minecraft/`-prefixed value, the Tempo/spanmetrics panels below (error rate, latency, top spans, trace search, slow traces) will not match it - reselect the bare name (e.g. `TeamBuild` instead of `minecraft/TeamBuild`) for those panels until the rename lands on the tracing side too.\n- **Logs** come from Loki (uid `loki`), **traces** from Tempo (uid `tempo`), and Tempo's span-metrics/service-graph output from Mimir (uid `mimir`) via the metrics-generator.\n- The recurring error **\"An error occurred whilst writing samples to Prometheus\" / `UnknownHostException: database01.onelite.feather`** is known baseline noise (a dead Prometheus pushgateway target) that dominates error counts on some servers - it is intentionally not alerted on. See the recurring error patterns panel below.",
+        "content": "### How to read this dashboard\n- **Primary filter** is **$job** (server), sourced from Loki's `job` label restricted to Minecraft log streams (`exporter=\"OTLP\"`) and deduplicated to the bare server name even while a server's job label is still migrating from e.g. `TeamBuild` to `minecraft/TeamBuild` - Loki panels match either form, Tempo/Mimir spanmetrics panels match on the bare name directly (Tempo `service.name` never carries the prefix). **$level** filters by detected log level (`detected_level`).\n- **Logs** come from Loki (uid `loki`), **traces** from Tempo (uid `tempo`), and Tempo's span-metrics/service-graph output from Mimir (uid `mimir`) via the metrics-generator.\n- The recurring error **\"An error occurred whilst writing samples to Prometheus\" / `UnknownHostException: database01.onelite.feather`** is known baseline noise (a dead Prometheus pushgateway target) that dominates error counts on some servers - it is intentionally not alerted on. See the recurring error patterns panel below.",
         "mode": "markdown"
       },
       "pluginVersion": "12.3.1",
@@ -152,7 +152,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (job, detected_level) (\n  rate({exporter=\"OTLP\", job=~\"$job\"} | detected_level=~\"$level\" [$__interval])\n) * 60\n",
+          "expr": "sum by (job, detected_level) (\n  rate({exporter=\"OTLP\", job=~\"(minecraft/)?$job\"} | detected_level=~\"$level\" [$__interval])\n) * 60\n",
           "legendFormat": "{{job}} · {{detected_level}}",
           "queryType": "range",
           "refId": "A"
@@ -217,7 +217,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(count_over_time({exporter=\"OTLP\", job=~\"$job\"} | detected_level=~\"ERROR|WARN\" [1h]))",
+          "expr": "sum(count_over_time({exporter=\"OTLP\", job=~\"(minecraft/)?$job\"} | detected_level=~\"ERROR|WARN\" [1h]))",
           "instant": true,
           "queryType": "instant",
           "refId": "A"
@@ -228,7 +228,7 @@
     },
     {
       "datasource": "Mimir",
-      "description": "Share of spans reported with STATUS_CODE_ERROR, from Tempo's metrics-generator spanmetrics. Uses the bare (non-prefixed) service name - see Read me first.",
+      "description": "Share of spans reported with STATUS_CODE_ERROR, from Tempo's metrics-generator spanmetrics.",
       "fieldConfig": {
         "defaults": {
           "decimals": 1,
@@ -295,7 +295,7 @@
     },
     {
       "datasource": "Mimir",
-      "description": "Span error rate by service, from Tempo's metrics-generator spanmetrics (status_code=\"STATUS_CODE_ERROR\"). Uses the bare (non-prefixed) service name - see Read me first.",
+      "description": "Span error rate by service, from Tempo's metrics-generator spanmetrics (status_code=\"STATUS_CODE_ERROR\").",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -389,7 +389,7 @@
     },
     {
       "datasource": "Mimir",
-      "description": "p95 span latency by service, from Tempo's metrics-generator spanmetrics histogram. Uses the bare (non-prefixed) service name - see Read me first.",
+      "description": "p95 span latency by service, from Tempo's metrics-generator spanmetrics histogram.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -494,7 +494,7 @@
     },
     {
       "datasource": "Mimir",
-      "description": "Busiest span names by calls/s, from Tempo's metrics-generator spanmetrics. Filtered to $job (bare service names - see Read me first).",
+      "description": "Busiest span names by calls/s, from Tempo's metrics-generator spanmetrics. Filtered to $job.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -573,7 +573,7 @@
     },
     {
       "datasource": "Mimir",
-      "description": "Slowest span names by p95 latency, from Tempo's metrics-generator spanmetrics histogram. Filtered to $job (bare service names - see Read me first).",
+      "description": "Slowest span names by p95 latency, from Tempo's metrics-generator spanmetrics histogram. Filtered to $job.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -652,7 +652,7 @@
     },
     {
       "datasource": "Tempo",
-      "description": "Service graph derived from Tempo's metrics-generator service-graph metrics (traces_service_graph_request_total). Uses the bare (non-prefixed) service name - see Read me first.",
+      "description": "Service graph derived from Tempo's metrics-generator service-graph metrics (traces_service_graph_request_total).",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -744,7 +744,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "topk(10, sum by (job, body) (count_over_time({exporter=\"OTLP\", job=~\"$job\"} | detected_level=\"ERROR\" | json | __error__=\"\" [$__range])))",
+          "expr": "topk(10, sum by (job, body) (count_over_time({exporter=\"OTLP\", job=~\"(minecraft/)?$job\"} | detected_level=\"ERROR\" | json | __error__=\"\" [$__range])))",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -794,7 +794,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "{exporter=\"OTLP\", job=~\"$job\"} | detected_level=~\"$level\"",
+          "expr": "{exporter=\"OTLP\", job=~\"(minecraft/)?$job\"} | detected_level=~\"$level\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -804,7 +804,7 @@
     },
     {
       "datasource": "Tempo",
-      "description": "Trace search for $job. Note: matches Tempo's bare service.name, not a minecraft/-prefixed $job value - see Read me first.",
+      "description": "Trace search for $job.",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -831,7 +831,7 @@
     },
     {
       "datasource": "Tempo",
-      "description": "Traces slower than 500ms for $job. Note: matches Tempo's bare service.name, not a minecraft/-prefixed $job value - see Read me first.",
+      "description": "Traces slower than 500ms for $job.",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -899,6 +899,7 @@
         "options": [],
         "query": "label_values({exporter=\"OTLP\"}, job)",
         "refresh": 2,
+        "regex": "/^(?:minecraft\\/)?(.+)$/",
         "type": "query"
       },
       {
