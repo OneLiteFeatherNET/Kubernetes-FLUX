@@ -1840,7 +1840,7 @@ groups:
               editorMode: code
               # ">0" on the limit series drops any pool that reports an unbounded/unknown max
               # (JVM MemoryUsage.getMax() == -1), so a job never divides by a non-positive limit.
-              expr: sum by (job) (jvm_memory_used_bytes{jvm_memory_type="heap", namespace="", job!~"reposilite|ingot-rehearsal"}) / sum by (job) (jvm_memory_limit_bytes{jvm_memory_type="heap", namespace="", job!~"reposilite|ingot-rehearsal"} > 0)
+              expr: sum by (job) (jvm_memory_used_bytes{jvm_memory_type="heap", job=~"(minecraft|proxy)/.+"}) / sum by (job) (jvm_memory_limit_bytes{jvm_memory_type="heap", job=~"(minecraft|proxy)/.+"} > 0)
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -1904,7 +1904,7 @@ groups:
               editorMode: code
               # Servers seen in the last 24h but not now, keyed on the name without the
               # minecraft/ or proxy/ prefix so the job rename can't look like an outage.
-              expr: count by (name) (label_replace(max_over_time(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"}[24h]), "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"))
+              expr: count by (name) (label_replace(max_over_time(jvm_memory_used_bytes{job=~"(minecraft|proxy)/(Proxy|Lobby|Survival-1)"}[24h]), "name", "$1", "job", "(?:minecraft|proxy)/(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{job=~"(minecraft|proxy)/(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:minecraft|proxy)/(Proxy|Lobby|Survival-1)"))
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200

@@ -18,6 +18,18 @@
   "id": 14,
   "links": [
     {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "minecraftotel"
+      ],
+      "targetBlank": false,
+      "title": "MinecraftOTEL dashboards",
+      "type": "dashboards"
+    },
+    {
       "includeVars": true,
       "keepTime": true,
       "targetBlank": false,
@@ -32,6 +44,14 @@
       "title": "JVM Dashboard",
       "type": "link",
       "url": "/d/minecraftotel-jvm/minecraftotel-jvm"
+    },
+    {
+      "includeVars": true,
+      "keepTime": true,
+      "targetBlank": false,
+      "title": "Logs & Traces",
+      "type": "link",
+      "url": "/d/minecraftotel-logs-traces/minecraftotel-logs-traces"
     }
   ],
   "panels": [
@@ -1307,7 +1327,8 @@
   "schemaVersion": 42,
   "tags": [
     "minecraft",
-    "otel"
+    "otel",
+    "minecraftotel"
   ],
   "templating": {
     "list": [

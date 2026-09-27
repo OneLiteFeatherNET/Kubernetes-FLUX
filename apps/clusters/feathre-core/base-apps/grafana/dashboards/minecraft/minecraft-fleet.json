@@ -18,6 +18,18 @@
   "id": 13,
   "links": [
     {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "minecraftotel"
+      ],
+      "targetBlank": false,
+      "title": "MinecraftOTEL dashboards",
+      "type": "dashboards"
+    },
+    {
       "includeVars": true,
       "keepTime": true,
       "targetBlank": false,
@@ -32,6 +44,14 @@
       "title": "JVM Dashboard",
       "type": "link",
       "url": "/d/minecraftotel-jvm/minecraftotel-jvm"
+    },
+    {
+      "includeVars": true,
+      "keepTime": true,
+      "targetBlank": false,
+      "title": "Logs & Traces",
+      "type": "link",
+      "url": "/d/minecraftotel-logs-traces/minecraftotel-logs-traces"
     }
   ],
   "panels": [
@@ -1180,7 +1200,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "group by (job) (jvm_memory_used_bytes{namespace=\"\", job!~\"reposilite|ingot-rehearsal\"})",
+          "expr": "group by (job) (jvm_memory_used_bytes{job=~\"(minecraft|proxy)/.+\"})",
           "format": "table",
           "instant": true,
           "range": false,
@@ -1240,7 +1260,8 @@
   "tags": [
     "minecraft",
     "otel",
-    "fleet"
+    "fleet",
+    "minecraftotel"
   ],
   "templating": {
     "list": [
