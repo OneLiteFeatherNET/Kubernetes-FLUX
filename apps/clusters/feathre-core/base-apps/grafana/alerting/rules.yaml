@@ -1903,11 +1903,11 @@ groups:
             model:
               editorMode: code
               # Compares "which core servers had JVM metrics 1h ago" against "now", keyed on a
-              # name with any minecraft/ prefix stripped - so the in-flight job=minecraft/<name>
-              # rename (old name disappearing while the new one appears) does NOT look like a
-              # server going down. Only a real gap (present 1h ago, gone now under the same
-              # stripped name) produces a row here.
-              expr: count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"(minecraft/)?(Proxy|Lobby|Survival-1)"} offset 1h, "name", "$1", "job", "(?:minecraft/)?(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"(minecraft/)?(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:minecraft/)?(Proxy|Lobby|Survival-1)"))
+              # name with any minecraft/ or proxy/ prefix stripped - so the in-flight
+              # job=(minecraft|proxy)/<name> rename (old name disappearing while the new one
+              # appears) does NOT look like a server going down. Only a real gap (present 1h ago,
+              # gone now under the same stripped name) produces a row here.
+              expr: count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"} offset 1h, "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{namespace="", job=~"((minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:(?:minecraft|proxy)/)?(Proxy|Lobby|Survival-1)"))
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
