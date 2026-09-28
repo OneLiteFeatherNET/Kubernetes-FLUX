@@ -19,9 +19,10 @@ spec:
     name: harbor-pull
 ---
 # CI on the Vulpes-Backend repo pushes harbor.onelitefeather.dev/onelitefeather/vulpes-backend:
-# develop-<commit-unix-ts>-<short-sha7> for every commit to develop. Extracting
-# the timestamp and ordering numerically means the newest commit always wins,
-# regardless of sha or push order.
+# develop-<commit-unix-ts>-<short-sha7> for every push to main (publish-develop.yml -
+# there is no separate develop branch; "develop" here names the tag prefix, not
+# a branch). Extracting the timestamp and ordering numerically means the
+# newest commit always wins, regardless of sha or push order.
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
 metadata:
