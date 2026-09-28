@@ -34,7 +34,6 @@ spec:
     # Deployment, not upgrading it.
     nameOverride: micronaut
     fullnameOverride: vulpes-backend-dev-micronaut
-
     # service.port and the Prometheus path still come from the chart. The tag
     # stays immutable -- it is either the chart's appVersion or a pinned
     # develop-* image, never "latest", which Spegel caches P2P and kept
@@ -47,7 +46,7 @@ spec:
       # chart's appVersion (see charts/vulpes-backend/values.yaml in the
       # Vulpes-Backend repo), so dev keeps today's behaviour until the first
       # develop image lands and the automation overwrites this value.
-      tag: "" # {"$imagepolicy": "flux-system:vulpes-backend-dev:tag"}
+      tag: "develop-1790604781-77d0d44" # {"$imagepolicy": "flux-system:vulpes-backend-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     metrics:
@@ -72,30 +71,25 @@ spec:
     # activates the k8s environment on its own inside a cluster, which brings up
     # the micronaut-kubernetes beans, and they need both the RBAC below and the
     # k8s config file this list makes load.
-    profiles: [ "prod", "k8s" ]
-
+    profiles: ["prod", "k8s"]
     # RBAC for in-namespace service discovery (read services/endpoints). Without
     # it the discovery client gets a 403 and reports its health indicator DOWN,
     # which fails /health/readiness and holds the pod at 0/1 forever.
     rbac:
       create: true
-
     # Alloy log pipeline: JSON parsing + per-env stream label.
     podLabels:
       logs.onelitefeather.net/format: json
       logs.onelitefeather.net/env: dev
-
     # Traces only -- metrics/logs already covered by serviceMonitor scraping
     # and stdout shipping above.
     tracing:
       enabled: true
-
     # OTel bytecode instrumentation adds real seconds to JVM cold start,
     # which pushed first-successful-health past livenessProbe's deadline
     # and SIGTERM-looped the pod before it ever finished starting.
     startupProbe:
       enabled: true
-
     config:
       base: |-
         micronaut:
