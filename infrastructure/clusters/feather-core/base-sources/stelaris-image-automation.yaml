@@ -3,9 +3,10 @@
 # from (see release.yaml's image.registry/repository), so develop commits show
 # up here without anything in stelaris-dev's own values changing.
 #
-# stelaris (prod) is untouched: it stays pinned to the chart's appVersion via
-# stelaris-ui.yaml's exact semver, with no ImagePolicy pointed at it.
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+# stelaris (prod) is untouched: its OCIRepository (stelaris-ui, in
+# stelaris-ui.yaml) is pinned to a single chart version (semver: "=1.3.1"),
+# moved by hand, and no ImagePolicy here targets it.
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageRepository
 metadata:
   name: stelaris
@@ -20,7 +21,7 @@ spec:
 # develop-<commit-unix-ts>-<short-sha7> for every commit to develop. Extracting
 # the timestamp and ordering numerically means the newest commit always wins,
 # regardless of sha or push order.
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
 metadata:
   name: stelaris-dev
@@ -40,7 +41,7 @@ spec:
 # update.path keeps it from ever touching stelaris (prod) or anything else in
 # the tree. Commits straight to main on the flux-system GitRepository, the same
 # way base-sources and apps are already reconciled from it.
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageUpdateAutomation
 metadata:
   name: stelaris-dev
