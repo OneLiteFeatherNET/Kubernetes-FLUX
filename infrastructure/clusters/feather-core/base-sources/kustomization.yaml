@@ -30,6 +30,7 @@ resources:
   - sturnus.yaml
   - pmint93.yml
   - stelaris-ui.yaml
+  - stelaris-image-automation.yaml
   - vulpes-backend.yaml
   - vulpes-generator.yaml
   - metallb.yaml
