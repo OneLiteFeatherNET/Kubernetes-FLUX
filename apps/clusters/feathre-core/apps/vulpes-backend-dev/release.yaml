@@ -10,10 +10,13 @@ spec:
     remediation:
       retries: 3
   # Tracks the newest chart release rather than an exact version (see
-  # base-sources/vulpes-backend.yaml), and the chart's appVersion decides the
-  # image tag -- so dev follows both without anything here being bumped. That
-  # is the whole point: this file used to carry a hand-edited tag, and it sat
-  # on 2.3.0 while prod ran 2.4.1.
+  # base-sources/vulpes-backend.yaml), and the chart still decides the image
+  # repository. The tag no longer comes from the chart's appVersion, though:
+  # values.image.tag below is kept current by
+  # ImageUpdateAutomation/vulpes-backend-dev (base-sources), which rolls out
+  # every develop image as CI on the Vulpes-Backend repo pushes it. prod
+  # (vulpes-backend/release.yaml) still gets its image from the chart's
+  # appVersion -- only dev has this override.
   chartRef:
     kind: OCIRepository
     name: vulpes-backend-dev
@@ -32,9 +35,19 @@ spec:
     nameOverride: micronaut
     fullnameOverride: vulpes-backend-dev-micronaut
 
-    # image, service.port and the Prometheus path now come from the chart. The
-    # tag stays immutable -- it is the chart's appVersion, never "latest",
-    # which Spegel caches P2P and kept resolving to a stale digest.
+    # service.port and the Prometheus path still come from the chart. The tag
+    # stays immutable -- it is either the chart's appVersion or a pinned
+    # develop-* image, never "latest", which Spegel caches P2P and kept
+    # resolving to a stale digest.
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/vulpes-backend
+      # Kept current by ImageUpdateAutomation/vulpes-backend-dev. Left empty
+      # for now: no develop-tagged image exists in Harbor until the companion
+      # Vulpes-Backend CI change merges, and an empty tag falls back to the
+      # chart's appVersion (see charts/vulpes-backend/values.yaml in the
+      # Vulpes-Backend repo), so dev keeps today's behaviour until the first
+      # develop image lands and the automation overwrites this value.
+      tag: "" # {"$imagepolicy": "flux-system:vulpes-backend-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     metrics:

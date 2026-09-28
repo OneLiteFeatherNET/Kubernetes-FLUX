@@ -1,0 +1,77 @@
+---
+# Scans the same Harbor repository the vulpes-backend-dev HelmRelease pulls its
+# image from (see vulpes-backend.yaml's OCIRepository and the chart's
+# image.repository default), so develop commits show up here without anything
+# in vulpes-backend-dev's own values changing.
+#
+# vulpes-backend (prod) is untouched: its chart is pinned to an exact version
+# (see vulpes-backend.yaml's semver: "=2.6.0") and follows the chart's
+# appVersion, moved by hand, and no ImagePolicy here targets it.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: vulpes-backend
+  namespace: flux-system
+spec:
+  image: harbor.onelitefeather.dev/onelitefeather/vulpes-backend
+  interval: 5m
+  secretRef:
+    name: harbor-pull
+---
+# CI on the Vulpes-Backend repo pushes harbor.onelitefeather.dev/onelitefeather/vulpes-backend:
+# develop-<commit-unix-ts>-<short-sha7> for every push to main (publish-develop.yml -
+# there is no separate develop branch; "develop" here names the tag prefix, not
+# a branch). Extracting the timestamp and ordering numerically means the
+# newest commit always wins, regardless of sha or push order.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: vulpes-backend-dev
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: vulpes-backend
+  filterTags:
+    pattern: '^develop-(?P<ts>[0-9]+)-[0-9a-f]{7}$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
+---
+# Writes the tag ImagePolicy/vulpes-backend-dev picks back into
+# apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml, and only
+# there - update.path keeps it from ever touching vulpes-backend (prod) or
+# anything else in the tree. Commits straight to main on the flux-system
+# GitRepository, the same way base-sources and apps are already reconciled
+# from it.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: vulpes-backend-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: |
+        chore(vulpes-backend-dev): roll out {{ range $resource, $changes := .Changed.Objects }}{{ range $_, $change := $changes }}vulpes-backend:{{ $change.NewValue }}{{ end }}{{ end }}
+
+        Automation: {{ .AutomationObject }}
+        Files:
+        {{ range $filename, $_ := .Changed.FileChanges -}}
+        - {{ $filename }}
+        {{ end -}}
+    push:
+      branch: main
+  update:
+    path: ./apps/clusters/feathre-core/apps/vulpes-backend-dev
+    strategy: Setters
