@@ -4,6 +4,14 @@ metadata:
   name: base-sources
   namespace: flux-system
 spec:
+  # ImageRepository/ImagePolicy/ImageUpdateAutomation (stelaris-image-automation.yaml)
+  # live here, and their CRDs are only installed by the flux-system root
+  # Kustomization (clusters/feather-core/flux-system/gotk-components.yaml).
+  # Both watch the same GitRepository, so without this they'd race on the same
+  # revision - dependsOn makes base-sources wait until flux-system is Ready
+  # (CRDs established, its controller Deployments healthy) before applying.
+  dependsOn:
+    - name: flux-system
   interval: 1m0s
   retryInterval: 30s
   timeout: 1m0s
