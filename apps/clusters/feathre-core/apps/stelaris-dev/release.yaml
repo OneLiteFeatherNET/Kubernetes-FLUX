@@ -9,9 +9,12 @@ spec:
   install:
     remediation:
       retries: 3
-  # The source in base-sources tracks the newest release rather than an exact
-  # version, and the chart's appVersion decides the image tag - so dev follows
-  # both without anything here being bumped.
+  # The source in base-sources tracks the newest chart release, but the chart's
+  # appVersion no longer decides the image tag here: values.image.tag below is
+  # kept current by ImageUpdateAutomation/stelaris-dev (base-sources), which
+  # rolls out every develop image as CI on the stelaris repo pushes it. prod
+  # (stelaris/release.yaml) still gets both the chart and the image from the
+  # chart's appVersion - only dev has this override.
   chartRef:
     kind: OCIRepository
     name: stelaris-ui-dev
@@ -25,6 +28,13 @@ spec:
     image:
       registry: harbor.onelitefeather.dev
       repository: onelitefeather/stelaris
+      # Kept current by ImageUpdateAutomation/stelaris-dev. Left empty for now:
+      # no develop-tagged image exists in Harbor until the companion stelaris CI
+      # PR merges, and an empty tag falls back to the chart's appVersion (see
+      # charts/stelaris-ui/templates/_helpers.tpl in the stelaris repo), so dev
+      # keeps today's behaviour until the first develop image lands and the
+      # automation overwrites this value.
+      tag: "" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
 

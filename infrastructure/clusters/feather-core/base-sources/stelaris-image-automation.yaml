@@ -1,0 +1,73 @@
+---
+# Scans the same Harbor repository the stelaris-dev HelmRelease pulls its image
+# from (see release.yaml's image.registry/repository), so develop commits show
+# up here without anything in stelaris-dev's own values changing.
+#
+# stelaris (prod) is untouched: it stays pinned to the chart's appVersion via
+# stelaris-ui.yaml's exact semver, with no ImagePolicy pointed at it.
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: stelaris
+  namespace: flux-system
+spec:
+  image: harbor.onelitefeather.dev/onelitefeather/stelaris
+  interval: 5m
+  secretRef:
+    name: harbor-pull
+---
+# CI on the stelaris repo pushes harbor.onelitefeather.dev/onelitefeather/stelaris:
+# develop-<commit-unix-ts>-<short-sha7> for every commit to develop. Extracting
+# the timestamp and ordering numerically means the newest commit always wins,
+# regardless of sha or push order.
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: stelaris-dev
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: stelaris
+  filterTags:
+    pattern: '^develop-(?P<ts>[0-9]+)-[0-9a-f]{7}$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
+---
+# Writes the tag ImagePolicy/stelaris-dev picks back into
+# apps/clusters/feathre-core/apps/stelaris-dev/release.yaml, and only there -
+# update.path keeps it from ever touching stelaris (prod) or anything else in
+# the tree. Commits straight to main on the flux-system GitRepository, the same
+# way base-sources and apps are already reconciled from it.
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: stelaris-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: |
+        chore(stelaris-dev): roll out {{ range $resource, $changes := .Changed.Objects }}{{ range $_, $change := $changes }}stelaris:{{ $change.NewValue }}{{ end }}{{ end }}
+
+        Automation: {{ .AutomationObject }}
+        Files:
+        {{ range $filename, $_ := .Changed.FileChanges -}}
+        - {{ $filename }}
+        {{ end -}}
+    push:
+      branch: main
+  update:
+    path: ./apps/clusters/feathre-core/apps/stelaris-dev
+    strategy: Setters
