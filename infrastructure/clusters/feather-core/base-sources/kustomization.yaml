@@ -32,6 +32,7 @@ resources:
   - stelaris-ui.yaml
   - stelaris-image-automation.yaml
   - vulpes-backend.yaml
+  - vulpes-backend-image-automation.yaml
   - vulpes-generator.yaml
   - metallb.yaml
   - jellyfin.yaml
