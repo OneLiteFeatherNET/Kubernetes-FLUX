@@ -34,35 +34,24 @@ spec:
       # charts/stelaris-ui/templates/_helpers.tpl in the stelaris repo), so dev
       # keeps today's behaviour until the first develop image lands and the
       # automation overwrites this value.
-      tag: "" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
+      tag: "develop-1790602279-c6f012e" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
-
     # Read by the app at startup from /config.json, which the chart mounts as a
     # Secret. nginx serves that file per request, so changing it needs no rollout.
     config:
       backendUrl: https://vulpes-backend-dev.apps.onelite.feather
       generatorUrl: https://vulpes-generator-dev.apps.onelite.feather
-
     # The image ships connect-src 'self' https:, because an image that is built
     # once and promoted cannot know its backend. Naming them turns "any HTTPS
     # host" into "these two". The unsafe-* entries are Flutter's, not ours - its loader
     # bootstraps from an inline script and compiles Wasm at runtime.
     nginx:
       contentSecurityPolicy: >-
-        default-src 'self'; base-uri 'self'; object-src 'none';
-        frame-ancestors 'none'; form-action 'none';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval';
-        style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;
-        font-src 'self' data:; media-src 'self' data: blob:;
-        worker-src 'self' blob:; child-src 'self' blob:; manifest-src 'self';
-        connect-src 'self' https://vulpes-backend-dev.apps.onelite.feather
-        https://vulpes-generator-dev.apps.onelite.feather
-
+        default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; child-src 'self' blob:; manifest-src 'self'; connect-src 'self' https://vulpes-backend-dev.apps.onelite.feather https://vulpes-generator-dev.apps.onelite.feather
     # Routed through Envoy Gateway via httproute.yaml, not an Ingress.
     ingress:
       enabled: false
-
     podLabels:
       logs.onelitefeather.net/format: json
       logs.onelitefeather.net/env: dev
