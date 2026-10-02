@@ -1,0 +1,32 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: telepresence
+  namespace: ambassador
+spec:
+  values:
+    # Dev namespaces only; the manager gets Roles there instead of a ClusterRole.
+    namespaces:
+      - otis-dev
+      - vulpes-dev
+      - stelaris-dev
+      - bluemap-onelitefeather-dev
+    clientRbac:
+      create: true
+      subjects:
+        - kind: Group
+          # TODO: replace with Entra group object ID (task 1.1)
+          name: ENTRA_GROUP_OBJECT_ID
+          apiGroup: rbac.authorization.k8s.io
+    intercept:
+      allowGlobalIntercepts: false
+    # The init container needs NET_ADMIN, which Pod Security baseline rejects in the dev namespaces.
+    agent:
+      initContainer:
+        enabled: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
