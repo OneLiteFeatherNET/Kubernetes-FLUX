@@ -17,3 +17,6 @@ spec:
       backendRefs:
         - name: opencost
           port: 9090
+      # The 7d allocation query takes ~50 s; Envoy defaults to 15 s.
+      timeouts:
+        request: 180s
