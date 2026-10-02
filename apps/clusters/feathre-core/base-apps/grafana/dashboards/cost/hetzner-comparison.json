@@ -484,7 +484,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time(((sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])) + clamp_min(sum(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}) / 2^30 / 4 - sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])), 0)) * $${hz_ccx_unit_month})[$__range:5m])",
+          "expr": "avg_over_time(((sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 4 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_ccx_unit_month})[$__range:5m])",
           "instant": true,
           "range": false,
           "legendFormat": "Hetzner CCX, nach Nutzung",
@@ -549,7 +549,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time(((sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])) + clamp_min(sum(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}) / 2^30 / 2 - sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])), 0)) * $${hz_cx_unit_month})[$__range:5m])",
+          "expr": "avg_over_time(((sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 2 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_cx_unit_month})[$__range:5m])",
           "instant": true,
           "range": false,
           "legendFormat": "Hetzner CX (shared), nach Nutzung",
@@ -691,7 +691,7 @@
       "id": 17,
       "type": "stat",
       "title": "Genutzte vCPU (Nutzung)",
-      "description": "Summe rate(container_cpu_usage_seconds_total), Mittel ueber den Zeitraum (cAdvisor).",
+      "description": "Summe der Recording Rule namespace:container_cpu_usage_cores:sum_rate5m, Mittel ueber den Zeitraum (cAdvisor).",
       "datasource": {
         "type": "prometheus",
         "uid": "$${datasource}"
@@ -744,7 +744,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time((sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])))[$__range:5m])",
+          "expr": "avg_over_time((sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}))[$__range:5m])",
           "instant": true,
           "range": false,
           "legendFormat": "Genutzte vCPU (Nutzung)",
@@ -756,7 +756,7 @@
       "id": 18,
       "type": "stat",
       "title": "Genutzter RAM (Working Set)",
-      "description": "Summe container_memory_working_set_bytes in GiB, Mittel ueber den Zeitraum (cAdvisor).",
+      "description": "Summe der Recording Rule namespace:container_memory_working_set_bytes:sum in GiB, Mittel ueber den Zeitraum (cAdvisor).",
       "datasource": {
         "type": "prometheus",
         "uid": "$${datasource}"
@@ -809,7 +809,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time((sum(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}))[$__range:5m]) / 2^30",
+          "expr": "avg_over_time((sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}))[$__range:5m]) / 2^30",
           "instant": true,
           "range": false,
           "legendFormat": "Genutzter RAM (Working Set)",
@@ -829,7 +829,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "**Hetzner Cloud, Deutschland, netto, gueltig ab 2026-06-15.** Quelle: [Hetzner Price Adjustment](https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/). Monat = 730 h.\n\n- **Dedicated vCPU (CCX33):** 8 vCPU / 32 GB / 138,49 EUR pro Monat, also 1 Einheit = 1 vCPU + 4 GB = 17,31 EUR.\n- **Shared vCPU (CX53):** 16 vCPU / 32 GB / 29,49 EUR pro Monat, also 1 Einheit = 1 vCPU + 2 GB = 1,84 EUR.\n- **Primaere IPv4:** 0,50 EUR pro Server und Monat. **Volumes:** 0,0572 EUR pro GB und Monat (Stand April 2026, Sekundaerquellen).\n- **Aequivalente Einheiten** = max(vCPU, RAM GiB / GB je Einheit): bezahlt wird die groessere Dimension.\n- Zwei Basen: **Requests** (`*_allocation`, OpenCost) und **Nutzung** (cAdvisor: `rate(container_cpu_usage_seconds_total)` und `container_memory_working_set_bytes`, Mittel ueber den Zeitraum). Nutzungsdaten gibt es erst seit 2026-10-02 ca. 10:47 UTC (Alloy-Fix); laengere Zeitraeume mitteln ueber eine Luecke. Nutzungsbasiertes Sizing hat keinen Headroom, echtes Hetzner-Sizing braeuchte Reserve.\n- Alle Preise stehen als versteckte Konstanten in den Dashboard-Variablen (`hz_*`, `hours`)."
+        "content": "**Hetzner Cloud, Deutschland, netto, gueltig ab 2026-06-15.** Quelle: [Hetzner Price Adjustment](https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/). Monat = 730 h.\n\n- **Dedicated vCPU (CCX33):** 8 vCPU / 32 GB / 138,49 EUR pro Monat, also 1 Einheit = 1 vCPU + 4 GB = 17,31 EUR.\n- **Shared vCPU (CX53):** 16 vCPU / 32 GB / 29,49 EUR pro Monat, also 1 Einheit = 1 vCPU + 2 GB = 1,84 EUR.\n- **Primaere IPv4:** 0,50 EUR pro Server und Monat. **Volumes:** 0,0572 EUR pro GB und Monat (Stand April 2026, Sekundaerquellen).\n- **Aequivalente Einheiten** = max(vCPU, RAM GiB / GB je Einheit): bezahlt wird die groessere Dimension.\n- Zwei Basen: **Requests** (`*_allocation`, OpenCost) und **Nutzung** (Recording Rules `namespace:container_cpu_usage_cores:sum_rate5m` und `namespace:container_memory_working_set_bytes:sum` aus cAdvisor, Mittel ueber den Zeitraum). Nutzungsdaten gibt es erst ab dem ersten Lauf der Recording Rules (nach dem Merge des Rules-PRs); davor sind die Nutzungs-Panels leer, laengere Zeitraeume mitteln nur ueber vorhandene Daten. Nutzungsbasiertes Sizing hat keinen Headroom, echtes Hetzner-Sizing braeuchte Reserve.\n- Alle Preise stehen als versteckte Konstanten in den Dashboard-Variablen (`hz_*`, `hours`)."
       }
     },
     {
@@ -1156,7 +1156,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time(((sum by(namespace)(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])) + clamp_min(sum by(namespace)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}) / 2^30 / 4 - sum by(namespace)(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])), 0)) * $${hz_ccx_unit_month})[$__range:5m])",
+          "expr": "avg_over_time(((sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum by(namespace)(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 4 - sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_ccx_unit_month})[$__range:5m])",
           "format": "table",
           "instant": true,
           "range": false,
@@ -1168,7 +1168,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time(((sum by(namespace)(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])) + clamp_min(sum by(namespace)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}) / 2^30 / 2 - sum by(namespace)(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])), 0)) * $${hz_cx_unit_month})[$__range:5m])",
+          "expr": "avg_over_time(((sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum by(namespace)(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 2 - sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_cx_unit_month})[$__range:5m])",
           "format": "table",
           "instant": true,
           "range": false,
@@ -1204,7 +1204,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time((sum by(namespace)(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[5m])))[$__range:5m])",
+          "expr": "avg_over_time((sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}))[$__range:5m])",
           "format": "table",
           "instant": true,
           "range": false,
@@ -1216,7 +1216,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg_over_time((sum by(namespace)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}) / 2^30)[$__range:5m])",
+          "expr": "avg_over_time((sum by(namespace)(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30)[$__range:5m])",
           "format": "table",
           "instant": true,
           "range": false,
@@ -1385,7 +1385,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "(sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[$__rate_interval])) + clamp_min(sum(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}) / 2^30 / 4 - sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[$__rate_interval])), 0)) * $${hz_ccx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
+          "expr": "(sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 4 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_ccx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
           "legendFormat": "Hetzner CCX (Nutzung) + Volumes",
           "range": true,
           "refId": "D"
@@ -1396,7 +1396,7 @@
             "uid": "$${datasource}"
           },
           "editorMode": "code",
-          "expr": "(sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[$__rate_interval])) + clamp_min(sum(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}) / 2^30 / 2 - sum(rate(container_cpu_usage_seconds_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",cluster=\"feather-core\",container!=\"\",container!=\"POD\"}[$__rate_interval])), 0)) * $${hz_cx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
+          "expr": "(sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 2 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_cx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
           "legendFormat": "Hetzner CX (Nutzung) + Volumes",
           "range": true,
           "refId": "E"
