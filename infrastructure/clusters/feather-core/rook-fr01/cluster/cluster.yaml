@@ -135,6 +135,9 @@ spec:
       osd_recovery_max_active: "2"
       osd_recovery_op_priority: "1"
       osd_memory_target: "4294967296"
+      # Pin one mClock IOPS capacity; per-OSD startup benchmarks diverged 10x on identical disks.
+      osd_mclock_max_capacity_iops_ssd: "15000"
+      osd_mclock_skip_benchmark: "true"
     # Disable RGW debug logging (default 1/5) to cut Loki/log-collector volume.
     # Ceph's config fallback is only global -> client -> <exact section>; a
     # section named "client.rgw" is NOT inherited by "client.rgw.<id>" daemons,
