@@ -146,3 +146,14 @@ spec:
           value: "external"
         - name: ALPINE_DATABASE_URL
           value: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432/dependency-track"
+        # Defaults (2 pools x 20 max, 10 min idle) pinned ~22 idle backends; ~10 total.
+        - name: ALPINE_DATABASE_POOL_TX_MAX_SIZE
+          value: "6"
+        - name: ALPINE_DATABASE_POOL_NONTX_MAX_SIZE
+          value: "4"
+        - name: ALPINE_DATABASE_POOL_TX_MIN_IDLE
+          value: "1"
+        - name: ALPINE_DATABASE_POOL_NONTX_MIN_IDLE
+          value: "1"
+        - name: ALPINE_DATABASE_POOL_IDLE_TIMEOUT
+          value: "60000"
