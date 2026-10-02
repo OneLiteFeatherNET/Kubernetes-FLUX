@@ -69,6 +69,34 @@ spec:
           prometheus.operator.servicemonitors "cluster" {
             forward_to = [prometheus.remote_write.mimir.receiver]
 
+            // kube-prometheus-stack monitors need file access, see below.
+            selector {
+              match_expression {
+                key      = "app.kubernetes.io/instance"
+                operator = "NotIn"
+                values   = ["kube-prometheus-stack"]
+              }
+            }
+
+            clustering {
+              enabled = true
+            }
+          }
+
+          // Only these monitors may read bearerTokenFile/caFile (Alloy default: off).
+          prometheus.operator.servicemonitors "kube_prometheus_stack" {
+            forward_to                  = [prometheus.remote_write.mimir.receiver]
+            namespaces                  = ["monitoring"]
+            allow_arbitrary_file_access = true
+
+            selector {
+              match_expression {
+                key      = "app.kubernetes.io/instance"
+                operator = "In"
+                values   = ["kube-prometheus-stack"]
+              }
+            }
+
             clustering {
               enabled = true
             }
