@@ -43,8 +43,8 @@ spec:
       enabled: false
     ingress:
       enabled: false
-    # PgBouncer stays off and the CNPG pooler is bypassed: it rejects some
-    # startup parameters, the same reason n8n talks to the -rw service.
+    # The chart's own PgBouncer (bitnami image) stays off; the CNPG
+    # transaction-mode pooler below replaces it.
     pgbouncer:
       enabled: false
 
@@ -165,13 +165,20 @@ spec:
             memory: 2Gi
 
     externalPostgresql:
-      host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
+      host: feather-core-cluster-pg-pooler-rw-tx.cnpg-system.svc.cluster.local
       port: 5432
       database: sentry
       existingSecret: sentry-db
       existingSecretKeys:
         username: username
         password: password
+
+    # Schema migrations bypass the transaction pooler and use the primary directly.
+    hooks:
+      dbInit:
+        env:
+          - name: POSTGRES_HOST
+            value: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
 
     # Shared Dragonfly, dedicated DB 3 (see https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te).
     # Sentry drives this hard -- it is the Celery broker as well as the cache --
