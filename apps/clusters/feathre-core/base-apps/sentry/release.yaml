@@ -173,13 +173,6 @@ spec:
         username: username
         password: password
 
-    # Schema migrations bypass the transaction pooler and use the primary directly.
-    hooks:
-      dbInit:
-        env:
-          - name: POSTGRES_HOST
-            value: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
-
     # Shared Dragonfly, dedicated DB 3 (see https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te).
     # Sentry drives this hard -- it is the Celery broker as well as the cache --
     # so watch the Dragonfly latency alert after this goes live.
