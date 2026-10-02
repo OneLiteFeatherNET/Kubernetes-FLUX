@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cost-usage
+  namespace: grafana
+  labels:
+    mimir.onelitefeather.net/sync: "true"
+spec:
+  groups:
+    - name: cost-usage
+      interval: 1m
+      rules:
+        - record: namespace:container_cpu_usage_cores:sum_rate5m
+          expr: sum by (cluster, namespace) (rate(container_cpu_usage_seconds_total{job="kubelet",metrics_path="/metrics/cadvisor",container!="",container!="POD"}[5m]))
+        - record: namespace:container_memory_working_set_bytes:sum
+          expr: sum by (cluster, namespace) (container_memory_working_set_bytes{job="kubelet",metrics_path="/metrics/cadvisor",container!="",container!="POD"})

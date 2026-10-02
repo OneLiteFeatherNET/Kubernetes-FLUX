@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../../../apps/base/mimir
   - httproute.yaml
+  - recording-rules.yaml
 patches:
   - path: release.yaml
 
