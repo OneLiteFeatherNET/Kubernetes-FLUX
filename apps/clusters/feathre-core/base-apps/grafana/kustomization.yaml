@@ -43,6 +43,7 @@ configMapGenerator:
     files:
       - dashboards/cost/opencost-basic-overview.json
       - dashboards/cost/opencost-detailed-overview.json
+      - dashboards/cost/hetzner-comparison.json
     options:
       labels:
         grafana_dashboard: "1"
