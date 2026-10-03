@@ -62,6 +62,12 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/vulpes-dev.sops.env
+  - name: role-developer
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/developer.sops.env
   - name: role-outline
     options:
       labels:

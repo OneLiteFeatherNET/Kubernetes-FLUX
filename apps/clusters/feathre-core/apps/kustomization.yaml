@@ -9,3 +9,4 @@ resources:
   - stelaris-dev
   - vulpes-generator
   - vulpes-generator-dev
+  - telepresence

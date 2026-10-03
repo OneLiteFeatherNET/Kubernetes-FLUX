@@ -1,0 +1,33 @@
+# Runbook: https://outline.onelitefeather.dev/doc/telepresence-cluster-dienste-vom-laptop-erreichen-s1thbeuDZQ
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: telepresence
+  namespace: ambassador
+spec:
+  values:
+    # Dev namespaces only; the manager gets Roles there instead of a ClusterRole.
+    namespaces:
+      - otis-dev
+      - vulpes-dev
+      - stelaris-dev
+      - bluemap-onelitefeather-dev
+    clientRbac:
+      create: true
+      subjects:
+        - kind: Group
+          # Entra group sg-k8s-feathercore-prod-telepresence-connect (object ID, no oidc: prefix)
+          name: "38fa8d85-f2d0-4845-a6a8-17e7f53a1c1e"
+          apiGroup: rbac.authorization.k8s.io
+    intercept:
+      allowGlobalIntercepts: false
+    # The init container needs NET_ADMIN, which Pod Security baseline rejects in the dev namespaces.
+    agent:
+      initContainer:
+        enabled: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
