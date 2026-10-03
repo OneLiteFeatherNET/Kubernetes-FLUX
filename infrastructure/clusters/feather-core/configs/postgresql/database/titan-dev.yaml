@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: titan-dev
+spec:
+  name: titan_dev
+  owner: titan_dev
+  cluster:
+    name: feather-core-cluster-pg
