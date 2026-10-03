@@ -178,7 +178,7 @@ spec:
           memory: 128Mi
         limits:
           cpu: "1"
-          memory: 512Mi
+          memory: 1Gi
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -338,6 +338,32 @@ spec:
         enabled: true
         storageClass: ceph-rbd-fr01
         size: 10Gi
+    # Memcached query caches (off by default); the chart wires their addresses
+    # into the Mimir config and derives pod resources from allocatedMemory.
+    results-cache:
+      enabled: true
+      replicas: 1
+      allocatedMemory: 512
+      nodeSelector:
+        topology.kubernetes.io/zone: fr01
+    index-cache:
+      enabled: true
+      replicas: 1
+      allocatedMemory: 512
+      nodeSelector:
+        topology.kubernetes.io/zone: fr01
+    metadata-cache:
+      enabled: true
+      replicas: 1
+      allocatedMemory: 256
+      nodeSelector:
+        topology.kubernetes.io/zone: fr01
+    chunks-cache:
+      enabled: true
+      replicas: 1
+      allocatedMemory: 1024
+      nodeSelector:
+        topology.kubernetes.io/zone: fr01
     metaMonitoring:
       serviceMonitor:
         enabled: true
