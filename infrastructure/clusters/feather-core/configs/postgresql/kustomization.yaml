@@ -18,6 +18,8 @@ resources:
   - database/otis-dev.yaml
   - database/vulpes.yaml
   - database/vulpes-dev.yaml
+  - database/titan.yaml
+  - database/titan-dev.yaml
   - database/backstage.yaml
   - database/dependency-track.yaml
   - database/grafana.yaml
@@ -68,6 +70,18 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/developer.sops.env
+  - name: role-titan
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/titan.sops.env
+  - name: role-titan-dev
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/titan-dev.sops.env
   - name: role-outline
     options:
       labels:

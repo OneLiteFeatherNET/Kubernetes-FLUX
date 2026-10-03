@@ -69,6 +69,16 @@ spec:
           - vulpes_dev
         passwordSecret:
           name: role-developer
+      - name: titan
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-titan
+      - name: titan_dev
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-titan-dev
       - name: outline
         login: true
         ensure: present
