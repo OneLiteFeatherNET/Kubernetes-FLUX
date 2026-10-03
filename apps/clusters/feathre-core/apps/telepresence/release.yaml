@@ -15,8 +15,8 @@ spec:
       create: true
       subjects:
         - kind: Group
-          # TODO: replace with Entra group object ID (task 1.1)
-          name: ENTRA_GROUP_OBJECT_ID
+          # Entra group sg-k8s-feathercore-prod-telepresence-connect (object ID, no oidc: prefix)
+          name: "38fa8d85-f2d0-4845-a6a8-17e7f53a1c1e"
           apiGroup: rbac.authorization.k8s.io
     intercept:
       allowGlobalIntercepts: false
