@@ -60,6 +60,15 @@ spec:
         ensure: present
         passwordSecret:
           name: role-vulpes-dev
+      # Telepresence developers; dev databases only via membership.
+      - name: developer
+        login: true
+        ensure: present
+        inRoles:
+          - otis_dev
+          - vulpes_dev
+        passwordSecret:
+          name: role-developer
       - name: outline
         login: true
         ensure: present
