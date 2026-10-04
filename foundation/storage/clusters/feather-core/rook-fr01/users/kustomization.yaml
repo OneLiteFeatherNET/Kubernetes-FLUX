@@ -22,3 +22,4 @@ resources:
   - sturnus.yaml
   - vikunja.yaml
   - mongodb.yaml
+  - cloudnet.yaml

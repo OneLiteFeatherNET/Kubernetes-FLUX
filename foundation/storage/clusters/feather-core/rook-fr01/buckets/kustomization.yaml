@@ -25,3 +25,4 @@ resources:
   - sentry.yaml
   - sturnus.yaml
   - mongodb-backup.yaml
+  - cloudnet-templates.yaml
