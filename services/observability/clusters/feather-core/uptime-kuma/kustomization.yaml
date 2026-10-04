@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: uptime-kuma
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/uptime-kuma
+  - ingress.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: uptime-kuma-mariadb
+    envs:
+      - uptime-kuma.sops.env
+  - name: uptime-kuma-metrics-auth
+    envs:
+      - uptime-kuma-metrics.sops.env
+  - name: cf-origin-tls
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=cf-origin-tls.sops.crt
+      - tls.key=cf-origin-tls.sops.key

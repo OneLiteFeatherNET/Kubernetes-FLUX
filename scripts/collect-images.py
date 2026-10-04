@@ -15,7 +15,7 @@ import sys
 
 import yaml
 
-ROOTS = ("apps", "foundation", "helm", "clusters")
+ROOTS = ("services", "products", "foundation", "helm", "clusters")
 SKIP_DIRS = {".git", "node_modules", ".claude", "graphify-out", ".serena", ".venv"}
 # whole-file encrypted; parsing them yields nothing but noise
 SKIP_SUFFIX = (".sops.yaml", ".sops.env", ".sops.json", ".sops.crt", ".sops.key", ".sops.conf")

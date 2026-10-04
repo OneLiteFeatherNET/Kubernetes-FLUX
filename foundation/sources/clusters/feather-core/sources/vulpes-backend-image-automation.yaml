@@ -39,7 +39,7 @@ spec:
       order: asc
 ---
 # Writes the tag ImagePolicy/vulpes-backend-dev picks back into
-# apps/clusters/feathre-core/apps/vulpes-backend-dev/release.yaml, and only
+# products/vulpes/clusters/feather-core/vulpes-backend-dev/release.yaml, and only
 # there - update.path keeps it from ever touching vulpes-backend (prod) or
 # anything else in the tree. Commits straight to main on the flux-system
 # GitRepository, the same way base-sources and apps are already reconciled
@@ -73,5 +73,5 @@ spec:
     push:
       branch: main
   update:
-    path: ./apps/clusters/feathre-core/apps/vulpes-backend-dev
+    path: ./products/vulpes/clusters/feather-core/vulpes-backend-dev
     strategy: Setters

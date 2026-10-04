@@ -2,7 +2,7 @@
 # this bucket holds recorded speech and must not share access (or a bucket
 # owner) with anything else in the cluster, unlike buckets that reuse a
 # shared owner. bucketName matches the chart's commonEnv.STURNUS_S3_BUCKET
-# default (sturnus-audio) -- see apps/clusters/feathre-core/base-apps/sturnus/release.yaml.
+# default (sturnus-audio) -- see products/sturnus/clusters/feather-core/sturnus/release.yaml.
 apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
 metadata:

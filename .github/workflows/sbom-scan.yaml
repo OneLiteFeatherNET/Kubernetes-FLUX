@@ -17,7 +17,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/**'
+      - 'services/**'
+      - 'products/**'
       - 'foundation/**'
       - 'helm/**'
       - 'clusters/**'
