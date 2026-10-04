@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: ./charts/sturnus
-      # The chart is read from a *branch* (see base-sources/sturnus.yaml), and
+      # The chart is read from a *branch* (see foundation/sources/.../sources/sturnus.yaml), and
       # the default reconcileStrategy for that is ChartVersion: source-controller
       # only repackages when Chart.yaml's version changes. Every chart edit that
       # is not itself a release therefore never reaches the cluster -- silently,
