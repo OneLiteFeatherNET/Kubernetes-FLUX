@@ -45,3 +45,6 @@ private-key.asc
 
 # Stale byproducts of running sops against a non-secret file.
 .decrypted~*
+
+# Dependencies; this repo has no npm project (see #199).
+node_modules/
