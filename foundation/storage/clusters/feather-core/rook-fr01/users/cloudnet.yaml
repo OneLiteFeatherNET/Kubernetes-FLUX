@@ -8,3 +8,4 @@ spec:
   displayName: cloudnet
   quotas:
     maxBuckets: 1
+    maxSize: 1Ti
