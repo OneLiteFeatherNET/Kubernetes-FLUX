@@ -70,6 +70,7 @@ configMapGenerator:
         grafana_folder: Kubernetes
   - name: grafana-sc-dashboards-minecraft
     files:
+      - dashboards/minecraft/cygnus-traces.json
       - dashboards/minecraft/minecraft-fleet.json
       - dashboards/minecraft/minecraft-jvm.json
     options:
