@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../collaboration/clusters/feather-core/shlink
+  - ../../../collaboration/clusters/feather-core/outline
+  - ../../../collaboration/clusters/feather-core/vikunja
+  - ../../../collaboration/clusters/feather-core/metabase

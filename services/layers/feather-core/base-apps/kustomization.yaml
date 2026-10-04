@@ -1,31 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+# third-party services moved to the services-* layers (services/layers/feather-core/<domain>)
 resources:
-  - ../../../development/clusters/feather-core/reposilite
-  - ../../../collaboration/clusters/feather-core/shlink
   - ../../../../products/bluemap/clusters/feather-core/bluemap
-  - ../../../development/clusters/feather-core/harbor
-  - ../../../automation/clusters/feather-core/node-red
-  - ../../../collaboration/clusters/feather-core/outline
-  - ../../../development/clusters/feather-core/dependency-track
-  - ../../../observability/clusters/feather-core/uptime-kuma
-  - ../../../development/clusters/feather-core/penpot
-  - ../../../development/clusters/feather-core/sentry
-  - ../../../observability/clusters/feather-core/grafana
-  - ../../../automation/clusters/feather-core/n8n
-  - ../../../automation/clusters/feather-core/ollama
-  # loki + mimir + tempo are managed by the dedicated
-  # wait:false monitoring Kustomization
-  # (clusters/feather-core/monitoring.yaml) so their external
-  # Ceph-RGW S3 backend does not block base-apps -> apps.
-  - ../../../observability/clusters/feather-core/alloy-logs
-  - ../../../observability/clusters/feather-core/alloy-metrics
-  - ../../../observability/clusters/feather-core/alloy-receiver
   - ../../../../products/apus/clusters/feather-core/apus
-  - ../../../collaboration/clusters/feather-core/vikunja
   - ../../../../products/sturnus/clusters/feather-core/sturnus
-  - ../../../collaboration/clusters/feather-core/metabase
-  - ../../../media/clusters/feather-core/media-library
-  - ../../../media/clusters/feather-core/filebrowser
-  - ../../../media/clusters/feather-core/jellyfin
-  - ../../../media/clusters/feather-core/kavita

@@ -9,4 +9,4 @@ resources:
   - ../../../stelaris/clusters/feather-core/stelaris-dev
   - ../../../vulpes/clusters/feather-core/vulpes-generator
   - ../../../vulpes/clusters/feather-core/vulpes-generator-dev
-  - ../../../../services/development/clusters/feather-core/telepresence
+  # telepresence moved to services-development

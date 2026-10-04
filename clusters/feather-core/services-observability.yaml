@@ -1,0 +1,33 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: services-observability
+  namespace: flux-system
+spec:
+  # Grafana stack, Alloy, uptime-kuma, Loki, Mimir, Tempo and OpenCost. Needs networking, storage, databases, messaging and certificates.
+  dependsOn:
+    - name: foundation-networking
+    - name: foundation-storage
+    - name: foundation-databases
+    - name: foundation-messaging
+    - name: foundation-certificates
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 20m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./services/layers/feather-core/observability
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  # wait:false on purpose: loki/mimir/tempo depend on the external Ceph RGW S3 backend whose
+  # bucket quota can be exceeded; health-gating here must NOT block the other services layers.
+  wait: false
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  postBuild:
+    substitute:
+      ALLOWED_CIDRS: "172.16.0.0/16,10.200.0.0/16,192.168.0.0/16"

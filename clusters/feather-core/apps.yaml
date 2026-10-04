@@ -6,6 +6,8 @@ metadata:
 spec:
   dependsOn:
     - name: base-apps
+    # Harbor serves the product images
+    - name: services-development
   interval: 10m0s
   retryInterval: 30s
   timeout: 10m0s

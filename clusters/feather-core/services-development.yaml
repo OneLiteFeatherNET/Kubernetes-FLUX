@@ -1,24 +1,25 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: base-apps
+  name: services-development
   namespace: flux-system
 spec:
+  # Developer tooling: Harbor, Reposilite, Dependency-Track, Sentry, Penpot, Telepresence. Needs networking, storage, databases, messaging and certificates.
   dependsOn:
-    - name: configs
+    - name: foundation-networking
+    - name: foundation-storage
     - name: foundation-databases
     - name: foundation-messaging
-    # sturnus pulls its image from Harbor
-    - name: services-development
+    - name: foundation-certificates
   interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./services/layers/feather-core/base-apps
-  # frozen for the layer split (split-flux-layers); do not re-enable before the legacy layers are retired
-  prune: false
+  path: ./services/layers/feather-core/development
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
   deletionPolicy: Orphan
   wait: true
   decryption:
