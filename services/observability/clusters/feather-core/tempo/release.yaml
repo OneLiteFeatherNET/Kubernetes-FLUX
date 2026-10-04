@@ -258,13 +258,15 @@ spec:
           # window. Costs generator and compactor load — both have OOM history.
           local_blocks:
             flush_to_storage: true
+            # Default true keeps only SERVER spans; INTERNAL spans need false.
+            filter_server_spans: false
       resources:
         requests:
           cpu: 50m
-          memory: 128Mi
+          memory: 256Mi
         limits:
           cpu: "1"
-          memory: 512Mi
+          memory: 1Gi
       affinity: |
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
