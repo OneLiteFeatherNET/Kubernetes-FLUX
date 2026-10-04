@@ -4,9 +4,9 @@
 Only what the repo pins is visible here; whatever a chart resolves on its own
 is not. Use --stats to see how far that reaches.
 
-  scripts/collect-images.py            one image reference per line
-  scripts/collect-images.py --json     same, as a JSON array
-  scripts/collect-images.py --stats    counts and the sources they came from
+  .github/scripts/collect-images.py            one image reference per line
+  .github/scripts/collect-images.py --json     same, as a JSON array
+  .github/scripts/collect-images.py --stats    counts and the sources they came from
 """
 import argparse
 import json
@@ -101,7 +101,7 @@ def main():
     parser.add_argument("--stats", action="store_true")
     args = parser.parse_args()
 
-    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     found = collect(repo_root)
     # a floating tag says nothing about what was scanned
     images = sorted(i for i in found if not i.endswith((":latest", ":stable", ":main")))

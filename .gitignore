@@ -53,3 +53,6 @@ node_modules/
 .vscode/
 .serena/
 graphify-out/
+
+# Python bytecode from running the tooling under .github/scripts.
+__pycache__/

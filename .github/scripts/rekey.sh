@@ -2,8 +2,8 @@
 # Re-encrypt every SOPS-encrypted file in this repo to the recipient set
 # currently listed in .sops.yaml. Run from anywhere; it cd's to the repo root.
 #
-#   ./scripts/rekey.sh          re-key every encrypted file
-#   ./scripts/rekey.sh --list   print the file list and exit (used by verification)
+#   ./.github/scripts/rekey.sh          re-key every encrypted file
+#   ./.github/scripts/rekey.sh --list   print the file list and exit (used by verification)
 #
 # Run this after ANY edit to .sops.yaml — adding a recipient, removing one,
 # or rotating a key. `sops updatekeys` is a no-op on a file whose recipients
@@ -14,7 +14,7 @@
 # not ciphertext, and `sops updatekeys` on it errors.
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 mapfile -t FILES < <(
   find services products foundation clusters -type f \
@@ -49,4 +49,4 @@ done
 echo
 echo "done: ${#FILES[@]} file(s) re-keyed"
 echo "now verify every file carries every recipient:"
-echo "  ./scripts/rekey.sh --list | xargs grep -L <RECIPIENT>   # must print nothing"
+echo "  ./.github/scripts/rekey.sh --list | xargs grep -L <RECIPIENT>   # must print nothing"

@@ -7,7 +7,7 @@ repository, version its tag, so the server compares tags of one image.
 https://outline.onelitefeather.dev/doc/supply-chain-scanning-trivy-und-dependency-track-sQdPCnAGdO
 
   DT_URL=https://dependency-track.example DT_API_KEY=odt_... \
-    scripts/upload-sbom.py sbom/*.cdx.json
+    .github/scripts/upload-sbom.py sbom/*.cdx.json
 """
 import argparse
 import base64

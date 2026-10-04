@@ -22,8 +22,8 @@ on:
       - 'foundation/**'
       - 'helm/**'
       - 'clusters/**'
-      - 'scripts/collect-images.py'
-      - 'scripts/upload-sbom.py'
+      - '.github/scripts/collect-images.py'
+      - '.github/scripts/upload-sbom.py'
       - '.github/workflows/sbom-scan.yaml'
 
 permissions:
@@ -60,7 +60,7 @@ jobs:
       - name: Collect pinned images
         id: images
         run: |
-          scripts/collect-images.py | tee images.txt
+          .github/scripts/collect-images.py | tee images.txt
           echo "count=$(wc -l < images.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Warm Trivy database
@@ -96,11 +96,11 @@ jobs:
         run: |
           if [ -z "${DT_API_KEY}" ]; then
             echo "::warning title=Upload skipped::DT_API_KEY is not set; see README"
-            scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
+            .github/scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
           elif [ "${DRY_RUN}" = "true" ]; then
-            scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
+            .github/scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
           else
-            scripts/upload-sbom.py 'sbom/*.cdx.json'
+            .github/scripts/upload-sbom.py 'sbom/*.cdx.json'
           fi
 
       - name: Keep the SBOMs
