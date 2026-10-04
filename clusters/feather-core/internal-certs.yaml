@@ -15,7 +15,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/clusters/feather-core/internal-certs
+  path: ./foundation/layers/feather-core/internal-certs
   prune: true
   # wait:false: internal *.apps.onelite.feather certs issue directly
   # via step-issuer/step-ca. Health-gating here must NOT block

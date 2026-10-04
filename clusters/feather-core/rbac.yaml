@@ -10,7 +10,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/clusters/feather-core/rbac
+  path: ./foundation/layers/feather-core/rbac
   prune: true
   wait: true
   decryption:

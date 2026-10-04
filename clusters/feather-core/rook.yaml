@@ -15,7 +15,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/clusters/feather-core/rook
+  path: ./foundation/layers/feather-core/rook
   prune: true
   wait: true
   decryption:

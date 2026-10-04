@@ -6,13 +6,13 @@
   ],
   "flux": {
     "managerFilePatterns": [
-      "/^(?:apps|infrastructure|clusters)/.+\\.ya?ml$/"
+      "/^(?:apps|foundation|clusters)/.+\\.ya?ml$/"
     ]
   },
   "helm-values": {
     "managerFilePatterns": [
       "/(^|/)values\\.ya?ml$/",
-      "/^(?:apps|infrastructure)/.+/release\\.ya?ml$/"
+      "/^(?:apps|foundation)/.+/release\\.ya?ml$/"
     ]
   },
   "packageRules": [
