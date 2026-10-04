@@ -1,25 +1,22 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: configs
+  name: foundation-storage-operators
   namespace: flux-system
 spec:
+  # Rook operator and the Ceph CSI drivers (CRDs, RBD/CephFS drivers); needs feather-critical
+  # and the snapshot/ServiceMonitor CRDs from foundation-platform.
   dependsOn:
-    - name: base-configs
-    - name: controllers
-    - name: rook
-    - name: foundation-storage
     - name: foundation-platform
-    - name: foundation-certificates
   interval: 1m0s
   retryInterval: 30s
-  timeout: 10m0s
+  timeout: 15m0s
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./foundation/layers/feather-core/configs
-  # frozen for the layer split (split-flux-layers); do not re-enable before the legacy layers are retired
-  prune: false
+  path: ./foundation/layers/feather-core/storage-operators
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
   deletionPolicy: Orphan
   wait: true
   decryption:
