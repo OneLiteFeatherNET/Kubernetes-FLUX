@@ -1,7 +1,4 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# third-party services moved to the services-* layers (services/layers/feather-core/<domain>)
-resources:
-  - ../../../../products/bluemap/clusters/feather-core/bluemap
-  - ../../../../products/apus/clusters/feather-core/apus
-  - ../../../../products/sturnus/clusters/feather-core/sturnus
+# emptied: bluemap, apus and sturnus moved to products (products/layers/feather-core/prod)
+resources: []
