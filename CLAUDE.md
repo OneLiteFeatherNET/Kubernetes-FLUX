@@ -8,23 +8,22 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 
 ## Repository layout
 
-- `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `foundation/layers/` or `apps/`.
+- `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `foundation/layers/`, `services/layers/` or `products/layers/`.
 - `foundation/` — cluster plumbing, grouped by **domain** (`sources`, `access`, `certificates`, `networking`, `storage`, `databases`, `messaging`, `observability`, `security`, `platform`): Flux sources, controllers/operators, and configs (databases, storage, PKI). `foundation/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer; it only lists domain overlays.
-- `apps/` — actual workloads.
+- `services/` — third-party software, grouped by domain (`observability`, `development`, `collaboration`, `automation`, `media`). `services/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer (`base-apps`, `monitoring`).
+- `products/` — OneLiteFeather's own projects (`otis`, `stelaris`, `vulpes`, `apus`, `sturnus`, `bluemap`); `-dev` variants are siblings. `products/layers/feather-core/apps/` is the entry for the `apps` layer.
 - `helm/` — in-repo Helm charts (`shlink`, `outline`, `vikunja`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
 - `scripts/validate.sh` — local/CI manifest validation.
 
 **There is no `docs/` directory.** Prose documentation lives in Outline, collection *Infrastruktur*, under [Kubernetes-FLUX — GitOps für feather-core](https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA) — architecture, runbooks, secrets handling, incidents, and an archive of design documents and implementation plans. Read it via the Outline MCP tools. New operational findings belong there, not as comment blocks in a manifest; keep in-repo comments to a line or two plus a link.
 
 **Two-tier Kustomize pattern.** Everything is a `base` + cluster `overlay`:
-- `foundation/<domain>/base/<component>/` and `apps/base/<name>/` — portable definitions (HelmRelease, namespace, etc.).
-- `foundation/<domain>/clusters/feather-core/<component>/...` (multi-stage components such as `metallb` have stage subdirs) and `apps/clusters/feathre-core/<layer>/...` — cluster overlays that reference a base and patch it (`patches: - path: release.yaml`) and attach secrets.
-
-⚠️ **Path-spelling gotcha:** foundation uses `clusters/feather-core/` (correct) but apps uses `clusters/feathre-core/` (misspelled "feathre"). Both are real, intentional paths — don't "fix" one to match the other.
+- `foundation/<domain>/base/<component>/`, `services/<domain>/base/<component>/` and `products/<project>/base/<component>/` — portable definitions (HelmRelease, namespace, etc.).
+- `foundation/<domain>/clusters/feather-core/<component>/...` (multi-stage components such as `metallb` have stage subdirs) and `services/<domain>/clusters/feather-core/<component>/`, `products/<project>/clusters/feather-core/<component>/` — cluster overlays that reference a base and patch it (`patches: - path: release.yaml`) and attach secrets.
 
 ## Flux layer dependency graph
 
-Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` at `./clusters/feather-core`. Layers keep their names and only `spec.path` points into `foundation/layers/` (never rename a layer: pruning would delete what it owns). Layers (all decrypt SOPS via provider `sops` / secret `sops-age`, except `internal-certs`):
+Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` at `./clusters/feather-core`. Layers keep their names and only `spec.path` points into `foundation/layers/`, `services/layers/` or `products/layers/` (never rename a layer: pruning would delete what it owns). Layers (all decrypt SOPS via provider `sops` / secret `sops-age`, except `internal-certs`):
 
 | Layer | Path | dependsOn |
 |---|---|---|
@@ -37,9 +36,9 @@ Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` a
 | `rook-fr01` | foundation/layers/feather-core/rook-fr01 | rook |
 | `configs` | foundation/layers/feather-core/configs | base-configs, controllers, rook |
 | `internal-certs` | foundation/layers/feather-core/internal-certs | controllers |
-| `base-apps` | apps/clusters/feathre-core/base-apps | configs |
-| `apps` | apps/clusters/feathre-core/apps | base-apps |
-| `monitoring` | apps/clusters/feathre-core/monitoring | configs |
+| `base-apps` | services/layers/feather-core/base-apps | configs |
+| `apps` | products/layers/feather-core/apps | base-apps |
+| `monitoring` | services/layers/feather-core/monitoring | configs |
 | `security` | foundation/layers/feather-core/security | configs |
 
 Most layers use `wait: true`, so a layer is only "Ready" once its applied resources are healthy — and its dependents block until then. Flux requires a dependency to be `Ready` **at the same git revision** before a dependent reconciles.

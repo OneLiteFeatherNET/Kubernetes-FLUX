@@ -6,19 +6,19 @@
   ],
   "flux": {
     "managerFilePatterns": [
-      "/^(?:apps|foundation|clusters)/.+\\.ya?ml$/"
+      "/^(?:services|products|foundation|clusters)/.+\\.ya?ml$/"
     ]
   },
   "helm-values": {
     "managerFilePatterns": [
       "/(^|/)values\\.ya?ml$/",
-      "/^(?:apps|foundation)/.+/release\\.ya?ml$/"
+      "/^(?:services|products|foundation)/.+/release\\.ya?ml$/"
     ]
   },
   "packageRules": [
     {
       "description": "Keep chart and image bumps in one PR, otherwise the chart rolls without its matching image tags",
-      "matchFileNames": ["apps/**/harbor/**"],
+      "matchFileNames": ["services/**/harbor/**"],
       "groupName": "harbor"
     }
   ],

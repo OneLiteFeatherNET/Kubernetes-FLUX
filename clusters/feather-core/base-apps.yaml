@@ -12,7 +12,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./apps/clusters/feathre-core/base-apps
+  path: ./services/layers/feather-core/base-apps
   prune: true
   wait: true
   decryption:

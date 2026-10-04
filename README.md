@@ -22,7 +22,8 @@ when it is applied by hand.
 |---|---|
 | `clusters/feather-core/` | The Flux control plane. Each file here is one `Kustomization` — a layer. |
 | `foundation/` | Cluster plumbing grouped by domain (networking, storage, databases, certificates, ...): Flux sources, controllers and operators, and configs (databases, storage, PKI). `foundation/layers/` has one entry point per Flux layer. |
-| `apps/` | The workloads. |
+| `services/` | Third-party software grouped by domain (observability, development, collaboration, automation, media). `services/layers/` has one entry point per Flux layer. |
+| `products/` | OneLiteFeather's own projects (otis, stelaris, vulpes, apus, sturnus, bluemap), with `-dev` variants as siblings. `products/layers/` has the entry point for the `apps` layer. |
 | `helm/` | Charts maintained in this repository: `outline`, `shlink`, `vikunja`, and `micronaut` — the generic chart several Micronaut services share. |
 | `scripts/` | Validation and SBOM tooling, all of it also run by CI. |
 
