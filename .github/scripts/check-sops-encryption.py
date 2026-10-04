@@ -10,7 +10,7 @@ scope here. (This repo currently has no field-level rule; it was removed in
 eb4ffd9 because it emitted cleartext under a valid-looking sops block.)
 
 The recipient assertion catches the one mistake that breaks the cluster: a file
-committed after `.sops.yaml` changed but before `./scripts/rekey.sh` ran is still
+committed after `.sops.yaml` changed but before `./.github/scripts/rekey.sh` ran is still
 validly encrypted, yet the cluster's key cannot read it and every Flux layer that
 touches it fails to decrypt. An age public key is a public key, so this check
 needs no private key — CI never gains the ability to read a secret.
@@ -61,5 +61,5 @@ print(f"sops-encryption: checked {checked} matched file(s)", file=sys.stderr)
 for f, why in bad:
     print(f"::error file={f}::matched a .sops.yaml creation_rule but {why}")
 if bad:
-    print("::error::run ./scripts/rekey.sh and commit the result")
+    print("::error::run ./.github/scripts/rekey.sh and commit the result")
 sys.exit(1 if bad else 0)

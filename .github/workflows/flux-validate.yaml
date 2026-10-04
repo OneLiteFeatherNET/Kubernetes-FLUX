@@ -6,7 +6,7 @@ name: flux-validate
 # No `paths:` filter on pull_request. A filtered-out workflow never reports
 # a result, so once this becomes a required status check a docs-only PR
 # would sit forever on "Expected — waiting for status". It also means every
-# PR exercises the check, including ones that only touch scripts/. The full
+# PR exercises the check, including ones that only touch .github/scripts/. The full
 # run is ~30s.
 on:
   pull_request:
@@ -37,7 +37,7 @@ jobs:
       - name: Install PyYAML
         run: pip install --quiet pyyaml
       - name: Validate Flux manifests
-        run: ./scripts/validate.sh
+        run: ./.github/scripts/validate.sh
 
   sops-encryption:
     name: sops encryption
@@ -53,7 +53,7 @@ jobs:
       - name: Install PyYAML
         run: pip install --quiet pyyaml
       - name: Assert sops-matched files are encrypted to every recipient
-        run: python3 scripts/check-sops-encryption.py
+        run: python3 .github/scripts/check-sops-encryption.py
 
   chart-version-bump:
     name: in-repo chart version bump
@@ -72,4 +72,4 @@ jobs:
         with:
           python-version: '3.x'
       - name: Assert a touched chart also bumps its Chart.yaml version
-        run: python3 scripts/check-chart-bump.py "${{ github.event.pull_request.base.sha }}"
+        run: python3 .github/scripts/check-chart-bump.py "${{ github.event.pull_request.base.sha }}"
