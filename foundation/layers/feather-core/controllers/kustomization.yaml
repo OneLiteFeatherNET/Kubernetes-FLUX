@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+# step-issuer moved to foundation-certificates-operators (split-flux-layers step 3)
 resources:
   - ../../../networking/clusters/feather-core/envoy
   - ../../../databases/clusters/feather-core/dragonfly
-  - ../../../certificates/clusters/feather-core/step-issuer
   - ../../../databases/clusters/feather-core/mariadb-operator
