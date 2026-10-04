@@ -8,7 +8,7 @@ spec:
   # that later layers' HelmReleases and monitors need.
   dependsOn:
     - name: foundation-sources
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s
   sourceRef:

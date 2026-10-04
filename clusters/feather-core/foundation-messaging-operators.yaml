@@ -7,7 +7,7 @@ spec:
   # Strimzi Kafka operator and its CRDs; the HelmRelease needs the platform sources and CRD plumbing.
   dependsOn:
     - name: foundation-platform
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s
   sourceRef:

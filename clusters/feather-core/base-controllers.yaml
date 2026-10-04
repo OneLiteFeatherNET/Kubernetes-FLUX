@@ -9,7 +9,7 @@ spec:
     - name: foundation-sources
     - name: foundation-platform
     - name: foundation-certificates-operators
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s
   sourceRef:

@@ -12,7 +12,7 @@ spec:
   # (CRDs established, its controller Deployments healthy) before applying.
   dependsOn:
     - name: flux-system
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 1m0s
   sourceRef:
