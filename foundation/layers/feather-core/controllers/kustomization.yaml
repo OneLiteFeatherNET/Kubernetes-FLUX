@@ -1,7 +1,4 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
 # step-issuer moved to foundation-certificates-operators (split-flux-layers step 3)
 # envoy moved to foundation-networking-operators (step 4)
-resources:
-  - ../../../databases/clusters/feather-core/dragonfly
-  - ../../../databases/clusters/feather-core/mariadb-operator
+# mariadb-operator moved to foundation-databases-operators, dragonfly to foundation-databases (step 6); emptied
+resources: []

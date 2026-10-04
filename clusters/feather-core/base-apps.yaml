@@ -6,6 +6,7 @@ metadata:
 spec:
   dependsOn:
     - name: configs
+    - name: foundation-databases
   interval: 1m0s
   retryInterval: 30s
   timeout: 15m0s
