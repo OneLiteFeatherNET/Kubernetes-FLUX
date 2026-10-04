@@ -14,7 +14,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./foundation/layers/feather-core/trivy
+  path: ./foundation/layers/feather-core/security
   prune: true
   # Orphan: deleting this CR must never delete what it manages
   deletionPolicy: Orphan
