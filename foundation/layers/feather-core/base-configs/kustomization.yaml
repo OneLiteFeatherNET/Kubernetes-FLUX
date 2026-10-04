@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# priorityclasses moved to foundation-platform (split-flux-layers step 2)
+# priorityclasses moved to foundation-platform (split-flux-layers step 2);
+# cert-manager-issuers moved to foundation-certificates (step 3)
 resources:
-  - ../../../certificates/clusters/feather-core/cert-manager-issuers
   - ../../../storage/clusters/feather-core/s3-proxy
   - ../../../networking/clusters/feather-core/metallb/bgp

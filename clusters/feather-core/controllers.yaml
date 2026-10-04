@@ -7,6 +7,7 @@ spec:
   dependsOn:
     - name: base-controllers
     - name: foundation-platform
+    - name: foundation-certificates-operators
   interval: 1m0s
   retryInterval: 30s
   timeout: 10m0s

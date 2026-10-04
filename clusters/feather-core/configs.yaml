@@ -9,6 +9,7 @@ spec:
     - name: controllers
     - name: rook
     - name: foundation-platform
+    - name: foundation-certificates
   interval: 1m0s
   retryInterval: 30s
   timeout: 10m0s
