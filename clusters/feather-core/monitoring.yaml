@@ -13,7 +13,9 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./services/layers/feather-core/monitoring
-  prune: true
+  # frozen for the layer split (split-flux-layers); do not re-enable before the legacy layers are retired
+  prune: false
+  deletionPolicy: Orphan
   # wait:false on purpose: loki/mimir/tempo depend on the
   # external Ceph RGW S3 backend whose bucket quota can be exceeded.
   # Health-gating here must NOT block base-apps -> apps.

@@ -19,7 +19,9 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./foundation/layers/feather-core/base-sources
-  prune: true
+  # frozen for the layer split (split-flux-layers); do not re-enable before the legacy layers are retired
+  prune: false
+  deletionPolicy: Orphan
   wait: false
   decryption:
     provider: sops
