@@ -1,16 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+# kube-prometheus-stack moved to foundation-observability; spegel, mariadb-operator-crds,
+# envoy-crds, snapshot-controller and descheduler moved to foundation-platform (split-flux-layers step 2)
 resources:
   - ../../../certificates/clusters/feather-core/cert-manager
   - ../../../networking/clusters/feather-core/cloudflare-tunnel-ingress-controller
   - ../../../certificates/clusters/feather-core/step-certificates
   - ../../../databases/clusters/feather-core/cnpg-operator
   - ../../../messaging/clusters/feather-core/strimzi-operator
-  - ../../../observability/clusters/feather-core/kube-prometheus-stack
   - ../../../networking/clusters/feather-core/metallb/controller
-  - ../../../platform/clusters/feather-core/spegel
-  - ../../../databases/clusters/feather-core/mariadb-operator-crds
-  - ../../../networking/clusters/feather-core/envoy-crds
-  - ../../../storage/clusters/feather-core/snapshot-controller
-  - ../../../platform/clusters/feather-core/descheduler
   - ../../../databases/clusters/feather-core/dragonfly-operator
