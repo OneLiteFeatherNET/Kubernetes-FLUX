@@ -40,7 +40,7 @@ spec:
 # products/stelaris/clusters/feather-core/stelaris-dev/release.yaml, and only there -
 # update.path keeps it from ever touching stelaris (prod) or anything else in
 # the tree. Commits straight to main on the flux-system GitRepository, the same
-# way base-sources and apps are already reconciled from it.
+# way foundation-sources and products are already reconciled from it.
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageUpdateAutomation
 metadata:

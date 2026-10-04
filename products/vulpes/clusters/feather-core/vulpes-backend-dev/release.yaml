@@ -10,10 +10,10 @@ spec:
     remediation:
       retries: 3
   # Tracks the newest chart release rather than an exact version (see
-  # base-sources/vulpes-backend.yaml), and the chart still decides the image
+  # foundation/sources/.../sources/vulpes-backend.yaml), and the chart still decides the image
   # repository. The tag no longer comes from the chart's appVersion, though:
   # values.image.tag below is kept current by
-  # ImageUpdateAutomation/vulpes-backend-dev (base-sources), which rolls out
+  # ImageUpdateAutomation/vulpes-backend-dev (foundation-sources), which rolls out
   # every develop image as CI on the Vulpes-Backend repo pushes it. prod
   # (vulpes-backend/release.yaml) still gets its image from the chart's
   # appVersion -- only dev has this override.

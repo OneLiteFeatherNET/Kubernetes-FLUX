@@ -11,8 +11,8 @@ spec:
     # Cluster-scoped on purpose. The namespace-scoped alternative
     # (watchNamespaces: [sentry]) makes the chart render RoleBindings into
     # those namespaces, which must therefore already exist when this layer
-    # applies -- but base-controllers runs well before base-apps creates the
-    # sentry namespace. Watching cluster-wide removes that ordering coupling.
+    # applies -- but foundation-messaging-operators runs well before
+    # services-development creates the sentry namespace. Watching cluster-wide removes that ordering coupling.
     watchAnyNamespace: true
 
     # Chart 1.1.0 ships `securityContext: {}`; upstream added exactly this

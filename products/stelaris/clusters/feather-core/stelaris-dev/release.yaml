@@ -9,9 +9,9 @@ spec:
   install:
     remediation:
       retries: 3
-  # The source in base-sources tracks the newest chart release, but the chart's
+  # The source in foundation-sources tracks the newest chart release, but the chart's
   # appVersion no longer decides the image tag here: values.image.tag below is
-  # kept current by ImageUpdateAutomation/stelaris-dev (base-sources), which
+  # kept current by ImageUpdateAutomation/stelaris-dev (foundation-sources), which
   # rolls out every develop image as CI on the stelaris repo pushes it. prod
   # (stelaris/release.yaml) still gets both the chart and the image from the
   # chart's appVersion - only dev has this override.

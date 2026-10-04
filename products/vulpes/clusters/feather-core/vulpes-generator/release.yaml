@@ -9,7 +9,7 @@ spec:
   install:
     remediation:
       retries: 3
-  # Pinned in base-sources; the chart's appVersion decides the image tag, so the
+  # Pinned in foundation-sources; the chart's appVersion decides the image tag, so the
   # source pin is the only version to bump.
   chartRef:
     kind: OCIRepository

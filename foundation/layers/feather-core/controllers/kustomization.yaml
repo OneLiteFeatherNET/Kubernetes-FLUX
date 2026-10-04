@@ -1,4 +1,0 @@
-# step-issuer moved to foundation-certificates-operators (split-flux-layers step 3)
-# envoy moved to foundation-networking-operators (step 4)
-# mariadb-operator moved to foundation-databases-operators, dragonfly to foundation-databases (step 6); emptied
-resources: []

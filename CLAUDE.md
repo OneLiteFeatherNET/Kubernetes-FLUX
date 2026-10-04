@@ -10,8 +10,8 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 
 - `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `foundation/layers/`, `services/layers/` or `products/layers/`.
 - `foundation/` — cluster plumbing, grouped by **domain** (`sources`, `access`, `certificates`, `networking`, `storage`, `databases`, `messaging`, `observability`, `security`, `platform`): Flux sources, controllers/operators, and configs (databases, storage, PKI). `foundation/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer; it only lists domain overlays.
-- `services/` — third-party software, grouped by domain (`observability`, `development`, `collaboration`, `automation`, `media`). `services/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer (`base-apps`, `monitoring`).
-- `products/` — OneLiteFeather's own projects (`otis`, `stelaris`, `vulpes`, `apus`, `sturnus`, `bluemap`); `-dev` variants are siblings. `products/layers/feather-core/apps/` is the entry for the `apps` layer.
+- `services/` — third-party software, grouped by domain (`observability`, `development`, `collaboration`, `automation`, `media`). `services/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer (`automation`, `collaboration`, `development`, `media`, `observability`).
+- `products/` — OneLiteFeather's own projects (`otis`, `stelaris`, `vulpes`, `apus`, `sturnus`, `bluemap`); `-dev` variants are siblings. `products/layers/feather-core/{prod,dev}/` are the entries for the `products` and `products-dev` layers.
 - `helm/` — in-repo Helm charts (`shlink`, `outline`, `vikunja`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
 - `.github/scripts/validate.sh` — local/CI manifest validation.
 
@@ -23,23 +23,34 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 
 ## Flux layer dependency graph
 
-Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` at `./clusters/feather-core`. Layers keep their names and only `spec.path` points into `foundation/layers/`, `services/layers/` or `products/layers/` (never rename a layer: pruning would delete what it owns). Layers (all decrypt SOPS via provider `sops` / secret `sops-age`, except `internal-certs`):
+Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `flux-system` at `./clusters/feather-core` (`prune: true`). The 22 layers below all decrypt SOPS via provider `sops` / secret `sops-age`, have `deletionPolicy: Orphan` (deleting a layer CR never deletes what it owns) and `interval: 10m0s` (`foundation-access`: `1h`):
 
 | Layer | Path | dependsOn |
 |---|---|---|
-| `base-sources` | foundation/layers/feather-core/base-sources | — (root, `wait:false`) |
-| `rbac` | foundation/layers/feather-core/rbac | — |
-| `base-controllers` | foundation/layers/feather-core/base-controllers | base-sources |
-| `controllers` | foundation/layers/feather-core/controllers | base-controllers |
-| `base-configs` | foundation/layers/feather-core/base-configs | base-controllers |
-| `rook` | foundation/layers/feather-core/rook | base-sources, base-controllers, base-configs, controllers |
-| `rook-fr01` | foundation/layers/feather-core/rook-fr01 | rook |
-| `configs` | foundation/layers/feather-core/configs | base-configs, controllers, rook |
-| `internal-certs` | foundation/layers/feather-core/internal-certs | controllers |
-| `base-apps` | services/layers/feather-core/base-apps | configs |
-| `apps` | products/layers/feather-core/apps | base-apps |
-| `monitoring` | services/layers/feather-core/monitoring | configs |
-| `security` | foundation/layers/feather-core/security | configs |
+| `foundation-sources` | foundation/layers/feather-core/sources | flux-system (`wait:false`) |
+| `foundation-access` | foundation/layers/feather-core/access | — |
+| `foundation-observability` | foundation/layers/feather-core/observability | foundation-sources |
+| `foundation-platform` | foundation/layers/feather-core/platform | foundation-observability |
+| `foundation-certificates-operators` | foundation/layers/feather-core/certificates-operators | foundation-platform |
+| `foundation-networking-operators` | foundation/layers/feather-core/networking-operators | foundation-platform |
+| `foundation-storage-operators` | foundation/layers/feather-core/storage-operators | foundation-platform |
+| `foundation-databases-operators` | foundation/layers/feather-core/databases-operators | foundation-platform, foundation-certificates-operators |
+| `foundation-messaging-operators` | foundation/layers/feather-core/messaging-operators | foundation-platform |
+| `foundation-certificates` | foundation/layers/feather-core/certificates | foundation-certificates-operators, foundation-networking-operators (`wait:false`) |
+| `foundation-networking` | foundation/layers/feather-core/networking | foundation-networking-operators, foundation-certificates |
+| `foundation-storage` | foundation/layers/feather-core/storage | foundation-storage-operators, foundation-networking |
+| `foundation-databases` | foundation/layers/feather-core/databases | foundation-databases-operators, foundation-storage, foundation-networking |
+| `foundation-messaging` | foundation/layers/feather-core/messaging | foundation-messaging-operators, foundation-storage |
+| `foundation-security` | foundation/layers/feather-core/trivy | foundation-platform, foundation-storage |
+| `services-automation` | services/layers/feather-core/automation | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
+| `services-collaboration` | services/layers/feather-core/collaboration | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
+| `services-development` | services/layers/feather-core/development | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
+| `services-media` | services/layers/feather-core/media | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
+| `services-observability` | services/layers/feather-core/observability | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates (`wait:false`) |
+| `products` | products/layers/feather-core/prod | services-development |
+| `products-dev` | products/layers/feather-core/dev | services-development |
+
+**Never rename or split a layer by editing its CR.** The Kustomization name is the ownership key; with `prune: true` a rename deletes everything the old layer owned. Instead: freeze the old layer (`prune: false`) → move the objects (one commit per move) → delete the emptied old CR. Walkthrough: [Struktur umbauen ohne Ausfall](https://outline.onelitefeather.dev/doc/how-to-struktur-umbauen-ohne-ausfall-QCsbUjcnXt).
 
 Most layers use `wait: true`, so a layer is only "Ready" once its applied resources are healthy — and its dependents block until then. Flux requires a dependency to be `Ready` **at the same git revision** before a dependent reconciles.
 

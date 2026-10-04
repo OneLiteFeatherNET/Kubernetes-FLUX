@@ -42,7 +42,7 @@ spec:
 # products/vulpes/clusters/feather-core/vulpes-backend-dev/release.yaml, and only
 # there - update.path keeps it from ever touching vulpes-backend (prod) or
 # anything else in the tree. Commits straight to main on the flux-system
-# GitRepository, the same way base-sources and apps are already reconciled
+# GitRepository, the same way foundation-sources and products are already reconciled
 # from it.
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageUpdateAutomation

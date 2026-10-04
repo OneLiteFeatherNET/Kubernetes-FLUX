@@ -23,7 +23,7 @@ when it is applied by hand.
 | `clusters/feather-core/` | The Flux control plane. Each file here is one `Kustomization` — a layer. |
 | `foundation/` | Cluster plumbing grouped by domain (networking, storage, databases, certificates, ...): Flux sources, controllers and operators, and configs (databases, storage, PKI). `foundation/layers/` has one entry point per Flux layer. |
 | `services/` | Third-party software grouped by domain (observability, development, collaboration, automation, media). `services/layers/` has one entry point per Flux layer. |
-| `products/` | OneLiteFeather's own projects (otis, stelaris, vulpes, apus, sturnus, bluemap), with `-dev` variants as siblings. `products/layers/` has the entry point for the `apps` layer. |
+| `products/` | OneLiteFeather's own projects (otis, stelaris, vulpes, apus, sturnus, bluemap), with `-dev` variants as siblings. `products/layers/` has the entry points for the `products` and `products-dev` layers. |
 | `helm/` | Charts maintained in this repository: `outline`, `shlink`, `vikunja`, and `micronaut` — the generic chart several Micronaut services share. |
 | `.github/scripts/` | Validation and SBOM tooling (kept under `.github/` so the root stays cluster manifests), all of it also run by CI. |
 
@@ -37,20 +37,16 @@ start — so a layer blocks everything downstream of it while it settles.
 
 ```mermaid
 graph LR
-  base-sources --> base-controllers
-  base-controllers --> controllers
-  base-controllers --> base-configs
-  base-sources & base-configs & controllers --> rook
-  rook --> rook-fr01
-  base-configs & controllers & rook --> configs
-  controllers --> internal-certs
-  configs --> base-apps --> apps
-  configs --> monitoring
-  configs --> security
-  rbac
+  foundation-sources --> foundation-observability --> foundation-platform
+  foundation-platform --> operators["*-operators (certificates, networking, storage, databases, messaging)"]
+  operators --> foundation-certificates --> foundation-networking --> foundation-storage
+  foundation-storage --> foundation-databases & foundation-messaging & foundation-security
+  foundation-networking & foundation-storage & foundation-databases & foundation-messaging & foundation-certificates --> services["services-* (automation, collaboration, development, media, observability)"]
+  services-development --> products & products-dev
+  foundation-access
 ```
 
-`base-sources` and `rbac` have no dependencies and start immediately.
+`foundation-sources` (after the Flux bootstrap) and `foundation-access` have no further dependencies and start immediately.
 
 ## Working here
 

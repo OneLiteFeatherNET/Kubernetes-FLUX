@@ -6,7 +6,7 @@ metadata:
 spec:
   releaseName: vulpes-backend
   # The chart comes from Harbor, released together with the image it deploys
-  # (see base-sources/vulpes-backend.yaml). The exact version lives on the
+  # (see foundation/sources/.../sources/vulpes-backend.yaml). The exact version lives on the
   # OCIRepository, so there is nothing to pin here.
   chartRef:
     kind: OCIRepository
