@@ -10,7 +10,7 @@ spec:
     # (cert-manager), so ordering is cert-manager -> step-issuer -> here.
     - name: controllers
     - name: foundation-certificates
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 10m0s
   sourceRef:

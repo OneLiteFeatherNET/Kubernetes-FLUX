@@ -7,7 +7,7 @@ spec:
   # MetalLB controller, Envoy Gateway and the Cloudflare tunnel ingress controller.
   dependsOn:
     - name: foundation-platform
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s
   sourceRef:

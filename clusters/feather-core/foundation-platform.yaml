@@ -7,7 +7,7 @@ spec:
   # PriorityClasses and CRD bundles every later layer needs.
   dependsOn:
     - name: foundation-observability
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s
   sourceRef:

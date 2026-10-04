@@ -8,7 +8,7 @@ spec:
   dependsOn:
     - name: foundation-platform
     - name: foundation-storage
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 10m0s
   sourceRef:

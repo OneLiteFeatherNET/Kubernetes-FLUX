@@ -9,7 +9,7 @@ spec:
   dependsOn:
     - name: foundation-certificates-operators
     - name: foundation-networking-operators
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 10m0s
   sourceRef:

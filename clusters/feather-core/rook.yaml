@@ -10,7 +10,7 @@ spec:
     - name: base-controllers
     - name: base-configs
     - name: controllers
-  interval: 1m0s
+  interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s
   sourceRef:
