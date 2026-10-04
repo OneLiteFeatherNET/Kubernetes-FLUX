@@ -4,7 +4,6 @@ kind: Kustomization
 # envoy-crds, snapshot-controller and descheduler moved to foundation-platform (split-flux-layers step 2)
 # cert-manager and step-certificates moved to foundation-certificates-operators (step 3)
 # metallb controller and cloudflare-tunnel-ingress-controller moved to foundation-networking-operators (step 4)
+# cnpg-operator and dragonfly-operator moved to foundation-databases-operators (step 6)
 resources:
-  - ../../../databases/clusters/feather-core/cnpg-operator
   - ../../../messaging/clusters/feather-core/strimzi-operator
-  - ../../../databases/clusters/feather-core/dragonfly-operator

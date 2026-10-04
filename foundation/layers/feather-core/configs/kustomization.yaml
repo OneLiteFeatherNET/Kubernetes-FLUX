@@ -1,7 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 # gateway and metallb monitoring moved to foundation-networking (split-flux-layers step 4)
+# postgresql and mariadb-galera moved to foundation-databases (step 6)
 resources:
-  - ../../../databases/clusters/feather-core/postgresql
-  - ../../../databases/clusters/feather-core/mariadb-galera
   - ../../../messaging/clusters/feather-core/kafka

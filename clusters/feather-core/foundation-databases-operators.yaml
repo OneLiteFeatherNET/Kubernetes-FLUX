@@ -1,0 +1,26 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-databases-operators
+  namespace: flux-system
+spec:
+  # CloudNativePG (incl. barman-cloud plugin), mariadb-operator and Dragonfly operator. The mariadb-operator
+  # webhook and the barman-cloud plugin use cert-manager Certificates/Issuer; CRDs come from foundation-platform.
+  dependsOn:
+    - name: foundation-platform
+    - name: foundation-certificates-operators
+  interval: 1m0s
+  retryInterval: 30s
+  timeout: 15m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/databases-operators
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
