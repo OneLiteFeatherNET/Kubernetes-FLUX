@@ -5,5 +5,5 @@ kind: Kustomization
 # cert-manager and step-certificates moved to foundation-certificates-operators (step 3)
 # metallb controller and cloudflare-tunnel-ingress-controller moved to foundation-networking-operators (step 4)
 # cnpg-operator and dragonfly-operator moved to foundation-databases-operators (step 6)
-resources:
-  - ../../../messaging/clusters/feather-core/strimzi-operator
+# strimzi-operator moved to foundation-messaging-operators (step 7)
+resources: []
