@@ -14,7 +14,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/clusters/feather-core/configs
+  path: ./foundation/layers/feather-core/configs
   prune: true
   wait: true
   decryption:

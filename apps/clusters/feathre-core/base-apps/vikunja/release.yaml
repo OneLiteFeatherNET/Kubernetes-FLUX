@@ -38,7 +38,7 @@ spec:
 
     # Internal, Envoy-fronted hostname. This is the only path that produces
     # traces: the gateway emits OTel spans to Tempo for every request it
-    # handles (infrastructure/.../configs/gateway/envoyproxy.yaml, 10 %
+    # handles (foundation/networking/.../gateway/envoyproxy.yaml, 10 %
     # sampling). The public Cloudflare-Tunnel hostname in ingress.yaml goes
     # straight to the Service and bypasses Envoy, so it is not traced.
     httpRoute:

@@ -17,7 +17,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 mapfile -t FILES < <(
-  find apps infrastructure clusters -type f \
+  find apps foundation clusters -type f \
     \( -name '*.sops.env' \
     -o -name '*.sops.yaml' -o -name '*.sops.yml' \
     -o -name '*.sops.json' \

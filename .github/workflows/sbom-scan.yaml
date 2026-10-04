@@ -18,7 +18,7 @@ on:
     branches: [main]
     paths:
       - 'apps/**'
-      - 'infrastructure/**'
+      - 'foundation/**'
       - 'helm/**'
       - 'clusters/**'
       - 'scripts/collect-images.py'

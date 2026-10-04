@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../certificates/clusters/feather-core/cert-manager-issuers
+  - ../../../storage/clusters/feather-core/s3-proxy
+  - ../../../networking/clusters/feather-core/metallb/bgp
+  - ../../../platform/clusters/feather-core/priorityclasses

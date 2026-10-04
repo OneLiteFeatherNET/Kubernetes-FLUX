@@ -8,8 +8,8 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 
 ## Repository layout
 
-- `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `infrastructure/` or `apps/`.
-- `infrastructure/` — cluster plumbing: Flux **sources**, **controllers/operators**, and **configs** (databases, storage, PKI).
+- `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `foundation/layers/` or `apps/`.
+- `foundation/` — cluster plumbing, grouped by **domain** (`sources`, `access`, `certificates`, `networking`, `storage`, `databases`, `messaging`, `observability`, `security`, `platform`): Flux sources, controllers/operators, and configs (databases, storage, PKI). `foundation/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer; it only lists domain overlays.
 - `apps/` — actual workloads.
 - `helm/` — in-repo Helm charts (`shlink`, `outline`, `vikunja`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
 - `scripts/validate.sh` — local/CI manifest validation.
@@ -17,30 +17,30 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 **There is no `docs/` directory.** Prose documentation lives in Outline, collection *Infrastruktur*, under [Kubernetes-FLUX — GitOps für feather-core](https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA) — architecture, runbooks, secrets handling, incidents, and an archive of design documents and implementation plans. Read it via the Outline MCP tools. New operational findings belong there, not as comment blocks in a manifest; keep in-repo comments to a line or two plus a link.
 
 **Two-tier Kustomize pattern.** Everything is a `base` + cluster `overlay`:
-- `infrastructure/base/<kind>/<name>/` and `apps/base/<name>/` — portable definitions (HelmRelease, namespace, etc.).
-- `infrastructure/clusters/feather-core/<layer>/...` and `apps/clusters/feathre-core/<layer>/...` — cluster overlays that reference a base and patch it (`patches: - path: release.yaml`) and attach secrets.
+- `foundation/<domain>/base/<component>/` and `apps/base/<name>/` — portable definitions (HelmRelease, namespace, etc.).
+- `foundation/<domain>/clusters/feather-core/<component>/...` (multi-stage components such as `metallb` have stage subdirs) and `apps/clusters/feathre-core/<layer>/...` — cluster overlays that reference a base and patch it (`patches: - path: release.yaml`) and attach secrets.
 
-⚠️ **Path-spelling gotcha:** infrastructure uses `clusters/feather-core/` (correct) but apps uses `clusters/feathre-core/` (misspelled "feathre"). Both are real, intentional paths — don't "fix" one to match the other.
+⚠️ **Path-spelling gotcha:** foundation uses `clusters/feather-core/` (correct) but apps uses `clusters/feathre-core/` (misspelled "feathre"). Both are real, intentional paths — don't "fix" one to match the other.
 
 ## Flux layer dependency graph
 
-Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` at `./clusters/feather-core`. Layers (all decrypt SOPS via provider `sops` / secret `sops-age`, except `internal-certs`):
+Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` at `./clusters/feather-core`. Layers keep their names and only `spec.path` points into `foundation/layers/` (never rename a layer: pruning would delete what it owns). Layers (all decrypt SOPS via provider `sops` / secret `sops-age`, except `internal-certs`):
 
 | Layer | Path | dependsOn |
 |---|---|---|
-| `base-sources` | infrastructure/.../base-sources | — (root, `wait:false`) |
-| `rbac` | infrastructure/.../rbac | — |
-| `base-controllers` | infrastructure/.../base-controllers | base-sources |
-| `controllers` | infrastructure/.../controllers | base-controllers |
-| `base-configs` | infrastructure/.../base-configs | base-controllers |
-| `rook` | infrastructure/.../rook | base-sources, base-controllers, base-configs, controllers |
-| `rook-fr01` | infrastructure/.../rook-fr01 | rook |
-| `configs` | infrastructure/.../configs | base-configs, controllers, rook |
-| `internal-certs` | infrastructure/.../internal-certs | controllers |
+| `base-sources` | foundation/layers/feather-core/base-sources | — (root, `wait:false`) |
+| `rbac` | foundation/layers/feather-core/rbac | — |
+| `base-controllers` | foundation/layers/feather-core/base-controllers | base-sources |
+| `controllers` | foundation/layers/feather-core/controllers | base-controllers |
+| `base-configs` | foundation/layers/feather-core/base-configs | base-controllers |
+| `rook` | foundation/layers/feather-core/rook | base-sources, base-controllers, base-configs, controllers |
+| `rook-fr01` | foundation/layers/feather-core/rook-fr01 | rook |
+| `configs` | foundation/layers/feather-core/configs | base-configs, controllers, rook |
+| `internal-certs` | foundation/layers/feather-core/internal-certs | controllers |
 | `base-apps` | apps/clusters/feathre-core/base-apps | configs |
 | `apps` | apps/clusters/feathre-core/apps | base-apps |
 | `monitoring` | apps/clusters/feathre-core/monitoring | configs |
-| `security` | infrastructure/clusters/feather-core/security | configs |
+| `security` | foundation/layers/feather-core/security | configs |
 
 Most layers use `wait: true`, so a layer is only "Ready" once its applied resources are healthy — and its dependents block until then. Flux requires a dependency to be `Ready` **at the same git revision** before a dependent reconciles.
 
@@ -52,7 +52,7 @@ Most layers use `wait: true`, so a layer is only "Ready" once its applied resour
 ./scripts/validate.sh
 
 # Render/inspect a single overlay locally (fast iteration).
-kubectl kustomize infrastructure/clusters/feather-core/controllers/<name>
+kubectl kustomize foundation/<domain>/clusters/feather-core/<component>
 # NOTE: a build that pulls in a sops-encrypted *patch* needs the GPG key;
 # secretGenerator inputs (*.sops.env) build fine (read as opaque bytes).
 
@@ -79,14 +79,14 @@ Full workflow: [SOPS — Secrets im Kubernetes-FLUX-Repo](https://outline.onelit
 
 ## In-repo Helm charts
 
-Charts under `helm/` are pulled by the `helmcharts` **GitRepository** source (which points back at this repo's `main`). External charts come from `OCIRepository`/`HelmRepository` sources defined in `infrastructure/clusters/feather-core/base-sources/`.
+Charts under `helm/` are pulled by the `helmcharts` **GitRepository** source (which points back at this repo's `main`). External charts come from `OCIRepository`/`HelmRepository` sources defined in `foundation/sources/clusters/feather-core/sources/`.
 
 ⚠️ **When you edit a chart in `helm/`, bump its `Chart.yaml` `version:`.** Flux/Helm caches by chart version; without a bump, edits to templates/values are not re-rendered onto the cluster.
 
 ## Conventions & non-obvious behaviors
 
 - **Conventional Commits are enforced in CI** (`.github/workflows/pr-lint.yaml` + `commitlint.config.mjs`): allowed types `build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test`, subject must start **lowercase**, header ≤100 chars. The PR title is the squash-merge subject and is linted too.
-- **`flux-validate` CI** runs `scripts/validate.sh` on every PR/push touching `clusters|infrastructure|apps|helm`. Run it locally before opening a PR.
+- **`flux-validate` CI** runs `scripts/validate.sh` on every PR/push touching `clusters|foundation|apps|helm`. Run it locally before opening a PR.
 - Overlays set `generatorOptions.disableNameSuffixHash: true`, so generated Secret/ConfigMap **names are stable**. Consequence: changing a secret's contents does **not** roll the consuming Deployment — `kubectl rollout restart` it to pick up new values.
 - **Renovate** (`renovate.json`) opens PRs to bump image tags and chart versions; expect `main` to move under you. Re-fetch/rebase before pushing.
 - A HelmRelease change updates the cluster ConfigMap/Deployment via a Helm upgrade; if values come from a chart-rendered ConfigMap, the new values only land after the upgrade completes — verify the ConfigMap before restarting a pod to apply them.

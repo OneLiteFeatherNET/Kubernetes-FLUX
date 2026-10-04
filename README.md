@@ -21,13 +21,13 @@ when it is applied by hand.
 | Path | Contents |
 |---|---|
 | `clusters/feather-core/` | The Flux control plane. Each file here is one `Kustomization` — a layer. |
-| `infrastructure/` | Cluster plumbing: Flux sources, controllers and operators, and configs (databases, storage, PKI). |
+| `foundation/` | Cluster plumbing grouped by domain (networking, storage, databases, certificates, ...): Flux sources, controllers and operators, and configs (databases, storage, PKI). `foundation/layers/` has one entry point per Flux layer. |
 | `apps/` | The workloads. |
 | `helm/` | Charts maintained in this repository: `outline`, `shlink`, `vikunja`, and `micronaut` — the generic chart several Micronaut services share. |
 | `scripts/` | Validation and SBOM tooling, all of it also run by CI. |
 
 Everything follows a **base + overlay** pattern: `*/base/<name>/` holds the portable definition,
-`*/clusters/feather-core/<layer>/<name>/` patches it for this cluster and attaches its secrets.
+`*/clusters/feather-core/<name>/` patches it for this cluster and attaches its secrets.
 
 ## Layer dependencies
 
@@ -58,7 +58,7 @@ graph LR
 ./scripts/validate.sh
 
 # Render a single overlay while iterating.
-kubectl kustomize infrastructure/clusters/feather-core/controllers/<name>
+kubectl kustomize foundation/<domain>/clusters/feather-core/<component>
 
 # Inspect the cluster's view of this repository.
 flux get kustomizations -A
