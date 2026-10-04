@@ -1,23 +1,22 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: controllers
+  name: foundation-networking
   namespace: flux-system
 spec:
+  # MetalLB pools and BGP, the shared Gateway with its certificates, and MetalLB monitoring.
   dependsOn:
-    - name: base-controllers
-    - name: foundation-platform
-    - name: foundation-certificates-operators
-    - name: foundation-networking
+    - name: foundation-networking-operators
+    - name: foundation-certificates
   interval: 1m0s
   retryInterval: 30s
   timeout: 10m0s
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./foundation/layers/feather-core/controllers
-  # frozen for the layer split (split-flux-layers); do not re-enable before the legacy layers are retired
-  prune: false
+  path: ./foundation/layers/feather-core/networking
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
   deletionPolicy: Orphan
   wait: true
   decryption:

@@ -5,8 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   # ClusterIssuers (ACME) and the internal step-ca Certificates, issued by the operators layer.
+  # foundation-networking-operators: Certificates live in the envoy namespace created there.
   dependsOn:
     - name: foundation-certificates-operators
+    - name: foundation-networking-operators
   interval: 1m0s
   retryInterval: 30s
   timeout: 10m0s
