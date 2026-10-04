@@ -53,8 +53,8 @@ spec:
         content: |
           // Single OTLP intake point (grpc :4317, http :4318) fanning traces
           // to Tempo, metrics to Mimir, and logs to Loki. otel.apps.onelite.feather
-          // is only reachable over the internal step-ca-issued TLS network
-          // (not the public internet), so no auth layer is needed here.
+          // is internal-only and has no auth; the public /v1/traces and
+          // /v1/logs go via the Cloudflare Tunnel behind Cloudflare Access.
           otelcol.receiver.otlp "default" {
             grpc {
               endpoint = "0.0.0.0:4317"

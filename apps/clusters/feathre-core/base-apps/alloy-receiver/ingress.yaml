@@ -1,0 +1,29 @@
+# Public OTLP/HTTP intake for Cloudflare Observability. Auth is a Cloudflare
+# Access service token enforced at the Cloudflare edge, not in the cluster.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alloy-receiver-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: otel.onelitefeather.net
+      http:
+        paths:
+          # Only traces and logs; paths are unanchored cloudflared regexes.
+          - path: /v1/traces
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: alloy-receiver
+                port:
+                  number: 4318
+          - path: /v1/logs
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: alloy-receiver
+                port:
+                  number: 4318

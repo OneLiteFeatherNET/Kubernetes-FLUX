@@ -7,5 +7,6 @@ resources:
   - ../../../../../apps/base/alloy-receiver
   - httproute.yaml
   - grpcroute.yaml
+  - ingress.yaml
 patches:
   - path: release.yaml
