@@ -1238,7 +1238,7 @@
     {
       "id": 28,
       "type": "timeseries",
-      "title": "Slow tick sections p95 by service",
+      "title": "Slow tick sections p95 by section",
       "description": "TraceQL metrics: p95 of cygnus.tick.section.duration_ms per cygnus.tick.section.name (creek, slender-gaze, tunnel-vision). Sections show who was in the tick, not when. TraceQL metrics: Tempo limits the query range to 24h; pick a shorter time range.",
       "datasource": {
         "type": "tempo",
