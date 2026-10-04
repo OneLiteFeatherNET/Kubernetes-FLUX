@@ -1,0 +1,24 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-messaging-operators
+  namespace: flux-system
+spec:
+  # Strimzi Kafka operator and its CRDs; the HelmRelease needs the platform sources and CRD plumbing.
+  dependsOn:
+    - name: foundation-platform
+  interval: 1m0s
+  retryInterval: 30s
+  timeout: 15m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/messaging-operators
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
