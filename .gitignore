@@ -48,3 +48,8 @@ private-key.asc
 
 # Dependencies; this repo has no npm project (see #199).
 node_modules/
+
+# Local editor and agent-tool state.
+.vscode/
+.serena/
+graphify-out/
