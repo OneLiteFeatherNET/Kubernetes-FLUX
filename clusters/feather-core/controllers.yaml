@@ -9,6 +9,7 @@ spec:
     - name: foundation-platform
     - name: foundation-certificates-operators
     - name: foundation-networking
+    - name: foundation-storage
   interval: 1m0s
   retryInterval: 30s
   timeout: 10m0s
