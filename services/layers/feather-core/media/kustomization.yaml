@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../media/clusters/feather-core/media-library
+  - ../../../media/clusters/feather-core/filebrowser
+  - ../../../media/clusters/feather-core/jellyfin
+  - ../../../media/clusters/feather-core/kavita
