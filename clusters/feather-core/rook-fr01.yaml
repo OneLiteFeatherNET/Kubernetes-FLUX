@@ -13,7 +13,9 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./foundation/layers/feather-core/rook-fr01
-  prune: true
+  # frozen for the layer split (split-flux-layers); do not re-enable before the legacy layers are retired
+  prune: false
+  deletionPolicy: Orphan
   wait: true
   decryption:
     provider: sops
