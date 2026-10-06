@@ -34,7 +34,7 @@ spec:
       # charts/stelaris-ui/templates/_helpers.tpl in the stelaris repo), so dev
       # keeps today's behaviour until the first develop image lands and the
       # automation overwrites this value.
-      tag: "develop-1791223506-577cb9c" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
+      tag: "develop-1791317321-8e8d78f" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     # Read by the app at startup from /config.json, which the chart mounts as a
