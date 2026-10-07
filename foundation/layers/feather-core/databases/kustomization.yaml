@@ -4,3 +4,4 @@ resources:
   - ../../../databases/clusters/feather-core/postgresql
   - ../../../databases/clusters/feather-core/mariadb-galera
   - ../../../databases/clusters/feather-core/dragonfly
+  - ../../../databases/clusters/feather-core/mongodb

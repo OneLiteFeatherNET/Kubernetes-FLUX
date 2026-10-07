@@ -1,0 +1,77 @@
+# Topology, provisioning and the restore runbook:
+# https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: feather-core-mongodb
+  namespace: mongodb
+spec:
+  members: 3
+  type: ReplicaSet
+  version: "8.0.32"
+  security:
+    authentication:
+      modes:
+        - SCRAM
+  users:
+    - name: admin
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-admin
+      roles:
+        - name: root
+          db: admin
+      scramCredentialsSecretName: admin
+  statefulSet:
+    spec:
+      template:
+        spec:
+          priorityClassName: feather-platform
+          nodeSelector:
+            topology.kubernetes.io/zone: fr01
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app: feather-core-mongodb-svc
+                    topologyKey: kubernetes.io/hostname
+          containers:
+            # Memory request==limit for OOM safety; no CPU limit, to avoid
+            # throttling the database, same as the CNPG cluster.
+            - name: mongod
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 2Gi
+                limits:
+                  memory: 2Gi
+            - name: mongodb-agent
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 200Mi
+                limits:
+                  memory: 500Mi
+      volumeClaimTemplates:
+        # 3 x 20Gi = ~180GiB raw at 3x replication; ceph-rbd-fr01 is Retain (two-stage PV cleanup).
+        - metadata:
+            name: data-volume
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: ceph-rbd-fr01
+            resources:
+              requests:
+                storage: 20Gi
+        - metadata:
+            name: logs-volume
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: ceph-rbd-fr01
+            resources:
+              requests:
+                storage: 2Gi
