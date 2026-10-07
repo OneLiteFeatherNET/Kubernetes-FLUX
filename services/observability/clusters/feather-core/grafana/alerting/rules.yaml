@@ -332,6 +332,128 @@ groups:
           check_command: "kubectl -n mariadb-galera get jobs"
         labels:
           severity: warning
+      - uid: mongodb-backup-job-failed
+        title: MongoDB backup job failed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Only Jobs owned by the CronJob, so manual test Jobs never page.
+              expr: sum(kube_job_status_failed{namespace="mongodb"} * on (namespace, job_name) group_left() kube_job_owner{namespace="mongodb", owner_name="mongodb-backup"}) OR vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "A Job created by the mongodb-backup CronJob failed."
+          problem: "Backup CronJob failed"
+          service: "MongoDB"
+          threshold: "0 failed jobs"
+          value_unit: "failed jobs"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          check: "Read the log of the failed Job pod."
+          check_command: "kubectl -n mongodb get jobs"
+        labels:
+          severity: warning
+      - uid: mongodb-backup-stale
+        title: MongoDB backup stale
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # 6 h schedule plus 1 h slack; no data (CronJob never succeeded) alerts too.
+              expr: (time() - max(kube_cronjob_status_last_successful_time{namespace="mongodb", cronjob="mongodb-backup"})) / 3600
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 7
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "No successful MongoDB backup in over 7 h (schedule is every 6 h)."
+          problem: "No backup for over 7 h"
+          service: "MongoDB"
+          threshold: "< 7 h since last backup"
+          value_unit: "h since last backup"
+          value_fmt: "%.1f"
+          location: "mongodb"
+          check: "Check whether the CronJob is suspended or its Jobs fail."
+          check_command: "kubectl -n mongodb get cronjob,jobs"
+        labels:
+          severity: warning
   - orgId: 1
     name: storage
     folder: Storage
@@ -975,6 +1097,191 @@ groups:
           dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
         labels:
           severity: critical
+      - uid: mongodb-no-primary
+        title: MongoDB replica set has no primary
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Each pod reports itself; sum over the 3 pods is 1 while healthy. No data also alerts.
+              expr: sum(mongodb_repl_isWritablePrimary{namespace="mongodb"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "No MongoDB member reports isWritablePrimary - the replica set cannot accept writes (or the metrics endpoint is not scraped)."
+          problem: "MongoDB has no primary"
+          service: "MongoDB"
+          threshold: "1 primary"
+          value_unit: "primaries"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          check: "Check the replica set state seen by each member."
+          check_command: "kubectl -n mongodb get mdbc,pods"
+        labels:
+          severity: critical
+      - uid: mongodb-member-unhealthy
+        title: MongoDB replica set member unhealthy
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # min over all reporters: one pod that cannot reach a peer is enough. Members are keyed by member_idx (FQDN).
+              expr: min by (member_idx) (mongodb_members_health{namespace="mongodb"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "A MongoDB replica set member is reported unhealthy (health != 1) by the other members, or its metrics are missing."
+          problem: "MongoDB member unhealthy"
+          service: "MongoDB"
+          threshold: "health = 1"
+          value_unit: "member health"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          object_label: "Member"
+          object_key: "member_idx"
+          check: "Check the pod and the agent log of the affected member."
+          check_command: "kubectl -n mongodb get pods -l app=feather-core-mongodb-svc"
+        labels:
+          severity: critical
+      - uid: mongodb-replication-lag
+        title: MongoDB replication lag high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # optimeDate is epoch milliseconds. max-min across members = lag of the slowest member.
+              expr: (max(mongodb_members_optimeDate{namespace="mongodb"}) - min(mongodb_members_optimeDate{namespace="mongodb"})) / 1000
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 60
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "A MongoDB secondary is more than 60 s behind the newest optime in the replica set."
+          problem: "MongoDB replication lag over 60 s"
+          service: "MongoDB"
+          threshold: "< 60 s"
+          value_unit: "s lag"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          check: "Compare optimeDate per member; check disk and network of the lagging member."
+          check_command: "kubectl -n mongodb exec feather-core-mongodb-0 -c mongod -- mongosh --eval \"rs.printSecondaryReplicationInfo()\""
+        labels:
+          severity: warning
   - orgId: 1
     name: cluster_health
     folder: Core Services

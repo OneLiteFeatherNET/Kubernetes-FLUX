@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - replicaset.yaml
   - backup-cronjob.yaml
+  - servicemonitor.yaml
 
 secretGenerator:
   - name: mongodb-user-admin
@@ -14,6 +15,9 @@ secretGenerator:
   - name: mongodb-user-backup
     envs:
       - users/backup.sops.env
+  - name: mongodb-user-prometheus
+    envs:
+      - users/prometheus.sops.env
   - name: mongodb-backup-s3
     envs:
       - backup-s3.sops.env
