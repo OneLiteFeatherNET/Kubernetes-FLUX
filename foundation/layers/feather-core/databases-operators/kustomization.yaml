@@ -4,3 +4,4 @@ resources:
   - ../../../databases/clusters/feather-core/cnpg-operator
   - ../../../databases/clusters/feather-core/mariadb-operator
   - ../../../databases/clusters/feather-core/dragonfly-operator
+  - ../../../databases/clusters/feather-core/mongodb-operator

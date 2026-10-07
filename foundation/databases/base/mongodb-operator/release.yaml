@@ -1,0 +1,51 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mongodb-operator
+spec:
+  releaseName: mongodb-operator
+  chart:
+    spec:
+      # MongoDB Controllers for Kubernetes (MCK) — the successor of the
+      # deprecated community-operator chart; serves the same MongoDBCommunity CRD.
+      chart: mongodb-kubernetes
+      version: "=1.12.0"
+      sourceRef:
+        kind: HelmRepository
+        name: mongodb
+        namespace: flux-system
+  install:
+    # CRDs come from the mongodb-operator-crds base, which vendors only the
+    # MongoDBCommunity CRD instead of the chart's full eight.
+    crds: Skip
+    remediation:
+      retries: 3
+  upgrade:
+    crds: Skip
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: warn
+    ignore:
+      # The documented rollout-restart workflow (CLAUDE.md) mutates this.
+      - paths: ["/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"]
+  interval: 1m0s
+  values:
+    operator:
+      # Only the MongoDBCommunity CRD is installed, so the operator must not
+      # try to watch the Ops Manager / Search / VoyageAI resources.
+      watchedResources:
+        - mongodbcommunity
+      watchNamespace: mongodb
+      enableClusterMongoDBRoles: false
+      # No phone-home from this cluster.
+      telemetry:
+        enabled: false
+        send:
+          enabled: false
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+        limits:
+          memory: 1Gi
