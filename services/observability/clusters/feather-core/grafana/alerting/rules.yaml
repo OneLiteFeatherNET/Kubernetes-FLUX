@@ -2326,3 +2326,507 @@ groups:
           dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-fleet/minecraftotel-fleet"
         labels:
           severity: critical
+  - orgId: 1
+    name: otis
+    folder: Backend Services
+    interval: 60s
+    rules:
+      - uid: otis-down
+        title: Otis down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # "or vector(0)": kube-state-metrics drops the series when the Deployment is gone, and that must read as 0 available replicas, not NoData.
+              # kube-state-metrics being down is covered by kube-state-metrics-down, so NoData cannot be mistaken for this alert.
+              expr: sum(kube_deployment_status_replicas_available{namespace="otis", deployment="otis-micronaut"}) or vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "Otis has no available replica - the API is unreachable."
+          problem: "No Otis replica available"
+          service: "Otis"
+          threshold: ">= 1 available replica"
+          value_unit: "available replicas"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "The proxies keep working (the plugin logs and continues) but player data is no longer synced. Check pod events and logs, database reachability and a failing Flyway migration on startup (escape hatch: env FLYWAY_ENABLED=false)."
+          check_command: "kubectl -n otis get pods,events --sort-by=.lastTimestamp"
+        labels:
+          severity: critical
+      - uid: otis-replicas-degraded
+        title: Otis replicas degraded
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # for: 15m is deliberately longer than a normal rollout, so a deploy never fires it.
+              expr: sum(kube_deployment_spec_replicas{namespace="otis", deployment="otis-micronaut"}) - sum(kube_deployment_status_replicas_available{namespace="otis", deployment="otis-micronaut"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Empty only if kube-state-metrics has no data - already covered by kube-state-metrics-down; the Deployment being gone is covered by otis-down.
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Fewer Otis replicas are available than desired for 15 minutes - the service runs without redundancy."
+          problem: "Otis replicas missing"
+          service: "Otis"
+          threshold: "0 missing replicas"
+          value_unit: "missing replicas"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "A pod that is not Ready for longer than a rollout: look at its events, readiness probe (/health) and the node it is scheduled on."
+          check_command: "kubectl -n otis get deploy,pods -o wide"
+        labels:
+          severity: warning
+      - uid: otis-server-errors
+        title: Otis API server errors
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Absolute count, not a ratio: traffic is ~20 API requests/day, so a rate would flap on a single request.
+              # "or vector(0)": the 5xx series only exists after the first error, so empty means 0 errors.
+              expr: sum(increase(http_server_requests_seconds_count{namespace="otis", status=~"5..", uri!~"/health.*|/prometheus"}[10m])) or vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # "or vector(0)" always yields a value while Mimir is reachable, so NoData only means the datasource is down - covered by observability-pipeline-no-data.
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: "Otis answered more than 2 API requests with a 5xx status in the last 10 minutes."
+          problem: "Otis 5xx responses"
+          service: "Otis"
+          threshold: "<= 2 errors in 10 min"
+          value_unit: "5xx in 10 min"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "Problem responses carry a traceId: search Tempo or Loki by it. Health and Prometheus probes are excluded."
+          check_command: "kubectl -n otis logs deploy/otis-micronaut --tail=200 | grep -i error"
+        labels:
+          severity: warning
+      - uid: otis-health-failing
+        title: Otis health check failing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Absolute count: probes run on a fixed schedule, so a handful of non-2xx answers in 10 min is a real signal, a single one is not.
+              # "or vector(0)": the non-2xx series only exists after the first failure, so empty means 0 failures.
+              expr: sum(increase(http_server_requests_seconds_count{namespace="otis", uri=~"/health.*", status!~"2.."}[10m])) or vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # "or vector(0)" always yields a value while Mimir is reachable, so NoData only means the datasource is down - covered by observability-pipeline-no-data.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Otis /health returned a non-2xx status more than 3 times in the last 10 minutes."
+          problem: "Otis /health failing"
+          service: "Otis"
+          threshold: "<= 3 failed probes in 10 min"
+          value_unit: "failed probes in 10 min"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "Health indicators are jdbc, disk and kubernetes discovery: read the /health body to see which one is DOWN."
+          check_command: "kubectl -n otis port-forward deploy/otis-micronaut 8080:8080 # then curl localhost:8080/health"
+        labels:
+          severity: warning
+      - uid: otis-slow-requests
+        title: Otis slow requests
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(http_server_requests_seconds_max{namespace="otis", uri!~"/health.*|/prometheus"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Micrometer's max gauge decays to 0 / has no series while the service is idle (~20 API requests/day), so NoData is the normal state. A dead service is covered by otis-down.
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "The slowest Otis API request in the current window took more than 5 seconds."
+          problem: "Otis requests slower than 5 s"
+          service: "Otis"
+          threshold: "< 5 s"
+          value_unit: "s slowest request"
+          value_fmt: "%.1f"
+          location: "otis"
+          check: "Usually a slow database (CNPG pooler, Postgres saturation) or a stalled connection pool; compare with otis-db-pool-pending and find the route via the uri label."
+          check_command: "kubectl -n otis logs deploy/otis-micronaut --tail=200"
+        labels:
+          severity: warning
+      - uid: otis-db-pool-pending
+        title: Otis DB pool exhausted
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(hikaricp_connections_pending{namespace="otis"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # No data means Otis is not scraped - covered by otis-down; this rule only reports connection starvation.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Otis requests have been waiting for a database connection for 5 minutes."
+          problem: "Requests waiting for a DB connection"
+          service: "Otis"
+          threshold: "0 pending connections"
+          value_unit: "pending connections"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "The pool is exhausted or the database is slow: check the CNPG pooler and Postgres connection saturation (cnpg-connection-saturation alerts)."
+          check_command: "kubectl -n cnpg-system get pods"
+        labels:
+          severity: warning
+      - uid: otis-heap-high
+        title: Otis JVM heap usage high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Heap pools carry area="heap" (Micrometer naming; the Minecraft rule uses OTel jvm_memory_type). ">0" drops pools reporting max -1. Result is a percentage (0-100), unlike minecraft-heap-high which is a 0-1 ratio.
+              expr: sum by (pod) (jvm_memory_used_bytes{namespace="otis", area="heap"}) / sum by (pod) (jvm_memory_max_bytes{namespace="otis", area="heap"} > 0) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 90
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # No data means Otis is not scraped - covered by otis-down.
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Otis pod {{ $labels.pod }} heap usage is above 90% of its limit - risks GC pressure or OOM."
+          problem: "Heap usage over 90 %"
+          service: "Otis"
+          threshold: "< 90 % of heap max"
+          value_unit: "% of heap max"
+          value_fmt: "%.1f"
+          object_label: "Pod"
+          object_key: "pod"
+          location: "otis"
+          check: "Check heap and GC pause trends for this pod; a steady climb points to a leak, a pod restart clears it."
+          check_command: "kubectl -n otis top pod"
+        labels:
+          severity: warning
+      - uid: otis-restarts
+        title: Otis container restarting
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max by (pod) (increase(kube_pod_container_status_restarts_total{namespace="otis"}[30m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Always has data while kube-state-metrics is up (covered by kube-state-metrics-down); a gone pod simply drops out.
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: "Otis pod {{ $labels.pod }} restarted more than 2 times in the last 30 minutes."
+          problem: "Otis container restart loop"
+          service: "Otis"
+          threshold: "<= 2 restarts in 30 min"
+          value_unit: "restarts in 30 min"
+          value_fmt: "%.0f"
+          object_label: "Pod"
+          object_key: "pod"
+          location: "otis"
+          check: "CrashLoop: read the previous container's log and the termination reason (OOMKilled, failing Flyway migration, database unreachable)."
+          check_command: "kubectl -n otis logs deploy/otis-micronaut --previous --tail=100"
+        labels:
+          severity: warning
