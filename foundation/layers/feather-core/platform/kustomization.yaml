@@ -6,5 +6,6 @@ resources:
   - ../../../databases/clusters/feather-core/mariadb-operator-crds
   - ../../../databases/clusters/feather-core/mongodb-operator-crds
   - ../../../networking/clusters/feather-core/envoy-crds
+  - ../../../networking/clusters/feather-core/metallb/admission-policy
   - ../../../storage/clusters/feather-core/snapshot-controller
   - ../../../platform/clusters/feather-core/descheduler
