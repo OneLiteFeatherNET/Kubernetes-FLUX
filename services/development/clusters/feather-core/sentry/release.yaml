@@ -29,6 +29,35 @@ spec:
                 path: /spec/strategy
                 value:
                   type: Recreate
+          # Pod-level seccomp applies to every workload without touching users or
+          # capabilities. Strategic merge: memcached and symbolicator already
+          # carry a pod securityContext, which a JSON `add` would replace.
+          - target:
+              kind: Deployment
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: not-used-target-selects
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      seccompProfile:
+                        type: RuntimeDefault
+          - target:
+              kind: StatefulSet
+            patch: |
+              apiVersion: apps/v1
+              kind: StatefulSet
+              metadata:
+                name: not-used-target-selects
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      seccompProfile:
+                        type: RuntimeDefault
   values:
     # Everything stateful lives outside this release: postgres in CNPG, redis
     # in the shared Dragonfly, kafka in the Strimzi cluster, clickhouse in its
