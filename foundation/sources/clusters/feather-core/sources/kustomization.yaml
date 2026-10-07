@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - mariadb-operator.yml
+  - mongodb.yml
   - cnpg.yml
   - helmcharts.yml
   - node-red.yml
