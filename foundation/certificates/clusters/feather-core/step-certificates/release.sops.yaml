@@ -101,7 +101,7 @@ spec:
                 memory: ENC[AES256_GCM,data:/mZt0jY=,iv:ABkzbNFZp9jwkgyPxK9KfTJzvWsx9xRIiCIPKpASH4Y=,tag:4r51JmEBrBDzdTay3ijitw==,type:str]
         service:
             annotations:
-                metallb.io/loadBalancerIPs: ENC[AES256_GCM,data:0/h3mUpmooYugISI,iv:V9OV23PISk8CTcgI5NQ2GsEmz+mHKxYAhhBvS7pfcqI=,tag:GhGbrmSScFtx/DeK5XQNfQ==,type:str]
+                metallb.io/loadBalancerIPs: ENC[AES256_GCM,data:gU9SstKJwYhArzUHfjLhkB0q6oVGK+lJfJSihM4SA3QhOQ==,iv:GkXJApTzkTb0EyPLn0b0IwlwdZv4p5+ZKKoMGFtL4n4=,tag:KsTFhjL51dzdaXuq/Wjwdg==,type:str]
             externalTrafficPolicy: ENC[AES256_GCM,data:uWf4Mbk=,iv:Zt79bRTbgQF/VX+RpwLOpTtvSSa4TK9ZI8U7pzRI9kA=,tag:w3DS5Mfy11ApulmwDjs3OA==,type:str]
             targetPort: ENC[AES256_GCM,data:7IyTLQ==,iv:sAdXK9zbmRzHqyAIjQbU2zvuD1RA784KiNxgVkMAqeg=,tag:MuB8mPipEVXLwHh1v0StqA==,type:int]
             type: ENC[AES256_GCM,data:LIHIqImsN6Ol6u+h,iv:V6um23rXo4ozaJfFI8xqZehH7yazCM4MAEvv9HlMWQk=,tag:fTiSetiZVYMKDzkYnqRJzw==,type:str]
@@ -135,7 +135,7 @@ sops:
             Y6w4ujGuvg7lOi8hEwVkLKHp0lniOjJHY3kgg5VifN55BYE4e0wETw==
             -----END AGE ENCRYPTED FILE-----
           recipient: age1rrus5c38flq6yg6l56d0cecgzap0fhdew64n7ygz7lngjwpzws4qcnge3x
-    lastmodified: "2026-06-12T14:32:47Z"
-    mac: ENC[AES256_GCM,data:DKraDcHejbuBZrD1vqOB7E5fiQG243cvD/ZMN84hE0RKHYlGaM4V+OWzVda/5MfsWev6IUj9TcqsR7Ve0zATNvViLnns+Vu90UCvxY3iTK9u2qCny6QU64g6dDZyh9sZz21S/S/taw4+PsNzD20Z32t3+1k/yTVx1/pTXK5h/M8=,iv:44RNVI8hGxWj4ZHGATSwswlBMvQ1PU2ll2nehNmENaM=,tag:QglXQHBI57bqHtUnFe88MA==,type:str]
+    lastmodified: "2026-09-06T20:35:36Z"
+    mac: ENC[AES256_GCM,data:GrAQ10iwmpSRTqRWPSm/frdOHzfqB2SVp6meVf4XhFHbgExWG6sq16ZXcXRV8cpykzup9MKrrEYTlM9z+1KGFahbZaBnfOlAWUrl+dgpYP0vC7ktsBsGpAaYgN9WIEIK3lg4MXIfc+S/aaLiypFne7BSsWpn1R4kkUFiF0WnZ68=,iv:q7rQHIHI2qXGzJag8iyX+plJGnuXyhBNDgHAFD6F6hg=,tag:1r/RQsckj332ZfMIs5u+sg==,type:str]
     unencrypted_suffix: _unencrypted
     version: 3.13.1
