@@ -344,7 +344,7 @@ groups:
             model:
               editorMode: code
               # Only Jobs owned by the CronJob, so manual test Jobs never page.
-              expr: sum(kube_job_status_failed{namespace="mongodb"} * on (namespace, job_name) group_left() kube_job_owner{namespace="mongodb", owner_name="mongodb-backup"}) OR vector(0)
+              expr: sum(kube_job_status_failed{job="kube-state-metrics", namespace="mongodb"} * on (namespace, job_name) group_left() kube_job_owner{job="kube-state-metrics", namespace="mongodb", owner_name="mongodb-backup"}) OR vector(0)
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -405,7 +405,7 @@ groups:
             model:
               editorMode: code
               # 6 h schedule plus 1 h slack; no data (CronJob never succeeded) alerts too.
-              expr: (time() - max(kube_cronjob_status_last_successful_time{namespace="mongodb", cronjob="mongodb-backup"})) / 3600
+              expr: (time() - max(kube_cronjob_status_last_successful_time{job="kube-state-metrics", namespace="mongodb", cronjob="mongodb-backup"})) / 3600
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -1232,8 +1232,8 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              # optimeDate is epoch milliseconds. max-min across members = lag of the slowest member.
-              expr: (max(mongodb_members_optimeDate{namespace="mongodb"}) - min(mongodb_members_optimeDate{namespace="mongodb"})) / 1000
+              # optimeDate is epoch ms. Spread per reporting pod, so series scraped at different times are not mixed.
+              expr: max(max by (pod) (mongodb_members_optimeDate{namespace="mongodb"}) - min by (pod) (mongodb_members_optimeDate{namespace="mongodb"})) / 1000
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
