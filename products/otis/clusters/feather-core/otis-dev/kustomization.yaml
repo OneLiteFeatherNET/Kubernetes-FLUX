@@ -15,3 +15,7 @@ secretGenerator:
   - name: otis-dev-app-db
     envs:
       - otis-dev.sops.env
+  # Unused until the app cuts over to MongoDB.
+  - name: mongodb-app-db
+    envs:
+      - mongodb.sops.env

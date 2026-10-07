@@ -16,3 +16,7 @@ secretGenerator:
   - name: vulpes-app-db
     envs:
       - vulpes.sops.env
+  # Unused until the app cuts over to MongoDB.
+  - name: mongodb-app-db
+    envs:
+      - mongodb.sops.env
