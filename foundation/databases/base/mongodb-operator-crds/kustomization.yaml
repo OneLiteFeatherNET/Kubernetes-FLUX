@@ -1,8 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # Vendored MongoDBCommunity CRD from the mongodb-kubernetes chart v1.12.0.
+  # Vendored CRDs from the mongodb-kubernetes chart v1.12.0.
   # The chart ships its CRDs in crds/ with no management flag and no separate
   # CRD chart, so Helm never upgrades them; the HelmRelease sets crds: Skip and
-  # only this one of the chart's eight CRDs is applied. Re-vendor on a chart bump.
+  # only these two of the chart's eight CRDs are applied. Re-vendor on a chart bump.
   - crds.yaml
+  # The community controller also watches MongoDBSearch (replica_set_controller.go
+  # SetupWithManager) and exits if the kind is missing, so it is needed too.
+  - mongodbsearch.yaml
