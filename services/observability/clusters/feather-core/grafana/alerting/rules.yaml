@@ -587,6 +587,69 @@ groups:
           dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
         labels:
           severity: critical
+      - uid: mongodb-volume-filling
+        title: MongoDB data volume filling up
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Aggregating to (persistentvolumeclaim, node) is what the Discord template needs and keeps a pod reschedule (new instance label) from spawning a second alert instance.
+              expr: max by (persistentvolumeclaim, node) (kubelet_volume_stats_used_bytes{job="kubelet", namespace="mongodb", persistentvolumeclaim=~"data-volume-.*"} / kubelet_volume_stats_capacity_bytes{job="kubelet", namespace="mongodb", persistentvolumeclaim=~"data-volume-.*"}) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "MongoDB PVC {{ $labels.persistentvolumeclaim }} on node {{ $labels.node }} is above 80% capacity."
+          problem: "PVC over 80 % full"
+          service: "MongoDB"
+          threshold: "< 80 % used"
+          value_unit: "% used"
+          value_fmt: "%.1f"
+          object_label: "PVC"
+          object_key: "persistentvolumeclaim"
+          location_key: "node"
+          check: "Check oplog and data growth before resizing; the volume grows via the MongoDBCommunity statefulSet volumeClaimTemplates."
+          check_command: "kubectl -n mongodb get pvc"
+        labels:
+          severity: warning
       - uid: ceph-cluster-health-warning
         title: Ceph cluster health degraded
         condition: B
