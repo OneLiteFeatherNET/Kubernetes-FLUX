@@ -53,7 +53,9 @@ spec:
                 - -c
                 - |
                   set -eu
-                  mongodump --uri="$MONGODB_URI" --oplog --gzip --archive=/work/dump.gz
+                  # Drop the /admin path: --oplog needs a full dump; authSource keeps the login db.
+                  URI=$(printf %s "$MONGODB_URI" | sed 's#/admin?#/?authSource=admin\&#')
+                  mongodump --uri="$URI" --oplog --gzip --archive=/work/dump.gz
                   ls -l /work/dump.gz
               volumeMounts:
                 - name: work
