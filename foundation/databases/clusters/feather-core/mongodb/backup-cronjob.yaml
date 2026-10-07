@@ -1,0 +1,128 @@
+# Restore runbook and the RPO this schedule implies:
+# https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+  namespace: mongodb
+spec:
+  # Every 6h, offset from CNPG (02:00) and MariaDB (0,6,12,18); RPO ~6h.
+  schedule: "0 3,9,15,21 * * *"
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: Never
+          nodeSelector:
+            topology.kubernetes.io/zone: fr01
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          volumes:
+            # Staged, not streamed: a broken pipe must not leave a truncated object.
+            - name: work
+              emptyDir:
+                sizeLimit: 10Gi
+          initContainers:
+            - name: mongodump
+              image: mongo:8.0.32
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              env:
+                # Operator-generated; readPreference=secondary keeps load off the primary.
+                - name: MONGODB_URI
+                  valueFrom:
+                    secretKeyRef:
+                      name: feather-core-mongodb-admin-mongodb-backup
+                      key: connectionString.standard
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  mongodump --uri="$MONGODB_URI" --oplog --gzip --archive=/work/dump.gz
+                  ls -l /work/dump.gz
+              volumeMounts:
+                - name: work
+                  mountPath: /work
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 512Mi
+                limits:
+                  memory: 2Gi
+          containers:
+            - name: upload
+              image: amazon/aws-cli:2.36.27
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: mongodb-backup-s3
+                      key: access-key-id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: mongodb-backup-s3
+                      key: secret-access-key
+                - name: AWS_DEFAULT_REGION
+                  # RGW ignores the value but the CLI refuses to run without one.
+                  value: us-east-1
+                - name: HOME
+                  value: /tmp
+                - name: S3_ENDPOINT
+                  # Internal only: Cloudflare breaks SigV4 on s3.onelitefeather.net.
+                  value: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+                - name: S3_BUCKET
+                  value: mongodb-backup
+                - name: RETENTION_DAYS
+                  # 7 days = 28 artifacts; revisit against the measured dump size.
+                  value: "7"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  KEY="$(date -u +%Y%m%dT%H%M%SZ).gz"
+                  aws --endpoint-url "$S3_ENDPOINT" s3 cp /work/dump.gz "s3://$S3_BUCKET/$KEY"
+                  echo "uploaded $KEY"
+
+                  # Prune in the job (not an RGW lifecycle rule) so it shows in logs and exit code.
+                  CUTOFF=$(date -u -d "-$RETENTION_DAYS days" +%s)
+                  aws --endpoint-url "$S3_ENDPOINT" s3api list-objects-v2 \
+                    --bucket "$S3_BUCKET" \
+                    --query 'Contents[].[Key,LastModified]' --output text \
+                    | while read -r key lastmod; do
+                        [ -n "$key" ] || continue
+                        if [ "$(date -u -d "$lastmod" +%s)" -lt "$CUTOFF" ]; then
+                          aws --endpoint-url "$S3_ENDPOINT" s3api delete-object \
+                            --bucket "$S3_BUCKET" --key "$key"
+                          echo "pruned $key"
+                        fi
+                      done
+              volumeMounts:
+                - name: work
+                  mountPath: /work
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  memory: 512Mi
