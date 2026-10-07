@@ -1,0 +1,22 @@
+# Alloy discovers every ServiceMonitor cluster-wide; basic auth via Secret reference
+# (no file access needed). Metrics: mongodb_up, mongodb_members_*, mongodb_repl_*.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: feather-core-mongodb
+spec:
+  selector:
+    matchLabels:
+      app: feather-core-mongodb-svc
+  endpoints:
+    - port: prometheus
+      scheme: http
+      interval: 30s
+      scrapeTimeout: 10s
+      basicAuth:
+        username:
+          name: mongodb-user-prometheus
+          key: username
+        password:
+          name: mongodb-user-prometheus
+          key: password

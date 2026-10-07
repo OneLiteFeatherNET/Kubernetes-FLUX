@@ -35,6 +35,11 @@ spec:
       additionalConnectionStringConfig:
         readPreference: secondary
       scramCredentialsSecretName: backup
+  # Agent metrics endpoint (9216, Service port "prometheus"), scraped via servicemonitor.yaml.
+  prometheus:
+    username: prometheus
+    passwordSecretRef:
+      name: mongodb-user-prometheus
   statefulSet:
     spec:
       template:
