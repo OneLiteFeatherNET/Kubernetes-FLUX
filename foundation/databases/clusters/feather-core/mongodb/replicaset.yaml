@@ -1,5 +1,5 @@
-# Topology, provisioning and the restore runbook:
-# https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA
+# Topology, users and provisioning:
+# https://outline.onelitefeather.dev/doc/reference-mongodb-plattform-jZ1b5CiWLc
 apiVersion: mongodbcommunity.mongodb.com/v1
 kind: MongoDBCommunity
 metadata:
