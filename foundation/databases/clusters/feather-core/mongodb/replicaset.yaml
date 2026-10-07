@@ -22,6 +22,19 @@ spec:
         - name: root
           db: admin
       scramCredentialsSecretName: admin
+    # `--oplog` reads local.oplog.rs, which `backup` alone does not cover.
+    - name: mongodb-backup
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-backup
+      roles:
+        - name: backup
+          db: admin
+        - name: clusterMonitor
+          db: admin
+      additionalConnectionStringConfig:
+        readPreference: secondary
+      scramCredentialsSecretName: backup
   statefulSet:
     spec:
       template:

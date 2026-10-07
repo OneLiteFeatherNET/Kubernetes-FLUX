@@ -5,8 +5,15 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - replicaset.yaml
+  - backup-cronjob.yaml
 
 secretGenerator:
   - name: mongodb-user-admin
     envs:
       - users/admin.sops.env
+  - name: mongodb-user-backup
+    envs:
+      - users/backup.sops.env
+  - name: mongodb-backup-s3
+    envs:
+      - backup-s3.sops.env
