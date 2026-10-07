@@ -281,7 +281,8 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              expr: sum(kube_job_status_failed{namespace="mariadb-galera"})
+              # Seconds the newest failed run is newer than the last successful one; a retry that succeeds clears it. Jobs are owned by the PhysicalBackup (no CronJob).
+              expr: max(kube_job_status_start_time{job="kube-state-metrics", namespace="mariadb-galera"} and on (namespace, job_name) (kube_job_status_failed{job="kube-state-metrics", namespace="mariadb-galera"} > 0) and on (namespace, job_name) kube_job_owner{job="kube-state-metrics", namespace="mariadb-galera", owner_name="mariadb-galera-backup"}) - max(kube_job_status_completion_time{job="kube-state-metrics", namespace="mariadb-galera"} and on (namespace, job_name) kube_job_owner{job="kube-state-metrics", namespace="mariadb-galera", owner_name="mariadb-galera-backup"}) > 0
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -324,8 +325,8 @@ groups:
           summary: "The mariadb-galera-backup CronJob's most recent Job run failed."
           problem: "Backup CronJob failed"
           service: "MariaDB Galera"
-          threshold: "0 failed jobs"
-          value_unit: "failed jobs"
+          threshold: "no failed run after the last success"
+          value_unit: "s after the last success"
           value_fmt: "%.0f"
           location: "mariadb-galera"
           check: "Read the log of the failed Job's pod."
@@ -343,8 +344,8 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              # Only Jobs owned by the CronJob, so manual test Jobs never page.
-              expr: sum(kube_job_status_failed{job="kube-state-metrics", namespace="mongodb"} * on (namespace, job_name) group_left() kube_job_owner{job="kube-state-metrics", namespace="mongodb", owner_name="mongodb-backup"}) OR vector(0)
+              # Newest failed run newer than the last success (seconds); only CronJob-owned Jobs, so manual test Jobs never page and a successful retry clears it.
+              expr: max(kube_job_status_start_time{job="kube-state-metrics", namespace="mongodb"} and on (namespace, job_name) (kube_job_status_failed{job="kube-state-metrics", namespace="mongodb"} > 0) and on (namespace, job_name) kube_job_owner{job="kube-state-metrics", namespace="mongodb", owner_name="mongodb-backup"}) - max(kube_cronjob_status_last_successful_time{job="kube-state-metrics", namespace="mongodb", cronjob="mongodb-backup"}) > 0
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -385,8 +386,8 @@ groups:
           summary: "A Job created by the mongodb-backup CronJob failed."
           problem: "Backup CronJob failed"
           service: "MongoDB"
-          threshold: "0 failed jobs"
-          value_unit: "failed jobs"
+          threshold: "no failed run after the last success"
+          value_unit: "s after the last success"
           value_fmt: "%.0f"
           location: "mongodb"
           check: "Read the log of the failed Job pod."
@@ -1169,8 +1170,8 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              # min over all reporters: one pod that cannot reach a peer is enough. Members are keyed by member_idx (FQDN).
-              expr: min by (member_idx) (mongodb_members_health{namespace="mongodb"})
+              # min over all reporters: one pod that cannot reach a peer is enough. The FQDN member_idx is shortened to the pod name in "member".
+              expr: label_replace(min by (member_idx) (mongodb_members_health{namespace="mongodb"}), "member", "$1", "member_idx", "([^.]+)\\..*")
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -1216,7 +1217,7 @@ groups:
           value_fmt: "%.0f"
           location: "mongodb"
           object_label: "Member"
-          object_key: "member_idx"
+          object_key: "member"
           check: "Check the pod and the agent log of the affected member."
           check_command: "kubectl -n mongodb get pods -l app=feather-core-mongodb-svc"
         labels:
@@ -1232,8 +1233,8 @@ groups:
             datasourceUid: mimir
             model:
               editorMode: code
-              # optimeDate is epoch ms. Spread per reporting pod, so series scraped at different times are not mixed.
-              expr: max(max by (pod) (mongodb_members_optimeDate{namespace="mongodb"}) - min by (pod) (mongodb_members_optimeDate{namespace="mongodb"})) / 1000
+              # optimeDate is epoch ms. Spread per reporting pod over healthy members only (an unreachable member reports 0).
+              expr: max(max by (pod) (mongodb_members_optimeDate{namespace="mongodb"} and on (pod, member_idx) (mongodb_members_health{namespace="mongodb"} == 1)) - min by (pod) (mongodb_members_optimeDate{namespace="mongodb"} and on (pod, member_idx) (mongodb_members_health{namespace="mongodb"} == 1))) / 1000
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
