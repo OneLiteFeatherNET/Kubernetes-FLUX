@@ -1,5 +1,5 @@
-# Restore runbook and the RPO this schedule implies:
-# https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA
+# Backup, restore runbook and the RPO this schedule implies:
+# https://outline.onelitefeather.dev/doc/runbook-mongodb-sichern-und-wiederherstellen-OmEoaEfE7t
 apiVersion: batch/v1
 kind: CronJob
 metadata:
