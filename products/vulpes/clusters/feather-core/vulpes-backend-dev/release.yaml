@@ -46,7 +46,7 @@ spec:
       # chart's appVersion (see charts/vulpes-backend/values.yaml in the
       # Vulpes-Backend repo), so dev keeps today's behaviour until the first
       # develop image lands and the automation overwrites this value.
-      tag: "develop-1791413469-b6e611c" # {"$imagepolicy": "flux-system:vulpes-backend-dev:tag"}
+      tag: "develop-1791475253-05b4eb4" # {"$imagepolicy": "flux-system:vulpes-backend-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     metrics:
