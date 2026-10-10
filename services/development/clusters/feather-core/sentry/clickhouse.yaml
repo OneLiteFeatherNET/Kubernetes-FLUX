@@ -77,6 +77,9 @@ spec:
           storage: 20Gi
       podLabels:
         logs.onelitefeather.net/env: prod
+      podSecurityContext:
+        seccompProfile:
+          type: RuntimeDefault
       resources:
         requests:
           cpu: 500m
