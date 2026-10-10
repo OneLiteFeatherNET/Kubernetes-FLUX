@@ -66,6 +66,10 @@ spec:
               containerPort: {{ $root.Values.service.port }}
               protocol: TCP
           {{- end }}
+          {{- with $component.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with $component.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
