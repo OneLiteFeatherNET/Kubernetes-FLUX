@@ -52,11 +52,17 @@ components:
         memory: 400Mi
     livenessProbe:
       initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
       httpGet:
         path: /_health
         port: http
     readinessProbe:
       initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
       httpGet:
         path: /_health
         port: http
@@ -98,11 +104,17 @@ components:
         memory: 400Mi
     livenessProbe:
       initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
       httpGet:
         path: /_health
         port: http
     readinessProbe:
       initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
       httpGet:
         path: /_health
         port: http
