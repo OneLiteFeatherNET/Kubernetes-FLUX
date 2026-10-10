@@ -3,7 +3,7 @@ kind: HelmRelease
 metadata:
   name: envoy
   labels:
-    flux.onelitefeather.dev/remediation: retries-only
+    flux.onelitefeather.dev/remediation: manual
 spec:
   chartRef:
     kind: OCIRepository
