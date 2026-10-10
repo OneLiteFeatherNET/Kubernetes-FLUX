@@ -4,7 +4,7 @@ metadata:
   name: helmcharts
   namespace: flux-system
 spec:
-  interval: 5m
+  interval: 10m
   url: https://github.com/OneLiteFeatherNET/Kubernetes-FLUX.git
   ref:
     branch: main
