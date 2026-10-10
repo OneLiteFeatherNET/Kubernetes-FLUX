@@ -193,10 +193,10 @@ spec:
       cleanup:
         resources:
           requests:
-            cpu: 50m
-            memory: 480Mi
+            cpu: 30m
+            memory: 256Mi
           limits:
-            memory: 960Mi
+            memory: 512Mi
       taskBroker:
         resources:
           requests:
@@ -208,128 +208,128 @@ spec:
         resources:
           requests:
             cpu: 10m
-            memory: 288Mi
+            memory: 324Mi
           limits:
-            memory: 576Mi
+            memory: 648Mi
       taskWorker:
         resources:
           requests:
             cpu: 30m
-            memory: 2Gi
+            memory: 1536Mi
           limits:
             memory: 3Gi
       genericMetricsConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 563Mi
           limits:
-            memory: 960Mi
+            memory: 1126Mi
       ingestConsumerAttachments:
         resources:
           requests:
             cpu: 20m
-            memory: 704Mi
+            memory: 810Mi
           limits:
-            memory: 1408Mi
+            memory: 1620Mi
       ingestConsumerEvents:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 550Mi
           limits:
-            memory: 960Mi
+            memory: 1100Mi
       ingestConsumerTransactions:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 549Mi
           limits:
-            memory: 960Mi
+            memory: 1098Mi
       ingestFeedback:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 549Mi
           limits:
-            memory: 960Mi
+            memory: 1098Mi
       ingestMonitors:
         resources:
           requests:
             cpu: 10m
-            memory: 256Mi
+            memory: 284Mi
           limits:
-            memory: 512Mi
+            memory: 568Mi
       ingestOccurrences:
         resources:
           requests:
             cpu: 10m
-            memory: 256Mi
+            memory: 278Mi
           limits:
-            memory: 512Mi
+            memory: 556Mi
       metricsConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 562Mi
           limits:
-            memory: 960Mi
+            memory: 1124Mi
       monitorsClockTasks:
         resources:
           requests:
             cpu: 10m
-            memory: 256Mi
+            memory: 280Mi
           limits:
-            memory: 512Mi
+            memory: 560Mi
       monitorsClockTick:
         resources:
           requests:
             cpu: 10m
-            memory: 256Mi
+            memory: 280Mi
           limits:
-            memory: 512Mi
+            memory: 560Mi
       postProcessForwardErrors:
         resources:
           requests:
             cpu: 20m
-            memory: 480Mi
+            memory: 550Mi
           limits:
-            memory: 960Mi
+            memory: 1100Mi
       postProcessForwardIssuePlatform:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 550Mi
           limits:
-            memory: 960Mi
+            memory: 1100Mi
       postProcessForwardTransactions:
         resources:
           requests:
             cpu: 20m
-            memory: 480Mi
+            memory: 550Mi
           limits:
-            memory: 960Mi
+            memory: 1100Mi
       processSegments:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 560Mi
           limits:
-            memory: 960Mi
+            memory: 1120Mi
       processSpans:
         resources:
           requests:
             cpu: 10m
-            memory: 480Mi
+            memory: 554Mi
           limits:
-            memory: 960Mi
+            memory: 1108Mi
       uptimeResults:
         resources:
           requests:
             cpu: 10m
-            memory: 256Mi
+            memory: 279Mi
           limits:
-            memory: 512Mi
+            memory: 558Mi
 
     externalPostgresql:
       host: feather-core-cluster-pg-pooler-rw-tx.cnpg-system.svc.cluster.local
@@ -362,7 +362,7 @@ spec:
         numPartitions: 3
         resources:
           requests:
-            cpu: 100m
+            cpu: 30m
             memory: 128Mi
           limits:
             memory: 256Mi
@@ -400,7 +400,7 @@ spec:
           resources:
             requests:
               cpu: 10m
-              memory: 96Mi
+              memory: 83Mi
             limits:
               memory: 256Mi
 
@@ -431,134 +431,137 @@ spec:
         resources:
           requests:
             cpu: 20m
-            memory: 96Mi
+            memory: 108Mi
           limits:
             memory: 256Mi
       eapItemsConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 106Mi
           limits:
             memory: 256Mi
       genericMetricsCountersConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 108Mi
           limits:
             memory: 256Mi
       groupAttributesConsumer:
         resources:
           requests:
             cpu: 20m
-            memory: 224Mi
+            memory: 262Mi
           limits:
-            memory: 448Mi
+            memory: 524Mi
       issueOccurrenceConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 224Mi
+            memory: 268Mi
           limits:
-            memory: 448Mi
+            memory: 536Mi
       metricsConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 107Mi
           limits:
             memory: 256Mi
       outcomesAcceptedConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 102Mi
           limits:
             memory: 256Mi
       outcomesBillingConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 102Mi
           limits:
             memory: 256Mi
       outcomesConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 108Mi
           limits:
             memory: 256Mi
       replacer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 95Mi
           limits:
             memory: 256Mi
       replaysConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 105Mi
           limits:
             memory: 256Mi
       subscriptionConsumerEapItems:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 112Mi
           limits:
             memory: 256Mi
       subscriptionConsumerEvents:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 113Mi
           limits:
             memory: 256Mi
       subscriptionConsumerGenericMetricsCounters:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 112Mi
           limits:
             memory: 256Mi
       subscriptionConsumerMetrics:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 112Mi
           limits:
             memory: 256Mi
       subscriptionConsumerTransactions:
         resources:
           requests:
             cpu: 10m
-            memory: 96Mi
+            memory: 112Mi
           limits:
             memory: 256Mi
       transactionsConsumer:
         resources:
           requests:
             cpu: 10m
-            memory: 224Mi
+            memory: 264Mi
           limits:
-            memory: 448Mi
+            memory: 528Mi
 
     launchpadTaskWorker:
       resources:
         requests:
           cpu: 20m
-          memory: 448Mi
+          memory: 533Mi
         limits:
-          memory: 896Mi
+          memory: 1066Mi
 
     memcached:
+      # Cache capped at 256 MB so it stays under the 384Mi pod limit.
+      config:
+        memoryLimit: 256
       resources:
         requests:
           cpu: 10m
           memory: 64Mi
         limits:
-          memory: 256Mi
+          memory: 384Mi
