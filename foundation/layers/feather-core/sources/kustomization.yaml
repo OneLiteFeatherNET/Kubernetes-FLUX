@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../../../sources/clusters/feather-core/sources
   - ../../../sources/clusters/feather-core/flux-notifications
+  - ../../../sources/clusters/feather-core/flux-receiver
