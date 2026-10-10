@@ -1,0 +1,14 @@
+# Extends gitleaks' default rules. The allowlist covers SOPS ciphertext:
+# these files are encrypted to age recipients and carry no plaintext secrets.
+title = "onelitefeather flux gitops"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "SOPS-encrypted files (ciphertext) and the public PGP key"
+paths = [
+  '''\.sops\.(env|yaml|json|crt|key|conf)$''',
+  '''\.env$''',
+  '''clusters/feather-core/\.sops\.pub\.asc$''',
+]
