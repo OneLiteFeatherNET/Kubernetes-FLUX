@@ -31,13 +31,6 @@ spec:
       clusterBootstrapTimeout: 20m
       podRecoveryTimeout: 10m
       podSyncTimeout: 10m
-    agent:
-      resources:
-        requests:
-          cpu: 10m
-          memory: 32Mi
-        limits:
-          memory: 128Mi
     availableWhenDonor: true
     replicaThreads: 4
     # gcache.size default (128M) only buffers ~44min of replication history
