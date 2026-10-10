@@ -13,7 +13,7 @@ context: |
 
 rules:
   proposal:
-    - Lead with the current state, BLUF style (bottom line up front).
+    - "Open BLUF style: state what changes and why in the first sentences, then the current state and details."
     - Name the Conventional Commits type and scope the change ships under.
     - A change that mixes types is split into two changes.
   specs:
