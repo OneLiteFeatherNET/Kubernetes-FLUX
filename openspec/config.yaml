@@ -1,0 +1,26 @@
+schema: spec-driven
+
+context: |
+  FluxCD GitOps repository for the single Kubernetes cluster feather-core.
+  No application code: Kubernetes/Flux manifests, Kustomize base + cluster
+  overlays, Helm values and a few in-repo Helm charts. Changes take effect
+  only when merged to main.
+  Secrets are SOPS-encrypted with age (recipients only in .sops.yaml).
+  Commits and PR titles follow Conventional Commits.
+  Documentation lives in Outline (collection Infrastruktur), not in docs/.
+  Prefer established terms from the Semantic Anchors catalog
+  (https://llm-coding.github.io/Semantic-Anchors/) over long paraphrases.
+
+rules:
+  proposal:
+    - Lead with the current state, BLUF style (bottom line up front).
+    - Name the Conventional Commits type and scope the change ships under.
+    - A change that mixes types is split into two changes.
+  specs:
+    - Write requirements in EARS syntax.
+    - Write scenarios as Given/When/Then.
+  design:
+    - Record alternatives and the decision MADR-style (options, decision drivers, consequences).
+  tasks:
+    - The last task opens the pull request under the Conventional Commits title from the proposal.
+    - 'Archive commit message: "docs(openspec): archive <change-name>" unless archived together with the implementation.'
