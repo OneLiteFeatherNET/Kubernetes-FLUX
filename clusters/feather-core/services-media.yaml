@@ -4,13 +4,10 @@ metadata:
   name: services-media
   namespace: flux-system
 spec:
-  # Media: Jellyfin, Kavita, media-library, filebrowser. Needs networking, storage, databases, messaging and certificates.
+  # Media: Jellyfin, Kavita, media-library, filebrowser. Needs networking and storage.
   dependsOn:
     - name: foundation-networking
     - name: foundation-storage
-    - name: foundation-databases
-    - name: foundation-messaging
-    - name: foundation-certificates
   interval: 10m0s
   retryInterval: 30s
   timeout: 15m0s

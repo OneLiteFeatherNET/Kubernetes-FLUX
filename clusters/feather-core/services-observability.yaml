@@ -4,13 +4,11 @@ metadata:
   name: services-observability
   namespace: flux-system
 spec:
-  # Grafana stack, Alloy, uptime-kuma, Loki, Mimir, Tempo and OpenCost. Needs networking, storage, databases, messaging and certificates.
+  # Grafana stack, Alloy, uptime-kuma, Loki, Mimir, Tempo and OpenCost. Needs networking, storage and databases.
   dependsOn:
     - name: foundation-networking
     - name: foundation-storage
     - name: foundation-databases
-    - name: foundation-messaging
-    - name: foundation-certificates
   interval: 10m0s
   retryInterval: 30s
   timeout: 20m0s
