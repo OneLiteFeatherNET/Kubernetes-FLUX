@@ -1,0 +1,61 @@
+name: security
+
+# Trivy vulnerability/secret scan plus a CycloneDX SBOM of the repository.
+# Report-only: findings land in code scanning, CI stays green.
+# Repo-level only; the per-image SBOMs for Dependency-Track live in sbom-scan.yaml.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "39 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trivy:
+    name: Trivy scan
+    permissions:
+      contents: read
+      security-events: write
+    # v2.9.0 of OneLiteFeatherNET/workflows; the reusable workflow takes no secrets.
+    uses: OneLiteFeatherNET/workflows/.github/workflows/security-scan.yml@ec5d37fed94ad59e54868d63af6ea4ef4ee4e84c # v2.9.0
+    with:
+      scan-type: "fs"
+      scanners: "vuln,secret"
+      severity: "CRITICAL,HIGH"
+      # Report-only for now, so adopting this does not turn CI red on day one.
+      fail-on-findings: false
+      upload-sarif: true
+
+  sbom:
+    name: CycloneDX SBOM
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: cyclonedx
+          output: bom.json
+          # An SBOM is an inventory, not a finding list - never fail on it.
+          exit-code: '0'
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: sbom-cyclonedx
+          path: bom.json
+          if-no-files-found: error
+          retention-days: 90
