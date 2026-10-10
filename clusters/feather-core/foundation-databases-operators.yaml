@@ -24,3 +24,21 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
+  patches:
+    # Stateful or CRD-heavy releases: retries only, no automatic rollback.
+    - target:
+        group: helm.toolkit.fluxcd.io
+        kind: HelmRelease
+        labelSelector: "flux.onelitefeather.dev/remediation=retries-only"
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: not-used
+        spec:
+          install:
+            remediation:
+              retries: 3
+          upgrade:
+            remediation:
+              retries: 3

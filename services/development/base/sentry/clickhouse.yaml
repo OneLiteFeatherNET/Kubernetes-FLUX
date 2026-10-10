@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: clickhouse
+  labels:
+    flux.onelitefeather.dev/remediation: manual
   namespace: sentry
 spec:
   releaseName: clickhouse
