@@ -29,8 +29,9 @@ spec:
     addressRanges:
       public:
         - "192.168.15.0/24"
+      # Replication on the public net; ens19 goes away in consolidate-node-network phase 4.
       cluster:
-        - "10.10.10.0/24"
+        - "192.168.15.0/24"
     connections:
       requireMsgr2: true
   crashCollector:
