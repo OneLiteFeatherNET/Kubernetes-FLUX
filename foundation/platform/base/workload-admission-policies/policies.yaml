@@ -1,0 +1,85 @@
+# Audit-only workload hardening (how to read results: see the PR).
+# Audit never rejects; Deny is the next step, per namespace.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: olf-require-image-tag
+spec:
+  failurePolicy: Ignore
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  variables:
+    - name: containers
+      expression: >-
+        object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : [])
+    - name: unpinned
+      expression: >-
+        variables.containers.filter(c,
+          c.image.endsWith(':latest') ||
+          !(c.image.matches('^(.*/)?[^/@]+:[^/@]+$') || c.image.matches('^(.*/)?[^/@]+@[A-Za-z0-9]+:[0-9a-fA-F]+$')))
+  validations:
+    - expression: "variables.unpinned.size() == 0"
+      messageExpression: >-
+        'image without tag/digest or with :latest: ' + variables.unpinned.map(c, c.name + '=' + c.image).join(', ')
+      reason: Invalid
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: olf-require-memory-resources
+spec:
+  failurePolicy: Ignore
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  variables:
+    - name: containers
+      expression: >-
+        object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : [])
+    - name: missing
+      expression: >-
+        variables.containers.filter(c,
+          !has(c.resources) ||
+          !has(c.resources.requests) || !('memory' in c.resources.requests) ||
+          !has(c.resources.limits) || !('memory' in c.resources.limits))
+  validations:
+    - expression: "variables.missing.size() == 0"
+      messageExpression: >-
+        'memory request and limit required: ' + variables.missing.map(c, c.name).join(', ')
+      reason: Invalid
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: olf-drop-capabilities
+spec:
+  failurePolicy: Ignore
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  variables:
+    - name: containers
+      expression: >-
+        object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : [])
+    - name: unhardened
+      expression: >-
+        variables.containers.filter(c,
+          !(has(c.securityContext) &&
+            has(c.securityContext.allowPrivilegeEscalation) && c.securityContext.allowPrivilegeEscalation == false &&
+            has(c.securityContext.capabilities) && has(c.securityContext.capabilities.drop) &&
+            c.securityContext.capabilities.drop.exists(x, x == 'ALL')))
+  validations:
+    - expression: "variables.unhardened.size() == 0"
+      messageExpression: >-
+        'allowPrivilegeEscalation=false and capabilities.drop=[ALL] required: ' + variables.unhardened.map(c, c.name).join(', ')
+      reason: Invalid
