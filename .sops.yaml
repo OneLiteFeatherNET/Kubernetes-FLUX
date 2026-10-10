@@ -3,7 +3,7 @@
 #   1. Ask them to run: age-keygen -o ~/.config/sops/age/keys.txt
 #   2. Get their public key: age-keygen -y ~/.config/sops/age/keys.txt
 #   3. Add that public key (the age1... string) to the age field below, comma-separated
-#   4. Re-encrypt all affected files: ./scripts/rekey.sh
+#   4. Re-encrypt all affected files: ./.github/scripts/rekey.sh
 #
 # Secrets are ALWAYS whole-file encrypted. There is deliberately no rule for
 # plain `*.yaml`: a Kubernetes Secret manifest must be named `*.sops.yaml` so

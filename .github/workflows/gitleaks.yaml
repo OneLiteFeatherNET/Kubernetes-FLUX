@@ -1,0 +1,67 @@
+name: gitleaks
+
+# Scans only the commits a change adds, so a secret pushed in a PR is caught
+# before merge. The official gitleaks-action needs a license on org repos, so
+# the pinned release binary is installed and checked against its checksums.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  scan:
+    name: gitleaks commit scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: 8.30.1
+    steps:
+      # Full history: the scanned range starts at the base commit (PR) or the
+      # previous main head (push), which a shallow clone does not contain.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install gitleaks
+        run: |
+          set -euo pipefail
+          work="$(mktemp -d)"
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL -o "${work}/${archive}" "${base}/${archive}"
+          curl -fsSL -o "${work}/checksums.txt" "${base}/gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          grep -F "${archive}" "${work}/checksums.txt" > "${work}/expected.txt"
+          (cd "${work}" && sha256sum -c expected.txt)
+          tar -xzf "${work}/${archive}" -C "${work}" gitleaks
+          install -m 0755 "${work}/gitleaks" "${RUNNER_TEMP}/gitleaks"
+          "${RUNNER_TEMP}/gitleaks" version
+
+      - name: Scan commits of this change
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT}" = "pull_request" ]; then
+            range="${PR_BASE}..${PR_HEAD}"
+          elif [ "${PUSH_BEFORE}" = "0000000000000000000000000000000000000000" ]; then
+            # Branch created without history to diff against: scan its head only.
+            range="-1 ${PUSH_HEAD}"
+          else
+            range="${PUSH_BEFORE}..${PUSH_HEAD}"
+          fi
+          echo "Scanning log range: ${range}"
+          "${RUNNER_TEMP}/gitleaks" git --config .gitleaks.toml --redact --no-banner \
+            --log-opts="${range}" .

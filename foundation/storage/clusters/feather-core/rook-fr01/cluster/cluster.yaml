@@ -1,0 +1,161 @@
+apiVersion: ceph.rook.io/v1
+kind: CephCluster
+metadata:
+  name: rook-ceph-fr01
+  namespace: rook-ceph-fr01
+spec:
+  cephVersion:
+    image: quay.io/ceph/ceph:v19.2.5
+    allowUnsupported: false
+  dataDirHostPath: /var/lib/rook
+  skipUpgradeChecks: false
+  continueUpgradeAfterChecksEvenIfNotHealthy: false
+  mon:
+    count: 3
+    allowMultiplePerNode: false
+  mgr:
+    count: 2
+    allowMultiplePerNode: false
+    modules:
+      - name: pg_autoscaler
+        enabled: true
+  dashboard:
+    enabled: true
+    ssl: false
+  monitoring:
+    enabled: true
+  network:
+    provider: host
+    addressRanges:
+      public:
+        - "192.168.15.0/24"
+      # Replication on the public net; ens19 goes away in consolidate-node-network phase 4.
+      cluster:
+        - "192.168.15.0/24"
+    connections:
+      requireMsgr2: true
+  crashCollector:
+    disable: false
+  logCollector:
+    enabled: true
+    periodicity: daily
+    maxLogSize: 500M
+  cleanupPolicy:
+    confirmation: ""
+    sanitizeDisks:
+      method: quick
+      dataSource: zero
+      iteration: 1
+    allowUninstallWithVolumes: false
+  priorityClassNames:
+    mon: system-node-critical
+    osd: system-node-critical
+    mgr: feather-critical
+  storage:
+    useAllNodes: false
+    useAllDevices: false
+    deviceFilter: "^sd[b-e]$"
+    nodes:
+      - name: fr01-str-01
+      - name: fr01-str-02
+      - name: fr01-str-03
+    config:
+      osdsPerDevice: "1"
+  placement:
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.feather/workload-class
+                  operator: In
+                  values:
+                    - storage
+      tolerations:
+        - key: node-role.feather/storage
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+  disruptionManagement:
+    managePodBudgets: true
+    osdMaintenanceTimeout: 30
+    pgHealthCheckTimeout: 0
+  resources:
+    mgr:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+    mon:
+      limits:
+        cpu: "1"
+        memory: 2Gi
+      requests:
+        cpu: 100m
+        memory: 1Gi
+    osd:
+      limits:
+        cpu: "2"
+        memory: 6Gi
+      requests:
+        cpu: 200m
+        memory: 4Gi
+    mgr-sidecar:
+      limits:
+        cpu: 200m
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 40Mi
+    crashcollector:
+      limits:
+        cpu: 100m
+        memory: 60Mi
+      requests:
+        cpu: 15m
+        memory: 60Mi
+    logcollector:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+    cleanup:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 100Mi
+    prepareosd:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    exporter:
+      limits:
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+  cephConfig:
+    osd:
+      osd_max_backfills: "1"
+      osd_recovery_max_active: "2"
+      osd_recovery_op_priority: "1"
+      osd_memory_target: "4294967296"
+      # Pin one mClock IOPS capacity; per-OSD startup benchmarks diverged 10x on identical disks.
+      osd_mclock_max_capacity_iops_ssd: "15000"
+      osd_mclock_skip_benchmark: "true"
+    # Disable RGW debug logging (default 1/5) to cut Loki/log-collector volume.
+    # Ceph's config fallback is only global -> client -> <exact section>; a
+    # section named "client.rgw" is NOT inherited by "client.rgw.<id>" daemons,
+    # so this must target the RGW daemon's exact identity (--id on the pod,
+    # e.g. rgw.feather.s3.a for the feather-s3 CephObjectStore) or it's silently
+    # ignored. Verify via: ceph config get client.rgw.<store-with-dots>.a debug_rgw
+    client.rgw.feather.s3.a:
+      debug_rgw: "0/0"

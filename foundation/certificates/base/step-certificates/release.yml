@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: step-ca
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: step-ca
+spec:
+  releaseName: step-ca
+  chart:
+    spec:
+      chart: step-certificates
+      sourceRef:
+        kind: HelmRepository
+        name: smallstep
+        namespace: flux-system
+  # The LB IP comes from a MetalLB pool applied in a later layer; waiting deadlocks a fresh bootstrap.
+  install:
+    disableWait: true
+    remediation:
+      retries: 3
+  upgrade:
+    disableWait: true
+  interval: 1m0s
+  # Default values
+  # https://github.com/smallstep/helm-charts/blob/master/step-certificates/values.yaml
+  values: {}

@@ -1,0 +1,24 @@
+# A SEPARATE peer, never multiprotocol on fr01-peer. Enabling the IPv6
+# address-family on an existing IPv4 neighbour makes FRR demand a link-local on
+# that neighbour too and discard the COMPLETE session without one - not just its
+# v6 half. That took down the production v4 session to Helsinki mid-operation on
+# 2026-08-27. The site tunnels solve it the same way, with one session per family.
+#
+# Requires on mkgfire (pfSense/FRR), under address-family ipv6 unicast:
+#   neighbor fd83:4192:3b5e:15::5  remote-as 64606   (and ::6 ::7 ::8 ::9
+#   ::10 ::11 ::12 ::15 ::16 - one per node, activate under the v6 family only)
+# The VLAN 15 interface already carries a link-local, so no Virtual IP is needed
+# here, unlike on the WireGuard interfaces.
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: fr01-peer-v6
+  namespace: metallb-system
+spec:
+  myASN: 64606
+  peerASN: 64501
+  peerAddress: fd83:4192:3b5e:15::1
+  peerPort: 179
+  nodeSelectors:
+    - matchLabels:
+        topology.kubernetes.io/zone: "fr01"

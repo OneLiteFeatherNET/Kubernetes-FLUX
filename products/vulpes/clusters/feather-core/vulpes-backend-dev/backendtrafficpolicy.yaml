@@ -1,0 +1,16 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: vulpes-backend-dev-tracing
+spec:
+  # Dev: sample every request so trace IDs returned by the API resolve in
+  # Tempo; the gateway default is 10%.
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: vulpes-backend-dev-micronaut
+  telemetry:
+    tracing:
+      samplingFraction:
+        numerator: 100
+        denominator: 100

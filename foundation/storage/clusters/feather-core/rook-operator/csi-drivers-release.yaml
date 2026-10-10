@@ -1,0 +1,186 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ceph-csi-drivers
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: rook-ceph
+spec:
+  releaseName: ceph-csi-drivers
+  chart:
+    spec:
+      chart: ceph-csi-drivers
+      version: "=1.1.0"
+      sourceRef:
+        kind: HelmRepository
+        name: ceph-csi-operator
+        namespace: flux-system
+  dependsOn:
+    - name: rook-ceph
+      namespace: rook-ceph
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  timeout: 10m0s
+  values:
+    drivers:
+      rbd:
+        enabled: true
+        name: rook-ceph.rbd.csi.ceph.com
+        nodePlugin:
+          tolerations:
+            - key: node-role.feather/storage
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
+          resources:
+            registrar:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+        controllerPlugin:
+          replicas: 2
+          resources:
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
+            provisioner:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            resizer:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            attacher:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            snapshotter:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+      cephfs:
+        enabled: true
+        name: rook-ceph.cephfs.csi.ceph.com
+        # Die Monitore sprechen nur msgr2 (Port 3300). Ohne ms_mode faellt der
+        # Kernel-Client auf msgr1 zurueck und meldet irrefuehrend "no mds is up".
+        kernelMountOptions:
+          ms_mode: prefer-crc
+        nodePlugin:
+          tolerations:
+            - key: node-role.feather/storage
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
+          resources:
+            registrar:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 4Gi
+        controllerPlugin:
+          replicas: 2
+          resources:
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
+            provisioner:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            resizer:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            attacher:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            snapshotter:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            plugin:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+      nfs:
+        enabled: false
+      nvmeof:
+        enabled: false

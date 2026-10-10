@@ -1,0 +1,30 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: envoy
+  namespace: envoy
+spec:
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  timeout: 5m
+  values:
+    podDisruptionBudget:
+      maxUnavailable: 1
+    deployment:
+      replicas: 2
+      priorityClassName: feather-platform
+      pod:
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: gateway-helm
+                app.kubernetes.io/instance: envoy
+    config:
+      envoyGateway:
+        extensionApis:
+          enableBackend: true

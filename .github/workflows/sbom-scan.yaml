@@ -17,12 +17,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/**'
-      - 'infrastructure/**'
+      - 'services/**'
+      - 'products/**'
+      - 'foundation/**'
       - 'helm/**'
       - 'clusters/**'
-      - 'scripts/collect-images.py'
-      - 'scripts/upload-sbom.py'
+      - '.github/scripts/collect-images.py'
+      - '.github/scripts/upload-sbom.py'
       - '.github/workflows/sbom-scan.yaml'
 
 permissions:
@@ -53,13 +54,13 @@ jobs:
       # Match the in-cluster trivy-operator so the numbers stay comparable.
       - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
         with:
-          version: v0.74.0
+          version: v0.75.0
           cache: true
 
       - name: Collect pinned images
         id: images
         run: |
-          scripts/collect-images.py | tee images.txt
+          .github/scripts/collect-images.py | tee images.txt
           echo "count=$(wc -l < images.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Warm Trivy database
@@ -95,16 +96,16 @@ jobs:
         run: |
           if [ -z "${DT_API_KEY}" ]; then
             echo "::warning title=Upload skipped::DT_API_KEY is not set; see README"
-            scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
+            .github/scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
           elif [ "${DRY_RUN}" = "true" ]; then
-            scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
+            .github/scripts/upload-sbom.py --dry-run 'sbom/*.cdx.json'
           else
-            scripts/upload-sbom.py 'sbom/*.cdx.json'
+            .github/scripts/upload-sbom.py 'sbom/*.cdx.json'
           fi
 
       - name: Keep the SBOMs
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: sbom
           path: sbom/

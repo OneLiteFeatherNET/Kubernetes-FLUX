@@ -1,0 +1,72 @@
+# External path-style S3 endpoint via Cloudflare Tunnel. The host is deliberately
+# NOT in the CephObjectStore dnsNames, which is what makes RGW serve it path-style.
+# Cloudflare caps request bodies at 100 MB — large single-shot uploads need Envoy.
+# outline.onelitefeather.dev/doc/betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: s3-path-cloudflare-tunnel
+  namespace: rook-ceph-fr01
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: s3-path.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rook-ceph-rgw-feather-s3
+                port:
+                  number: 80
+---
+# Public path-style endpoint for the canonical host. Envoy claims the same host
+# internally, but its LB is internal-only — this tunnel is the only public route.
+# The same 100 MB body cap applies.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: s3-cloudflare-tunnel
+  namespace: rook-ceph-fr01
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: s3.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rook-ceph-rgw-feather-s3
+                port:
+                  number: 80
+---
+# Second public path-style endpoint. Older Outline records (team avatars) store
+# absolute URLs against this host, so it has to keep resolving; it is in the
+# CephObjectStore dnsNames for path-style, same 100 MB body cap as above.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-s3-cloudflare-tunnel
+  namespace: rook-ceph-fr01
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: api-s3.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rook-ceph-rgw-feather-s3
+                port:
+                  number: 80

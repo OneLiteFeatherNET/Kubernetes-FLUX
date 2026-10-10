@@ -1,0 +1,208 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: penpot
+  namespace: penpot
+spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          # Covers frontend, backend, exporter and mcp — the chart renders all
+          # four as Deployments and none of them carry a priority class.
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          # The chart already runs every component non-root as uid 1001 with
+          # drop-ALL and no privilege escalation; a pod-level seccomp profile
+          # was the only thing missing (KSV-0104, 5 workloads). Strategic
+          # merge rather than `op: add` so the existing fsGroup 1001 survives.
+          - target:
+              kind: Deployment
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: not-used-target-selects
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      seccompProfile:
+                        type: RuntimeDefault
+  values:
+    config:
+      publicUri: "https://penpot.onelitefeather.net"
+      # Deviates from the chart default on two points: registration is off
+      # (this is a team instance, not a public one) and enable-smtp is absent
+      # because the cluster has no shared mail relay. Consequence: no invite
+      # mails and no password reset by mail; accounts are created manually.
+      # enable-mcp is the ONLY switch for the MCP component — the chart's
+      # penpot.mcpEnabled helper greps exactly this string, there is no
+      # mcp.enabled value.
+      # Registration has to be ON: Penpot provisions an OIDC user by *creating*
+      # a profile on first login, and disable-registration rejected exactly that
+      # with error=registration-disabled. There is no "only register via OIDC"
+      # flag -- registration is one global switch.
+      #
+      # So the gate is moved elsewhere: password login is switched off, leaving
+      # Entra as the only way in. That matters because this cluster has no SMTP
+      # relay, so disable-email-verification is required, and registration +
+      # password login + no verification together would let anyone claim an
+      # @onelitefeather.net address they do not own.
+      #
+      # It has to be spelled `disable-login-with-password`, not merely omitted.
+      # The chart renders PENPOT_FLAGS as "$PENPOT_FLAGS <ours>", so these are
+      # ADDITIVE to the image's built-in defaults -- and login-with-password is
+      # one of those defaults. Leaving it out kept it enabled; the running pod
+      # reported `login-with-password` in its startup flags the whole time.
+      #
+      # enable-mcp is the ONLY switch for the MCP component; the chart's
+      # penpot.mcpEnabled helper greps exactly this string.
+      flags: "enable-registration disable-login-with-password enable-login-with-oidc disable-email-verification enable-mcp"
+      # Second gate: even through Entra, only this domain may be provisioned.
+      registrationDomainWhitelist: "onelitefeather.net"
+      telemetryEnabled: false
+
+      # Penpot's default connection pool is 60, and it holds all of them open
+      # even while completely idle -- `pg_stat_activity` showed 60/60 in state
+      # `idle`. On a shared cluster with max_connections=200 that is a sixth of
+      # everything for one dormant app, and it helped push the primary to 207
+      # connections, at which point Postgres started refusing new ones with
+      # "remaining connection slots are reserved" and Sentry's login broke.
+      #
+      # 10 is ample for this team's usage; raise it if the backend ever reports
+      # pool exhaustion.
+      #
+      # The names matter and are not documented upstream: an earlier attempt
+      # with PENPOT_DATABASE_POOL_MAX was silently ignored. The backend prints
+      # the values it actually applied, which is the only reliable check:
+      #
+      #   kubectl -n penpot logs deploy/penpot-backend \
+      #     | grep "initialize connection pool"
+      #   ... min-size=60, max-size=60      <- before, the default
+      #
+      # min-size matters as much as max-size: Penpot opens the minimum eagerly
+      # and holds it, which is why an idle instance sat at exactly 60.
+      extraEnvs:
+        - name: PENPOT_DATABASE_MIN_POOL_SIZE
+          value: "5"
+        - name: PENPOT_DATABASE_MAX_POOL_SIZE
+          value: "10"
+
+      # Microsoft Entra ID — the same tenant the rest of the cluster already
+      # authenticates against (dependency-track, apus, grafana). Penpot
+      # auto-discovers the endpoints from baseURI, so authURI/tokenURI/userURI
+      # stay unset.
+      providers:
+        existingSecret: penpot-oidc
+        secretKeys:
+          oidcClientIDKey: oidc-client-id
+          oidcClientSecretKey: oidc-client-secret
+        oidc:
+          enabled: true
+          baseURI: "https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0"
+          # Both of these override chart defaults that would break login:
+          # scopes defaults to the literal placeholder "scope1 scope2", and
+          # roles defaults to "designer developer". Penpot needs at least name
+          # and email on the userinfo response; role gating is off on purpose.
+          scopes: "openid profile email"
+          roles: ""
+
+      # The -rw service directly, NOT the PgBouncer pooler — same reasoning as
+      # n8n: PgBouncer rejects some startup parameters and Penpot is untested
+      # against it here.
+      postgresql:
+        host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
+        port: 5432
+        database: penpot
+        existingSecret: penpot-db
+        secretKeys:
+          usernameKey: username
+          passwordKey: password
+
+      # Shared Dragonfly instance, dedicated DB 13 (see
+      # https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te). The chart wants one complete URI
+      # in a single key, not host/port/password split out.
+      redis:
+        existingSecret: penpot-redis
+        secretKeys:
+          redisUriKey: redis-uri
+
+      objectsStorage:
+        storageBackend: s3
+        s3:
+          bucket: penpot
+          region: us-east-1
+          existingSecret: penpot-s3
+          secretKeys:
+            accessKeyIDKey: access-key-id
+            secretAccessKey: secret-access-key
+            endpointURIKey: endpoint-uri
+
+      existingSecret: penpot-core
+      secretKeys:
+        apiSecretKey: api-secret-key
+
+    # Assets live in Ceph S3. The chart default is true, which would otherwise
+    # provision an unused 20Gi RWO volume alongside the S3 backend.
+    persistence:
+      assets:
+        enabled: false
+
+    # Exposed via Cloudflare Tunnel (see ingress.yaml); the chart Ingress only
+    # covers the frontend service anyway and would not reach the MCP ports.
+    ingress:
+      enabled: false
+
+    # Every resources block in this chart defaults to {}, which leaves each
+    # component BestEffort and first in line for eviction. Values below are
+    # starting points, to be revisited against `kubectl top` once real usage
+    # settles.
+    backend:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 250m
+          memory: 1Gi
+        limits:
+          memory: 2Gi
+
+    # nginx plus an entrypoint that rewrites the built JS bundle on every start.
+    # That rewrite spikes well past what steady-state nginx needs: a 256Mi limit
+    # OOMKilled the container four times before it ever served a request.
+    frontend:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 25m
+          memory: 128Mi
+        limits:
+          memory: 1Gi
+
+    # Headless browser for PDF/PNG export — memory-hungry by nature.
+    exporter:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 1500Mi
+
+    # The chart's MCP Deployment defines no liveness or readiness probes, so a
+    # wedged pod will not be restarted automatically.
+    mcp:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          memory: 512Mi

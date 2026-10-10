@@ -1,0 +1,24 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-security
+  namespace: flux-system
+spec:
+  # Trivy operator (ClientServer). The server PVC needs storage; ServiceMonitor CRDs come from observability (via platform).
+  dependsOn:
+    - name: foundation-storage
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/security
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

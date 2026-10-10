@@ -1,0 +1,57 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: stelaris-ui-dev
+  namespace: stelaris-dev
+spec:
+  releaseName: stelaris-ui-dev
+  interval: 1m0s
+  install:
+    remediation:
+      retries: 3
+  # The source in foundation-sources tracks the newest chart release, but the chart's
+  # appVersion no longer decides the image tag here: values.image.tag below is
+  # kept current by ImageUpdateAutomation/stelaris-dev (foundation-sources), which
+  # rolls out every develop image as CI on the stelaris repo pushes it. prod
+  # (stelaris/release.yaml) still gets both the chart and the image from the
+  # chart's appVersion - only dev has this override.
+  chartRef:
+    kind: OCIRepository
+    name: stelaris-ui-dev
+    namespace: flux-system
+  values:
+    # Single replica, no PDB -> dev is best-effort and yields to prod under
+    # pressure. Only the backend it talks to and the hostname differ from prod.
+    replicaCount: 1
+    podDisruptionBudget:
+      enabled: false
+    image:
+      registry: harbor.onelitefeather.dev
+      repository: onelitefeather/stelaris
+      # Kept current by ImageUpdateAutomation/stelaris-dev. Left empty for now:
+      # no develop-tagged image exists in Harbor until the companion stelaris CI
+      # PR merges, and an empty tag falls back to the chart's appVersion (see
+      # charts/stelaris-ui/templates/_helpers.tpl in the stelaris repo), so dev
+      # keeps today's behaviour until the first develop image lands and the
+      # automation overwrites this value.
+      tag: "develop-1791656583-2e7da68" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
+    imagePullSecrets:
+      - name: harbor-pull
+    # Read by the app at startup from /config.json, which the chart mounts as a
+    # Secret. nginx serves that file per request, so changing it needs no rollout.
+    config:
+      backendUrl: https://vulpes-backend-dev.apps.onelite.feather
+      generatorUrl: https://vulpes-generator-dev.apps.onelite.feather
+    # The image ships connect-src 'self' https:, because an image that is built
+    # once and promoted cannot know its backend. Naming them turns "any HTTPS
+    # host" into "these two". The unsafe-* entries are Flutter's, not ours - its loader
+    # bootstraps from an inline script and compiles Wasm at runtime.
+    nginx:
+      contentSecurityPolicy: >-
+        default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; child-src 'self' blob:; manifest-src 'self'; connect-src 'self' https://vulpes-backend-dev.apps.onelite.feather https://vulpes-generator-dev.apps.onelite.feather
+    # Routed through Envoy Gateway via httproute.yaml, not an Ingress.
+    ingress:
+      enabled: false
+    podLabels:
+      logs.onelitefeather.net/format: json
+      logs.onelitefeather.net/env: dev

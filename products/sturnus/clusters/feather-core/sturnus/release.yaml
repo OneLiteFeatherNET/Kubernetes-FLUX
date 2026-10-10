@@ -1,0 +1,158 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sturnus
+  namespace: sturnus
+spec:
+  # The chart has no top-level priorityClassName value (unlike outline's/
+  # vikunja's chart) -- inject it post-render the same way bluemap/
+  # dependency-track/grafana/penpot/reposilite/sentry/shlink already do for
+  # their own charts. Applies to all three Deployments (bot, link, worker).
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+  values:
+    # The chart defaults to harbor.onelitefeather.dev/sturnus/sturnus, which
+    # does not exist: the release workflow pushes to onelitefeather/sturnus
+    # (`image-name` in .github/workflows/release-please.yml), alongside otis,
+    # blackhole and vulpes. Harbor answers 401 rather than 404 for a missing
+    # repository in a private project, so the wrong path looks like an auth
+    # failure.
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/sturnus
+
+    imagePullSecrets:
+      - name: harbor-pull
+
+    podLabels:
+      logs.onelitefeather.net/env: prod
+
+    commonEnv:
+      # Traces and metrics to the cluster's own collector. `alloy-receiver`
+      # exposes OTLP on 4317 (gRPC) and 4318 (HTTP) and fans out to Tempo;
+      # the base URL carries no /v1/traces suffix, the SDK appends it.
+      #
+      # Empty is the off switch and was the default until now. Turning it on
+      # is what makes 0.6.0's transcription metrics reach anything: the
+      # real-time factor is the number that would have made the defect this
+      # release exists for -- 100 minutes of audio "decoded" in 43 seconds --
+      # visible as an impossible rate rather than as an empty transcript
+      # indistinguishable from a silent participant.
+      STURNUS_OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.grafana.svc:4318"
+
+      # The three non-secret Outline settings every component or the OAuth
+      # flow needs. None is a credential: an OAuth client id is public by
+      # design and the other two are addresses, so they belong here rather
+      # than in the SOPS secret beside them.
+      #
+      # The redirect URI must match both the host in ingress.yaml in this
+      # directory and the redirect URI registered on the Outline OAuth
+      # application, or the flow fails on a redirect_uri mismatch after the
+      # user has already consented. The path is fixed by the link server's
+      # own route table (sturnus.infrastructure.linkserver: GET
+      # /oauth/callback).
+      STURNUS_OUTLINE_BASE_URL: "https://outline.onelitefeather.dev"
+      STURNUS_OUTLINE_REDIRECT_URI: "https://sturnus.onelitefeather.dev/oauth/callback"
+      # From the Outline OAuth application (Settings -> Applications). Public
+      # by design, so it stays in plain configuration -- only the matching
+      # client secret goes in the SOPS secret beside it.
+      STURNUS_OUTLINE_CLIENT_ID: "kicsnq6nr7dy56efy4r9"
+
+      # Internal RGW Service, not the public s3.onelitefeather.net endpoint
+      # (same endpoint the CNPG barman ObjectStore and the bluemap render Job
+      # use -- see foundation/databases/clusters/feather-core/postgresql/object-store.yaml).
+      # bot uploads whole recordings and worker downloads+decrypts them; the
+      # public route runs through the Cloudflare Tunnel, which caps request
+      # bodies at 100 MB (see foundation/storage/.../rook-fr01/s3-external-tunnel.yaml) -- staying
+      # in-cluster avoids that cap entirely. The chart's own default
+      # (s3.onelitefeather.dev) is a placeholder, not this cluster's real
+      # domain.
+      STURNUS_S3_ENDPOINT: "http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80"
+      STURNUS_S3_BUCKET: "sturnus-audio"
+
+    # Chart default (eu-central-1) is a placeholder the chart's own comment
+    # says to override per-cluster. Every other region-pinned pod/PVC here
+    # uses fr-rosenau (see outline's release.yaml `regionAffinity` anchor and
+    # storageclasses/rbd.yaml's allowedTopologies).
+    region:
+      key: topology.kubernetes.io/region
+      value: fr-rosenau
+
+    # What is left of the block that carried 0.5.x through. The model and
+    # the resources are gone from here because the chart now sets them
+    # itself: `large-v3` is its default, and 0.6.0's rewrite hands the model
+    # the concatenated speech instead of the padded track, which took peak
+    # RSS from 5025 MB to 2441 MB on the 100-minute recording. The 12Gi
+    # limit bought while log-mel ran over the whole file is no longer
+    # needed; the chart's own 4Gi/6Gi is accurate again, and keeping a
+    # second copy of numbers that now agree is how they drift apart.
+    # Singleton bot; the chart's bot PDB (minAvailable: 1) blocks every node drain.
+    bot:
+      pdb:
+        enabled: false
+
+    worker:
+      # Put back after an OOMKill in production, 18 minutes into a job.
+      #
+      # The chart's 6Gi was adopted here on the strength of 0.6.0's measured
+      # drop from 5025 MB to 2441 MB peak. That measurement is real, and it
+      # was taken with the **tiny** model -- so the delta between the two
+      # numbers carries over to production and the absolute does not. A
+      # memory limit is an absolute. large-v3 at int8_float32 holds roughly
+      # 2 GB of weights that tiny does not, before a single frame is
+      # extracted.
+      #
+      # Not restored to a measured figure, because the honest number for
+      # this model on this hardware has not been taken yet; 12Gi is the
+      # value that was carrying production before, on a node with 64 GB that
+      # is under half allocated. Measure large-v3 end to end on a real
+      # recording before narrowing it again.
+      resources:
+        requests:
+          cpu: "4"
+          memory: 5Gi
+        limits:
+          cpu: "4"
+          memory: 12Gi
+      env:
+        # The one thing the chart cannot know: how long a job may run here.
+        # 0.5.0 made the worker transcribe the speech rather than 1% of it,
+        # and a real 100-minute recording took 99 minutes -- against the
+        # chart's 1800s default, which would have reclaimed it mid-job and
+        # started a loop that never produces a protocol. 3 hours covers a
+        # four-hour session in which one person speaks 40% of the time.
+        STURNUS_JOB_LEASE_SECONDS: "10800"
+
+    api:
+      env:
+        # The console's own OAuth callback, which is deliberately NOT the
+        # account-link one. `/oauth/callback` completes `/link` in Discord;
+        # this completes a console sign-in. Registering one URI for both
+        # would send an account link into the console and a console sign-in
+        # into the link service, and each would fail in a way that looks
+        # like the other's bug.
+        #
+        # Must match the path ingress.yaml routes to `sturnus-api` and the
+        # redirect URI registered on the Outline OAuth application, or the
+        # flow fails on a redirect_uri mismatch after the person has already
+        # consented.
+        STURNUS_CONSOLE_REDIRECT_URI: "https://sturnus.onelitefeather.dev/api/auth/callback"
+        # Where the browser is sent after a completed sign-in, and the
+        # origin the console is served from. Same host as the API above,
+        # which is what lets the session cookie stay HttpOnly and
+        # SameSite=Lax rather than becoming a cross-site cookie or a token
+        # in local storage.
+        STURNUS_CONSOLE_ORIGIN: "https://sturnus.onelitefeather.dev"
+
+    # Exposed via Cloudflare Tunnel (see ingress.yaml): the link callback,
+    # the console's API, and the console itself, all on one hostname. The
+    # chart's own HTTPRoute stays off, same as outline's httpRoute, so that
+    # Ingress is the only thing deciding what is reachable.
+    httpRoute:
+      enabled: false

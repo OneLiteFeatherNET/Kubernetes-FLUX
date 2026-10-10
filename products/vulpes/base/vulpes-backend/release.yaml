@@ -1,0 +1,23 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vulpes-backend
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: vulpes
+spec:
+  releaseName: vulpes-backend
+  # The chart comes from Harbor, released together with the image it deploys
+  # (see foundation/sources/.../sources/vulpes-backend.yaml). The exact version lives on the
+  # OCIRepository, so there is nothing to pin here.
+  chartRef:
+    kind: OCIRepository
+    name: vulpes-backend
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  #
+  values: {}

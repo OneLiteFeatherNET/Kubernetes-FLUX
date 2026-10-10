@@ -8,7 +8,7 @@ image:
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.9.2"
+  tag: ""
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -52,11 +52,17 @@ components:
         memory: 400Mi
     livenessProbe:
       initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
       httpGet:
         path: /_health
         port: http
     readinessProbe:
       initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
       httpGet:
         path: /_health
         port: http
@@ -98,11 +104,17 @@ components:
         memory: 400Mi
     livenessProbe:
       initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
       httpGet:
         path: /_health
         port: http
     readinessProbe:
       initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
       httpGet:
         path: /_health
         port: http

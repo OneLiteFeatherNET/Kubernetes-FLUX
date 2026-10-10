@@ -1,0 +1,9 @@
+# HelmReleases flux-local cannot render in CI, as clusters/feather-core::<kustomization>::<namespace>/<name>.
+# Harbor OCI charts need pull credentials (401 without them); sturnus' chart lives in another repo.
+clusters/feather-core::products::sturnus/sturnus
+clusters/feather-core::products::stelaris/stelaris-ui
+clusters/feather-core::products::vulpes/vulpes-backend
+clusters/feather-core::products::vulpes/vulpes-generator
+clusters/feather-core::products-dev::stelaris-dev/stelaris-ui-dev
+clusters/feather-core::products-dev::vulpes-dev/vulpes-backend-dev
+clusters/feather-core::products-dev::vulpes-dev/vulpes-generator-dev

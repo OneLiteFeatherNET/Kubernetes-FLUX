@@ -1,0 +1,28 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: feather-core-cluster-pg-pooler-rw-tx
+  namespace: cnpg-system
+spec:
+  cluster:
+    name: feather-core-cluster-pg
+  type: rw
+  instances: 2
+  pgbouncer:
+    # Transaction mode multiplexes idle clients (Sentry); the session pooler stays for the rest.
+    poolMode: transaction
+    parameters:
+      max_client_conn: "400"
+      # Per (user,db) pool and per pooler pod: 2 pods * 20 caps Sentry at 40 backends.
+      default_pool_size: "20"
+  template:
+    spec:
+      priorityClassName: feather-high
+      containers:
+        - name: pgbouncer
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi

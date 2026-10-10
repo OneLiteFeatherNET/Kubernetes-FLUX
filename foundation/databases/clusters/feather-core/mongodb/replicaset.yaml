@@ -1,0 +1,136 @@
+# Topology, users and provisioning:
+# https://outline.onelitefeather.dev/doc/reference-mongodb-plattform-jZ1b5CiWLc
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: feather-core-mongodb
+  namespace: mongodb
+spec:
+  members: 3
+  type: ReplicaSet
+  version: "8.0.32"
+  security:
+    authentication:
+      modes:
+        - SCRAM
+  users:
+    - name: admin
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-admin
+      roles:
+        - name: root
+          db: admin
+      scramCredentialsSecretName: admin
+    # `--oplog` reads local.oplog.rs, which `backup` alone does not cover.
+    - name: mongodb-backup
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-backup
+      roles:
+        - name: backup
+          db: admin
+        - name: clusterMonitor
+          db: admin
+      additionalConnectionStringConfig:
+        readPreference: secondary
+      scramCredentialsSecretName: backup
+    # One user per internal app, readWrite on its own database only.
+    - name: otis
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-otis
+      roles:
+        - name: readWrite
+          db: otis
+      scramCredentialsSecretName: otis
+    - name: otis-dev
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-otis-dev
+      roles:
+        - name: readWrite
+          db: otis_dev
+      scramCredentialsSecretName: otis-dev
+    - name: vulpes
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-vulpes
+      roles:
+        - name: readWrite
+          db: vulpes
+      scramCredentialsSecretName: vulpes
+    - name: vulpes-dev
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-vulpes-dev
+      roles:
+        - name: readWrite
+          db: vulpes_dev
+      scramCredentialsSecretName: vulpes-dev
+    - name: sturnus
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-sturnus
+      roles:
+        - name: readWrite
+          db: sturnus
+      scramCredentialsSecretName: sturnus
+  # Agent metrics endpoint (9216, Service port "prometheus"), scraped via servicemonitor.yaml.
+  prometheus:
+    username: prometheus
+    passwordSecretRef:
+      name: mongodb-user-prometheus
+  statefulSet:
+    spec:
+      template:
+        spec:
+          priorityClassName: feather-platform
+          nodeSelector:
+            topology.kubernetes.io/zone: fr01
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app: feather-core-mongodb-svc
+                    topologyKey: kubernetes.io/hostname
+          containers:
+            # Memory request==limit for OOM safety; no CPU limit, to avoid
+            # throttling the database, same as the CNPG cluster.
+            - name: mongod
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 2Gi
+                limits:
+                  memory: 2Gi
+            - name: mongodb-agent
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 200Mi
+                limits:
+                  memory: 500Mi
+      volumeClaimTemplates:
+        # 3 x 20Gi = ~180GiB raw at 3x replication; ceph-rbd-fr01 is Retain (two-stage PV cleanup).
+        - metadata:
+            name: data-volume
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: ceph-rbd-fr01
+            resources:
+              requests:
+                storage: 20Gi
+        - metadata:
+            name: logs-volume
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: ceph-rbd-fr01
+            resources:
+              requests:
+                storage: 2Gi
