@@ -24,18 +24,22 @@ kustomize version
 kubeconform -v
 echo "::endgroup::"
 
-# Only the upstream Kubernetes schemas. Community CRD catalogs (datreeio)
-# lag upstream and bake additionalProperties:false into every schema, so
-# valid CRD fields like CNPG spec.affinity.topologySpreadConstraints fail
-# regardless of -strict. -ignore-missing-schemas means CRDs are skipped
-# rather than rejected; core resources are still strictly validated.
+# Upstream Kubernetes schemas first, then the datreeio CRDs-catalog, pinned
+# to a commit so a catalog change cannot break CI unannounced. CRDs the
+# catalog does not know are still skipped (-ignore-missing-schemas).
+# Bump the SHA deliberately: gh api repos/datreeio/CRDs-catalog/commits/main
+DATREE_CRDS_SHA="63669a570e231d4f1f8396d229a1de512bcf0a34"
 KUBECONFORM_COMMON=(
   -ignore-missing-schemas
   -kubernetes-version "${KUBERNETES_VERSION}"
   -skip Secret
   -summary
   -schema-location default
+  -schema-location "https://raw.githubusercontent.com/datreeio/CRDs-catalog/${DATREE_CRDS_SHA}/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json"
 )
+
+# Every kubeconform run tees its summary here so the total can be reported.
+KC_LOG="$(mktemp)"
 
 rc=0
 
@@ -43,7 +47,7 @@ rc=0
 echo "::group::Validate Flux control-plane manifests"
 if ! kubeconform "${KUBECONFORM_COMMON[@]}" \
   clusters/feather-core/flux-system/gotk-components.yaml \
-  clusters/feather-core/*.yaml; then
+  clusters/feather-core/*.yaml | tee -a "${KC_LOG}"; then
   rc=1
 fi
 echo "::endgroup::"
@@ -80,7 +84,7 @@ PY
 # reads them as opaque bytes and the resulting Secrets are skipped by
 # kubeconform anyway.
 SANITIZED="$(mktemp -d)"
-trap 'rm -rf "${BIN_DIR}" "${SANITIZED}"' EXIT
+trap 'rm -rf "${BIN_DIR}" "${SANITIZED}" "${KC_LOG}"' EXIT
 cp -a . "${SANITIZED}/repo"
 SANITIZED_REPO="${SANITIZED}/repo"
 
@@ -138,11 +142,25 @@ for p in "${PATHS[@]}"; do
   fi
   echo "::group::kustomize build ${p}"
   if ! kustomize build --load-restrictor=LoadRestrictionsNone "${dir}" \
-    | kubeconform "${KUBECONFORM_COMMON[@]}"; then
+    | kubeconform "${KUBECONFORM_COMMON[@]}" | tee -a "${KC_LOG}"; then
     rc=1
   fi
   echo "::endgroup::"
 done
+
+# Resources actually checked against a schema (Valid + Invalid + Errors).
+# Skipped = Secrets plus CRDs without any schema in the catalogs.
+read -r checked skipped < <(
+  awk -F'[:,]' '/^Summary:/ {
+    for (i = 1; i <= NF; i++) {
+      if ($i ~ /Valid$/)   v += $(i+1)
+      if ($i ~ /Invalid$/) v += $(i+1)
+      if ($i ~ /Errors$/)  v += $(i+1)
+      if ($i ~ /Skipped$/) s += $(i+1)
+    }
+  } END { print v+0, s+0 }' "${KC_LOG}"
+)
+echo "Schema coverage: ${checked} resources checked against a schema, ${skipped} skipped (Secrets or no schema)"
 
 if [[ "${rc}" -ne 0 ]]; then
   echo "::error::Flux manifest validation failed"
