@@ -1,0 +1,2832 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: core_services
+    folder: Core Services
+    interval: 60s
+    rules:
+      - uid: flux-core-layer-not-ready
+        title: Flux core layer not ready
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1200
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Sustain check lives in PromQL instead of `for:`, so short reconcile blips never
+              # fire; aggregating to exactly 2 labels is a hard requirement of the Discord template.
+              expr: min_over_time((max by (exported_namespace, name) (gotk_resource_info{customresource_kind="Kustomization", ready!="True"}) or max by (exported_namespace, name) (gotk_resource_info{customresource_kind="Kustomization"}) * 0)[15m:1m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        keepFiringFor: 15m
+        annotations:
+          summary: "Flux Kustomization {{ $labels.name }} (namespace {{ $labels.exported_namespace }}) has not been Ready for 15 minutes."
+          problem: "Kustomization not Ready for >15 min"
+          service: "Flux"
+          threshold: "Ready = True (sustained 15 min)"
+          object_label: "Layer"
+          object_key: "name"
+          location_key: "exported_namespace"
+          check: "Look at the layer's status conditions first - a layer below a stuck dependency only reports that its dependency is not ready and is not the cause."
+          check_command: "flux get kustomization -A"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
+        labels:
+          severity: critical
+      - uid: core-infra-helmrelease-not-ready
+        title: Core infrastructure HelmRelease not ready
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1200
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Dropped metallb/dragonfly (never existed in 90d retention), added 9 real infra
+              # releases; descheduler stays out on purpose (optimiser, not a dependency).
+              expr: min_over_time((max by (exported_namespace, name) (gotk_resource_info{customresource_kind="HelmRelease", ready!="True", name=~"alloy-logs|alloy-metrics|alloy-receiver|ceph-csi-drivers|cert-manager|cloudflare-tunnel-ingress-controller|cnpg|envoy|grafana|kube-prometheus-stack|loki|mariadb-operator|mariadb-operator-crds|mimir|rook-ceph|spegel|step-ca|step-issuer|tempo"}) or max by (exported_namespace, name) (gotk_resource_info{customresource_kind="HelmRelease", name=~"alloy-logs|alloy-metrics|alloy-receiver|ceph-csi-drivers|cert-manager|cloudflare-tunnel-ingress-controller|cnpg|envoy|grafana|kube-prometheus-stack|loki|mariadb-operator|mariadb-operator-crds|mimir|rook-ceph|spegel|step-ca|step-issuer|tempo"}) * 0)[15m:1m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        keepFiringFor: 15m
+        annotations:
+          summary: "Flux HelmRelease {{ $labels.name }} (namespace {{ $labels.exported_namespace }}) has not been Ready for 15 minutes."
+          problem: "HelmRelease not Ready for >15 min"
+          service: "Flux"
+          threshold: "Ready = True (sustained 15 min)"
+          object_label: "Release"
+          object_key: "name"
+          location_key: "exported_namespace"
+          check: "Read the HelmRelease status; a failed upgrade usually leaves a pending-upgrade lock that has to be cleared before Flux retries."
+          check_command: "flux get helmrelease -A"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
+        labels:
+          severity: critical
+  - orgId: 1
+    name: backups
+    folder: Backups
+    interval: 60s
+    rules:
+      - uid: cnpg-backup-stale
+        title: CNPG backup stale
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # cnpg_collector_last_available_backup_timestamp never updates for
+              # plugin-based (barman-cloud) backups -- confirmed live it stays
+              # stuck at 0 even after real completed backups. cnpg_backup_stopped_at_seconds
+              # (kube-state-metrics customResourceState reading the Backup CR itself)
+              # is the metric that actually reflects reality.
+              expr: (time() - max(cnpg_backup_stopped_at_seconds{cluster="feather-core-cluster-pg", phase="completed"})) / 3600
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 24
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "No successful CloudNativePG (Postgres) backup in over 24h."
+          problem: "No backup for over 24 h"
+          service: "CloudNativePG"
+          threshold: "< 24 h since last backup"
+          value_unit: "h since last backup"
+          value_fmt: "%.1f"
+          location: "cnpg-system"
+          check: "Check whether the scheduled backup still runs and whether the S3 target accepts writes."
+          check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+        labels:
+          severity: warning
+      - uid: cnpg-backup-failing
+        title: CNPG backup failing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Same dead-metric issue as cnpg-backup-stale: the legacy
+              # cnpg_collector_last_failed_backup_timestamp metric never fires
+              # for plugin-based backups. Failed backups never get a stoppedAt
+              # (only completed ones do), so use createdAt instead: any Backup
+              # CR that entered phase=failed within the staleness window (24h).
+              expr: count(cnpg_backup_created_at_seconds{cluster="feather-core-cluster-pg", phase="failed"} > (time() - 86400)) OR vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "CloudNativePG's most recent backup attempt failed (a failure timestamp is newer than the last successful one)."
+          problem: "Backup attempt failed"
+          service: "CloudNativePG"
+          threshold: "0 failures in 24 h"
+          value_unit: "failed backups in 24 h"
+          value_fmt: "%.0f"
+          location: "cnpg-system"
+          check: "Read the failed Backup object's error field; S3 credentials and RGW user permissions are the usual cause."
+          check_command: "kubectl -n cnpg-system get backups.postgresql.cnpg.io"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+        labels:
+          severity: warning
+      - uid: mariadb-galera-backup-job-failed
+        title: MariaDB Galera backup job failed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Seconds the newest failed run is newer than the last successful one; a retry that succeeds clears it. Jobs are owned by the PhysicalBackup (no CronJob).
+              expr: max(kube_job_status_start_time{job="kube-state-metrics", namespace="mariadb-galera"} and on (namespace, job_name) (kube_job_status_failed{job="kube-state-metrics", namespace="mariadb-galera"} > 0) and on (namespace, job_name) kube_job_owner{job="kube-state-metrics", namespace="mariadb-galera", owner_name="mariadb-galera-backup"}) - max(kube_job_status_completion_time{job="kube-state-metrics", namespace="mariadb-galera"} and on (namespace, job_name) kube_job_owner{job="kube-state-metrics", namespace="mariadb-galera", owner_name="mariadb-galera-backup"}) > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          # No dashboard_url: the mariadb-galera dashboard (gnetId 13106) covers
+          # cluster health, not backup jobs, so it wouldn't add useful context here.
+          summary: "The mariadb-galera-backup CronJob's most recent Job run failed."
+          problem: "Backup CronJob failed"
+          service: "MariaDB Galera"
+          threshold: "no failed run after the last success"
+          value_unit: "s after the last success"
+          value_fmt: "%.0f"
+          location: "mariadb-galera"
+          check: "Read the log of the failed Job's pod."
+          check_command: "kubectl -n mariadb-galera get jobs"
+        labels:
+          severity: warning
+      - uid: mongodb-backup-job-failed
+        title: MongoDB backup job failed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Newest failed run newer than the last success (seconds); only CronJob-owned Jobs, so manual test Jobs never page and a successful retry clears it.
+              expr: max(kube_job_status_start_time{job="kube-state-metrics", namespace="mongodb"} and on (namespace, job_name) (kube_job_status_failed{job="kube-state-metrics", namespace="mongodb"} > 0) and on (namespace, job_name) kube_job_owner{job="kube-state-metrics", namespace="mongodb", owner_name="mongodb-backup"}) - max(kube_cronjob_status_last_successful_time{job="kube-state-metrics", namespace="mongodb", cronjob="mongodb-backup"}) > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "A Job created by the mongodb-backup CronJob failed."
+          problem: "Backup CronJob failed"
+          service: "MongoDB"
+          threshold: "no failed run after the last success"
+          value_unit: "s after the last success"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          check: "Read the log of the failed Job pod."
+          check_command: "kubectl -n mongodb get jobs"
+        labels:
+          severity: warning
+      - uid: mongodb-backup-stale
+        title: MongoDB backup stale
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # 6 h schedule plus 1 h slack; no data (CronJob never succeeded) alerts too.
+              expr: (time() - max(kube_cronjob_status_last_successful_time{job="kube-state-metrics", namespace="mongodb", cronjob="mongodb-backup"})) / 3600
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 7
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "No successful MongoDB backup in over 7 h (schedule is every 6 h)."
+          problem: "No backup for over 7 h"
+          service: "MongoDB"
+          threshold: "< 7 h since last backup"
+          value_unit: "h since last backup"
+          value_fmt: "%.1f"
+          location: "mongodb"
+          check: "Check whether the CronJob is suspended or its Jobs fail."
+          check_command: "kubectl -n mongodb get cronjob,jobs"
+        labels:
+          severity: warning
+  - orgId: 1
+    name: storage
+    folder: Storage
+    interval: 60s
+    rules:
+      - uid: mariadb-galera-pvc-usage-high
+        title: MariaDB Galera PVC usage high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Aggregating to (persistentvolumeclaim, node) is what the Discord template needs and keeps a pod reschedule (new instance label) from spawning a second alert instance.
+              expr: max by (persistentvolumeclaim, node) (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "MariaDB Galera PVC {{ $labels.persistentvolumeclaim }} on node {{ $labels.node }} is above 80% capacity."
+          problem: "PVC over 80 % full"
+          service: "MariaDB Galera"
+          threshold: "< 80 % used"
+          value_unit: "% used"
+          value_fmt: "%.1f"
+          object_label: "PVC"
+          object_key: "persistentvolumeclaim"
+          location_key: "node"
+          check: "Check binlog and tmp growth before resizing; the volume grows via storage.size in the MariaDB CR."
+          check_command: "kubectl -n mariadb-galera get pvc"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+        labels:
+          severity: warning
+      - uid: mariadb-galera-pvc-usage-critical
+        title: MariaDB Galera PVC almost full
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max by (persistentvolumeclaim, node) (kubelet_volume_stats_used_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"} / kubelet_volume_stats_capacity_bytes{namespace="mariadb-galera", persistentvolumeclaim=~"storage-mariadb-galera-.*"}) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 90
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "MariaDB Galera PVC {{ $labels.persistentvolumeclaim }} on node {{ $labels.node }} is above 90% capacity and at risk of filling up."
+          problem: "PVC over 90 % full"
+          service: "MariaDB Galera"
+          threshold: "< 90 % used"
+          value_unit: "% used"
+          value_fmt: "%.1f"
+          object_label: "PVC"
+          object_key: "persistentvolumeclaim"
+          location_key: "node"
+          check: "Check binlog and tmp growth before resizing; the volume grows via storage.size in the MariaDB CR."
+          check_command: "kubectl -n mariadb-galera get pvc"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+        labels:
+          severity: critical
+      - uid: mongodb-volume-filling
+        title: MongoDB data volume filling up
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Aggregating to (persistentvolumeclaim, node) is what the Discord template needs and keeps a pod reschedule (new instance label) from spawning a second alert instance.
+              expr: max by (persistentvolumeclaim, node) (kubelet_volume_stats_used_bytes{job="kubelet", namespace="mongodb", persistentvolumeclaim=~"data-volume-.*"} / kubelet_volume_stats_capacity_bytes{job="kubelet", namespace="mongodb", persistentvolumeclaim=~"data-volume-.*"}) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "MongoDB PVC {{ $labels.persistentvolumeclaim }} on node {{ $labels.node }} is above 80% capacity."
+          problem: "PVC over 80 % full"
+          service: "MongoDB"
+          threshold: "< 80 % used"
+          value_unit: "% used"
+          value_fmt: "%.1f"
+          object_label: "PVC"
+          object_key: "persistentvolumeclaim"
+          location_key: "node"
+          check: "Check oplog and data growth before resizing; the volume grows via the MongoDBCommunity statefulSet volumeClaimTemplates."
+          check_command: "kubectl -n mongodb get pvc"
+        labels:
+          severity: warning
+      - uid: ceph-cluster-health-warning
+        title: Ceph cluster health degraded
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(ceph_health_status)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Only rule kept as the sentinel for "Ceph telemetry is gone": ceph_health_status was
+        # present 40319/40321 min in 28 days (longest gap 1 min), so for: 10m cannot blip-fire.
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "Ceph cluster health is not HEALTH_OK (HEALTH_WARN or worse)."
+          problem: "Ceph not HEALTH_OK"
+          service: "Rook-Ceph"
+          threshold: "HEALTH_OK"
+          value_unit: "(0 = OK, 1 = WARN, 2 = ERR)"
+          value_fmt: "%.0f"
+          location: "rook-ceph-fr01"
+          check: "Read the health detail output; a single failing OSD or a stuck PG is the common case."
+          check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+        labels:
+          severity: warning
+      - uid: ceph-cluster-health-critical
+        title: Ceph cluster health critical
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(ceph_health_status)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Ceph cluster health is HEALTH_ERR."
+          problem: "Ceph HEALTH_ERR"
+          service: "Rook-Ceph"
+          threshold: "not HEALTH_ERR"
+          value_unit: "(0 = OK, 1 = WARN, 2 = ERR)"
+          value_fmt: "%.0f"
+          location: "rook-ceph-fr01"
+          check: "Read the health detail output; HEALTH_ERR usually means unfound objects, full OSDs or a down monitor quorum."
+          check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph health detail"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+        labels:
+          severity: critical
+      - uid: ceph-rgw-failed-request-rate
+        title: Ceph RGW failed request rate elevated
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: sum(rate(ceph_rgw_failed_req[5m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          # Baseline observed 2026-07-18 was 0.02-0.3 req/s; a real RGW degradation
+          # incident (Rook 1.20 upgrade, S3 access broken for non-owner users) would
+          # show as a sustained multi-request/s error rate, not baseline noise.
+          summary: "RGW failed request rate is elevated (baseline is <1/s). This is the class of failure that broke S3 access for backups/Loki/Mimir/Postgres WAL during the Rook 1.20 upgrade incident."
+          problem: "RGW failure rate elevated"
+          service: "Rook-Ceph RGW"
+          threshold: "< 5 failed req/s"
+          value_unit: "failed req/s"
+          value_fmt: "%.2f"
+          location: "rook-ceph-fr01"
+          check: "Read the RGW log for the failing status code; 403 on named (non-owner) users is the known Rook 1.20 regression."
+          check_command: "kubectl -n rook-ceph-fr01 logs -l app=rook-ceph-rgw --tail=200"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+        labels:
+          severity: warning
+      - uid: ceph-osd-usage-high
+        title: Ceph OSD usage high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Per-OSD, not cluster-aggregate: the 2026-07-26 InsufficientCapacity
+              # incident had individual OSDs at 94% (backfillfull) while the cluster-wide
+              # average still read 86.7% -- ceph-cluster-health-warning only fires once
+              # Ceph itself declares HEALTH_WARN (nearfull/backfillfull already tripped),
+              # this is the earlier leading indicator on the single most-full OSD.
+              expr: max(ceph_osd_stat_bytes_used / ceph_osd_stat_bytes) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "The most-full Ceph OSD is above 80% used. Ceph's own nearfull/backfillfull thresholds trip around here and will start rejecting large S3 uploads (InsufficientCapacity) before HEALTH_WARN fires."
+          problem: "OSD over 80 % full"
+          service: "Rook-Ceph"
+          threshold: "< 80 % on the fullest OSD"
+          value_unit: "% on the fullest OSD"
+          value_fmt: "%.1f"
+          location: "rook-ceph-fr01"
+          check: "Compare per-OSD usage; an imbalance is reweighted, a uniformly full cluster needs capacity."
+          check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+        labels:
+          severity: warning
+      - uid: ceph-osd-usage-critical
+        title: Ceph OSD usage critical
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(ceph_osd_stat_bytes_used / ceph_osd_stat_bytes) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 90
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "The most-full Ceph OSD is above 90% used -- at or past Ceph's backfillfull threshold, new writes to affected pools (including S3/RGW uploads) will start being rejected."
+          problem: "OSD over 90 % full"
+          service: "Rook-Ceph"
+          threshold: "< 90 % on the fullest OSD"
+          value_unit: "% on the fullest OSD"
+          value_fmt: "%.1f"
+          location: "rook-ceph-fr01"
+          check: "At this level writes to affected pools are already being rejected - free space or add capacity, reweighting alone is unlikely to be enough."
+          check_command: "kubectl -n rook-ceph-fr01 exec deploy/rook-ceph-tools -- ceph osd df"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/tbO9LAiZK/ceph-cluster"
+        labels:
+          severity: critical
+  - orgId: 1
+    name: databases
+    folder: Databases
+    interval: 60s
+    rules:
+      - uid: cnpg-connection-saturation-warning
+        title: CNPG Postgres connection saturation high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          # Threshold is against the live max_connections setting (queried dynamically),
+          # not a hardcoded value - stays correct if the setting is changed again.
+          summary: "CNPG Postgres connections are above 80% of max_connections. Idle pools from Harbor/Dependency-Track have starved other consumers (e.g. outline-collab) before."
+          problem: "Postgres connections over 80 %"
+          service: "CloudNativePG"
+          threshold: "< 80 % of max_connections"
+          value_unit: "% of max_connections"
+          value_fmt: "%.1f"
+          location: "cnpg-system"
+          check: "Find the database with the largest idle pool; Harbor and Dependency-Track hold connections they do not use."
+          check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
+          dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+        labels:
+          severity: warning
+      - uid: cnpg-connection-saturation-critical
+        title: CNPG Postgres connection saturation critical
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: sum(cnpg_backends_total{namespace="cnpg-system"}) / scalar(max(cnpg_pg_settings_setting{namespace="cnpg-system", name="max_connections"})) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 90
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "CNPG Postgres connections are above 90% of max_connections - close to exhausting the shared pool."
+          problem: "Postgres connections over 90 %"
+          service: "CloudNativePG"
+          threshold: "< 90 % of max_connections"
+          value_unit: "% of max_connections"
+          value_fmt: "%.1f"
+          location: "cnpg-system"
+          check: "Find the database with the largest idle pool and cap it; a restart storm at this level starves every other consumer."
+          check_command: "kubectl -n cnpg-system exec feather-core-cluster-pg-1 -- psql -Atc \"select datname,count(*) from pg_stat_activity group by 1 order by 2 desc\""
+          dashboard_url: "https://grafana.apps.onelite.feather/d/cloudnative-pg"
+        labels:
+          severity: critical
+      - uid: mariadb-galera-cluster-degraded
+        title: MariaDB Galera cluster degraded
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: min(mysql_global_status_wsrep_cluster_size{namespace="mariadb-galera"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        # In 28 days wsrep_cluster_size was below 3 for 7 minutes total, in exactly one
+        # episode >=2m and none >=5m - so 2m paged monthly for a rolling restart.
+        for: 5m
+        annotations:
+          # min() across all 3 nodes' own view of cluster size - a node that loses
+          # connectivity to its peers (e.g. the Flannel host-gw/MTU incident) reports a
+          # smaller cluster size on its own, so this catches split-brain, not just a
+          # fully-down node.
+          summary: "MariaDB Galera cluster size has dropped below 3 - the cluster is degraded or split-brained."
+          problem: "Galera cluster below 3 nodes"
+          service: "MariaDB Galera"
+          threshold: "3 nodes"
+          value_unit: "nodes in the cluster"
+          value_fmt: "%.0f"
+          location: "mariadb-galera"
+          check: "Check wsrep_cluster_size and wsrep_cluster_status on each node; a node that reports a different cluster UUID is split-brained."
+          check_command: "kubectl -n mariadb-galera exec mariadb-galera-0 -- mariadb -e \"show status like 'wsrep_cluster%'\""
+          dashboard_url: "https://grafana.apps.onelite.feather/d/pXgz0qFGk/galera-mariadb-overview"
+        labels:
+          severity: critical
+      - uid: mongodb-no-primary
+        title: MongoDB replica set has no primary
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Each pod reports itself; sum over the 3 pods is 1 while healthy. No data also alerts.
+              expr: sum(mongodb_repl_isWritablePrimary{namespace="mongodb"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "No MongoDB member reports isWritablePrimary - the replica set cannot accept writes (or the metrics endpoint is not scraped)."
+          problem: "MongoDB has no primary"
+          service: "MongoDB"
+          threshold: "1 primary"
+          value_unit: "primaries"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          check: "Check the replica set state seen by each member."
+          check_command: "kubectl -n mongodb get mdbc,pods"
+        labels:
+          severity: critical
+      - uid: mongodb-member-unhealthy
+        title: MongoDB replica set member unhealthy
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # min over all reporters: one pod that cannot reach a peer is enough. The FQDN member_idx is shortened to the pod name in "member".
+              expr: label_replace(min by (member_idx) (mongodb_members_health{namespace="mongodb"}), "member", "$1", "member_idx", "([^.]+)\\..*")
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "A MongoDB replica set member is reported unhealthy (health != 1) by the other members, or its metrics are missing."
+          problem: "MongoDB member unhealthy"
+          service: "MongoDB"
+          threshold: "health = 1"
+          value_unit: "member health"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          object_label: "Member"
+          object_key: "member"
+          check: "Check the pod and the agent log of the affected member."
+          check_command: "kubectl -n mongodb get pods -l app=feather-core-mongodb-svc"
+        labels:
+          severity: critical
+      - uid: mongodb-replication-lag
+        title: MongoDB replication lag high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # optimeDate is epoch ms. Spread per reporting pod over healthy members only (an unreachable member reports 0).
+              expr: max(max by (pod) (mongodb_members_optimeDate{namespace="mongodb"} and on (pod, member_idx) (mongodb_members_health{namespace="mongodb"} == 1)) - min by (pod) (mongodb_members_optimeDate{namespace="mongodb"} and on (pod, member_idx) (mongodb_members_health{namespace="mongodb"} == 1))) / 1000
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 60
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "A MongoDB secondary is more than 60 s behind the newest optime in the replica set."
+          problem: "MongoDB replication lag over 60 s"
+          service: "MongoDB"
+          threshold: "< 60 s"
+          value_unit: "s lag"
+          value_fmt: "%.0f"
+          location: "mongodb"
+          check: "Compare optimeDate per member; check disk and network of the lagging member."
+          check_command: "kubectl -n mongodb exec feather-core-mongodb-0 -c mongod -- mongosh --eval \"rs.printSecondaryReplicationInfo()\""
+        labels:
+          severity: warning
+  - orgId: 1
+    name: cluster_health
+    folder: Core Services
+    interval: 60s
+    rules:
+      - uid: pods-stuck-terminating
+        title: Pods stuck in Terminating
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # "OR vector(0)" always yields a series, so the noDataState path is unreachable here.
+              expr: count(time() - kube_pod_deletion_timestamp > 900) OR vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "One or more pods have been stuck in Terminating for over 15 minutes. Matches the containerd shim task.Delete hang on SIGKILL teardown seen before."
+          problem: "Pods stuck in Terminating"
+          service: "Kubernetes"
+          threshold: "0 pods stuck > 15 min"
+          value_unit: "pods stuck"
+          value_fmt: "%.0f"
+          check: "Check the containerd shim on the affected node - a task.Delete hang on SIGKILL teardown holds the pod forever."
+          check_command: "kubectl get pods -A | grep Terminating"
+        labels:
+          severity: warning
+  - orgId: 1
+    name: observability
+    folder: Observability
+    interval: 60s
+    rules:
+      - uid: observability-pipeline-no-data
+        title: Observability pipeline producing no data
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Do NOT use absent() here: it returns empty when healthy, which is the
+              # opposite of what noDataState: Alerting needs. count() relies on NoData.
+              expr: count(up{job="kubelet", metrics_path="/metrics"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "No kubelet metrics are reaching Mimir at all - the Alloy scrape/remote-write pipeline is likely down. Every other alert in this cluster depends on this pipeline and will read as falsely healthy while this fires."
+          problem: "No kubelet metrics in Mimir"
+          service: "Alloy / Mimir"
+          threshold: ">= 1 kubelet target"
+          value_unit: "kubelet targets"
+          value_fmt: "%.0f"
+          location: "grafana"
+          check: "Every other alert reads as falsely healthy while this fires - treat it first. Check alloy-metrics scrape and remote-write."
+          check_command: "kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
+        labels:
+          severity: critical
+      - uid: kube-state-metrics-down
+        title: kube-state-metrics producing no data
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Same count()/NoData pattern as observability-pipeline-no-data above, not
+              # absent(): absent() is empty while healthy, which reads as NoData forever.
+              expr: count(up{job="kube-state-metrics"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          # No dashboard_url: the Kubernetes Objects dashboard is built from the same
+          # metrics, so it is empty exactly while this alert fires.
+          summary: "kube-state-metrics has stopped producing metrics. Both Flux alerts read gotk_resource_info from it, so they report healthy while blind for as long as this fires."
+          problem: "No kube-state-metrics data"
+          service: "kube-state-metrics"
+          threshold: ">= 1 target up"
+          value_unit: "targets up"
+          value_fmt: "%.0f"
+          location: "monitoring"
+          check: "Both Flux alerts go blind while this fires. Check the kube-state-metrics pod and its ServiceMonitor."
+          check_command: "kubectl -n monitoring get pods -l app.kubernetes.io/name=kube-state-metrics"
+        labels:
+          severity: critical
+      - uid: alert-notifications-failing
+        title: Alert notifications failing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Both counters are registered WithSkipZeroValueMetrics, so they do not exist
+              # at all until they were once >0 - a bare sum() would read as NoData instead
+              # of 0. Hence "or vector(0)" per counter. Both are summed because the webhook
+              # notifier failure path may bump either one.
+              expr: (sum(increase(grafana_alerting_notification_requests_failed_total[10m])) or vector(0)) + (sum(increase(grafana_alerting_notifications_failed_total[10m])) or vector(0))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # "or vector(0)" always yields a value while Mimir is reachable, so NoData here only
+        # means the datasource itself is down - already covered by observability-pipeline-no-data,
+        # and firing this rule on it would falsely claim notifications are broken.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Grafana failed to deliver alert notifications, so Discord messages are being dropped - the webhook notifier does not retry. Alerts themselves keep evaluating and stay visible in the Grafana alerting UI, so use it as the source of truth until this clears."
+          problem: "Discord delivery failing"
+          service: "Grafana Alerting"
+          threshold: "0 failures in 10 min"
+          value_unit: "failed deliveries"
+          value_fmt: "%.0f"
+          location: "grafana"
+          check: "The webhook notifier does not retry, so these messages are gone. Use the Grafana alerting UI as the source of truth until this clears."
+          check_command: "kubectl -n grafana logs -l app.kubernetes.io/name=grafana --tail=200 | grep -i \"Notify for alerts failed\""
+          runbook_url: "https://outline.onelitefeather.dev/doc/explanation-betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra"
+        labels:
+          severity: critical
+      - uid: alerting-provisioning-failing
+        title: Alerting provisioning failing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: loki
+            model:
+              editorMode: code
+              queryType: instant
+              # Two signatures: the sidecar reload path (HTTP 500) and the fatal startup
+              # path. sum() collapses both replicas into one message.
+              # != "tsdb.loki" excludes Grafana's own query-evaluation log line (self-match).
+              expr: 'sum(count_over_time({namespace="grafana", container="grafana"} != "tsdb.loki" |~ "Failed to provision alerting|provisioning/alerting/reload.*status=500" [10m]))'
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Inverted from the metric rules: a log-based query returns NOTHING while healthy, so
+        # NoData is the good case and must not fire. execErrState stays Alerting - if Loki
+        # itself errors we are blind to this failure and want to hear about it.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Grafana rejected the provisioned alerting configuration. Alerting comes from a sidecar-collected ConfigMap and is applied through the reload endpoint, so a bad file is an HTTP 500 instead of a crash: Grafana keeps serving the last configuration it accepted, and contact points, templates, notification policies and rules silently no longer match git."
+          problem: "Alerting provisioning rejected"
+          service: "Grafana Alerting"
+          threshold: "0 errors in 10 min"
+          value_unit: "provisioning errors"
+          value_fmt: "%.0f"
+          location: "grafana"
+          check: "Grafana keeps serving the last accepted configuration, so contact points, templates and rules silently no longer match git."
+          check_command: "kubectl -n grafana logs -l app.kubernetes.io/name=grafana --tail=200 | grep -i \"provisioning/alerting/reload\""
+          runbook_url: "https://outline.onelitefeather.dev/doc/explanation-betriebsfallen-im-feather-core-cluster-qgL9Dgd4Ra"
+        labels:
+          severity: critical
+  - orgId: 1
+    name: node_health
+    folder: Core Services
+    interval: 60s
+    rules:
+      - uid: node-not-ready
+        title: Node not Ready
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Always has data, so noDataState: OK is correct. Do NOT write
+              # `{status="true"} == 0` — the filtered value is 0 and gt 0 never fires.
+              expr: max by (node) (kube_node_status_condition{condition="Ready", status=~"false|unknown"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Node {{ $labels.node }} is NotReady or Unreachable."
+          problem: "Node NotReady/Unreachable"
+          service: "Kubernetes Node"
+          threshold: "Ready = True"
+          object_label: "Node"
+          object_key: "node"
+          check: "Check the node's conditions and, if it is unreachable, whether the machine itself is up."
+          check_command: "kubectl get nodes -o wide"
+        labels:
+          severity: critical
+      - uid: kubelet-down
+        title: Kubelet down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # min by (node) keeps a real 0/1 value per node instead of
+              # filtering healthy nodes out of the result, so the series
+              # never disappears while the scrape pipeline is alive. Total
+              # pipeline loss is already covered by observability-pipeline-no-data.
+              expr: min by (node) (up{job="kubelet", metrics_path="/metrics"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Kubelet on node {{ $labels.node }} is not being scraped - the node is down, the kubelet is dead, or its serving cert expired."
+          problem: "Kubelet not being scraped"
+          service: "Kubelet"
+          threshold: "scrape up = 1"
+          object_label: "Node"
+          object_key: "node"
+          check: "The node is down, the kubelet is dead, or its serving certificate expired - check the certificate before rebooting anything."
+          check_command: "kubectl get nodes -o wide"
+        labels:
+          severity: critical
+      - uid: node-clock-unsynchronised
+        title: Node clock not synchronised
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # machine.time.servers is /dev/ptp0 only (talos repo:
+              # clusters/feather-core/talos/patches/common/time-ptp.yaml) and
+              # Talos makes PTP and NTP mutually exclusive - there is NO NTP
+              # fallback. A live-migration onto a host without ptp_kvm leaves
+              # the clock free-running silently. node-exporter series carry
+              # instance (IP:9100), not node.
+              expr: min by (instance) (node_timex_sync_status)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Clock on {{ $labels.instance }} is not synchronised - /dev/ptp0 is the only time source and there is no NTP fallback."
+          problem: "Clock not synchronised"
+          service: "Node clock (PTP)"
+          threshold: "sync status = 1"
+          object_label: "Node"
+          object_key: "instance"
+          check: "/dev/ptp0 is the only time source and there is no NTP fallback, so an unsynchronised node stays unsynchronised."
+          check_command: "talosctl -n <node> time"
+        labels:
+          severity: warning
+      - uid: node-clock-offset-high
+        title: Node clock offset high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Current cluster-wide max is 5.7 microseconds; 50ms is ~4
+              # orders of magnitude above that and well below the point
+              # where Galera/etcd/TLS start misbehaving.
+              expr: max by (instance) (abs(node_timex_offset_seconds))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.05
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Clock offset on {{ $labels.instance }} exceeds 50ms. Galera certification, etcd leases and TLS validity all assume a tight cluster clock."
+          problem: "Clock offset over 50 ms"
+          service: "Node clock (PTP)"
+          threshold: "< 50 ms offset"
+          value_unit: "s offset"
+          value_fmt: "%.3f"
+          object_label: "Node"
+          object_key: "instance"
+          check: "Galera certification, etcd leases and TLS validity all assume a tight cluster clock."
+          check_command: "talosctl -n <node> time"
+        labels:
+          severity: warning
+  - orgId: 1
+    name: certificates
+    folder: Core Services
+    interval: 60s
+    rules:
+      - uid: certificate-expiring-soon
+        title: Certificate expiring within 14 days
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # cert-manager's own metric. The certificate's namespace is in
+              # exported_namespace (namespace= is cert-manager, where the
+              # controller runs). Lowest value across the 20 series today is
+              # ~72.7 days, so this will not fire on merge.
+              # noDataState MUST stay OK: if a Certificate is deleted its
+              # series vanishes, and "no certs" is not an emergency.
+              expr: min by (exported_namespace, name) ((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 14
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 1h
+        annotations:
+          summary: "Certificate {{ $labels.name }} in namespace {{ $labels.exported_namespace }} expires in under 14 days and has not renewed."
+          problem: "Certificate expires in <14 days"
+          service: "cert-manager"
+          threshold: "> 14 days left"
+          value_unit: "days left"
+          value_fmt: "%.1f"
+          object_label: "Certificate"
+          object_key: "name"
+          location_key: "exported_namespace"
+          check: "Check the Certificate's conditions and the issuer; a renewal that has not started points at the issuer, not the certificate."
+          check_command: "kubectl get certificate -A | grep -v True"
+        labels:
+          severity: warning
+      - uid: certificate-expiring-critical
+        title: Certificate expiring within 3 days
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: min by (exported_namespace, name) ((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Certificate {{ $labels.name }} in namespace {{ $labels.exported_namespace }} expires in under 3 days. Renewal has failed."
+          problem: "Certificate expires in <3 days"
+          service: "cert-manager"
+          threshold: "> 3 days left"
+          value_unit: "days left"
+          value_fmt: "%.1f"
+          object_label: "Certificate"
+          object_key: "name"
+          location_key: "exported_namespace"
+          check: "Renewal has already failed - read the CertificateRequest's error before the certificate expires."
+          check_command: "kubectl get certificate -A | grep -v True"
+        labels:
+          severity: critical
+  - orgId: 1
+    name: minecraft
+    folder: Minecraft
+    interval: 60s
+    rules:
+      - uid: minecraft-tps-low
+        title: Minecraft TPS low
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: min by (job) (minecraft_server_tps_ratio{window="1m"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 15
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Server {{ $labels.job }} 1m TPS has dropped below 15 - players will notice lag."
+          problem: "TPS below 15"
+          service: "MinecraftOTEL"
+          threshold: ">= 15 TPS (1m)"
+          value_unit: "TPS"
+          value_fmt: "%.2f"
+          object_label: "Server"
+          object_key: "job"
+          check: "Check the JVM dashboard for GC pauses and the detail dashboard for entity/chunk counts on this server."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-fleet/minecraftotel-fleet"
+        labels:
+          severity: warning
+      - uid: minecraft-mspt-high
+        title: Minecraft MSPT p95 high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max by (job) (minecraft_server_mspt_p95_milliseconds)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 50
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "Server {{ $labels.job }} p95 tick time is above the 50ms (20 TPS) budget."
+          problem: "MSPT p95 over 50 ms"
+          service: "MinecraftOTEL"
+          threshold: "< 50 ms p95"
+          value_unit: "ms"
+          value_fmt: "%.1f"
+          object_label: "Server"
+          object_key: "job"
+          check: "Check the JVM dashboard for GC pauses and the detail dashboard's tick duration heatmap for spike patterns."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-fleet/minecraftotel-fleet"
+        labels:
+          severity: warning
+      - uid: minecraft-heap-high
+        title: Minecraft JVM heap usage high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # ">0" on the limit series drops any pool that reports an unbounded/unknown max
+              # (JVM MemoryUsage.getMax() == -1), so a job never divides by a non-positive limit.
+              expr: sum by (job) (jvm_memory_used_bytes{jvm_memory_type="heap", job=~"(minecraft|proxy)/.+"}) / sum by (job) (jvm_memory_limit_bytes{jvm_memory_type="heap", job=~"(minecraft|proxy)/.+"} > 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.9
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Server {{ $labels.job }} heap usage is above 90% of its limit - risks GC pressure or OOM."
+          problem: "Heap usage over 90 %"
+          service: "MinecraftOTEL"
+          threshold: "< 90 % of heap limit"
+          value_unit: "% of heap limit"
+          value_fmt: "%.1f"
+          object_label: "Server"
+          object_key: "job"
+          check: "Check the JVM dashboard's heap used vs limit and GC pause rate panels for this server."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the MinecraftOTEL dashboards"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-jvm/minecraftotel-jvm"
+        labels:
+          severity: warning
+      - uid: minecraft-server-down
+        title: Core Minecraft server down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Servers seen in the last 24h but not now, keyed on the name without the
+              # minecraft/ or proxy/ prefix so the job rename can't look like an outage.
+              expr: count by (name) (label_replace(max_over_time(jvm_memory_used_bytes{job=~"(minecraft|proxy)/(Proxy|Lobby|Survival-1)"}[24h]), "name", "$1", "job", "(?:minecraft|proxy)/(Proxy|Lobby|Survival-1)")) unless count by (name) (label_replace(jvm_memory_used_bytes{job=~"(minecraft|proxy)/(Proxy|Lobby|Survival-1)"}, "name", "$1", "job", "(?:minecraft|proxy)/(Proxy|Lobby|Survival-1)"))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Empty (no row) is the healthy case here (every name seen in the last 24h is still seen now), so
+        # NoData must stay OK - only a non-empty result (a real gap) should alert.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Core server {{ $labels.name }} (Proxy, Lobby or Survival-1) sent JVM metrics in the last 24h and has none now."
+          problem: "Core server stopped reporting telemetry"
+          service: "MinecraftOTEL"
+          threshold: "JVM metrics present"
+          object_label: "Server"
+          object_key: "name"
+          check: "Check whether the server process/pod is actually down, or whether only its OTel/metrics agent died - the game server itself may still be reachable."
+          check_command: "kubectl -n grafana port-forward svc/grafana 3000:80 # then open the Fleet Overview dashboard's Server inventory table"
+          dashboard_url: "https://grafana.apps.onelite.feather/d/minecraftotel-fleet/minecraftotel-fleet"
+        labels:
+          severity: critical
+  - orgId: 1
+    name: otis
+    folder: Backend Services
+    interval: 60s
+    rules:
+      - uid: otis-down
+        title: Otis down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # "or vector(0)": kube-state-metrics drops the series when the Deployment is gone, and that must read as 0 available replicas, not NoData.
+              # kube-state-metrics being down is covered by kube-state-metrics-down, so NoData cannot be mistaken for this alert.
+              expr: sum(kube_deployment_status_replicas_available{namespace="otis", deployment="otis-micronaut"}) or vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "Otis has no available replica - the API is unreachable."
+          problem: "No Otis replica available"
+          service: "Otis"
+          threshold: ">= 1 available replica"
+          value_unit: "available replicas"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "The proxies keep working (the plugin logs and continues) but player data is no longer synced. Check pod events and logs, database reachability and a failing Flyway migration on startup (escape hatch: env FLYWAY_ENABLED=false)."
+          check_command: "kubectl -n otis get pods,events --sort-by=.lastTimestamp"
+        labels:
+          severity: critical
+      - uid: otis-replicas-degraded
+        title: Otis replicas degraded
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # for: 15m is deliberately longer than a normal rollout, so a deploy never fires it.
+              expr: sum(kube_deployment_spec_replicas{namespace="otis", deployment="otis-micronaut"}) - sum(kube_deployment_status_replicas_available{namespace="otis", deployment="otis-micronaut"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Empty only if kube-state-metrics has no data - already covered by kube-state-metrics-down; the Deployment being gone is covered by otis-down.
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Fewer Otis replicas are available than desired for 15 minutes - the service runs without redundancy."
+          problem: "Otis replicas missing"
+          service: "Otis"
+          threshold: "0 missing replicas"
+          value_unit: "missing replicas"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "A pod that is not Ready for longer than a rollout: look at its events, readiness probe (/health) and the node it is scheduled on."
+          check_command: "kubectl -n otis get deploy,pods -o wide"
+        labels:
+          severity: warning
+      - uid: otis-server-errors
+        title: Otis API server errors
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Absolute count, not a ratio: traffic is ~20 API requests/day, so a rate would flap on a single request.
+              # "or vector(0)": the 5xx series only exists after the first error, so empty means 0 errors.
+              expr: sum(increase(http_server_requests_seconds_count{namespace="otis", status=~"5..", uri!~"/health.*|/prometheus"}[10m])) or vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # "or vector(0)" always yields a value while Mimir is reachable, so NoData only means the datasource is down - covered by observability-pipeline-no-data.
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: "Otis answered more than 2 API requests with a 5xx status in the last 10 minutes."
+          problem: "Otis 5xx responses"
+          service: "Otis"
+          threshold: "<= 2 errors in 10 min"
+          value_unit: "5xx in 10 min"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "Problem responses carry a traceId: search Tempo or Loki by it. Health and Prometheus probes are excluded."
+          check_command: "kubectl -n otis logs deploy/otis-micronaut --tail=200 | grep -i error"
+        labels:
+          severity: warning
+      - uid: otis-health-failing
+        title: Otis health check failing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Absolute count: probes run on a fixed schedule, so a handful of non-2xx answers in 10 min is a real signal, a single one is not.
+              # "or vector(0)": the non-2xx series only exists after the first failure, so empty means 0 failures.
+              expr: sum(increase(http_server_requests_seconds_count{namespace="otis", uri=~"/health.*", status!~"2.."}[10m])) or vector(0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # "or vector(0)" always yields a value while Mimir is reachable, so NoData only means the datasource is down - covered by observability-pipeline-no-data.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Otis /health returned a non-2xx status more than 3 times in the last 10 minutes."
+          problem: "Otis /health failing"
+          service: "Otis"
+          threshold: "<= 3 failed probes in 10 min"
+          value_unit: "failed probes in 10 min"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "Health indicators are jdbc, disk and kubernetes discovery: read the /health body to see which one is DOWN."
+          check_command: "kubectl -n otis port-forward deploy/otis-micronaut 8080:8080 # then curl localhost:8080/health"
+        labels:
+          severity: warning
+      - uid: otis-slow-requests
+        title: Otis slow requests
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(http_server_requests_seconds_max{namespace="otis", uri!~"/health.*|/prometheus"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Micrometer's max gauge decays to 0 / has no series while the service is idle (~20 API requests/day), so NoData is the normal state. A dead service is covered by otis-down.
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "The slowest Otis API request in the current window took more than 5 seconds."
+          problem: "Otis requests slower than 5 s"
+          service: "Otis"
+          threshold: "< 5 s"
+          value_unit: "s slowest request"
+          value_fmt: "%.1f"
+          location: "otis"
+          check: "Usually a slow database (CNPG pooler, Postgres saturation) or a stalled connection pool; compare with otis-db-pool-pending and find the route via the uri label."
+          check_command: "kubectl -n otis logs deploy/otis-micronaut --tail=200"
+        labels:
+          severity: warning
+      - uid: otis-db-pool-pending
+        title: Otis DB pool exhausted
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(hikaricp_connections_pending{namespace="otis"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # No data means Otis is not scraped - covered by otis-down; this rule only reports connection starvation.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Otis requests have been waiting for a database connection for 5 minutes."
+          problem: "Requests waiting for a DB connection"
+          service: "Otis"
+          threshold: "0 pending connections"
+          value_unit: "pending connections"
+          value_fmt: "%.0f"
+          location: "otis"
+          check: "The pool is exhausted or the database is slow: check the CNPG pooler and Postgres connection saturation (cnpg-connection-saturation alerts)."
+          check_command: "kubectl -n cnpg-system get pods"
+        labels:
+          severity: warning
+      - uid: otis-heap-high
+        title: Otis JVM heap usage high
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Heap pools carry area="heap" (Micrometer naming; the Minecraft rule uses OTel jvm_memory_type). ">0" drops pools reporting max -1. Result is a percentage (0-100), unlike minecraft-heap-high which is a 0-1 ratio.
+              expr: sum by (pod) (jvm_memory_used_bytes{namespace="otis", area="heap"}) / sum by (pod) (jvm_memory_max_bytes{namespace="otis", area="heap"} > 0) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 90
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # No data means Otis is not scraped - covered by otis-down.
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Otis pod {{ $labels.pod }} heap usage is above 90% of its limit - risks GC pressure or OOM."
+          problem: "Heap usage over 90 %"
+          service: "Otis"
+          threshold: "< 90 % of heap max"
+          value_unit: "% of heap max"
+          value_fmt: "%.1f"
+          object_label: "Pod"
+          object_key: "pod"
+          location: "otis"
+          check: "Check heap and GC pause trends for this pod; a steady climb points to a leak, a pod restart clears it."
+          check_command: "kubectl -n otis top pod"
+        labels:
+          severity: warning
+      - uid: otis-restarts
+        title: Otis container restarting
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max by (pod) (increase(kube_pod_container_status_restarts_total{namespace="otis"}[30m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Always has data while kube-state-metrics is up (covered by kube-state-metrics-down); a gone pod simply drops out.
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: "Otis pod {{ $labels.pod }} restarted more than 2 times in the last 30 minutes."
+          problem: "Otis container restart loop"
+          service: "Otis"
+          threshold: "<= 2 restarts in 30 min"
+          value_unit: "restarts in 30 min"
+          value_fmt: "%.0f"
+          object_label: "Pod"
+          object_key: "pod"
+          location: "otis"
+          check: "CrashLoop: read the previous container's log and the termination reason (OOMKilled, failing Flyway migration, database unreachable)."
+          check_command: "kubectl -n otis logs deploy/otis-micronaut --previous --tail=100"
+        labels:
+          severity: warning

@@ -1,0 +1,22 @@
+# Runbook: https://outline.onelitefeather.dev/doc/telepresence-cluster-dienste-vom-laptop-erreichen-s1thbeuDZQ
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: telepresence
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: ambassador
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: telepresence
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  timeout: 5m
+  values: {}

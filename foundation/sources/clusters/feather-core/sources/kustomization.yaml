@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: flux-system
+resources:
+  - mariadb-operator.yml
+  - mongodb.yml
+  - cnpg.yml
+  - helmcharts.yml
+  - node-red.yml
+  - reposilite.yml
+  - strrl.yml
+  - smallstep.yml
+  - jetstack.yml
+  - spegel.yaml
+  - harbor.yml
+  - dependency-track.yml
+  - dirsigler.yml
+  - envoy.yaml
+  - prometheus-stack.yaml
+  - grafana.yml
+  - rook.yaml
+  - ceph-csi-operator.yaml
+  - n8n.yml
+  - ollama.yml
+  - descheduler.yml
+  - aquasecurity.yml
+  - apus.yaml
+  - penpot.yaml
+  - strimzi.yaml
+  - sentry-kubernetes.yaml
+  - sturnus.yaml
+  - pmint93.yml
+  - stelaris-ui.yaml
+  - stelaris-image-automation.yaml
+  - vulpes-backend.yaml
+  - vulpes-backend-image-automation.yaml
+  - vulpes-generator.yaml
+  - metallb.yaml
+  - jellyfin.yaml
+  - app-template.yaml
+  - opencost.yaml
+  - telepresence.yaml
+
+# The OCIRepositories above pull from the private onelitefeather Harbor project,
+# so flux-system needs the same pull credential the workloads use.
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json

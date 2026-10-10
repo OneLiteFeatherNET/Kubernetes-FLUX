@@ -1,0 +1,26 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-storage
+  namespace: flux-system
+spec:
+  # The rook-ceph-fr01 Ceph cluster, StorageClasses, object users and buckets, plus the S3 proxy
+  # (HTTPRoutes need the gateway, the tunnel Ingresses the Cloudflare controller).
+  dependsOn:
+    - name: foundation-storage-operators
+    - name: foundation-networking
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 15m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/storage
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

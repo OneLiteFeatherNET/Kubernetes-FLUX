@@ -1,0 +1,109 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: uptime-kuma
+  namespace: uptime-kuma
+spec:
+  chart:
+    spec:
+      version: "=4.1.0"
+  valuesFrom:
+    - kind: Secret
+      name: uptime-kuma-metrics-auth
+      valuesKey: username
+      targetPath: serviceMonitor.basicAuth.username
+    - kind: Secret
+      name: uptime-kuma-metrics-auth
+      valuesKey: password
+      targetPath: serviceMonitor.basicAuth.password
+  # The dirsigler uptime-kuma chart copies podLabels into the Deployment
+  # selector (which is immutable), so adding the Loki env label via podLabels
+  # breaks upgrades. Inject it into the pod template only, via post-render.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: uptime-kuma
+            patch: |
+              - op: add
+                path: /spec/template/metadata/labels/logs.onelitefeather.net~1env
+                value: prod
+  values:
+    priorityClassName: feather-low
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
+    image:
+      repository: louislam/uptime-kuma
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "2.5.6"
+    ingress:
+      enabled: false
+
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 256Mi
+    serviceMonitor:
+      enabled: true
+    volume:
+      enabled: false
+
+    # Everything except dropping capabilities. Each setting was probed against
+    # louislam/uptime-kuma:2.3.2 in-cluster before being written here; the
+    # capability drop is the one that breaks ping monitors:
+    #   root + seccomp + allowPrivilegeEscalation:false   -> ping ok
+    #   root + capabilities.drop:[ALL]                    -> ping exits 126
+    #   uid 1000 + noPrivEsc + readOnly, caps untouched   -> ping ok
+    # /usr/bin/ping carries cap_net_raw=ep, so emptying the bounding set makes
+    # the exec itself fail. KSV-0003/0004/0106 stay open on purpose.
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+
+    # The read-only root filesystem needs these two writable; the chart mounts
+    # nothing itself because volume.enabled is false (state lives in MariaDB).
+    additionalVolumes:
+      - name: tmp
+        emptyDir: {}
+      - name: data
+        emptyDir: {}
+    additionalVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: data
+        mountPath: /app/data
+    podEnv:
+      - name: UPTIME_KUMA_DB_TYPE
+        value: "mariadb"
+      - name: UPTIME_KUMA_DB_HOSTNAME
+        value: "maxscale-galera.mariadb-galera.svc.cluster.local"
+      - name: UPTIME_KUMA_DB_PORT
+        value: "3306"
+      - name: UPTIME_KUMA_DB_NAME
+        value: "uptime-kuma"
+      - name: UPTIME_KUMA_DB_USERNAME
+        value: "uptime-kuma"
+      - name: UPTIME_KUMA_DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: "uptime-kuma-mariadb"
+            key: "mariadb-password"

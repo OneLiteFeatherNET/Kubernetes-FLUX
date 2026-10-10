@@ -1,0 +1,11 @@
+# Runbook: https://outline.onelitefeather.dev/doc/telepresence-cluster-dienste-vom-laptop-erreichen-s1thbeuDZQ
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: telepresence
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://ghcr.io/telepresenceio/telepresence-oss
+  ref:
+    semver: "=2.32.1"

@@ -1,0 +1,86 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mariadb-operator
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+spec:
+  releaseName: mariadb-operator
+  chart:
+    spec:
+      chart: mariadb-operator
+      version: "=26.10.1"
+      sourceRef:
+        kind: HelmRepository
+        name: mariadb-operator
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: warn
+    ignore:
+      # The documented rollout-restart workflow (CLAUDE.md) mutates this.
+      - paths: ["/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"]
+  interval: 1m0s
+  # Default values
+  #
+  values:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
+    metrics:
+      enabled: false
+    priorityClassName: feather-platform
+    ha:
+      enabled: true
+      replicas: 3
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - mariadb-operator
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                    - mariadb-operator
+            topologyKey: kubernetes.io/hostname
+
+    pdb:
+      enabled: true
+      maxUnavailable: 1
+    webhook:
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+      cert:
+        certManager:
+          enabled: true
+      ha:
+        enabled: true
+        replicas: 2
+      priorityClassName: feather-platform
+      pdb:
+        enabled: true
+        maxUnavailable: 1
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: mariadb-operator-webhook
+              app.kubernetes.io/instance: mariadb-operator

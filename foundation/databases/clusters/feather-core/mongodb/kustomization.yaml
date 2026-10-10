@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mongodb
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - replicaset.yaml
+  - backup-cronjob.yaml
+  - servicemonitor.yaml
+
+secretGenerator:
+  - name: mongodb-user-admin
+    envs:
+      - users/admin.sops.env
+  - name: mongodb-user-backup
+    envs:
+      - users/backup.sops.env
+  - name: mongodb-user-prometheus
+    envs:
+      - users/prometheus.sops.env
+  - name: mongodb-user-otis
+    envs:
+      - users/otis.sops.env
+  - name: mongodb-user-otis-dev
+    envs:
+      - users/otis-dev.sops.env
+  - name: mongodb-user-vulpes
+    envs:
+      - users/vulpes.sops.env
+  - name: mongodb-user-vulpes-dev
+    envs:
+      - users/vulpes-dev.sops.env
+  - name: mongodb-user-sturnus
+    envs:
+      - users/sturnus.sops.env
+  - name: mongodb-backup-s3
+    envs:
+      - backup-s3.sops.env

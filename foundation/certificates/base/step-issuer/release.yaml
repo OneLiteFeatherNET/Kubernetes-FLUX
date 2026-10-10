@@ -1,0 +1,49 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: step-issuer
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: step-issuer
+spec:
+  releaseName: step-issuer
+  chart:
+    spec:
+      chart: step-issuer
+      version: "<1.12.0"
+      sourceRef:
+        kind: HelmRepository
+        name: smallstep
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  values:
+    deployment:
+      priorityClassName: feather-platform
+    # The chart sets only runAsUser/runAsGroup 1000 on the container. No
+    # readOnlyRootFilesystem here — untested against this image, and a broken
+    # external issuer stops certificate renewal.
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+    # No cpu limit: CFS throttling made lease renewals time out (restart loop).
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        cpu: null
+        memory: 128Mi

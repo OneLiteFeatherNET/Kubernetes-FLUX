@@ -1,0 +1,28 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-databases
+  namespace: flux-system
+spec:
+  # CNPG PostgreSQL, MariaDB Galera with MaxScale and Dragonfly (instances, databases, users, roles, backups).
+  # Needs the operators, the ceph-rbd-fr01 PVCs and RGW backup endpoints (storage) and the MetalLB
+  # LoadBalancer Services (networking).
+  dependsOn:
+    - name: foundation-databases-operators
+    - name: foundation-storage
+    - name: foundation-networking
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/databases
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

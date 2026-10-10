@@ -1,0 +1,67 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: services-automation
+  namespace: flux-system
+spec:
+  # Automation: n8n, Node-RED, Ollama. Needs networking, storage and databases.
+  dependsOn:
+    - name: foundation-networking
+    - name: foundation-storage
+    - name: foundation-databases
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 15m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./services/layers/feather-core/automation
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  postBuild:
+    substitute:
+      ALLOWED_CIDRS: "172.16.0.0/16,10.200.0.0/16,192.168.0.0/16"
+  patches:
+    # HelmRelease remediation defaults; opt-outs via the flux.onelitefeather.dev/remediation label.
+    - target:
+        group: helm.toolkit.fluxcd.io
+        kind: HelmRelease
+        labelSelector: "flux.onelitefeather.dev/remediation notin (retries-only,manual)"
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: not-used
+        spec:
+          install:
+            remediation:
+              retries: 3
+          upgrade:
+            cleanupOnFail: true
+            remediation:
+              retries: 3
+              remediateLastFailure: true
+              strategy: rollback
+    # Stateful, CRD-heavy or schema-migrating releases: retries only, no automatic rollback.
+    - target:
+        group: helm.toolkit.fluxcd.io
+        kind: HelmRelease
+        labelSelector: "flux.onelitefeather.dev/remediation=retries-only"
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: not-used
+        spec:
+          install:
+            remediation:
+              retries: 3
+          upgrade:
+            remediation:
+              retries: 3

@@ -1,0 +1,16 @@
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: feather-rbd
+  namespace: rook-ceph-fr01
+spec:
+  failureDomain: host
+  replicated:
+    size: 3
+    requireSafeReplicaSize: true
+  # Autoscaler aus, weil er nach Kapazität dimensioniert und den Pool damit
+  # dauerhaft auf dem Default-Boden 32 hält. pg_num ist ab hier von Hand zu
+  # pflegen: outline.onelitefeather.dev/doc/reference-rook-ceph-fr01-cluster-setup-und-ceph-cli-d5ZGZH6QON
+  parameters:
+    pg_autoscale_mode: "off"
+    pg_num: "128"

@@ -1,0 +1,140 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: cluster-errors
+  namespace: flux-system
+spec:
+  summary: "feather-core"
+  providerRef:
+    name: discord
+  eventSeverity: error
+  # Kustomizations all live in flux-system. HelmReleases need one entry per namespace (no namespace wildcard in Flux).
+  eventSources:
+    - kind: Kustomization
+      name: "*"
+    - kind: HelmRelease
+      name: "*"
+      namespace: ambassador
+    - kind: HelmRelease
+      name: "*"
+      namespace: apus-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: bluemap
+    - kind: HelmRelease
+      name: "*"
+      namespace: cert-manager
+    - kind: HelmRelease
+      name: "*"
+      namespace: cloudflare-tunnel-ingress-controller
+    - kind: HelmRelease
+      name: "*"
+      namespace: cnpg-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: dependency-track
+    - kind: HelmRelease
+      name: "*"
+      namespace: descheduler
+    - kind: HelmRelease
+      name: "*"
+      namespace: envoy
+    - kind: HelmRelease
+      name: "*"
+      namespace: grafana
+    - kind: HelmRelease
+      name: "*"
+      namespace: harbor
+    - kind: HelmRelease
+      name: "*"
+      namespace: kube-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: mariadb-operator
+    - kind: HelmRelease
+      name: "*"
+      namespace: media
+    - kind: HelmRelease
+      name: "*"
+      namespace: metabase
+    - kind: HelmRelease
+      name: "*"
+      namespace: metallb-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: mongodb
+    - kind: HelmRelease
+      name: "*"
+      namespace: monitoring
+    - kind: HelmRelease
+      name: "*"
+      namespace: n8n
+    - kind: HelmRelease
+      name: "*"
+      namespace: node-red
+    - kind: HelmRelease
+      name: "*"
+      namespace: ollama
+    - kind: HelmRelease
+      name: "*"
+      namespace: opencost
+    - kind: HelmRelease
+      name: "*"
+      namespace: otis
+    - kind: HelmRelease
+      name: "*"
+      namespace: otis-dev
+    - kind: HelmRelease
+      name: "*"
+      namespace: outline
+    - kind: HelmRelease
+      name: "*"
+      namespace: penpot
+    - kind: HelmRelease
+      name: "*"
+      namespace: reposilite
+    - kind: HelmRelease
+      name: "*"
+      namespace: rook-ceph
+    - kind: HelmRelease
+      name: "*"
+      namespace: sentry
+    - kind: HelmRelease
+      name: "*"
+      namespace: shlink
+    - kind: HelmRelease
+      name: "*"
+      namespace: stelaris
+    - kind: HelmRelease
+      name: "*"
+      namespace: stelaris-dev
+    - kind: HelmRelease
+      name: "*"
+      namespace: step-ca
+    - kind: HelmRelease
+      name: "*"
+      namespace: step-issuer
+    - kind: HelmRelease
+      name: "*"
+      namespace: strimzi-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: sturnus
+    - kind: HelmRelease
+      name: "*"
+      namespace: trivy-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: uptime-kuma
+    - kind: HelmRelease
+      name: "*"
+      namespace: vikunja
+    - kind: HelmRelease
+      name: "*"
+      namespace: vulpes
+    - kind: HelmRelease
+      name: "*"
+      namespace: vulpes-dev
+  # Cascade noise: a dependent waiting on a failed layer, not a failure itself.
+  exclusionList:
+    - "dependency .* is not ready"

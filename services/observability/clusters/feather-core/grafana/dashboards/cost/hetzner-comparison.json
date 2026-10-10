@@ -1,0 +1,1546 @@
+{
+  "__elements": {},
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Vergleich der On-Prem-Kosten (OpenCost) mit dem Preis derselben Last auf Hetzner Cloud.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Gesamtkosten pro Monat",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "On-Prem (OpenCost)",
+      "description": "Summe node_total_hourly_cost x Stunden/Monat plus PV-Kosten (pv_hourly_cost je GiB-Stunde x PV-Kapazitaet).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_total_hourly_cost{job=\"opencost\"}) * $${hours} + sum(pv_hourly_cost{job=\"opencost\"} * on(persistentvolume) group_left() (kube_persistentvolume_capacity_bytes{job=\"opencost\"} / 2^30)) * $${hours}",
+          "instant": true,
+          "range": false,
+          "legendFormat": "On-Prem (OpenCost)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Hetzner CCX, gleiche Node-Groessen",
+      "description": "Je Node max(vCPU, RAM GiB / 4) x CCX-Einheit plus IPv4 je Server. Ohne Volumes.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(kube_node_status_capacity_cpu_cores{job=\"opencost\"} + on(node) clamp_min(kube_node_status_capacity_memory_bytes{job=\"opencost\"} / 2^30 / 4 - on(node) kube_node_status_capacity_cpu_cores{job=\"opencost\"}, 0)) * $${hz_ccx_unit_month} + count(kube_node_status_capacity_cpu_cores{job=\"opencost\"}) * $${hz_ipv4_month}",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hetzner CCX, gleiche Node-Groessen",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Hetzner CCX, nach Requests",
+      "description": "max(Summe CPU-Requests, Summe RAM-Requests GiB / 4) x CCX-Einheit, clusterweit. Ohne Volumes/IPv4.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(container_cpu_allocation{job=\"opencost\"}) + clamp_min(sum(container_memory_allocation_bytes{job=\"opencost\"}) / 2^30 / 4 - sum(container_cpu_allocation{job=\"opencost\"}), 0)) * $${hz_ccx_unit_month}",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hetzner CCX, nach Requests",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Hetzner CX (shared), nach Requests",
+      "description": "max(Summe CPU-Requests, Summe RAM-Requests GiB / 2) x CX-Einheit, clusterweit. Ohne Volumes/IPv4.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "yellow"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(container_cpu_allocation{job=\"opencost\"}) + clamp_min(sum(container_memory_allocation_bytes{job=\"opencost\"}) / 2^30 / 2 - sum(container_cpu_allocation{job=\"opencost\"}), 0)) * $${hz_cx_unit_month}",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hetzner CX (shared), nach Requests",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Hetzner Volumes (Storage)",
+      "description": "PV-Kapazitaet in GiB x Volume-Preis je GB und Monat.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hetzner Volumes (Storage)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "On-Prem Storage (OpenCost)",
+      "description": "Nur der PV-Anteil der On-Prem-Kosten, zum Vergleich mit den Hetzner Volumes.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(pv_hourly_cost{job=\"opencost\"} * on(persistentvolume) group_left() (kube_persistentvolume_capacity_bytes{job=\"opencost\"} / 2^30)) * $${hours}",
+          "instant": true,
+          "range": false,
+          "legendFormat": "On-Prem Storage (OpenCost)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "stat",
+      "title": "Hetzner CCX, nach Nutzung",
+      "description": "max(CPU-Nutzung, RAM-Working-Set GiB / 4) x CCX-Einheit, clusterweit, Mittel ueber den Zeitraum. Ohne Headroom, ohne Volumes/IPv4.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "dark-orange"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-orange",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(((sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 4 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_ccx_unit_month})[$__range:5m])",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hetzner CCX, nach Nutzung",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "type": "stat",
+      "title": "Hetzner CX (shared), nach Nutzung",
+      "description": "max(CPU-Nutzung, RAM-Working-Set GiB / 2) x CX-Einheit, clusterweit, Mittel ueber den Zeitraum. Ohne Headroom, ohne Volumes/IPv4.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "dark-yellow"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-yellow",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(((sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 2 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_cx_unit_month})[$__range:5m])",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hetzner CX (shared), nach Nutzung",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Angefragte vCPU (Requests)",
+      "description": "Summe container_cpu_allocation, Grundlage der Right-Sizing-Rechnung.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 11
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(container_cpu_allocation{job=\"opencost\"})",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Angefragte vCPU (Requests)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Angefragter RAM (Requests)",
+      "description": "Summe container_memory_allocation_bytes in GiB.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 11
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decgbytes",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(container_memory_allocation_bytes{job=\"opencost\"}) / 2^30",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Angefragter RAM (Requests)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "type": "stat",
+      "title": "Genutzte vCPU (Nutzung)",
+      "description": "Summe der Recording Rule namespace:container_cpu_usage_cores:sum_rate5m, Mittel ueber den Zeitraum (cAdvisor).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 11
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "dark-purple"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-purple",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time((sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}))[$__range:5m])",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Genutzte vCPU (Nutzung)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "type": "stat",
+      "title": "Genutzter RAM (Working Set)",
+      "description": "Summe der Recording Rule namespace:container_memory_working_set_bytes:sum in GiB, Mittel ueber den Zeitraum (cAdvisor).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 11
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decgbytes",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "dark-purple"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-purple",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time((sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}))[$__range:5m]) / 2^30",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Genutzter RAM (Working Set)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "text",
+      "title": "Preismodell und Quellen",
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**Hetzner Cloud, Deutschland, netto, gueltig ab 2026-06-15.** Quelle: [Hetzner Price Adjustment](https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/). Monat = 730 h.\n\n- **Dedicated vCPU (CCX33):** 8 vCPU / 32 GB / 138,49 EUR pro Monat, also 1 Einheit = 1 vCPU + 4 GB = 17,31 EUR.\n- **Shared vCPU (CX53):** 16 vCPU / 32 GB / 29,49 EUR pro Monat, also 1 Einheit = 1 vCPU + 2 GB = 1,84 EUR.\n- **Primaere IPv4:** 0,50 EUR pro Server und Monat. **Volumes:** 0,0572 EUR pro GB und Monat (Stand April 2026, Sekundaerquellen).\n- **Aequivalente Einheiten** = max(vCPU, RAM GiB / GB je Einheit): bezahlt wird die groessere Dimension.\n- Zwei Basen: **Requests** (`*_allocation`, OpenCost) und **Nutzung** (Recording Rules `namespace:container_cpu_usage_cores:sum_rate5m` und `namespace:container_memory_working_set_bytes:sum` aus cAdvisor, Mittel ueber den Zeitraum). Nutzungsdaten gibt es erst ab dem ersten Lauf der Recording Rules (nach dem Merge des Rules-PRs); davor sind die Nutzungs-Panels leer, laengere Zeitraeume mitteln nur ueber vorhandene Daten. Nutzungsbasiertes Sizing hat keinen Headroom, echtes Hetzner-Sizing braeuchte Reserve.\n- Alle Preise stehen als versteckte Konstanten in den Dashboard-Variablen (`hz_*`, `hours`)."
+      }
+    },
+    {
+      "id": 11,
+      "type": "row",
+      "title": "Pro Namespace (Requests und Nutzung)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "panels": []
+    },
+    {
+      "id": 12,
+      "type": "table",
+      "title": "Kosten pro Namespace und Monat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "description": "On-Prem: CPU-/RAM-Requests x Node-Stundenpreise x 730. Hetzner: max(vCPU, RAM/GB je Einheit) x Einheitspreis, je Namespace, einmal nach Requests und einmal nach Nutzung (Mittel ueber den Zeitraum, ohne Headroom).",
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Prem"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyEUR"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hetzner CCX"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyEUR"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hetzner CX"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyEUR"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "yellow"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hetzner CCX (Nutzung)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyEUR"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-orange"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hetzner CX (Nutzung)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyEUR"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-yellow"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU-Requests (vCPU)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "RAM-Requests (GiB)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU-Nutzung (vCPU)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "RAM-Nutzung (GiB)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Hetzner CCX",
+            "desc": true
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum by(namespace) (container_cpu_allocation{job=\"opencost\"} * on(node) group_left() max by(node) (node_cpu_hourly_cost{job=\"opencost\"})) + sum by(namespace) (container_memory_allocation_bytes{job=\"opencost\"} / 2^30 * on(node) group_left() max by(node) (node_ram_hourly_cost{job=\"opencost\"}))) * $${hours}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum by(namespace) (container_cpu_allocation{job=\"opencost\"}) + clamp_min(sum by(namespace) (container_memory_allocation_bytes{job=\"opencost\"}) / 2^30 / 4 - sum by(namespace) (container_cpu_allocation{job=\"opencost\"}), 0)) * $${hz_ccx_unit_month}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum by(namespace) (container_cpu_allocation{job=\"opencost\"}) + clamp_min(sum by(namespace) (container_memory_allocation_bytes{job=\"opencost\"}) / 2^30 / 2 - sum by(namespace) (container_cpu_allocation{job=\"opencost\"}), 0)) * $${hz_cx_unit_month}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(((sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum by(namespace)(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 4 - sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_ccx_unit_month})[$__range:5m])",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(((sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum by(namespace)(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 2 - sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_cx_unit_month})[$__range:5m])",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by(namespace) (container_cpu_allocation{job=\"opencost\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by(namespace) (container_memory_allocation_bytes{job=\"opencost\"}) / 2^30",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "G"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time((sum by(namespace)(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}))[$__range:5m])",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "H"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time((sum by(namespace)(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30)[$__range:5m])",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "I"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "namespace",
+            "mode": "outer"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true,
+              "Time 5": true,
+              "Time 6": true,
+              "Time 7": true,
+              "Time 8": true,
+              "Time 9": true
+            },
+            "renameByName": {
+              "namespace": "Namespace",
+              "Value #A": "On-Prem",
+              "Value #B": "Hetzner CCX",
+              "Value #C": "Hetzner CX",
+              "Value #D": "Hetzner CCX (Nutzung)",
+              "Value #E": "Hetzner CX (Nutzung)",
+              "Value #F": "CPU-Requests (vCPU)",
+              "Value #G": "RAM-Requests (GiB)",
+              "Value #H": "CPU-Nutzung (vCPU)",
+              "Value #I": "RAM-Nutzung (GiB)"
+            },
+            "indexByName": {
+              "Namespace": 0,
+              "On-Prem": 1,
+              "Hetzner CCX": 2,
+              "Hetzner CX": 3,
+              "Hetzner CCX (Nutzung)": 4,
+              "Hetzner CX (Nutzung)": 5,
+              "CPU-Requests (vCPU)": 6,
+              "CPU-Nutzung (vCPU)": 7,
+              "RAM-Requests (GiB)": 8,
+              "RAM-Nutzung (GiB)": 9
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Hetzner CCX",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "row",
+      "title": "Verlauf",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "panels": []
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Monatskosten-Rate im Zeitverlauf",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$${datasource}"
+      },
+      "description": "Auf einen Monat (730 h) hochgerechnete Rate. On-Prem = Nodes + PVs; Hetzner = dimensionierte Server + Volumes, jeweils nach Requests (*_allocation) und nach Nutzung (cAdvisor, rate ueber $__rate_interval, ohne Headroom).",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_total_hourly_cost{job=\"opencost\"}) * $${hours} + sum(pv_hourly_cost{job=\"opencost\"} * on(persistentvolume) group_left() (kube_persistentvolume_capacity_bytes{job=\"opencost\"} / 2^30)) * $${hours}",
+          "legendFormat": "On-Prem (Nodes + Storage)",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(container_cpu_allocation{job=\"opencost\"}) + clamp_min(sum(container_memory_allocation_bytes{job=\"opencost\"}) / 2^30 / 4 - sum(container_cpu_allocation{job=\"opencost\"}), 0)) * $${hz_ccx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
+          "legendFormat": "Hetzner CCX (Requests) + Volumes",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(container_cpu_allocation{job=\"opencost\"}) + clamp_min(sum(container_memory_allocation_bytes{job=\"opencost\"}) / 2^30 / 2 - sum(container_cpu_allocation{job=\"opencost\"}), 0)) * $${hz_cx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
+          "legendFormat": "Hetzner CX (Requests) + Volumes",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 4 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_ccx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
+          "legendFormat": "Hetzner CCX (Nutzung) + Volumes",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}) + clamp_min(sum(namespace:container_memory_working_set_bytes:sum{cluster=\"feather-core\"}) / 2^30 / 2 - sum(namespace:container_cpu_usage_cores:sum_rate5m{cluster=\"feather-core\"}), 0)) * $${hz_cx_unit_month} + sum(kube_persistentvolume_capacity_bytes{job=\"opencost\"}) / 2^30 * $${hz_volume_gb_month}",
+          "legendFormat": "Hetzner CX (Nutzung) + Volumes",
+          "range": true,
+          "refId": "E"
+        }
+      ]
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [
+    "cost",
+    "opencost",
+    "hetzner"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Mimir",
+          "value": "mimir"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "type": "constant",
+        "name": "hours",
+        "label": "Stunden pro Monat",
+        "hide": 2,
+        "query": "730",
+        "current": {
+          "selected": false,
+          "text": "730",
+          "value": "730"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "730",
+            "value": "730"
+          }
+        ],
+        "skipUrlSync": true
+      },
+      {
+        "type": "constant",
+        "name": "hz_ccx_unit_month",
+        "label": "CCX-Einheit EUR/Monat (CCX33 138,49 / 8)",
+        "hide": 2,
+        "query": "17.31125",
+        "current": {
+          "selected": false,
+          "text": "17.31125",
+          "value": "17.31125"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "17.31125",
+            "value": "17.31125"
+          }
+        ],
+        "skipUrlSync": true
+      },
+      {
+        "type": "constant",
+        "name": "hz_cx_unit_month",
+        "label": "CX-Einheit EUR/Monat (CX53 29,49 / 16)",
+        "hide": 2,
+        "query": "1.843125",
+        "current": {
+          "selected": false,
+          "text": "1.843125",
+          "value": "1.843125"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "1.843125",
+            "value": "1.843125"
+          }
+        ],
+        "skipUrlSync": true
+      },
+      {
+        "type": "constant",
+        "name": "hz_ipv4_month",
+        "label": "IPv4 EUR/Monat",
+        "hide": 2,
+        "query": "0.5",
+        "current": {
+          "selected": false,
+          "text": "0.5",
+          "value": "0.5"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "0.5",
+            "value": "0.5"
+          }
+        ],
+        "skipUrlSync": true
+      },
+      {
+        "type": "constant",
+        "name": "hz_volume_gb_month",
+        "label": "Volume EUR/GB/Monat",
+        "hide": 2,
+        "query": "0.0572",
+        "current": {
+          "selected": false,
+          "text": "0.0572",
+          "value": "0.0572"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "0.0572",
+            "value": "0.0572"
+          }
+        ],
+        "skipUrlSync": true
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Kosten: feather-core vs. Hetzner Cloud",
+  "uid": "hetzner-cost-comparison",
+  "version": 1,
+  "weekStart": ""
+}

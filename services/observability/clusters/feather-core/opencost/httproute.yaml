@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: opencost
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - opencost.apps.onelite.feather
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: opencost
+          port: 9090
+      # The 7d allocation query takes ~50 s; Envoy defaults to 15 s.
+      timeouts:
+        request: 180s

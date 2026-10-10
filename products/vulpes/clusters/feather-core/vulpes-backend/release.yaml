@@ -1,0 +1,217 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vulpes-backend
+  namespace: vulpes
+spec:
+  values:
+    # HA prod: 2 replicas with seamless rollouts (surge +1, 0 unavailable),
+    # spread across nodes, and a PDB so node drains never take the service down.
+    replicaCount: 2
+    priorityClassName: feather-standard
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: vulpes-backend
+                  app.kubernetes.io/name: micronaut
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 1
+    # The chart is named vulpes-backend, the old shared one was named micronaut,
+    # and .Chart.Name reaches app.kubernetes.io/name -- which is in the
+    # Deployment's selector and immutable. Frozen here so moving to the chart
+    # renames nothing on the cluster; undoing this means deleting the
+    # Deployment, not upgrading it.
+    nameOverride: micronaut
+    fullnameOverride: vulpes-backend-micronaut
+
+    # image, service.port and the Prometheus path now come from the chart, which
+    # is released from the application's own repository and knows them.
+    imagePullSecrets:
+      - name: harbor-pull
+    metrics:
+      serviceMonitor:
+        enabled: true
+    ingress:
+      enabled: false
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: eg
+          namespace: envoy
+          sectionName: https
+      hostnames:
+        - vulpes-backend.apps.onelite.feather
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+    # "k8s" activates the Micronaut Kubernetes environment so the discovery
+    # client beans (micronaut-kubernetes-discovery-client) come up in-cluster.
+    profiles: [ "prod", "k8s" ]
+
+    # RBAC for in-namespace service discovery (read services/endpoints).
+    rbac:
+      create: true
+
+    # Alloy log pipeline: JSON parsing + per-env stream label.
+    podLabels:
+      logs.onelitefeather.net/format: json
+      logs.onelitefeather.net/env: prod
+
+    # Traces only -- metrics/logs already covered by serviceMonitor scraping
+    # and stdout shipping above.
+    tracing:
+      enabled: true
+
+    # OTel bytecode instrumentation adds real seconds to JVM cold start,
+    # which pushed first-successful-health past livenessProbe's deadline
+    # and SIGTERM-looped the pod before it ever finished starting.
+    startupProbe:
+      enabled: true
+
+    config:
+      base: |-
+        micronaut:
+          application:
+            name: Vulpes Backend
+          server:
+            port: 8080
+            # The Stelaris UI is served from its own host, so every call it makes
+            # is cross-origin. Allow that one origin - not '*', which would also
+            # be sent to any site that asks.
+            cors:
+              enabled: true
+              configurations:
+                stelaris-ui:
+                  allowed-origins:
+                    - https://stelaris.apps.onelite.feather
+                  # Stelaris sends PATCH for partial updates. Listing the set
+                  # explicitly replaces Micronaut's implicit any-method default.
+                  allowed-methods:
+                    - GET
+                    - POST
+                    - PUT
+                    - PATCH
+                    - DELETE
+                    - OPTIONS
+            netty:
+              access-logger:
+                enabled: true
+                # Drop probe/metrics noise: kubelet hits /health every 5-10s and
+                # Prometheus scrapes /prometheus. Regexes match the request URI.
+                exclusions:
+                  - /health.*
+                  - /prometheus.*
+      profiles:
+        prod: |-
+          endpoints:
+            health:
+              enabled: true
+              sensitive: false
+            metrics:
+              enabled: true
+              sensitive: true
+          micrometer:
+            metrics:
+              enabled: true
+            export:
+              prometheus:
+                enabled: true
+          logger:
+            levels:
+              root: WARN
+              # Per-request access logs (micronaut.server.netty.access-logger).
+              # root is WARN, so the access logger must be raised explicitly.
+              HTTP_ACCESS_LOGGER: INFO
+              "org.hibernate.SQL": WARN
+              "org.hibernate.type.descriptor.sql": WARN
+              "org.hibernate.orm.connections.pooling": WARN
+              "com.zaxxer.hikari": WARN
+          jpa:
+            default:
+              properties:
+                hibernate:
+                  hbm2ddl.auto: none
+                  format_sql: false
+                  show_sql: false
+                  jdbc.lob.non_contextual_creation: true
+                  connection.provider_disables_autocommit: true
+                  jdbc.batch_size: 50
+                  order_inserts: true
+                  order_updates: true
+                  jdbc.batch_versioned_data: true
+          datasources:
+            default:
+              dialect: POSTGRES
+              url: $${JDBC_URL}
+              username: $${DB_USER}
+              password: $${DB_PASS}
+              driver-class-name: org.postgresql.Driver
+              schema-generate: NONE
+              maximumPoolSize: 20
+              minimumIdle: 4
+              autoCommit: false
+              poolName: "HikariPool-Vulpes-Backend"
+              connectionTimeout: 10000
+              validationTimeout: 5000
+              idleTimeout: 600000
+              maxLifetime: 1700000
+              keepaliveTime: 300000
+              registerMbeans: true
+              leakDetectionThreshold: 20000
+              transactionIsolation: TRANSACTION_READ_COMMITTED
+        # Loaded only in the Kubernetes (k8s) environment. k8s is listed in
+        # profiles because MICRONAUT_CONFIG_FILES is built from that list -- it
+        # is what makes this file load at all. It does not switch the k8s
+        # environment on: Micronaut deduces that from running in a cluster
+        # regardless of MICRONAUT_ENVIRONMENTS, which is why the discovery beans
+        # come up here whether or not anything asks for them.
+        k8s: |-
+          # Disable the KubernetesHealthIndicator: the client-java bundled with
+          # micronaut-kubernetes 7.1.1 can't deserialize newer API-server pod
+          # fields (observedGeneration / PodReadyToStartContainers), so every
+          # /health probe logs an ERROR+WARN. Service discovery is unaffected.
+          endpoints:
+            health:
+              kubernetes:
+                enabled: false
+          kubernetes:
+            client:
+              discovery:
+                mode: endpoint
+    envFrom:
+      - secretRef:
+          name: vulpes-app-db
+    # Helm replaces list values: this env list must carry the heap flag itself.
+    env:
+      - name: LOG_JSON
+        value: "true"
+      - name: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=50.0 -Duser.timezone=UTC"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 768Mi
+    readinessProbe:
+      path: /health/readiness
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    livenessProbe:
+      path: /health/liveness
+      initialDelaySeconds: 15
+      periodSeconds: 10

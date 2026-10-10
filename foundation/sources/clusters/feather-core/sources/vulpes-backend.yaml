@@ -1,0 +1,51 @@
+---
+# The Vulpes backend ships its chart as an OCI artifact from our own Harbor,
+# versioned together with the image it deploys: the chart leaves image.tag empty
+# and falls back to .Chart.AppVersion, so pinning the chart pins the image. It
+# replaces the shared helm/micronaut chart in this repository, which described
+# no service in particular and had to be paired with a hand-edited image tag in
+# each HelmRelease -- that is how dev came to run 2.3.0 against prod's 2.4.1.
+# otis still uses helm/micronaut.
+#
+# Unlike apus/charts, onelitefeather is a private project - hence secretRef.
+# Two repositories, not one, so dev can run a newer chart than prod: prod is
+# pinned to an exact version and moved deliberately, dev follows the newest
+# release on its own. Same shape as stelaris-ui.yaml beside this file.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vulpes-backend
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/vulpes-backend
+  ref:
+    # 2.6.0 is the first release that publishes a chart: 2.5.0 was cut before
+    # the chart existed and has an image in Harbor but no chart to go with it.
+    # Moving prod onto 2.6.0 is therefore also an application upgrade from the
+    # 2.4.1 it runs today -- the chart and the image share one version by
+    # design, so there is no chart carrying an older image to step through.
+    semver: "=2.6.0"
+  secretRef:
+    name: harbor-pull
+---
+# Floored at 2.6.0 rather than left fully open because that is the first release
+# to carry a chart at all: nothing below it exists in Harbor to resolve to.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vulpes-backend-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/vulpes-backend
+  ref:
+    semver: ">=2.6.0"
+  secretRef:
+    name: harbor-pull

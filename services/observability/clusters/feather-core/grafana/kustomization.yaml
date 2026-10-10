@@ -1,0 +1,133 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: grafana
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/grafana
+  - httproute.yaml
+patches:
+  - path: release.yaml
+
+# Dashboards for Grafana's sidecar collector: one ConfigMap per Grafana folder,
+# label grafana_dashboard=1 is what the sidecar selects on, annotation
+# grafana_folder is the subdirectory (and therefore folder) it writes them to.
+# Names are prefixed grafana-sc- so they cannot collide with the chart's own
+# helm-owned grafana-dashboards-<provider> ConfigMaps.
+configMapGenerator:
+  - name: grafana-sc-dashboards-applications
+    files:
+      - dashboards/applications/harbor.json
+      - dashboards/applications/sturnus.json
+      - dashboards/applications/sturnus-resources.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Applications
+  - name: grafana-sc-dashboards-controllers
+    files:
+      - dashboards/controllers/flux.json
+      - dashboards/controllers/flux-cluster-stats.json
+      - dashboards/controllers/flux-control-plane.json
+      - dashboards/controllers/metallb.json
+      - dashboards/controllers/spegel-monitoring.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Controllers
+  # Upstream opencost/opencost-grafana-dashboard, angepasst: __inputs entfernt,
+  # Datasource auf Mimir gepinnt, currencyUSD -> currencyEUR.
+  - name: grafana-sc-dashboards-cost
+    files:
+      - dashboards/cost/opencost-basic-overview.json
+      - dashboards/cost/opencost-detailed-overview.json
+      - dashboards/cost/hetzner-comparison.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Cost
+  - name: grafana-sc-dashboards-databases
+    files:
+      - dashboards/databases/dragonfly.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Databases
+  - name: grafana-sc-dashboards-kubernetes
+    files:
+      - dashboards/kubernetes/api-server.json
+      - dashboards/kubernetes/coredns.json
+      - dashboards/kubernetes/kube-state-metrics.json
+      - dashboards/kubernetes/kube-state-metrics-v2.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Kubernetes
+  - name: grafana-sc-dashboards-minecraft
+    files:
+      - dashboards/minecraft/cygnus-traces.json
+      - dashboards/minecraft/minecraft-fleet.json
+      - dashboards/minecraft/minecraft-jvm.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Minecraft
+  - name: grafana-sc-dashboards-observability
+    files:
+      - dashboards/observability/loki-quick-search.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Observability
+  - name: grafana-sc-dashboards-overview
+    files:
+      - dashboards/overview/cluster-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Overview
+  - name: grafana-sc-dashboards-storage
+    files:
+      - dashboards/storage/ceph-cluster.json
+      - dashboards/storage/ceph-osd.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Storage
+
+  # Alerting for the same sidecar collector, label grafana_alert=1. Exactly ONE ConfigMap
+  # for all four files: the sidecar POSTs the provisioning reload once per ConfigMap, after
+  # writing all of its keys, so splitting them up would create intermediate states in which
+  # policies.yaml references a receiver contactpoints.yaml has not delivered yet.
+  - name: grafana-sc-alerting
+    files:
+      - alerting/contactpoints.yaml
+      - alerting/templates.yaml
+      - alerting/policies.yaml
+      - alerting/rules.yaml
+    options:
+      labels:
+        grafana_alert: "1"
+
+secretGenerator:
+  - name: grafana-admin
+    envs:
+      - grafana.sops.env
+  - name: grafana-postgresql
+    envs:
+      - grafana-postgresql.sops.env
+  - name: grafana-discord
+    envs:
+      - grafana-discord.sops.env
+  - name: grafana-azuread
+    envs:
+      - grafana-azuread.sops.env

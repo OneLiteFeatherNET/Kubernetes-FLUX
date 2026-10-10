@@ -1,0 +1,25 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-messaging
+  namespace: flux-system
+spec:
+  # Kafka cluster and node pools (Strimzi CRs). Needs the operator and the ceph-rbd-fr01 PVCs (storage).
+  dependsOn:
+    - name: foundation-messaging-operators
+    - name: foundation-storage
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/messaging
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

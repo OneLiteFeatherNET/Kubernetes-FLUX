@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - gateway-class.yaml
+  - certificates.yaml
+  # Internal *.apps.onelite.feather certs are issued via
+  # step-issuer/step-ca (StepClusterIssuer) by the separate
+  # wait:false `foundation-certificates` Kustomization
+  # (clusters/feather-core/foundation-certificates.yaml) - not here, so it
+  # never blocks the foundation-networking Kustomization (wait:true).
+  - envoyproxy.yaml
+  - gateway.yaml
+  - redirect-route.yaml
+  - podmonitor.yaml
+  - servicemonitor.yaml

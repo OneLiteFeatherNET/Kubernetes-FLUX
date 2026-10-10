@@ -1,0 +1,364 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  # Install/upgrade budget. Two replicas roll one after another and each init
+  # container downloads its dashboards (up to 60s each), so the 5m default is too short.
+  timeout: 15m
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: grafana
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-high
+  valuesFrom:
+    - kind: Secret
+      name: grafana-admin
+      valuesKey: adminUser
+      targetPath: adminUser
+    - kind: Secret
+      name: grafana-admin
+      valuesKey: adminPassword
+      targetPath: adminPassword
+  values:
+    podLabels:
+      logs.onelitefeather.net/env: prod
+    replicas: 2
+    headlessService: true
+    useStatefulSet: false
+    serviceMonitor:
+      enabled: true
+    podDisruptionBudget:
+      minAvailable: 1
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: topology.kubernetes.io/region
+                  operator: In
+                  values:
+                    - fr-rosenau
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: grafana
+            app.kubernetes.io/instance: grafana
+    persistence:
+      enabled: false
+    ingress:
+      enabled: false
+    env:
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432
+      GF_DATABASE_NAME: grafana
+      GF_DATABASE_SSL_MODE: disable
+    envValueFrom:
+      POD_IP:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+      GF_DATABASE_USER:
+        secretKeyRef:
+          name: grafana-postgresql
+          key: username
+      GF_DATABASE_PASSWORD:
+        secretKeyRef:
+          name: grafana-postgresql
+          key: password
+      # Read back by alerting/contactpoints.yaml as $__env{DISCORD_WEBHOOK_URL}; that keeps
+      # the URL out of the ConfigMap, which is what lets the contact points live next to the
+      # other three provisioning files instead of in a Secret.
+      DISCORD_WEBHOOK_URL:
+        secretKeyRef:
+          name: grafana-discord
+          key: webhookUrl
+    # Keys in grafana-azuread are already named like the env vars, so the whole
+    # secret is injected; rotating it needs `kubectl rollout restart` (stable name).
+    envFromSecret: grafana-azuread
+    grafana.ini:
+      server:
+        domain: grafana.apps.onelite.feather
+        root_url: https://grafana.apps.onelite.feather
+      dashboards:
+        # Path the dashboards sidecar writes to: <folder>/<ConfigMap key>, with the
+        # folder coming from the grafana_folder annotation on the ConfigMap.
+        default_home_dashboard_path: /tmp/dashboards/Overview/cluster-overview.json
+      auth:
+        disable_login_form: false
+      auth.azuread:
+        name: Entra ID
+        enabled: true
+        allow_sign_up: true
+        auto_login: false
+        client_authentication: client_secret_post
+        client_id: $__env{GF_AUTH_AZUREAD_CLIENT_ID}
+        client_secret: $__env{GF_AUTH_AZUREAD_CLIENT_SECRET}
+        scopes: openid email profile
+        auth_url: https://login.microsoftonline.com/$__env{GF_AUTH_AZUREAD_TENANT_ID}/oauth2/v2.0/authorize
+        token_url: https://login.microsoftonline.com/$__env{GF_AUTH_AZUREAD_TENANT_ID}/oauth2/v2.0/token
+        # allowed_organizations takes tenant IDs (tid claim); allowed_tenants is not a real key.
+        allowed_organizations: $__env{GF_AUTH_AZUREAD_TENANT_ID}
+        allowed_groups: 29c2994c-95ad-4fb5-af6d-015866f151bc 171f6cc7-644d-457a-85ea-397b9eb70eb1 82f559e3-e191-46e1-a920-a860b906c69e
+        # org_mapping only grants None|Viewer|Editor|Admin, so server admin stays on the local account.
+        org_mapping: 29c2994c-95ad-4fb5-af6d-015866f151bc:1:Admin 171f6cc7-644d-457a-85ea-397b9eb70eb1:1:Editor 82f559e3-e191-46e1-a920-a860b906c69e:1:Viewer
+        use_pkce: true
+      unified_alerting:
+        enabled: true
+        ha_peers: grafana-headless:9094
+        ha_listen_address: $${POD_IP}:9094
+        ha_advertise_address: $${POD_IP}:9094
+        rule_version_record_limit: "5"
+        # The 1m default let notifications render against a config that did not know
+        # a just-provisioned template yet; the webhook notifier drops those silently.
+        alertmanager_config_poll_interval: 10s
+      alerting:
+        enabled: false
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Mimir
+            uid: mimir
+            type: prometheus
+            access: proxy
+            url: http://mimir-gateway.grafana.svc.cluster.local/prometheus
+            isDefault: true
+            editable: false
+            jsonData:
+              httpMethod: POST
+              timeInterval: 30s
+          - name: Loki
+            uid: loki
+            type: loki
+            access: proxy
+            url: http://loki-gateway.grafana.svc.cluster.local
+            editable: false
+            jsonData:
+              maxLines: 1000
+              derivedFields:
+                - datasourceUid: tempo
+                  matcherRegex: '"trace_id":"(\w+)"'
+                  name: TraceID
+                  url: "$${__value.raw}"
+          - name: Tempo
+            uid: tempo
+            type: tempo
+            access: proxy
+            url: http://tempo-gateway.grafana.svc.cluster.local
+            editable: false
+            jsonData:
+              tracesToLogsV2:
+                datasourceUid: loki
+                spanStartTimeShift: "-1h"
+                spanEndTimeShift: "1h"
+                filterByTraceID: false
+                filterBySpanID: false
+              tracesToMetrics:
+                datasourceUid: mimir
+                spanStartTimeShift: "-1h"
+                spanEndTimeShift: "1h"
+              serviceMap:
+                datasourceUid: mimir
+              nodeGraph:
+                enabled: true
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        # Remote (gnetId/url) dashboards only — inline ones live in sidecar
+        # ConfigMaps. disableDeletion keeps the version history across that move.
+        providers:
+          - name: kubernetes
+            orgId: 1
+            folder: Kubernetes
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/kubernetes
+          - name: controllers
+            orgId: 1
+            folder: Controllers
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/controllers
+          - name: observability
+            orgId: 1
+            folder: Observability
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/observability
+          - name: databases
+            orgId: 1
+            folder: Databases
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/databases
+          # applications provider dropped: harbor was its only dashboard and now
+          # comes from a sidecar ConfigMap, so the provider had no files left and
+          # would only log a missing-directory error.
+          - name: storage
+            orgId: 1
+            folder: Storage
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/storage
+    # Collects ConfigMaps labelled grafana_dashboard=1 into one extra file
+    # provider, which runs *alongside* the dashboardProviders above. Every
+    # dashboard this repo maintains itself now comes from here (see dashboards/
+    # next to this file); the providers above are left with remote gnetId/url
+    # dashboards, which the chart's initContainer downloads.
+    sidecar:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        # ALL, not the default own-namespace: spegel-dashboard is in kube-system.
+        searchNamespace:
+          - ALL
+        # Only ConfigMaps carry dashboards here; avoids watching every Secret
+        # cluster-wide (RBAC still grants both, the chart hardcodes that).
+        resource: configmap
+        # Annotation -> subdirectory, and foldersFromFilesStructure turns those
+        # subdirectories into Grafana folders, reusing an existing folder of the
+        # same title -- that is what keeps the moved dashboards in place.
+        folderAnnotation: grafana_folder
+        # Native sidecar: the startupProbe holds Grafana back until the initial
+        # LIST wrote every file, so provisioning no longer unprovisions all of
+        # them and churns versions; the watch loop keeps ConfigMap edits live.
+        initDashboards: true
+        restartPolicy: Always
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 8084 # chart default here, and templated into HEALTH_PORT
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 60
+        provider:
+          foldersFromFilesStructure: true
+          # disableDelete dropped: the directory is complete before Grafana
+          # provisions, so a missing file really is a removed ConfigMap.
+      # Collects the single ConfigMap labelled grafana_alert=1 (see alerting/ next to this
+      # file) into /etc/grafana/provisioning/alerting and POSTs the provisioning reload once
+      # per ConfigMap, after writing all of its keys -- which is why all four files share one
+      # ConfigMap: split up, policies.yaml could be reloaded before contactpoints.yaml exists.
+      alerts:
+        enabled: true
+        label: grafana_alert
+        # contactpoints.yaml no longer carries the webhook URL (it reads $__env{}), so
+        # everything is a plain ConfigMap and Secrets need not be watched.
+        resource: configmap
+        # Unlike dashboards: nothing alerting-related lives outside this namespace.
+        searchNamespace:
+          - grafana
+        watchMethod: WATCH
+        # Deliberately not a native sidecar like the dashboards one: this keeps a bad
+        # provisioning file an HTTP 500 instead of a CrashLoopBackOff.
+    dashboards:
+      kubernetes:
+        # kubernetes-dashboard (gnetId 22523) removed: it never worked, and
+        # revision 1 would silently overwrite a manually imported dashboard.
+        kubernetes-cluster:
+          gnetId: 7249
+          revision: 1
+          datasource: Mimir
+        persistent-volumes:
+          gnetId: 15600
+          revision: 1
+          datasource: Mimir
+        node-exporter-full:
+          gnetId: 1860
+          revision: 41
+          datasource: Mimir
+      controllers:
+        # ingress-nginx dashboard removed: the component was replaced by
+        # Envoy Gateway a while back, confirmed 100% dead (zero samples for
+        # any nginx_ingress_controller_* metric over 7 days, only stale
+        # TSDB label-index metadata remained).
+        cert-manager:
+          gnetId: 20340
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
+        cloudflare-tunnel:
+          gnetId: 24874
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
+        envoy-gateway-overview:
+          gnetId: 24460
+          revision: 1
+          datasource: Mimir
+        # envoy-proxy (legacy community dashboard, gnetId 21329) removed:
+        # built for classic per-upstream-host Envoy clusters, conceptually
+        # mismatched with Envoy Gateway's per-route cluster model (no
+        # "host" label exists, "Live servers" stat flatlined at 0 despite
+        # real traffic). envoy-gateway-overview above already covers this
+        # deployment correctly.
+      observability:
+        # prometheus-overview (legacy community dashboard, gnetId 3662)
+        # removed: fully orphaned since metrics scraping migrated from
+        # kube-prometheus-stack's Prometheus to clustered Alloy -- no
+        # Prometheus server process exists in this cluster anymore, and
+        # several referenced metrics are pre-2.0-era names removed from
+        # Prometheus/Mimir entirely.
+        loki-metrics:
+          gnetId: 17781
+          revision: 1
+          datasource: Mimir
+      databases:
+        cloudnative-pg:
+          url: https://raw.githubusercontent.com/cloudnative-pg/grafana-dashboards/refs/heads/main/charts/cluster/grafana-dashboard.json
+          # Plain "datasource: Mimir" left the DS_PROMETHEUS input pinned to
+          # the dead legacy "Prometheus" datasource (same failure mode this
+          # dashboard shares with several gnetId imports) -- the list form,
+          # naming the input explicitly, is what actually substitutes it
+          # (matches the working cert-manager gnetId 20340 entry below).
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
+        mariadb-galera:
+          gnetId: 13106
+          revision: 1
+          datasource: Mimir
+        # redis-exporter (gnetId 14091) removed: nothing produces redis_* metrics
+        # since the Dragonfly migration. Replaced by dashboards/databases/dragonfly.json.
+      storage:
+        ceph-pools:
+          gnetId: 5342
+          revision: 9
+          datasource: Mimir
+    resources:
+      requests:
+        cpu: 250m
+        memory: 288Mi
+      limits:
+        cpu: 2
+        memory: 2Gi
