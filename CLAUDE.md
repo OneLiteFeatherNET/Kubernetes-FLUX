@@ -93,6 +93,23 @@ Charts under `helm/` are pulled by the `helmcharts` **GitRepository** source (wh
 
 ⚠️ **When you edit a chart in `helm/`, bump its `Chart.yaml` `version:`.** Flux/Helm caches by chart version; without a bump, edits to templates/values are not re-rendered onto the cluster.
 
+## Semantic anchors
+
+[Semantic Anchors](https://llm-coding.github.io/Semantic-Anchors/) are established terms that activate a whole concept in the model, so a name replaces a long instruction. Prefer them in prompts, specs, docs and PRs:
+
+| Use case here | Anchor |
+|---|---|
+| Commit messages, PR titles | Conventional Commits |
+| PR descriptions, incident summaries (state first, details after) | BLUF (Bottom Line Up Front) |
+| Structuring an argument or longer write-up | Pyramid Principle according to Barbara Minto |
+| Splitting work or categories without overlap or gaps (layers, OpenSpec changes) | MECE Principle |
+| Decisions and ADRs in Outline | MADR |
+| Outline documentation structure (runbook vs. explanation vs. reference) | Diátaxis Framework |
+| Requirements in OpenSpec specs | EARS-Requirements |
+| Scenarios in OpenSpec specs | Gherkin |
+| Architecture diagrams | C4-Diagrams |
+| Incident root-cause analysis | Five Whys (Ohno) |
+
 ## Conventions & non-obvious behaviors
 
 - **Conventional Commits are enforced in CI** (`.github/workflows/pr-lint.yaml` + `commitlint.config.mjs`): allowed types `build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test`, subject must start **lowercase**, header ≤100 chars. The PR title is the squash-merge subject and is linted too.
