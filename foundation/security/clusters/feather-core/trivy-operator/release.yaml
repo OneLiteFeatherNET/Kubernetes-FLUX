@@ -60,6 +60,14 @@ spec:
           fsGroup: 65534
           seccompProfile:
             type: RuntimeDefault
+        # Chart default is 512Mi; observed p95 53Mi, max 174Mi (7d).
+        resources:
+          requests:
+            cpu: 200m
+            memory: 192Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
         securityContext:
           privileged: false
           allowPrivilegeEscalation: false
