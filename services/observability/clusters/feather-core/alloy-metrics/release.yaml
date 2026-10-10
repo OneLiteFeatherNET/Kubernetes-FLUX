@@ -29,6 +29,13 @@ spec:
               topologyKey: kubernetes.io/hostname
     serviceMonitor:
       enabled: true
+    configReloader:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          memory: 64Mi
     alloy:
       clustering:
         enabled: true
