@@ -41,12 +41,12 @@ Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `
 | `foundation-storage` | foundation/layers/feather-core/storage | foundation-storage-operators, foundation-networking |
 | `foundation-databases` | foundation/layers/feather-core/databases | foundation-databases-operators, foundation-storage, foundation-networking |
 | `foundation-messaging` | foundation/layers/feather-core/messaging | foundation-messaging-operators, foundation-storage |
-| `foundation-security` | foundation/layers/feather-core/security | foundation-platform, foundation-storage |
-| `services-automation` | services/layers/feather-core/automation | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
-| `services-collaboration` | services/layers/feather-core/collaboration | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
+| `foundation-security` | foundation/layers/feather-core/security | foundation-storage |
+| `services-automation` | services/layers/feather-core/automation | foundation-networking, foundation-storage, foundation-databases |
+| `services-collaboration` | services/layers/feather-core/collaboration | foundation-networking, foundation-storage, foundation-databases |
 | `services-development` | services/layers/feather-core/development | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
-| `services-media` | services/layers/feather-core/media | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
-| `services-observability` | services/layers/feather-core/observability | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates (`wait:false`) |
+| `services-media` | services/layers/feather-core/media | foundation-networking, foundation-storage, foundation-messaging |
+| `services-observability` | services/layers/feather-core/observability | foundation-networking, foundation-storage, foundation-databases, foundation-messaging (`wait:false`) |
 | `products` | products/layers/feather-core/prod | services-development |
 | `products-dev` | products/layers/feather-core/dev | services-development |
 
