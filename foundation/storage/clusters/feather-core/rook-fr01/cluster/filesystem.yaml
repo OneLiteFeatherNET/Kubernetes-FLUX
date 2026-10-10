@@ -16,6 +16,7 @@ spec:
   metadataServer:
     activeCount: 1
     activeStandby: true
+    priorityClassName: feather-platform
     placement:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
