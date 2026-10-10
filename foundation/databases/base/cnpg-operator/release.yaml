@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: cnpg
+  labels:
+    flux.onelitefeather.dev/remediation: manual
   namespace: cnpg-system
 spec:
   releaseName: cnpg
@@ -15,6 +17,10 @@ spec:
   install:
     remediation:
       retries: 0
+  # Operator with CRDs: retries only, no automatic rollback.
+  upgrade:
+    remediation:
+      retries: 3
   driftDetection:
     mode: warn
     ignore:

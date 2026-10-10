@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: strimzi-kafka-operator
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
   namespace: strimzi-system
 spec:
   releaseName: strimzi-kafka-operator
