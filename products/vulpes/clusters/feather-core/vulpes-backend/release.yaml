@@ -194,9 +194,19 @@ spec:
     envFrom:
       - secretRef:
           name: vulpes-app-db
+    # Helm replaces list values: this env list must carry the heap flag itself.
     env:
       - name: LOG_JSON
         value: "true"
+      - name: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=75.0 -Duser.timezone=UTC"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 768Mi
     readinessProbe:
       path: /health/readiness
       initialDelaySeconds: 5
