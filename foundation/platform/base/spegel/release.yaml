@@ -20,6 +20,11 @@ spec:
     ignore:
       # The documented rollout-restart workflow (CLAUDE.md) mutates this.
       - paths: ["/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"]
+      # Chart declares containerPort 5001 twice (TCP + UDP); the strategic merge keys on port only and drops the UDP entry.
+      - paths: ["/spec/template/spec/containers/0/ports"]
+        target:
+          kind: DaemonSet
+          name: spegel
   interval: 1m0s
   timeout: 5m
   values:
