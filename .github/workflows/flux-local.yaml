@@ -91,8 +91,9 @@ jobs:
           deselect=""
           for id in "${excluded[@]}"; do deselect+=" --deselect ${id}"; done
           # pytest honours PYTEST_ADDOPTS; flux-local test runs on pytest.
-          PYTEST_ADDOPTS="${deselect}" flux-local test --enable-helm --skip-secrets \
-            --all-namespaces --path clusters/feather-core | tee "${RUNNER_TEMP}/render.log"
+          # Retries only chart-download failures (e.g. a 503 from a chart repo).
+          PYTEST_ADDOPTS="${deselect}" bash .github/scripts/flux-local-retry.sh "${RUNNER_TEMP}/render.log" -- \
+            flux-local test --enable-helm --skip-secrets --all-namespaces --path clusters/feather-core
 
       - name: Diff Kustomizations against main
         id: ks
@@ -124,8 +125,12 @@ jobs:
               continue
             fi
             echo "### ${ns}/${name}" >> "${out}"
-            flux-local diff helmreleases "${name}" --namespace "${ns}" --path clusters/feather-core \
-              --path-orig ../base/clusters/feather-core --skip-secrets --output diff >> "${out}"
+            # --output-file is rewritten on every attempt, so a retry never leaves a partial diff behind.
+            piece="${RUNNER_TEMP}/hr-piece.diff"
+            bash .github/scripts/flux-local-retry.sh "${RUNNER_TEMP}/hr-attempts.log" -- \
+              flux-local diff helmreleases "${name}" --namespace "${ns}" --path clusters/feather-core \
+              --path-orig ../base/clusters/feather-core --skip-secrets --output diff --output-file "${piece}"
+            cat "${piece}" >> "${out}"
           done < "${RUNNER_TEMP}/changed-hr.txt"
 
       - name: Write job summary

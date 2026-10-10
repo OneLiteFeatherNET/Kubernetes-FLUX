@@ -19,3 +19,13 @@ patches:
       template:
         spec:
           priorityClassName: system-cluster-critical
+# Retry layers blocked on a dependency after 5s instead of the 30s default
+# (9-hop layer chain adds ~4.5 min to a rollout). Upstream: fluxcd.io bootstrap customization.
+- patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value: --requeue-dependency=5s
+  target:
+    kind: Deployment
+    namespace: flux-system
+    name: "(kustomize-controller|helm-controller)"
