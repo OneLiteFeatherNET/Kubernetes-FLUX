@@ -1,0 +1,17 @@
+name: close-invalid-prs
+
+# Closes pull requests opened from a fork's default branch.
+# The reusable workflow needs no secrets; GITHUB_TOKEN with pull-requests: write is enough.
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions: {}
+
+jobs:
+  close:
+    name: Close invalid PR
+    permissions:
+      pull-requests: write
+    # v2.9.0 of OneLiteFeatherNET/workflows
+    uses: OneLiteFeatherNET/workflows/.github/workflows/close-invalid-prs.yml@ec5d37fed94ad59e54868d63af6ea4ef4ee4e84c # v2.9.0
