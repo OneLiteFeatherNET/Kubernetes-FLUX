@@ -182,9 +182,7 @@ spec:
       singleOrganization: true
       existingSecret: sentry-secret
       existingSecretKey: secret-key
-      # Chart default is {}, which leaves the web pods BestEffort and first to
-      # be evicted. The many Snuba consumers keep chart defaults until
-      # `kubectl top` shows what they actually need.
+      # Sized from kubectl top; no CPU limits on purpose (throttling).
       web:
         resources:
           requests:
@@ -192,6 +190,146 @@ spec:
             memory: 1Gi
           limits:
             memory: 2Gi
+      cleanup:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      taskBroker:
+        resources:
+          requests:
+            cpu: 20m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+      taskScheduler:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 288Mi
+          limits:
+            memory: 576Mi
+      taskWorker:
+        resources:
+          requests:
+            cpu: 30m
+            memory: 2Gi
+          limits:
+            memory: 3Gi
+      genericMetricsConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      ingestConsumerAttachments:
+        resources:
+          requests:
+            cpu: 20m
+            memory: 704Mi
+          limits:
+            memory: 1408Mi
+      ingestConsumerEvents:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      ingestConsumerTransactions:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      ingestFeedback:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      ingestMonitors:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+      ingestOccurrences:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+      metricsConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      monitorsClockTasks:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+      monitorsClockTick:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+      postProcessForwardErrors:
+        resources:
+          requests:
+            cpu: 20m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      postProcessForwardIssuePlatform:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      postProcessForwardTransactions:
+        resources:
+          requests:
+            cpu: 20m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      processSegments:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      processSpans:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 480Mi
+          limits:
+            memory: 960Mi
+      uptimeResults:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
 
     externalPostgresql:
       host: feather-core-cluster-pg-pooler-rw-tx.cnpg-system.svc.cluster.local
@@ -222,6 +360,12 @@ spec:
         enabled: true
         replicationFactor: 3
         numPartitions: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
 
     externalClickhouse:
       host: clickhouse.sentry.svc.cluster.local
@@ -252,6 +396,13 @@ spec:
             memory: 512Mi
           limits:
             memory: 2Gi
+        cleaner:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
 
     relay:
       resources:
@@ -260,6 +411,13 @@ spec:
           memory: 256Mi
         limits:
           memory: 1Gi
+      init:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
 
     snuba:
       api:
@@ -269,3 +427,138 @@ spec:
             memory: 512Mi
           limits:
             memory: 1Gi
+      consumer:
+        resources:
+          requests:
+            cpu: 20m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      eapItemsConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      genericMetricsCountersConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      groupAttributesConsumer:
+        resources:
+          requests:
+            cpu: 20m
+            memory: 224Mi
+          limits:
+            memory: 448Mi
+      issueOccurrenceConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 224Mi
+          limits:
+            memory: 448Mi
+      metricsConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      outcomesAcceptedConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      outcomesBillingConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      outcomesConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      replacer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      replaysConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      subscriptionConsumerEapItems:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      subscriptionConsumerEvents:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      subscriptionConsumerGenericMetricsCounters:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      subscriptionConsumerMetrics:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      subscriptionConsumerTransactions:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+      transactionsConsumer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 224Mi
+          limits:
+            memory: 448Mi
+
+    launchpadTaskWorker:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 448Mi
+        limits:
+          memory: 896Mi
+
+    memcached:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
