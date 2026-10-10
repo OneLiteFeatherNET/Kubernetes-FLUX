@@ -1,0 +1,13 @@
+# Entra admin group (object ID, no oidc: prefix; apiserver has no --oidc-groups-prefix). Every member is cluster-admin.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: entra-cluster-admins
+subjects:
+  - kind: Group
+    name: "1f5c0924-bb0a-49b9-8641-aeb3a22b8d46"
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
