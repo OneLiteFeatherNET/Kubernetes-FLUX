@@ -3,7 +3,7 @@ kind: HelmRelease
 metadata:
   name: clickhouse
   labels:
-    flux.onelitefeather.dev/remediation: manual
+    flux.onelitefeather.dev/remediation: retries-only
   namespace: sentry
 spec:
   releaseName: clickhouse
@@ -23,7 +23,6 @@ spec:
     timeout: 10m0s
     remediation:
       retries: 3
-      remediateLastFailure: true
   interval: 1m0s
   # Default values
   #

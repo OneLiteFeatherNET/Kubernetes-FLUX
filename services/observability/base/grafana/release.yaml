@@ -21,7 +21,6 @@ spec:
   upgrade:
     remediation:
       retries: 3
-      remediateLastFailure: true
   interval: 1m0s
   # Default values
   # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml

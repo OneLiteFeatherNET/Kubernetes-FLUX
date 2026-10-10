@@ -25,7 +25,7 @@ spec:
     secretRef:
       name: sops-age
   patches:
-    # Stateful or CRD-heavy releases: retries only, no automatic rollback.
+    # Stateful, CRD-heavy or schema-migrating releases: retries only, no automatic rollback.
     - target:
         group: helm.toolkit.fluxcd.io
         kind: HelmRelease
