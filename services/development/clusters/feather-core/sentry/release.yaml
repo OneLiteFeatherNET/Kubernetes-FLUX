@@ -353,6 +353,10 @@ spec:
     externalKafka:
       host: feather-kafka-kafka-bootstrap.kafka.svc
       port: 9092
+      # librdkafka needs socket.timeout.ms well above fetch.wait.max.ms (500); the chart default of 1000 causes REQTMOUT.
+      socket:
+        timeout:
+          ms: 5000
       # Creates Sentry's 116 topics with topicctl. This template is gated on
       # `not kafka.enabled`, so it runs precisely in this external setup, and
       # falls back to the chart's full built-in topic list.
