@@ -54,6 +54,8 @@ Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `
 
 Most layers use `wait: true`, so a layer is only "Ready" once its applied resources are healthy — and its dependents block until then. Flux requires a dependency to be `Ready` **at the same git revision** before a dependent reconciles.
 
+**Critical path:** the longest chain is 10 hops (`flux-system` → `foundation-sources` → `foundation-observability` → `foundation-platform` → `foundation-certificates-operators` → `foundation-certificates` → `foundation-networking` → `foundation-storage` → `foundation-databases` → `services-development` → `products-dev`); blocked layers are requeued after `--requeue-dependency=5s` (patched in `clusters/feather-core/flux-system/kustomization.yaml`, Flux default 30 s), so the requeue wait no longer dominates a rollout.
+
 ## Common commands
 
 ```bash
@@ -113,7 +115,7 @@ Charts under `helm/` are pulled by the `helmcharts` **GitRepository** source (wh
 ## Conventions & non-obvious behaviors
 
 - **Conventional Commits are enforced in CI** (`.github/workflows/pr-lint.yaml` + `commitlint.config.mjs`): allowed types `build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test`, subject must start **lowercase**, header ≤100 chars. The PR title is the squash-merge subject and is linted too.
-- **`flux-validate` CI** runs `.github/scripts/validate.sh` on every PR/push touching `clusters|foundation|apps|helm`. Run it locally before opening a PR.
+- **`flux-validate` CI** runs `.github/scripts/validate.sh` on every PR and on every push to `main` (no path filter). Run it locally before opening a PR.
 - Overlays set `generatorOptions.disableNameSuffixHash: true`, so generated Secret/ConfigMap **names are stable**. Consequence: changing a secret's contents does **not** roll the consuming Deployment — `kubectl rollout restart` it to pick up new values.
 - **Renovate** (`renovate.json`) opens PRs to bump image tags and chart versions; expect `main` to move under you. Re-fetch/rebase before pushing.
 - A HelmRelease change updates the cluster ConfigMap/Deployment via a Helm upgrade; if values come from a chart-rendered ConfigMap, the new values only land after the upgrade completes — verify the ConfigMap before restarting a pod to apply them.
