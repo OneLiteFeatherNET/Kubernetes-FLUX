@@ -12,6 +12,19 @@ spec:
   roles:
     - controller
     - broker
+  template:
+    pod:
+      # One pool pod per worker node; the 4 xl workers are untainted and the pool has no nodeSelector.
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: strimzi.io/pool-name
+                    operator: In
+                    values:
+                      - dual
+              topologyKey: kubernetes.io/hostname
   storage:
     type: jbod
     volumes:
@@ -57,6 +70,10 @@ spec:
       # Topics are created explicitly by the Sentry chart's provisioning job,
       # never implicitly by a producer hitting an unknown name.
       auto.create.topics.enable: "false"
+      # Defaults are 2000/1000/1000 ms; Ceph RBD fsync stalls of 2-4 s trigger spurious elections.
+      controller.quorum.fetch.timeout.ms: 6000
+      controller.quorum.election.timeout.ms: 3000
+      controller.quorum.election.backoff.max.ms: 2000
   # entityOperator is omitted deliberately: enabling the Topic Operator would
   # put it in competition with the `topicctl` run that creates Sentry's 116
   # topics. Nothing here manages topics through KafkaTopic CRs.
