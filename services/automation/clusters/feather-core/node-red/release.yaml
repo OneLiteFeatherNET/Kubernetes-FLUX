@@ -11,6 +11,8 @@ spec:
     podLabels:
       logs.onelitefeather.net/env: prod
     priorityClassName: feather-low
+    # RWO PVC: Recreate avoids a RollingUpdate deadlock on the volume.
+    deploymentStrategy: Recreate
     persistence:
       enabled: true
       # Pin to the existing PVC capacity; the chart default is smaller and a
