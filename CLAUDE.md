@@ -45,8 +45,8 @@ Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `
 | `services-automation` | services/layers/feather-core/automation | foundation-networking, foundation-storage, foundation-databases |
 | `services-collaboration` | services/layers/feather-core/collaboration | foundation-networking, foundation-storage, foundation-databases |
 | `services-development` | services/layers/feather-core/development | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
-| `services-media` | services/layers/feather-core/media | foundation-networking, foundation-storage, foundation-messaging |
-| `services-observability` | services/layers/feather-core/observability | foundation-networking, foundation-storage, foundation-databases, foundation-messaging (`wait:false`) |
+| `services-media` | services/layers/feather-core/media | foundation-networking, foundation-storage |
+| `services-observability` | services/layers/feather-core/observability | foundation-networking, foundation-storage, foundation-databases (`wait:false`) |
 | `products` | products/layers/feather-core/prod | services-development |
 | `products-dev` | products/layers/feather-core/dev | services-development |
 
