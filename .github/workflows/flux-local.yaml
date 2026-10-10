@@ -1,0 +1,187 @@
+name: flux-local
+
+# Renders every HelmRelease in clusters/feather-core, in-repo and external
+# charts alike, and shows what the PR changes against main in the job summary.
+# flux-validate only builds Kustomizations; it never inflates a chart.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: render helmreleases + diff against main
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FLUX_VERSION: 2.9.6 # matches app.kubernetes.io/version in flux-system/gotk-components.yaml
+      KUSTOMIZE_VERSION: 5.7.1 # matches validate.sh
+      FLUX_LOCAL_VERSION: 8.4.0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: pr
+          persist-credentials: false
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          path: base
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+
+      - name: Install flux, kustomize and flux-local
+        run: |
+          set -euo pipefail
+          bin="${RUNNER_TEMP}/bin"
+          tmp="$(mktemp -d)"
+          mkdir -p "${bin}"
+
+          # fetch <url> <file> <checksums-url> <asset-name>: fails unless the checksum matches
+          fetch() {
+            curl -fsSL -o "${tmp}/$2" "$1"
+            curl -fsSL -o "${tmp}/$2.sha" "$3"
+            expected="$(awk -v f="$4" '$2 == f { print $1 }' "${tmp}/$2.sha")"
+            echo "${expected}  ${tmp}/$2" | sha256sum -c -
+          }
+
+          fetch "https://github.com/fluxcd/flux2/releases/download/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz" \
+            flux.tgz \
+            "https://github.com/fluxcd/flux2/releases/download/v${FLUX_VERSION}/flux_${FLUX_VERSION}_checksums.txt" \
+            "flux_${FLUX_VERSION}_linux_amd64.tar.gz"
+          tar -xzf "${tmp}/flux.tgz" -C "${bin}" flux
+
+          fetch "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" \
+            kustomize.tgz \
+            "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/checksums.txt" \
+            "kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz"
+          tar -xzf "${tmp}/kustomize.tgz" -C "${bin}" kustomize
+
+          echo "${bin}" >> "${GITHUB_PATH}"
+          export PATH="${bin}:${PATH}"
+          python3 -m pip install --quiet "flux-local==${FLUX_LOCAL_VERSION}" pyyaml
+
+          flux version --client
+          kustomize version
+          helm version --short
+
+      # CI holds no age key, so SOPS-encrypted patches and resources are dropped
+      # from the copies flux-local reads. Both trees get the PR's copy of the script.
+      - name: Strip SOPS references from kustomizations
+        run: |
+          python3 pr/.github/scripts/flux-local-sanitize.py pr
+          python3 pr/.github/scripts/flux-local-sanitize.py base
+
+      - name: Render every HelmRelease
+        id: render
+        continue-on-error: true
+        working-directory: pr
+        run: |
+          set -euo pipefail
+          mapfile -t excluded < <(grep -vE "^[[:space:]]*(#|\$)" .github/flux-local-exclude.txt)
+          deselect=""
+          for id in "${excluded[@]}"; do deselect+=" --deselect ${id}"; done
+          # pytest honours PYTEST_ADDOPTS; flux-local test runs on pytest.
+          PYTEST_ADDOPTS="${deselect}" flux-local test --enable-helm --skip-secrets \
+            --all-namespaces --path clusters/feather-core | tee "${RUNNER_TEMP}/render.log"
+
+      - name: Diff Kustomizations against main
+        id: ks
+        continue-on-error: true
+        working-directory: pr
+        run: |
+          set -euo pipefail
+          flux-local diff kustomizations --path clusters/feather-core \
+            --path-orig ../base/clusters/feather-core \
+            --all-namespaces --skip-secrets --output diff > "${RUNNER_TEMP}/ks.diff"
+
+      - name: Diff changed HelmReleases against main
+        id: hr
+        continue-on-error: true
+        working-directory: pr
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/hr.diff"
+          : > "${out}"
+          # flux-local inflates only HelmReleases whose Kustomization-level object
+          # changed, so the list comes from the Kustomization diff.
+          grep -oE 'HelmRelease: [^ ]+/[^ ]+' "${RUNNER_TEMP}/ks.diff" | sed 's/^HelmRelease: //' | sort -u \
+            > "${RUNNER_TEMP}/changed-hr.txt" || true
+          mapfile -t excluded < <(grep -vE "^[[:space:]]*(#|\$)" .github/flux-local-exclude.txt | sed 's/.*:://')
+          while IFS=/ read -r ns name; do
+            [ -n "${name:-}" ] || continue
+            if printf '%s\n' "${excluded[@]}" | grep -qxF "${ns}/${name}"; then
+              echo "skipped ${ns}/${name} (excluded)" >> "${out}"
+              continue
+            fi
+            echo "### ${ns}/${name}" >> "${out}"
+            flux-local diff helmreleases "${name}" --namespace "${ns}" --path clusters/feather-core \
+              --path-orig ../base/clusters/feather-core --skip-secrets --output diff >> "${out}"
+          done < "${RUNNER_TEMP}/changed-hr.txt"
+
+      - name: Write job summary
+        if: always()
+        env:
+          RENDER: ${{ steps.render.outcome }}
+          KS: ${{ steps.ks.outcome }}
+          HR: ${{ steps.hr.outcome }}
+        run: |
+          limit=900000
+          {
+            echo "## flux-local: render and diff against main"
+            echo
+            echo "| step | result |"
+            echo "| --- | --- |"
+            echo "| render (\`flux-local test --enable-helm\`) | ${RENDER} |"
+            echo "| Kustomization diff | ${KS} |"
+            echo "| HelmRelease diff | ${HR} |"
+            echo
+            if [ -f "${RUNNER_TEMP}/render.log" ]; then
+              echo "\`$(grep -E '[0-9]+ passed' "${RUNNER_TEMP}/render.log" | tail -1 | sed 's/^=*//;s/=*$//;s/^ *//')\`"
+              echo
+            fi
+            echo "<details><summary>Excluded from render and HelmRelease diff</summary>"
+            echo
+            grep -vE "^[[:space:]]*(#|\$)" pr/.github/flux-local-exclude.txt | sed 's/.*:://' \
+              | while IFS= read -r item; do printf "%s\n" "- \`${item}\`"; done
+            echo
+            echo "</details>"
+            echo
+            for pair in "Kustomization diff:${RUNNER_TEMP}/ks.diff" "HelmRelease diff:${RUNNER_TEMP}/hr.diff"; do
+              title="${pair%%:*}"; file="${pair#*:}"
+              echo "<details><summary>${title}</summary>"
+              echo
+              if [ -s "${file}" ]; then
+                echo '```diff'
+                head -c "${limit}" "${file}"
+                [ "$(stat -c %s "${file}")" -le "${limit}" ] || echo "... truncated, see the step log"
+                echo '```'
+              else
+                echo "No changes."
+              fi
+              echo
+              echo "</details>"
+              echo
+            done
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Fail on render or diff errors
+        if: always()
+        env:
+          RENDER: ${{ steps.render.outcome }}
+          KS: ${{ steps.ks.outcome }}
+          HR: ${{ steps.hr.outcome }}
+        run: |
+          if [ "${RENDER}" != success ] || [ "${KS}" != success ] || [ "${HR}" != success ]; then
+            echo "::error::flux-local failed (render=${RENDER} kustomization-diff=${KS} helmrelease-diff=${HR})"
+            exit 1
+          fi
