@@ -208,7 +208,7 @@ spec:
       - name: LOG_JSON
         value: "true"
       - name: JAVA_TOOL_OPTIONS
-        value: "-XX:MaxRAMPercentage=75.0 -Duser.timezone=UTC"
+        value: "-XX:MaxRAMPercentage=50.0 -Duser.timezone=UTC"
     resources:
       requests:
         cpu: 100m
