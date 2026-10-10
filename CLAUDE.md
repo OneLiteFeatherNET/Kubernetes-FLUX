@@ -58,7 +58,7 @@ Most layers use `wait: true`, so a layer is only "Ready" once its applied resour
 
 ```bash
 # Validate ALL manifests the way CI does (kustomize build every Flux path + kubeconform).
-# Pins kustomize 5.7.1 / kubeconform 0.7.0 / k8s 1.31; skips Secrets; strips SOPS patches.
+# Pins kustomize 5.7.1 / kubeconform 0.7.0 / k8s 1.36.0; skips Secrets; strips SOPS patches.
 ./.github/scripts/validate.sh
 
 # Render/inspect a single overlay locally (fast iteration).
