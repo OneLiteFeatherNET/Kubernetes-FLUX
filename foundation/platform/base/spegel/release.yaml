@@ -23,6 +23,12 @@ spec:
   interval: 1m0s
   timeout: 5m
   values:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
     tolerations:
       - key: node-role.feather/storage
         operator: Equal

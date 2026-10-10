@@ -43,6 +43,12 @@ spec:
               limits:
                 cpu: 100m
                 memory: 256Mi
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
             plugin:
               requests:
                 cpu: 50m
@@ -53,6 +59,12 @@ spec:
         controllerPlugin:
           replicas: 2
           resources:
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
             provisioner:
               requests:
                 cpu: 25m
@@ -109,6 +121,12 @@ spec:
               limits:
                 cpu: 100m
                 memory: 256Mi
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
             plugin:
               requests:
                 cpu: 50m
@@ -119,6 +137,12 @@ spec:
         controllerPlugin:
           replicas: 2
           resources:
+            logRotator:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
             provisioner:
               requests:
                 cpu: 25m
