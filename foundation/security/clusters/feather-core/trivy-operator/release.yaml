@@ -11,12 +11,11 @@ spec:
     resources:
       requests:
         cpu: 100m
-        # The operator sits at ~400Mi steady-state with this many reports.
-        memory: 384Mi
+        # Observed steady-state ~741Mi with the current report count.
+        memory: 768Mi
       limits:
-        # 512Mi OOMKilled it in a loop (119 restarts/7d), which silently
-        # truncated the reports it had already written.
-        memory: 1Gi
+        # 1Gi was OOMKilled (spikes above the ~741Mi steady state).
+        memory: 1536Mi
 
     # The image already declares USER 10000; this only states it so the
     # admission-level checks (KSV-0012/0118) can see it.
@@ -60,6 +59,14 @@ spec:
           fsGroup: 65534
           seccompProfile:
             type: RuntimeDefault
+        # Chart default is 512Mi; observed p95 53Mi, max 174Mi (7d).
+        resources:
+          requests:
+            cpu: 200m
+            memory: 192Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
         securityContext:
           privileged: false
           allowPrivilegeEscalation: false

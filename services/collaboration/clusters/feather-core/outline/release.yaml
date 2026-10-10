@@ -70,7 +70,7 @@ spec:
             memory: 3Gi
           requests:
             cpu: 1
-            memory: 1500Mi
+            memory: 416Mi
         livenessProbe:
           initialDelaySeconds: 60
           httpGet:
@@ -107,7 +107,7 @@ spec:
             memory: 2Gi
           requests:
             cpu: 500m
-            memory: 1Gi
+            memory: 320Mi
         pdb:
           enabled: true
           minAvailable: 1

@@ -8,6 +8,16 @@ spec:
     spec:
       version: "=0.27.1"
   values:
+    replicaCount: 2
+    priorityClassName: feather-platform
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: cloudnative-pg
+            app.kubernetes.io/instance: cnpg
     resources:
       requests:
         cpu: 50m

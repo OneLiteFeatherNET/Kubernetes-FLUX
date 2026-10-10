@@ -4,6 +4,9 @@ metadata:
   name: grafana
   namespace: grafana
 spec:
+  # Install/upgrade budget. Two replicas roll one after another and each init
+  # container downloads its dashboards (up to 60s each), so the 5m default is too short.
+  timeout: 15m
   postRenderers:
     - kustomize:
         patches:
@@ -355,7 +358,7 @@ spec:
     resources:
       requests:
         cpu: 250m
-        memory: 512Mi
+        memory: 288Mi
       limits:
         cpu: 2
         memory: 2Gi

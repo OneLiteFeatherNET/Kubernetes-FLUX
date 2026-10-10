@@ -1,0 +1,23 @@
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Receiver
+metadata:
+  name: github
+  namespace: flux-system
+spec:
+  # GitHub push webhook -> immediate reconcile of the listed sources (polling stays as fallback).
+  type: github
+  events:
+    - ping
+    - push
+  secretRef:
+    name: flux-github-receiver-token
+  resources:
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: flux-system
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: helmcharts
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: sturnus

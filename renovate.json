@@ -15,11 +15,18 @@
       "/^(?:services|products|foundation)/.+/release\\.ya?ml$/"
     ]
   },
+  "dependencyDashboard": true,
+  "pinDigests": true,
   "packageRules": [
     {
       "description": "Keep chart and image bumps in one PR, otherwise the chart rolls without its matching image tags",
       "matchFileNames": ["services/**/harbor/**"],
       "groupName": "harbor"
+    },
+    {
+      "description": "Digest pins for the ~130 tag-only images would otherwise open one PR each (no PR limits are set)",
+      "matchUpdateTypes": ["pinDigest"],
+      "groupName": "image digest pins"
     }
   ],
   "bumpVersions": [

@@ -4,9 +4,8 @@ metadata:
   name: foundation-security
   namespace: flux-system
 spec:
-  # Trivy operator (ClientServer). The server PVC needs storage; ServiceMonitor CRDs come from platform.
+  # Trivy operator (ClientServer). The server PVC needs storage; ServiceMonitor CRDs come from observability (via platform).
   dependsOn:
-    - name: foundation-platform
     - name: foundation-storage
   interval: 10m0s
   retryInterval: 30s

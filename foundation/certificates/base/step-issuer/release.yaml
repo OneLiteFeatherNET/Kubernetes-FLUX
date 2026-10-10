@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: step-issuer
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
   namespace: step-issuer
 spec:
   releaseName: step-issuer
@@ -21,6 +23,8 @@ spec:
       retries: 3
   interval: 1m0s
   values:
+    deployment:
+      priorityClassName: feather-platform
     # The chart sets only runAsUser/runAsGroup 1000 on the container. No
     # readOnlyRootFilesystem here — untested against this image, and a broken
     # external issuer stops certificate renewal.

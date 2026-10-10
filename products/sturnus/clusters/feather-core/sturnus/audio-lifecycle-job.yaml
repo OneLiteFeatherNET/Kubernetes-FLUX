@@ -61,6 +61,12 @@ spec:
             - name: AWS_DEFAULT_REGION
               # RGW ignores the value but the CLI refuses to run without one.
               value: us-east-1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
           command:
             - /bin/sh
             - -c

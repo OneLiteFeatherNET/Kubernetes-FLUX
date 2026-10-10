@@ -10,6 +10,14 @@ spec:
       enabled: false
     alertmanager:
       enabled: false
+    # Live operator uses ~4m/29Mi.
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
     # Scraping moved to alloy-metrics. Do NOT disable prometheusOperator in the
     # same change that drops the PrometheusAgent CR — the generated StatefulSet
     # has no ownerReference, so nothing would clean it up and the old pods would

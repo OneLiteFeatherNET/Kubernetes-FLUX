@@ -156,7 +156,7 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 512Mi
+          memory: 352Mi
         limits:
           cpu: "1"
           memory: 1Gi
@@ -197,7 +197,7 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 512Mi
+          memory: 352Mi
         limits:
           cpu: "1"
           memory: 1536Mi
@@ -280,6 +280,14 @@ spec:
         limits:
           cpu: "1"
           memory: 512Mi
+    # Shared by the chunks-cache and results-cache exporter sidecars.
+    memcachedExporter:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
     chunksCache:
       # Trimmed well below the chart's 8Gi default for this cluster's log volume.
       allocatedMemory: 1024

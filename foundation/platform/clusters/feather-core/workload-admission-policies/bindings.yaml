@@ -1,0 +1,42 @@
+# Audit everywhere except system namespaces and the privileged Rook/MetalLB ones.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: olf-require-image-tag
+spec:
+  policyName: olf-require-image-tag
+  validationActions: [Audit]
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-node-lease, kube-public, rook-ceph, rook-ceph-fr01, metallb-system]
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: olf-require-memory-resources
+spec:
+  policyName: olf-require-memory-resources
+  validationActions: [Audit]
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-node-lease, kube-public, rook-ceph, rook-ceph-fr01, metallb-system]
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: olf-drop-capabilities
+spec:
+  policyName: olf-drop-capabilities
+  validationActions: [Audit]
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-node-lease, kube-public, rook-ceph, rook-ceph-fr01, metallb-system]
