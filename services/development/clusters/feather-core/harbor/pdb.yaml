@@ -17,11 +17,9 @@ metadata:
   name: harbor-registry
   namespace: harbor
 spec:
-  # The registry runs as a single replica (chunked uploads are session-bound to
-  # one pod). minAvailable: 1 keeps that pod up across voluntary disruptions, so
-  # node drains/updates don't silently take the registry down mid-push; draining
-  # its node needs a deliberate cordon/force.
-  minAvailable: 1
+  # Single replica by design (see release.yaml). minAvailable: 1 would block every
+  # voluntary drain (ALLOWED=0); maxUnavailable: 1 lets Talos upgrades proceed.
+  maxUnavailable: 1
   selector:
     matchLabels:
       app: harbor
