@@ -41,12 +41,12 @@ Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `
 | `foundation-storage` | foundation/layers/feather-core/storage | foundation-storage-operators, foundation-networking |
 | `foundation-databases` | foundation/layers/feather-core/databases | foundation-databases-operators, foundation-storage, foundation-networking |
 | `foundation-messaging` | foundation/layers/feather-core/messaging | foundation-messaging-operators, foundation-storage |
-| `foundation-security` | foundation/layers/feather-core/security | foundation-platform, foundation-storage |
-| `services-automation` | services/layers/feather-core/automation | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
-| `services-collaboration` | services/layers/feather-core/collaboration | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
+| `foundation-security` | foundation/layers/feather-core/security | foundation-storage |
+| `services-automation` | services/layers/feather-core/automation | foundation-networking, foundation-storage, foundation-databases |
+| `services-collaboration` | services/layers/feather-core/collaboration | foundation-networking, foundation-storage, foundation-databases |
 | `services-development` | services/layers/feather-core/development | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
-| `services-media` | services/layers/feather-core/media | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |
-| `services-observability` | services/layers/feather-core/observability | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates (`wait:false`) |
+| `services-media` | services/layers/feather-core/media | foundation-networking, foundation-storage |
+| `services-observability` | services/layers/feather-core/observability | foundation-networking, foundation-storage, foundation-databases (`wait:false`) |
 | `products` | products/layers/feather-core/prod | services-development |
 | `products-dev` | products/layers/feather-core/dev | services-development |
 
@@ -58,7 +58,7 @@ Most layers use `wait: true`, so a layer is only "Ready" once its applied resour
 
 ```bash
 # Validate ALL manifests the way CI does (kustomize build every Flux path + kubeconform).
-# Pins kustomize 5.7.1 / kubeconform 0.7.0 / k8s 1.31; skips Secrets; strips SOPS patches.
+# Pins kustomize 5.7.1 / kubeconform 0.7.0 / k8s 1.36.0; skips Secrets; strips SOPS patches.
 ./.github/scripts/validate.sh
 
 # Render/inspect a single overlay locally (fast iteration).
@@ -92,6 +92,23 @@ Full workflow: [SOPS — Secrets im Kubernetes-FLUX-Repo](https://outline.onelit
 Charts under `helm/` are pulled by the `helmcharts` **GitRepository** source (which points back at this repo's `main`). External charts come from `OCIRepository`/`HelmRepository` sources defined in `foundation/sources/clusters/feather-core/sources/`.
 
 ⚠️ **When you edit a chart in `helm/`, bump its `Chart.yaml` `version:`.** Flux/Helm caches by chart version; without a bump, edits to templates/values are not re-rendered onto the cluster.
+
+## Semantic anchors
+
+[Semantic Anchors](https://llm-coding.github.io/Semantic-Anchors/) are established terms that activate a whole concept in the model, so a name replaces a long instruction. Prefer them in prompts, specs, docs and PRs:
+
+| Use case here | Anchor |
+|---|---|
+| Commit messages, PR titles | Conventional Commits |
+| PR descriptions, incident summaries (state first, details after) | BLUF (Bottom Line Up Front) |
+| Structuring an argument or longer write-up | Pyramid Principle according to Barbara Minto |
+| Splitting work or categories without overlap or gaps (layers, OpenSpec changes) | MECE Principle |
+| Decisions and ADRs in Outline | MADR |
+| Outline documentation structure (runbook vs. explanation vs. reference) | Diátaxis Framework |
+| Requirements in OpenSpec specs | EARS-Requirements |
+| Scenarios in OpenSpec specs | Gherkin |
+| Architecture diagrams | C4-Diagrams |
+| Incident root-cause analysis | Five Whys (Ohno) |
 
 ## Conventions & non-obvious behaviors
 

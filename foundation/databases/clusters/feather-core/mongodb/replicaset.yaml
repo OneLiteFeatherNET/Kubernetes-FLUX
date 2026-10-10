@@ -1,5 +1,5 @@
-# Topology, provisioning and the restore runbook:
-# https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA
+# Topology, users and provisioning:
+# https://outline.onelitefeather.dev/doc/reference-mongodb-plattform-jZ1b5CiWLc
 apiVersion: mongodbcommunity.mongodb.com/v1
 kind: MongoDBCommunity
 metadata:
@@ -35,6 +35,47 @@ spec:
       additionalConnectionStringConfig:
         readPreference: secondary
       scramCredentialsSecretName: backup
+    # One user per internal app, readWrite on its own database only.
+    - name: otis
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-otis
+      roles:
+        - name: readWrite
+          db: otis
+      scramCredentialsSecretName: otis
+    - name: otis-dev
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-otis-dev
+      roles:
+        - name: readWrite
+          db: otis_dev
+      scramCredentialsSecretName: otis-dev
+    - name: vulpes
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-vulpes
+      roles:
+        - name: readWrite
+          db: vulpes
+      scramCredentialsSecretName: vulpes
+    - name: vulpes-dev
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-vulpes-dev
+      roles:
+        - name: readWrite
+          db: vulpes_dev
+      scramCredentialsSecretName: vulpes-dev
+    - name: sturnus
+      db: admin
+      passwordSecretRef:
+        name: mongodb-user-sturnus
+      roles:
+        - name: readWrite
+          db: sturnus
+      scramCredentialsSecretName: sturnus
   # Agent metrics endpoint (9216, Service port "prometheus"), scraped via servicemonitor.yaml.
   prometheus:
     username: prometheus

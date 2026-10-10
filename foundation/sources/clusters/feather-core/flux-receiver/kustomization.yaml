@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: flux-system
+resources:
+  - ../../../base/flux-receiver
+  - ingress.yaml
+# Receiver token is created by the maintainer as flux-github-receiver-token.sops.env (key `token`).
+generatorOptions:
+  disableNameSuffixHash: true
+secretGenerator:
+  - name: flux-github-receiver-token
+    envs:
+      - flux-github-receiver-token.sops.env

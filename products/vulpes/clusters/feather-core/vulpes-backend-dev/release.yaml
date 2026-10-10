@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: vulpes-backend-dev
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
   namespace: vulpes-dev
 spec:
   releaseName: vulpes-backend-dev
@@ -46,7 +48,7 @@ spec:
       # chart's appVersion (see charts/vulpes-backend/values.yaml in the
       # Vulpes-Backend repo), so dev keeps today's behaviour until the first
       # develop image lands and the automation overwrites this value.
-      tag: "develop-1791353559-5042d99" # {"$imagepolicy": "flux-system:vulpes-backend-dev:tag"}
+      tag: "develop-1791595686-99bd5e9" # {"$imagepolicy": "flux-system:vulpes-backend-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     metrics:
@@ -203,9 +205,19 @@ spec:
     envFrom:
       - secretRef:
           name: vulpes-dev-app-db
+    # Helm replaces list values: this env list must carry the heap flag itself.
     env:
       - name: LOG_JSON
         value: "true"
+      - name: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=50.0 -Duser.timezone=UTC"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 448Mi
+      limits:
+        cpu: 1
+        memory: 640Mi
     readinessProbe:
       path: /health/readiness
       initialDelaySeconds: 5

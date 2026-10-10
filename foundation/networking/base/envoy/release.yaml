@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: envoy
+  labels:
+    flux.onelitefeather.dev/remediation: manual
 spec:
   chartRef:
     kind: OCIRepository

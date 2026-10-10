@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - themeinerlp.yml
   - onelitefeather.yml
+  - entra-cluster-admins.yml

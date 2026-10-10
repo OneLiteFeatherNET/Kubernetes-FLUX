@@ -35,6 +35,7 @@ spec:
   gateway:
     port: 80
     instances: 3
+    priorityClassName: feather-platform
     # Beast's own idle-keepalive default (request_timeout_ms) is 65s. In-cluster
     # clients that talk to the RGW Service directly (bypassing the Cloudflare
     # Tunnel entirely, e.g. reposilite) can hit the same cold-reconnect pattern

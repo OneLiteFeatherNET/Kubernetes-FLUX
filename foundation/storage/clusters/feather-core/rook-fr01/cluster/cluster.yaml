@@ -29,8 +29,9 @@ spec:
     addressRanges:
       public:
         - "192.168.15.0/24"
+      # Replication on the public net; ens19 goes away in consolidate-node-network phase 4.
       cluster:
-        - "10.10.10.0/24"
+        - "192.168.15.0/24"
     connections:
       requireMsgr2: true
   crashCollector:
@@ -129,6 +130,18 @@ spec:
       requests:
         cpu: 500m
         memory: 100Mi
+    prepareosd:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    exporter:
+      limits:
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
   cephConfig:
     osd:
       osd_max_backfills: "1"

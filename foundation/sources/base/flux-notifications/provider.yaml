@@ -1,0 +1,11 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: discord
+  namespace: flux-system
+spec:
+  type: discord
+  username: Flux
+  # Webhook URL is read from the `address` key of the secret.
+  secretRef:
+    name: flux-discord-webhook

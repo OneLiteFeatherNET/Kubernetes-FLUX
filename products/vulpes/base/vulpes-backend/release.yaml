@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: vulpes-backend
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
   namespace: vulpes
 spec:
   releaseName: vulpes-backend

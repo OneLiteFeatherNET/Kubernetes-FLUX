@@ -40,6 +40,14 @@ spec:
                       seccompProfile:
                         type: RuntimeDefault
   values:
+    # Bundled trace cache; live ~6-8m/90Mi.
+    memcached:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
     global:
       podLabels:
         logs.onelitefeather.net/env: prod

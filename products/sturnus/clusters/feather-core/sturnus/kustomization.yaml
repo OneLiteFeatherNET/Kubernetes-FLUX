@@ -26,3 +26,7 @@ secretGenerator:
     type: kubernetes.io/dockerconfigjson
     files:
       - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json
+  # Unused until the app cuts over to MongoDB.
+  - name: mongodb-app-db
+    envs:
+      - mongodb.sops.env

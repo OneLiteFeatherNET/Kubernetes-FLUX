@@ -29,6 +29,13 @@ spec:
               topologyKey: kubernetes.io/hostname
     serviceMonitor:
       enabled: true
+    configReloader:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          memory: 64Mi
     alloy:
       clustering:
         enabled: true
@@ -122,7 +129,7 @@ spec:
 
           // Syncs only PrometheusRule CRs opted in via the label below to the
           // Mimir ruler; all other PrometheusRules stay with their own stack.
-          // Clustered: only one replica talks to the ruler API.
+          // Clustered replicas elect one leader to talk to the ruler API.
           mimir.rules.kubernetes "default" {
             address = "http://mimir-gateway.grafana.svc.cluster.local"
 
@@ -130,9 +137,5 @@ spec:
               match_labels = {
                 "mimir.onelitefeather.net/sync" = "true",
               }
-            }
-
-            clustering {
-              enabled = true
             }
           }

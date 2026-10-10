@@ -68,6 +68,11 @@ spec:
         - name: N8N_PROXY_HOPS
           value: "1"
 
+    # Main is a singleton (multi-main is enterprise); chart PDB minAvailable: 1
+    # would block every node drain, so it is off.
+    pdb:
+      enabled: false
+
     # Region pin (matches the other stateful apps).
     affinity:
       nodeAffinity:
@@ -91,7 +96,7 @@ spec:
       worker:
         requests:
           cpu: 200m
-          memory: 512Mi
+          memory: 384Mi
         limits:
           cpu: "1"
           memory: 1Gi

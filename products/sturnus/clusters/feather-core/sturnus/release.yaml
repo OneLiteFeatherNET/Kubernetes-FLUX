@@ -92,6 +92,11 @@ spec:
     # limit bought while log-mel ran over the whole file is no longer
     # needed; the chart's own 4Gi/6Gi is accurate again, and keeping a
     # second copy of numbers that now agree is how they drift apart.
+    # Singleton bot; the chart's bot PDB (minAvailable: 1) blocks every node drain.
+    bot:
+      pdb:
+        enabled: false
+
     worker:
       # Put back after an OOMKill in production, 18 minutes into a job.
       #

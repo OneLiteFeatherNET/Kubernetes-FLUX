@@ -18,6 +18,21 @@ secretGenerator:
   - name: mongodb-user-prometheus
     envs:
       - users/prometheus.sops.env
+  - name: mongodb-user-otis
+    envs:
+      - users/otis.sops.env
+  - name: mongodb-user-otis-dev
+    envs:
+      - users/otis-dev.sops.env
+  - name: mongodb-user-vulpes
+    envs:
+      - users/vulpes.sops.env
+  - name: mongodb-user-vulpes-dev
+    envs:
+      - users/vulpes-dev.sops.env
+  - name: mongodb-user-sturnus
+    envs:
+      - users/sturnus.sops.env
   - name: mongodb-backup-s3
     envs:
       - backup-s3.sops.env

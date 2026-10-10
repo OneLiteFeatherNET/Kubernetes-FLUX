@@ -2,6 +2,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: bluemap
+  labels:
+    flux.onelitefeather.dev/remediation: manual
   namespace: bluemap
 spec:
   chart:
@@ -10,6 +12,12 @@ spec:
   install:
     remediation:
       retries: 0
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+      strategy: rollback
   interval: 1m0s
   # bluemap's chart has no priorityClassName value; inject it post-render.
   postRenderers:

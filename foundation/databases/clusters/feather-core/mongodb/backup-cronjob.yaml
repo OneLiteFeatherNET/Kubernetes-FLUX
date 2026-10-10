@@ -1,5 +1,5 @@
-# Restore runbook and the RPO this schedule implies:
-# https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA
+# Backup, restore runbook and the RPO this schedule implies:
+# https://outline.onelitefeather.dev/doc/runbook-mongodb-sichern-und-wiederherstellen-OmEoaEfE7t
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -101,7 +101,8 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  set -eu
+                  # /bin/sh is bash here; pipefail makes a failed list/delete fail the job.
+                  set -euo pipefail
                   KEY="$(date -u +%Y%m%dT%H%M%SZ).gz"
                   aws --endpoint-url "$S3_ENDPOINT" s3 cp /work/dump.gz "s3://$S3_BUCKET/$KEY"
                   echo "uploaded $KEY"
@@ -112,7 +113,8 @@ spec:
                     --bucket "$S3_BUCKET" \
                     --query 'Contents[].[Key,LastModified]' --output text \
                     | while read -r key lastmod; do
-                        [ -n "$key" ] || continue
+                        # An empty bucket lists as "None".
+                        [ -n "$key" ] && [ "$key" != "None" ] || continue
                         if [ "$(date -u -d "$lastmod" +%s)" -lt "$CUTOFF" ]; then
                           aws --endpoint-url "$S3_ENDPOINT" s3api delete-object \
                             --bucket "$S3_BUCKET" --key "$key"
