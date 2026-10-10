@@ -36,6 +36,17 @@ spec:
       enabled: true
       podmonitor:
         enabled: true
+    replicaCount: 2
+    podDisruptionBudget:
+      enabled: true
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: cert-manager
+            app.kubernetes.io/instance: cert-manager
     strategy:
       type: RollingUpdate
       rollingUpdate:
@@ -49,6 +60,17 @@ spec:
         cpu: "20m"
         memory: "40Mi"
     webhook:
+      replicaCount: 2
+      podDisruptionBudget:
+        enabled: true
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: webhook
+              app.kubernetes.io/instance: cert-manager
       # The 10m CPU limit that used to sit here throttled the webhook so hard it
       # could not answer its own /livez within the probe's 1s timeout, so the
       # kubelet killed it: 406 restarts in 17 days, and an endpointless Service
@@ -67,6 +89,17 @@ spec:
           cpu: "50m"
           memory: "64Mi"
     cainjector:
+      replicaCount: 2
+      podDisruptionBudget:
+        enabled: true
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: cainjector
+              app.kubernetes.io/instance: cert-manager
       resources:
         limits:
           cpu: "50m"
