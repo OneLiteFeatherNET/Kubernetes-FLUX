@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's single Kubernetes cluster, **`feather-core`**. There is no application source code here — only Kubernetes/Flux manifests, Kustomize overlays, Helm values, and a few in-repo Helm charts. The cluster continuously reconciles itself to `main`: a change takes effect **only when committed and pushed to `main`**, after which Flux applies it (GitRepository polls every 1m, root Kustomization every 10m).
+A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's single Kubernetes cluster, **`feather-core`**. There is no application source code here — only Kubernetes/Flux manifests, Kustomize overlays, Helm values, and a few in-repo Helm charts. The cluster continuously reconciles itself to `main`: a change takes effect **only when committed and pushed to `main`**, after which Flux applies it (GitHub push webhook triggers an immediate fetch; polling every 10m is the fallback, root Kustomization every 10m).
 
 ## Repository layout
 
