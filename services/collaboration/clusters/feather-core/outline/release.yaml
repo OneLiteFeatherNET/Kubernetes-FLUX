@@ -33,13 +33,17 @@ spec:
       - name: DATABASE_CONNECTION_POOL_MAX
         value: "3"
     securityContext:
-      readOnlyRootFilesystem: false
+      readOnlyRootFilesystem: true
       runAsUser: 1000
+    # Read-only root fs: /tmp (os.tmpdir()) is the only scratch dir. The
+    # /var/lib/outline/data mount is a separate volume and stays writable.
     volumeMounts:
       - mountPath: /opt/outline/.env
         name: outline-env-file
         readOnly: true
         subPath: .env
+      - mountPath: /tmp
+        name: tmp
     volumes:
       - name: outline-env-file
         secret:
@@ -47,6 +51,9 @@ spec:
             - key: .env
               path: .env
           secretName: outline-env
+      - name: tmp
+        emptyDir:
+          sizeLimit: 256Mi
 
     ingress:
       enabled: false
