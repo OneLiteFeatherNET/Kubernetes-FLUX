@@ -15,6 +15,42 @@
       "/^(?:services|products|foundation)/.+/release\\.ya?ml$/"
     ]
   },
+  "kubernetes": {
+    "enabled": true,
+    "description": "Only the plain Job/CronJob and CR-image files; scanning every yaml would double-count the HelmReleases",
+    "managerFilePatterns": [
+      "/^products/bluemap/clusters/feather-core/bluemap/render-offline-job\\.yaml$/",
+      "/^products/sturnus/clusters/feather-core/sturnus/audio-lifecycle-job\\.yaml$/",
+      "/^foundation/databases/clusters/feather-core/mongodb/backup-cronjob\\.yaml$/",
+      "/^foundation/storage/clusters/feather-core/rook-fr01/buckets/outline-cors\\.yaml$/",
+      "/^foundation/storage/clusters/feather-core/rook-fr01/cluster/cluster\\.yaml$/",
+      "/^foundation/databases/clusters/feather-core/mariadb-galera/mariadb\\.yaml$/",
+      "/^foundation/databases/clusters/feather-core/dragonfly/dragonfly\\.yaml$/"
+    ]
+  },
+  "customManagers": [
+    {
+      "description": "CNPG Cluster image is read from imageName, not an image: key; the floating tag 17 is pinned in a follow-up",
+      "customType": "regex",
+      "managerFilePatterns": ["/^foundation/databases/clusters/feather-core/postgresql/cluster\\.yaml$/"],
+      "matchStrings": ["imageName: (?<depName>[^\\s:]+):(?<currentValue>\\S+)"],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "description": "Dragonfly operator manifest is applied from a versioned raw URL; the kustomize manager only reads github.com ?ref= URLs",
+      "customType": "regex",
+      "managerFilePatterns": ["/^foundation/databases/base/dragonfly-operator/kustomization\\.yaml$/"],
+      "matchStrings": ["https://raw\\.githubusercontent\\.com/(?<depName>dragonflydb/dragonfly-operator)/(?<currentValue>v[^/\\s]+)/"],
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "description": "barman-cloud plugin manifest is applied from a versioned GitHub release URL",
+      "customType": "regex",
+      "managerFilePatterns": ["/^foundation/databases/base/cnpg-operator/kustomization\\.yaml$/"],
+      "matchStrings": ["https://github\\.com/(?<depName>cloudnative-pg/plugin-barman-cloud)/releases/download/(?<currentValue>v[^/\\s]+)/"],
+      "datasourceTemplate": "github-releases"
+    }
+  ],
   "dependencyDashboard": true,
   "pinDigests": true,
   "packageRules": [
@@ -33,6 +69,18 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java"],
       "overrideDepName": "otel-autoinstrumentation-java"
+    },
+    {
+      "description": "Kavita stable tags have 3 parts (0.9.1) and 4 parts (0.9.0.2); semver drops the 4-part ones",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["docker.io/jvmilazz0/kavita"],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:\\.(?<build>\\d+))?$"
+    },
+    {
+      "description": "docker.getoutline.com does not answer Renovate lookups; outlinewiki/outline on Docker Hub has the same tags and the same digest. The deployed reference stays on docker.getoutline.com",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["docker.getoutline.com/outlinewiki/outline"],
+      "overridePackageName": "outlinewiki/outline"
     }
   ],
   "bumpVersions": [

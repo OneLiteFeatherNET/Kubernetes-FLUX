@@ -4,9 +4,6 @@ metadata:
   name: node-red
   namespace: node-red
 spec:
-  chart:
-    spec:
-      version: "=0.40.2"
   values:
     podLabels:
       logs.onelitefeather.net/env: prod

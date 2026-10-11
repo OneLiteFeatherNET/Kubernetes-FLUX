@@ -4,9 +4,6 @@ metadata:
   name: metallb
   namespace: metallb-system
 spec:
-  chart:
-    spec:
-      version: "=0.16.1"
   values:
     crds:
       enabled: true
