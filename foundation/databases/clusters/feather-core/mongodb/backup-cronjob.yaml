@@ -68,7 +68,7 @@ spec:
                   memory: 2Gi
           containers:
             - name: upload
-              image: amazon/aws-cli:2.36.27
+              image: amazon/aws-cli:2.36.50@sha256:c240dd63cdbab17197486d55460675ef2b94c9cc372dedae34dee53ccd30657c
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:

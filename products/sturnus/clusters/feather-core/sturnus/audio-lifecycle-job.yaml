@@ -46,7 +46,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: apply-lifecycle
-          image: amazon/aws-cli:2.36.27
+          image: amazon/aws-cli:2.36.50@sha256:c240dd63cdbab17197486d55460675ef2b94c9cc372dedae34dee53ccd30657c
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
