@@ -71,6 +71,12 @@
       "overrideDepName": "otel-autoinstrumentation-java"
     },
     {
+      "description": "A CNPG major needs a planned pg_upgrade or import, and a Ceph major goes with a Rook upgrade plan; never open these as tag bumps",
+      "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql", "quay.io/ceph/ceph"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
       "description": "Kavita stable tags have 3 parts (0.9.1) and 4 parts (0.9.0.2); semver drops the 4-part ones",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["docker.io/jvmilazz0/kavita"],
