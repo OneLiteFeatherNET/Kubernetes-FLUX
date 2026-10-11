@@ -27,6 +27,11 @@ spec:
       valuesKey: adminPassword
       targetPath: adminPassword
   values:
+    # Pinned instead of the chart appVersion (12.3.1, CVE-2026-27876); Renovate tracks this tag.
+    image:
+      registry: docker.io
+      repository: grafana/grafana
+      tag: "12.4.12"
     podLabels:
       logs.onelitefeather.net/env: prod
     replicas: 2
