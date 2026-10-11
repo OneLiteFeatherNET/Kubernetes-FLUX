@@ -87,6 +87,26 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["docker.getoutline.com/outlinewiki/outline"],
       "overridePackageName": "outlinewiki/outline"
+    },
+    {
+      "description": "Stateful databases, storage and their operators: an automerged patch restarted the Galera cluster unannounced (2026-10-11), so these update only through a reviewed PR",
+      "matchPackageNames": [
+        "mariadb",
+        "mongo",
+        "docker.dragonflydb.io/dragonflydb/dragonfly",
+        "ghcr.io/cloudnative-pg/postgresql",
+        "quay.io/ceph/ceph",
+        "cloudnative-pg",
+        "cloudnative-pg/plugin-barman-cloud",
+        "mariadb-operator",
+        "mariadb-operator-crds",
+        "rook-ceph",
+        "strimzi-kafka-operator",
+        "dragonflydb/dragonfly-operator",
+        "mongodb-kubernetes"
+      ],
+      "automerge": false,
+      "addLabels": ["stateful"]
     }
   ],
   "bumpVersions": [
