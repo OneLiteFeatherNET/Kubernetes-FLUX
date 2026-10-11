@@ -4,9 +4,6 @@ metadata:
   name: uptime-kuma
   namespace: uptime-kuma
 spec:
-  chart:
-    spec:
-      version: "=4.1.0"
   valuesFrom:
     - kind: Secret
       name: uptime-kuma-metrics-auth

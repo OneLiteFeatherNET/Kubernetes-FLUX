@@ -8,6 +8,7 @@ spec:
   chart:
     spec:
       chart: node-red
+      version: "=0.40.2"
       sourceRef:
         kind: HelmRepository
         name: node-red

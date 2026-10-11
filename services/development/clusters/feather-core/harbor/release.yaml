@@ -4,9 +4,6 @@ metadata:
     name: harbor
     namespace: harbor
 spec:
-  chart:
-    spec:
-      version: "=1.19.1"
   values:
     expose:
       # Single-endpoint exposure via the internal Harbor nginx proxy: the

@@ -28,7 +28,7 @@ spec:
     # Moving prod onto 2.6.0 is therefore also an application upgrade from the
     # 2.4.1 it runs today -- the chart and the image share one version by
     # design, so there is no chart carrying an older image to step through.
-    semver: "=2.6.0"
+    tag: "2.6.0"
   secretRef:
     name: harbor-pull
 ---

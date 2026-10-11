@@ -8,6 +8,7 @@ spec:
   chart:
     spec:
       chart: bluemap
+      version: "=1.0.5"
       sourceRef:
         kind: HelmRepository
         name: themeinerlp

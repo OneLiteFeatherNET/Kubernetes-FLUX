@@ -8,4 +8,4 @@ spec:
   interval: 5m
   url: oci://ghcr.io/telepresenceio/telepresence-oss
   ref:
-    semver: "=2.32.1"
+    tag: "2.32.1"

@@ -4,9 +4,6 @@ metadata:
   name: cnpg
   namespace: cnpg-system
 spec:
-  chart:
-    spec:
-      version: "=0.27.1"
   values:
     replicaCount: 2
     priorityClassName: feather-platform

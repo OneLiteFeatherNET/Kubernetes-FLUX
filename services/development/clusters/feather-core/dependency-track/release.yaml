@@ -4,9 +4,6 @@ metadata:
   name: dependency-track
   namespace: dependency-track
 spec:
-  chart:
-    spec:
-      version: "=0.39.0"
   postRenderers:
     - kustomize:
         patches:

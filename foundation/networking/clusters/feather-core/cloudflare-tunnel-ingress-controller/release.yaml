@@ -4,9 +4,6 @@ metadata:
   name: cloudflare-tunnel-ingress-controller
   namespace: cloudflare-tunnel-ingress-controller
 spec:
-  chart:
-    spec:
-      version: "=0.0.24"
   values:
     # HA: two controller replicas in active/standby. Leader election ensures
     # only one reconciles Cloudflare at a time (mandatory with replicaCount > 1,

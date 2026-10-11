@@ -4,9 +4,6 @@ metadata:
   name: strimzi-kafka-operator
   namespace: strimzi-system
 spec:
-  chart:
-    spec:
-      version: "=1.1.0"
   values:
     # Cluster-scoped on purpose. The namespace-scoped alternative
     # (watchNamespaces: [sentry]) makes the chart render RoleBindings into
