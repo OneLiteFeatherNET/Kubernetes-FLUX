@@ -5,7 +5,8 @@ metadata:
   namespace: cnpg-system
 spec:
   instances: 3
-  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  # Exact tag; trixie is maintained (bullseye has no CNPG builds since 2026-08-31).
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
   postgresql:
     parameters:
       # Raised from the CNPG default (100): the shared cluster sits at saturation
