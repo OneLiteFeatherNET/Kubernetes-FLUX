@@ -10,6 +10,10 @@ spec:
   interval: 1m0s
   timeout: 5m
   values:
+    # CRDs come from envoy-crds (Kustomize); keep the chart's CRD subchart
+    # and its Helm-rendered safe-upgrades ValidatingAdmissionPolicy out.
+    crds:
+      enabled: false
     podDisruptionBudget:
       maxUnavailable: 1
     deployment:

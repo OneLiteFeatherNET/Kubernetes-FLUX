@@ -1,10 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # Vendored Gateway API (standard) + Envoy Gateway CRDs from
-  # gateway-crds-helm v1.7.3, applied via Flux server-side apply.
+  # Vendored Envoy Gateway + Gateway API CRDs from gateway-crds-helm v1.8.5,
+  # standard channel, applied via Flux server-side apply.
   # Helm release storage cannot be used: the rendered CRD set exceeds
   # the 1Mi Kubernetes Secret limit even when split into a Gateway API
   # and an Envoy Gateway HelmRelease (the Envoy half alone is too big).
-  # Re-vendor on a minor bump; patch bumps keep the same CRD schema.
+  # Re-vendor on a minor bump, including Renovate's envoyproxy tag bumps;
+  # patch bumps keep the same CRD schema.
   - crds.yaml
