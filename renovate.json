@@ -105,6 +105,7 @@
         "dragonflydb/dragonfly-operator",
         "mongodb-kubernetes"
       ],
+      "groupName": "stateful updates",
       "automerge": false,
       "addLabels": ["stateful"]
     }
