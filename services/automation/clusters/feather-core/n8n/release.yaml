@@ -8,8 +8,10 @@ spec:
     # Covers main, worker and webhook-processor pod templates.
     podLabels:
       logs.onelitefeather.net/env: prod
+    # Pinned, not "stable": the floating tag moved to 2.42.6 while the pods
+    # still ran 2.26.8, and Renovate cannot track it. Bumps via Renovate.
     image:
-      tag: "stable"
+      tag: "2.42.6"
 
     # Queue mode: 1 main (UI/API) + N workers (BullMQ executors).
     # multiMain stays off — it requires an enterprise license.
