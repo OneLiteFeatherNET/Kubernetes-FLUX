@@ -223,7 +223,7 @@ spec:
       initContainers:
         # 1) Assemble /app/config with ONLY the selected world's map config.
         - name: prepare-config
-          image: busybox:1.37
+          image: busybox:1.38@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e
           envFrom:
             - configMapRef:
                 name: bluemap-render-params
