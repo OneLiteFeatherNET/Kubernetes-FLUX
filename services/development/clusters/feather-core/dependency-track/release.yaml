@@ -32,6 +32,7 @@ spec:
           cpu: 10m
           memory: 32Mi
         limits:
+          cpu: 500m
           memory: 64Mi
       affinity:
         nodeAffinity:
@@ -86,6 +87,7 @@ spec:
           cpu: 500m
           memory: 4Gi
         limits:
+          cpu: "4"
           memory: 6Gi
       affinity:
         nodeAffinity:
