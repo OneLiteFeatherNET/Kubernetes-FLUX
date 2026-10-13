@@ -29,6 +29,13 @@ spec:
     podDisruptionBudget:
       enabled: false
 
+    # Kept current by ImageUpdateAutomation/vulpes-generator-dev (foundation-sources).
+    # Empty until the first develop-* image lands in Harbor; an empty tag falls
+    # back to the chart's appVersion, so dev keeps today's behaviour until then.
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/vulpes-generator
+      tag: "" # {"$imagepolicy": "flux-system:vulpes-generator-dev:tag"}
+
     imagePullSecrets:
       - name: harbor-pull
 

@@ -1,0 +1,77 @@
+---
+# Scans the same Harbor repository the vulpes-generator-dev HelmRelease gets its
+# image from (the chart's image.repository, pinned explicitly in
+# products/vulpes/clusters/feather-core/vulpes-generator-dev/release.yaml), so
+# develop commits show up here without anything in the dev values changing by hand.
+#
+# vulpes-generator (prod) is untouched: its chart follows the pinned OCI tag and
+# the chart's appVersion, moved by hand, and no ImagePolicy here targets it.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: vulpes-generator
+  namespace: flux-system
+spec:
+  image: harbor.onelitefeather.dev/onelitefeather/vulpes-generator
+  interval: 5m
+  secretRef:
+    name: harbor-pull
+---
+# CI on the Vulpes-Generator repo pushes harbor.onelitefeather.dev/onelitefeather/vulpes-generator:
+# develop-<commit-unix-ts>-<short-sha7> for every push to main. "develop" names the
+# tag prefix, not a branch. Extracting the timestamp and ordering numerically means
+# the newest commit always wins, regardless of sha or push order.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: vulpes-generator-dev
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: vulpes-generator
+  filterTags:
+    pattern: '^develop-(?P<ts>[0-9]+)-[0-9a-f]{7}$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
+---
+# Writes the tag ImagePolicy/vulpes-generator-dev picks back into
+# products/vulpes/clusters/feather-core/vulpes-generator-dev/release.yaml, and only
+# there - update.path keeps it from ever touching vulpes-generator (prod),
+# vulpes-backend, or anything else in the tree. Kept as its own automation rather
+# than widening vulpes-backend-dev's path: a shared parent folder would also cover
+# prod, and the commit template names the component being rolled out.
+# Commits straight to main on the flux-system GitRepository, the same way
+# foundation-sources and products are already reconciled from it.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: vulpes-generator-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: |
+        chore(vulpes-generator-dev): roll out {{ range $resource, $changes := .Changed.Objects }}{{ range $_, $change := $changes }}vulpes-generator:{{ $change.NewValue }}{{ end }}{{ end }}
+
+        Automation: {{ .AutomationObject }}
+        Files:
+        {{ range $filename, $_ := .Changed.FileChanges -}}
+        - {{ $filename }}
+        {{ end -}}
+    push:
+      branch: main
+  update:
+    path: ./products/vulpes/clusters/feather-core/vulpes-generator-dev
+    strategy: Setters
