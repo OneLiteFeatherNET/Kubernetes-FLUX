@@ -54,9 +54,9 @@ spec:
       # connector, not just s3.onelitefeather.net.
       extraArgs:
         - "--proxy-keepalive-timeout=10m"
-    # cloudflared serves /metrics on :44483 by itself; this only wires up the
-    # scrape. There is no tracing equivalent — see cloudflare/cloudflared#671.
-    cloudflaredServiceMonitor:
+    # One switch (chart >= 0.1.0) scrapes the controller and the cloudflared
+    # connectors (/metrics on :44483). No tracing equivalent: cloudflare/cloudflared#671.
+    serviceMonitor:
       create: true
     affinity:
       nodeAffinity:
