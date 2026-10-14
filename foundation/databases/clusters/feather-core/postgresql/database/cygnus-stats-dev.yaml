@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: cygnus-stats-dev
+spec:
+  name: cygnus_stats_dev
+  owner: cygnus_stats_dev
+  cluster:
+    name: feather-core-cluster-pg

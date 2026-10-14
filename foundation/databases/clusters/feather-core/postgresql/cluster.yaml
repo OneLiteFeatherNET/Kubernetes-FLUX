@@ -148,6 +148,12 @@ spec:
         connectionLimit: 20
         passwordSecret:
           name: role-cygnus-stats
+      - name: cygnus_stats_dev
+        login: true
+        ensure: present
+        connectionLimit: 10
+        passwordSecret:
+          name: role-cygnus-stats-dev
     services:
       additional:
         - selectorType: rw
