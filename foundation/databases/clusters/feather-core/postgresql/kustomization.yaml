@@ -29,6 +29,7 @@ resources:
   - database/vikunja.yaml
   - database/sturnus.yaml
   - database/metabase.yaml
+  - database/cygnus-stats.yaml
 
 secretGenerator:
   - name: role-sturnus
@@ -148,3 +149,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/metabase-ro.sops.env
+  - name: role-cygnus-stats
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/cygnus-stats.sops.env

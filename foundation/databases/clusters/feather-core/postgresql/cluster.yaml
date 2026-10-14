@@ -142,6 +142,12 @@ spec:
         connectionLimit: 20
         passwordSecret:
           name: role-metabase-ro
+      - name: cygnus_stats
+        login: true
+        ensure: present
+        connectionLimit: 20
+        passwordSecret:
+          name: role-cygnus-stats
     services:
       additional:
         - selectorType: rw
