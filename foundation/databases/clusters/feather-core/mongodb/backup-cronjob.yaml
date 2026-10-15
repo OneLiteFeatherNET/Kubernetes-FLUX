@@ -36,7 +36,7 @@ spec:
                 sizeLimit: 10Gi
           initContainers:
             - name: mongodump
-              image: mongo:8.0.32
+              image: mongo:8.0.34@sha256:6657bf2413fefc5be649390318f5b4cd7328e982722f8ce2ac6dfa6f0a42cb03
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:
