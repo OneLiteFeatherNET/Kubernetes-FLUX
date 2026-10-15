@@ -4,6 +4,7 @@ resources:
   - ../../../bluemap/clusters/feather-core/bluemap
   - ../../../apus/clusters/feather-core/apus
   - ../../../sturnus/clusters/feather-core/sturnus
+  - ../../../sturnus/clusters/feather-core/speaches
   - ../../../otis/clusters/feather-core/otis
   - ../../../stelaris/clusters/feather-core/stelaris
   - ../../../vulpes/clusters/feather-core/vulpes-backend

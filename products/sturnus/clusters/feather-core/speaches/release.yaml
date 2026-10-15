@@ -1,0 +1,157 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: speaches
+  namespace: sturnus
+spec:
+  values:
+    controllers:
+      speaches:
+        type: deployment
+        replicas: 1
+        # The model cache is a ReadWriteOnce volume: a rolling update would start the
+        # new pod while the old one still holds it.
+        strategy: Recreate
+        pod:
+          priorityClassName: feather-standard
+          automountServiceAccountToken: false
+          labels:
+            logs.onelitefeather.net/env: prod
+          securityContext:
+            runAsNonRoot: true
+            # The image's `ubuntu` user (Dockerfile: useradd --uid 1000 ubuntu).
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile:
+              type: RuntimeDefault
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      # Large-v3 on CPU wants the 16-core xl workers.
+                      - key: node-role.feather/workload-class
+                        operator: In
+                        values: ["xl"]
+                      # The cache PVC is ceph-rbd-fr01, which only attaches in fr-rosenau.
+                      - key: topology.kubernetes.io/region
+                        operator: In
+                        values: ["fr-rosenau"]
+        containers:
+          app:
+            image:
+              repository: ghcr.io/speaches-ai/speaches
+              tag: 0.8.3-cpu@sha256:21e3df06d842fb7802ab470dd77c25f0e8c0d22950e8d8c6ae886e851af53ef8
+            env:
+              # Sturnus posts `whisper-1`; model_aliases.json in the image maps that name to
+              # Systran/faster-whisper-large-v3, which is what the old in-process worker ran.
+              WHISPER__INFERENCE_DEVICE: cpu
+              WHISPER__COMPUTE_TYPE: int8
+              # Match the CPU request below. 0 (the default) lets ctranslate2 guess from the
+              # node's core count, i.e. 16 threads on a pod limited to 4 CPUs.
+              WHISPER__CPU_THREADS: "4"
+              # -1 keeps the model resident. The default (300 s) would unload it between
+              # meetings and pay the multi-second load on the first window of the next job.
+              # (v0.8.3 spells this WHISPER__TTL; STT_MODEL_TTL only exists from 0.9.0.)
+              WHISPER__TTL: "-1"
+              # Drops the Gradio UI and its dependencies; nothing reaches this pod but the API.
+              ENABLE_UI: "false"
+              # No API_KEY: ClusterIP only, same namespace, and Sturnus sends none.
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              # What the in-process worker needed for the same model on the same nodes.
+              requests:
+                cpu: "4"
+                memory: 5Gi
+              limits:
+                cpu: "4"
+                memory: 12Gi
+            probes:
+              # Up to 30 minutes for the process to come up from a cold cache volume.
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8000
+                  periodSeconds: 10
+                  failureThreshold: 180
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8000
+                  periodSeconds: 30
+              # /health answers as soon as the server is up, long before a model exists.
+              # This answers 200 only once the model is in the cache, so the Service has no
+              # endpoints (and Sturnus gets a connection error rather than a 404 from a
+              # half-provisioned server) until the download has finished.
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/models/Systran/faster-whisper-large-v3
+                    port: 8000
+                  periodSeconds: 15
+          # v0.8.3 has no PRELOAD_MODELS (added in 0.9.0, still a release candidate) and
+          # never downloads a model by itself, so a fresh cache volume would answer every
+          # transcription with 404. This sidecar asks the server to fetch the model once it
+          # is up; the call returns 201 at once when it is already cached.
+          model-fetch:
+            image:
+              repository: ghcr.io/speaches-ai/speaches
+              tag: 0.8.3-cpu@sha256:21e3df06d842fb7802ab470dd77c25f0e8c0d22950e8d8c6ae886e851af53ef8
+            command:
+              - python
+              - -c
+              - |
+                import time, urllib.request
+                url = "http://127.0.0.1:8000/v1/models/Systran/faster-whisper-large-v3"
+                while True:
+                    try:
+                        req = urllib.request.Request(url, method="POST")
+                        with urllib.request.urlopen(req, timeout=3600) as r:
+                            print("model ready", r.status, flush=True)
+                            break
+                    except Exception as e:
+                        print("model fetch failed, retrying:", e, flush=True)
+                        time.sleep(10)
+                while True:
+                    time.sleep(3600)
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+    service:
+      app:
+        controller: speaches
+        type: ClusterIP
+        ports:
+          http:
+            port: 8000
+    persistence:
+      hf-cache:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        storageClass: ceph-rbd-fr01
+        # Both containers: the server reads the model, the sidecar's request makes it write.
+        globalMounts:
+          - path: /home/ubuntu/.cache/huggingface
