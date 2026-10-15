@@ -81,6 +81,11 @@ spec:
       key: key
       keyId: k1
 
+    # Raw payloads are deleted after defaultDays; a pool may keep them up to maxDays.
+    rawRetention:
+      defaultDays: 21
+      maxDays: 180
+
     ingest:
       replicas: 2
       resources:
@@ -132,6 +137,11 @@ spec:
     # Replica i of n owns the partitions p with p mod n == i; change the count only here.
     score:
       replicas: 2
+      # Frames buffered per session, segment and windowing; the oldest are dropped.
+      # 16384 frames x ~1 KiB stays well below the 1Gi limit for the expected sessions.
+      rawMaxBufferedFrames: 16384
+      # Warn at model load when one raw-byte window is estimated above 10 ms (p99).
+      p99BudgetMs: 10
       env:
         CORVUS_CAPTURE_PARTITIONS: "16"
       resources:
