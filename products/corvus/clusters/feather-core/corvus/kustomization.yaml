@@ -1,0 +1,49 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: corvus
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/corvus/
+  - bucket.yaml
+  - ingress.yaml
+  - serviceaccount-jobs.yaml
+patches:
+  - path: release.yaml
+
+# Every Secret is referenced by name from the chart (see release.yaml); key names are
+# listed in the *.TEMPLATE files next to the encrypted inputs. Stable names mean a
+# changed value does not roll the pods: restart them after rotating a secret.
+secretGenerator:
+  # Harbor pull credentials, the shared robot of the onelitefeather project.
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json
+  # JetStream user credentials of ingest and score (.creds files).
+  - name: corvus-nats
+    files:
+      - ingest.creds=nats-ingest.sops.conf
+      - score.creds=nats-score.sops.conf
+  # DSN and CNPG-style connection keys for the "corvus" role (rw service).
+  - name: corvus-database
+    envs:
+      - database.sops.env
+  - name: corvus-kek
+    envs:
+      - kek.sops.env
+  - name: corvus-pseudonym
+    envs:
+      - pseudonym.sops.env
+  # CORVUS_API_PLUGIN_TOKENS
+  - name: corvus-api-extra
+    envs:
+      - api-extra.sops.env
+  # CORVUS_API_JOB_TOKENS (hashes only)
+  - name: corvus-job-tokens
+    envs:
+      - job-tokens.sops.env
+  # Environment of the ML job pods: CORVUS_API_URL and the plain CORVUS_API_TOKEN.
+  - name: corvus-jobs-env
+    envs:
+      - jobs-env.sops.env

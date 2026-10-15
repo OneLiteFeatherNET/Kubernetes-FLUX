@@ -30,6 +30,7 @@ resources:
   - nats.yaml
   - sentry-kubernetes.yaml
   - sturnus.yaml
+  - corvus.yaml
   - pmint93.yml
   - stelaris-ui.yaml
   - stelaris-image-automation.yaml

@@ -5,6 +5,7 @@ resources:
   - ../../../apus/clusters/feather-core/apus
   - ../../../sturnus/clusters/feather-core/sturnus
   - ../../../sturnus/clusters/feather-core/speaches
+  - ../../../corvus/clusters/feather-core/corvus
   - ../../../otis/clusters/feather-core/otis
   - ../../../stelaris/clusters/feather-core/stelaris
   - ../../../vulpes/clusters/feather-core/vulpes-backend

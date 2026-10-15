@@ -1,0 +1,14 @@
+# The data lake. Deliberately NOT in rook-ceph-fr01 like most claims: Rook creates the
+# credentials Secret (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) and the ConfigMap
+# (BUCKET_NAME, BUCKET_HOST, ...) in the namespace of the claim, and Corvus reads both
+# from its own (same approach as apus/bundle-bucket.yaml). The owner is the dedicated
+# CephObjectStoreUser in foundation/storage/.../rook-fr01/users/corvus.yaml.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: corvus-lake
+spec:
+  bucketName: corvus-lake
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: corvus

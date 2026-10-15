@@ -1,0 +1,168 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: corvus
+  namespace: corvus
+spec:
+  # The chart has no priorityClassName value: inject it post-render, as sturnus
+  # does. Only the long-running workloads; the CronJobs keep the default.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          - target:
+              kind: StatefulSet
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+  values:
+    # Written against the Corvus chart as of its next release: the configurable S3 key
+    # names / bucket ConfigMap, the CNPG-style database secret and the NATS credentials
+    # secret are not on main yet. Rename keys here if that change lands differently.
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/corvus-services
+    uiImage:
+      repository: harbor.onelitefeather.dev/onelitefeather/corvus-ui
+
+    # The onelitefeather Harbor project is private; same shared pull secret as sturnus.
+    imagePullSecrets:
+      - name: harbor-pull
+
+    podLabels:
+      logs.onelitefeather.net/env: prod
+
+    # JetStream in the nats namespace (foundation/messaging). Users and permissions are
+    # defined by the CORVUS account JWTs: ingest and score each get their own credentials.
+    nats:
+      url: nats://nats.nats.svc.cluster.local:4222
+      stream: CORVUS_CAPTURE
+      creds:
+        existingSecret: corvus-nats
+        ingestKey: ingest.creds
+        scoreKey: score.creds
+
+    # Ingest, score and the migrate hook take session advisory locks, which a
+    # transaction pooler breaks: the DSN points at the -rw service, not at
+    # feather-core-cluster-pg-pooler-rw-tx. The Secret mirrors the keys of a CNPG app
+    # secret (uri, host, port, dbname, username, password) although the role is managed.
+    database:
+      existingSecret: corvus-database
+      dsnKey: uri
+
+    # Internal RGW service over plain HTTP, like sturnus and the CNPG backups. The bucket
+    # and its credentials Secret come from the ObjectBucketClaim in bucket.yaml, which
+    # Rook names after the claim: Secret and ConfigMap `corvus-lake`.
+    s3:
+      endpointUrl: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+      bucket: corvus-lake
+      bucketConfigMap: corvus-lake
+      existingSecret: corvus-lake
+      accessKeyKey: AWS_ACCESS_KEY_ID
+      secretKeyKey: AWS_SECRET_ACCESS_KEY
+
+    # Losing the KEK makes every stored player key, and with it all raw payloads,
+    # unreadable. Back up corvus-kek.sops.env's key out of band.
+    kek:
+      existingSecret: corvus-kek
+      key: kek
+      id: kek-1
+
+    # Identical to the key in the Velocity plugin's configuration.
+    pseudonym:
+      enabled: true
+      existingSecret: corvus-pseudonym
+      key: key
+      keyId: k1
+
+    ingest:
+      replicas: 2
+      resources:
+        requests:
+          cpu: 500m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+
+    api:
+      replicas: 2
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+      # Microsoft Entra ID, the same tenant dependency-track and apus use. Issuer and JWKS
+      # are public discovery metadata. The audience is the client id of the "Corvus" app
+      # registration (v2 access tokens carry it as `aud`).
+      #
+      # TODO(entra): the app registration does not exist yet, see the pull request. Replace
+      # the all-zero client id here and in ui.config.oidc.clientId below.
+      oidc:
+        issuer: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
+        audience: 00000000-0000-0000-0000-000000000000
+        jwksUrl: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/discovery/v2.0/keys
+        rolesClaim: roles
+        # Entra app roles of the registration -> Corvus roles.
+        roleMapping: '{"Corvus.Admin":"admin","Corvus.DataScientist":"data_scientist","Corvus.Staff":"staff","Corvus.Viewer":"viewer"}'
+      # CORVUS_API_PLUGIN_TOKENS: the bearer token of the Velocity proxies for
+      # GET /api/v1/plugin/blocklist (plain value, as the API compares it directly).
+      extraSecret: corvus-api-extra
+      # CORVUS_API_JOB_TOKENS: SHA-256 of the ML job token and the job name. The plain
+      # token is CORVUS_API_TOKEN in corvus-jobs-env.
+      jobTokens:
+        existingSecret: corvus-job-tokens
+        key: job-tokens
+      # Training and evaluation run as Kubernetes Jobs in this namespace. They need the
+      # Harbor pull secret too, so they run under a ServiceAccount that carries it
+      # (serviceaccount-jobs.yaml).
+      jobs:
+        runner: kubernetes
+        serviceAccount: corvus-jobs
+        envSecret: corvus-jobs-env
+        image:
+          repository: harbor.onelitefeather.dev/onelitefeather/corvus-ml
+
+    # Replica i of n owns the partitions p with p mod n == i; change the count only here.
+    score:
+      replicas: 2
+      env:
+        CORVUS_CAPTURE_PARTITIONS: "16"
+      resources:
+        requests:
+          cpu: 500m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+
+    # The management UI. It proxies /api/ to the in-cluster API on its own origin, so the
+    # browser needs no CORS and the API has no ingress of its own: everything, including
+    # the Velocity plugin's blocklist sync, goes through corvus.onelitefeather.dev.
+    ui:
+      enabled: true
+      proxyApi: true
+      config:
+        apiBaseUrl: /api/v1
+        auth:
+          mode: oidc
+          rolesClaim: roles
+          roleMapping:
+            Corvus.Admin: admin
+            Corvus.DataScientist: data_scientist
+            Corvus.Staff: staff
+            Corvus.Viewer: viewer
+        oidc:
+          issuer: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
+          # TODO(entra): client id of the "Corvus" app registration (a public client, no secret).
+          clientId: 00000000-0000-0000-0000-000000000000
+          # Entra needs the API's own scope, or the access token is addressed to Microsoft
+          # Graph and the API rejects it (see the apus release for the same trap).
+          scopes: openid profile api://00000000-0000-0000-0000-000000000000/access_as_user
+
+    serviceMonitor:
+      enabled: true

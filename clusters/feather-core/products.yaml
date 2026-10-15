@@ -4,7 +4,7 @@ metadata:
   name: products
   namespace: flux-system
 spec:
-  # OneLiteFeather's own projects (production): bluemap, apus, sturnus, otis, stelaris, vulpes.
+  # OneLiteFeather's own projects (production): bluemap, apus, sturnus, corvus, otis, stelaris, vulpes.
   dependsOn:
     # Harbor serves the images; the foundation layers are reached through services-development
     - name: services-development

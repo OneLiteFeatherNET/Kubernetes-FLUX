@@ -1,0 +1,19 @@
+# Corvus' Helm chart lives in the Corvus repo (deploy/helm/corvus) and is not
+# published as an OCI artifact, so it is read from Git, same shape as sturnus.yaml.
+# The HelmRelease uses reconcileStrategy: Revision, otherwise chart edits that are
+# not a release never reach the cluster. The chart's appVersion (and with it the
+# image tag) only moves when release-please cuts a release.
+#
+# Tracks `main` for now. Once Corvus has tagged releases, consider the Sturnus
+# approach (`ref.semver`): following main upgrades the release, and reruns the
+# migrate hook, on every commit.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: corvus
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://github.com/OneLiteFeatherNET/Corvus.git
+  ref:
+    branch: main
