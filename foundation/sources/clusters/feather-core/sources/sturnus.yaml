@@ -4,9 +4,8 @@
 # directory). This GitRepository is the "chart living in a Git source"
 # pattern applied to a second repo, mirroring helmcharts.yml's own shape
 # (branch checkout of a whole repo, chart referenced by in-repo path from the
-# HelmRelease). Requires the chart to exist on Sturnus' `main` branch --
-# confirm that before relying on this; as of this writing Sturnus' work was
-# still on a feature branch.
+# HelmRelease).
+# Tracks released tags (see ref below), so the chart must exist at the tagged commit.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -16,4 +15,12 @@ spec:
   interval: 10m
   url: https://github.com/OneLiteFeatherNET/Sturnus.git
   ref:
-    branch: main
+    # Released versions only, and only patch releases on their own. Following
+    # `main` deployed every merged commit, so the breaking 0.17.0 chart (new
+    # required values) reached the cluster the moment it merged, before this
+    # repo could supply them, and the HelmRelease burned 43 failed upgrades.
+    # Before 1.0 Sturnus raises the minor version for features and breaking
+    # changes alike (release-please `bump-minor-pre-major`), so a new minor is
+    # rolled out by raising this range here, together with any values it needs.
+    # release-please tags look like `v0.17.0`; Flux accepts the `v` prefix.
+    semver: "~0.17.0"
