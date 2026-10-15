@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: nats
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/nats/
+  - ingress.yaml
+patches:
+  - path: release.yaml
+
+# Operator JWT plus the SYS and CORVUS account JWTs for the in-memory
+# resolver (nsc generate config --mem-resolver), shaped as Helm values and
+# merged into config.merge by the HelmRelease's valuesFrom. JWTs are signed
+# public claims, not secrets, but they stay out of git in the clear.
+secretGenerator:
+  - name: nats-auth
+    files:
+      - values.yaml=nats-auth.sops.conf

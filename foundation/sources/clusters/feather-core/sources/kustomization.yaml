@@ -27,6 +27,7 @@ resources:
   - apus.yaml
   - penpot.yaml
   - strimzi.yaml
+  - nats.yaml
   - sentry-kubernetes.yaml
   - sturnus.yaml
   - pmint93.yml

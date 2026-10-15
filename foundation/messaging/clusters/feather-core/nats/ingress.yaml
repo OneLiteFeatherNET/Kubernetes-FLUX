@@ -1,0 +1,36 @@
+# NATS over WebSocket for the Velocity proxies, which run outside the cluster.
+#
+# Why this and not a TCP LoadBalancer: the only MetalLB pool (lb-dc06,
+# 10.200.90.1-15) is RFC 1918 space advertised over BGP to the internal
+# network; every service on it (gateway, postgres, maxscale, dragonfly, harbor)
+# is reached through the internal network or an external reverse proxy, none is
+# a public address. Cloudflare Tunnel carries HTTP(S) and WebSocket only, so
+# NATS is published as `wss://`: TLS terminates at Cloudflare, the tunnel
+# reaches the plain-HTTP WebSocket listener (port 8080) in the cluster.
+#
+# jnats speaks wss since 2.16.8 (the Corvus plugin ships 2.26.4). Limits: the
+# client must use a `wss://nats.onelitefeather.dev` URL (no `nats://` / no
+# port 4222 from outside); Cloudflare closes idle connections, so the server
+# pings every 30 s (see release.yaml); a single message is capped at the
+# server's max_payload (1 MiB, Corvus envelopes stay below 512 KiB).
+# Authentication is mandatory: the CORVUS account only accepts JWT credentials,
+# and the corvus-proxy user is restricted to WebSocket connections.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nats-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: nats.onelitefeather.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nats
+                port:
+                  number: 8080
