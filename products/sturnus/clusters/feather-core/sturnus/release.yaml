@@ -76,6 +76,13 @@ spec:
       STURNUS_S3_ENDPOINT: "http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80"
       STURNUS_S3_BUCKET: "sturnus-audio"
 
+      # Where the worker sends each speaker's audio, and whose host the bot names in
+      # `/about` and the `/consent` prompt -- hence commonEnv, one value for both.
+      # The client posts to <base>/audio/transcriptions, so the base carries /v1.
+      # In-cluster Speaches (../speaches): recordings never leave the cluster.
+      # Required and blank in the chart; a worker without it does not start.
+      STURNUS_TRANSCRIPTION_BASE_URL: "http://speaches.sturnus.svc.cluster.local:8000/v1"
+
     # Chart default (eu-central-1) is a placeholder the chart's own comment
     # says to override per-cluster. Every other region-pinned pod/PVC here
     # uses fr-rosenau (see outline's release.yaml `regionAffinity` anchor and
@@ -84,42 +91,21 @@ spec:
       key: topology.kubernetes.io/region
       value: fr-rosenau
 
-    # What is left of the block that carried 0.5.x through. The model and
-    # the resources are gone from here because the chart now sets them
-    # itself: `large-v3` is its default, and 0.6.0's rewrite hands the model
-    # the concatenated speech instead of the padded track, which took peak
-    # RSS from 5025 MB to 2441 MB on the 100-minute recording. The 12Gi
-    # limit bought while log-mel ran over the whole file is no longer
-    # needed; the chart's own 4Gi/6Gi is accurate again, and keeping a
-    # second copy of numbers that now agree is how they drift apart.
     # Singleton bot; the chart's bot PDB (minAvailable: 1) blocks every node drain.
     bot:
       pdb:
         enabled: false
+      env:
+        # The one Discord guild this bot serves; any other guild is never acted on.
+        # Required and blank in the chart: without it the bot refuses to start.
+        # A guild id is public by design, so it lives here and not in the Secret.
+        STURNUS_GUILD_ID: "752527676903784518"
 
     worker:
-      # Put back after an OOMKill in production, 18 minutes into a job.
-      #
-      # The chart's 6Gi was adopted here on the strength of 0.6.0's measured
-      # drop from 5025 MB to 2441 MB peak. That measurement is real, and it
-      # was taken with the **tiny** model -- so the delta between the two
-      # numbers carries over to production and the absolute does not. A
-      # memory limit is an absolute. large-v3 at int8_float32 holds roughly
-      # 2 GB of weights that tiny does not, before a single frame is
-      # extracted.
-      #
-      # Not restored to a measured figure, because the honest number for
-      # this model on this hardware has not been taken yet; 12Gi is the
-      # value that was carrying production before, on a node with 64 GB that
-      # is under half allocated. Measure large-v3 end to end on a real
-      # recording before narrowing it again.
-      resources:
-        requests:
-          cpu: "4"
-          memory: 5Gi
-        limits:
-          cpu: "4"
-          memory: 12Gi
+      # No resources override: since 0.17.0 the worker decodes nothing. It gates an
+      # array and waits on HTTP, so the chart's own 1 CPU / 1Gi (2Gi limit) fits.
+      # The 4 CPU / 12Gi that used to sit here moved to the speaches Deployment,
+      # which is where large-v3 now runs (products/sturnus/.../speaches).
       env:
         # The one thing the chart cannot know: how long a job may run here.
         # 0.5.0 made the worker transcribe the speech rather than 1% of it,
