@@ -134,6 +134,16 @@ spec:
         connectionLimit: 30
         passwordSecret:
           name: role-corvus
+      # ML jobs: reads corvus.player_keys to unwrap the DEKs of raw-byte builds. Least
+      # privilege (CONNECT, USAGE, SELECT on that table) cannot be declared in CNPG;
+      # the grants are a one-time SQL step, see the pull request. Not a superuser, no
+      # inRoles.
+      - name: corvus_jobs
+        login: true
+        ensure: present
+        connectionLimit: 5
+        passwordSecret:
+          name: role-corvus-jobs
       # Gedeckelt: geteilter Cluster nahe der Sättigung (max_connections: 200).
       - name: metabase
         login: true

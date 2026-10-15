@@ -40,6 +40,12 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/corvus.sops.env
+  - name: role-corvus-jobs
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/corvus-jobs.sops.env
   - name: role-sturnus
     options:
       labels:
