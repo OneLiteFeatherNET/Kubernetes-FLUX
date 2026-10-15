@@ -28,11 +28,18 @@ resources:
   - database/sentry.yaml
   - database/vikunja.yaml
   - database/sturnus.yaml
+  - database/corvus.yaml
   - database/metabase.yaml
   - database/cygnus-stats.yaml
   - database/cygnus-stats-dev.yaml
 
 secretGenerator:
+  - name: role-corvus
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/corvus.sops.env
   - name: role-sturnus
     options:
       labels:

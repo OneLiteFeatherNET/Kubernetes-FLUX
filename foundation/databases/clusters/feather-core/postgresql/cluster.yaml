@@ -125,6 +125,15 @@ spec:
         ensure: present
         passwordSecret:
           name: role-sturnus
+      # Ingest, score and the migrate hook connect to the -rw service directly
+      # (advisory locks do not survive the transaction pooler). Capped so a
+      # runaway worker count cannot exhaust the shared 200 connection slots.
+      - name: corvus
+        login: true
+        ensure: present
+        connectionLimit: 30
+        passwordSecret:
+          name: role-corvus
       # Gedeckelt: geteilter Cluster nahe der Sättigung (max_connections: 200).
       - name: metabase
         login: true
