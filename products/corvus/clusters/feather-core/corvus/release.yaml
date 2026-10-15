@@ -42,6 +42,7 @@ spec:
     nats:
       url: nats://nats.nats.svc.cluster.local:4222
       stream: CORVUS_CAPTURE
+      streamReplicas: 3
       creds:
         existingSecret: corvus-nats
         ingestKey: ingest.creds
