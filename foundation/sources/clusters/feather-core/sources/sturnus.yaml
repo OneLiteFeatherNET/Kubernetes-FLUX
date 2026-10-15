@@ -15,10 +15,12 @@ spec:
   interval: 10m
   url: https://github.com/OneLiteFeatherNET/Sturnus.git
   ref:
-    # Released versions only. Following `main` deployed every merged commit, so
-    # the breaking 0.17.0 chart (new required values) reached the cluster the
-    # moment it merged, before this repo could supply them, and the HelmRelease
-    # burned 43 failed upgrades. release-please tags look like `v0.17.0`; the
-    # semver range accepts the `v` prefix. Raise the lower bound deliberately
-    # when a release needs values this repo does not have yet.
-    semver: ">=0.17.0 <1.0.0"
+    # Released versions only, and only patch releases on their own. Following
+    # `main` deployed every merged commit, so the breaking 0.17.0 chart (new
+    # required values) reached the cluster the moment it merged, before this
+    # repo could supply them, and the HelmRelease burned 43 failed upgrades.
+    # Before 1.0 Sturnus raises the minor version for features and breaking
+    # changes alike (release-please `bump-minor-pre-major`), so a new minor is
+    # rolled out by raising this range here, together with any values it needs.
+    # release-please tags look like `v0.17.0`; Flux accepts the `v` prefix.
+    semver: "~0.17.0"
