@@ -5,9 +5,6 @@ metadata:
   # Matches the base namespace; the overlay transformer renames it afterwards.
   namespace: reposilite
 spec:
-  # Stays suspended until the prod data copy is restored and the settings are
-  # rewritten; unsuspend afterwards.
-  suspend: true
   postRenderers:
     - kustomize:
         patches:
@@ -26,7 +23,9 @@ spec:
       name: ghcr.io/onelitefeathernet/ingot
       tag: "1.1.0"
     deployment:
-      replicas: 1
+      # 0 until the prod data copy is restored and the settings are rewritten.
+      # Not `suspend`: a never-installed suspended release would stall the layer health check.
+      replicas: 0
       # Probed against ghcr.io/onelitefeathernet/ingot:1.1.0 in-cluster: comes
       # up 1/1 as uid 1000 with drop-ALL and a read-only rootfs. Data is an
       # emptyDir here (persistence is off), so there is no volume ownership to
