@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: corvus
+  labels:
+    # Schema migrations run as a Helm hook: retry, but never roll back automatically.
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: corvus
+spec:
+  releaseName: corvus
+  chart:
+    spec:
+      chart: ./deploy/helm/corvus
+      # The chart is read from a branch (foundation/sources/.../sources/corvus.yaml).
+      # The default ChartVersion strategy only repackages when Chart.yaml's version
+      # changes, so template and values edits would silently never be redeployed.
+      reconcileStrategy: Revision
+      sourceRef:
+        kind: GitRepository
+        name: corvus
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  # The pre-install/pre-upgrade migrate hook counts against this.
+  timeout: 10m
+  interval: 1m0s
+  # Default values
+  #
+  values: {}

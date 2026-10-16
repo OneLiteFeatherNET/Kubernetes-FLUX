@@ -1,0 +1,29 @@
+# =============================================================================
+# TEMPLATE -- NOT a real secret, NOT encrypted, NOT wired into any
+# kustomization. Shape of nats-auth.sops.conf in this directory (encrypt with
+# `sops -e -i`; the file is a Helm values document, JSON is valid YAML, so
+# strip these comment lines first).
+#
+# Decentralised JWT auth, operator mode with the in-memory resolver. Create the
+# operator, the SYS and CORVUS accounts and the users with `nsc`, then
+#   nsc generate config --mem-resolver --config-file resolver.conf
+# and copy the operator JWT, the system account key and the two account JWTs
+# from resolver.conf. The NKEY seeds (operator signing key, account keys) never
+# go into this repo; keep the nsc keystore in the team's password manager.
+#
+# Changing this file does not restart the pods: the config reloader re-reads
+# nats.conf after the HelmRelease upgrade rewrites the ConfigMap.
+# =============================================================================
+{
+  "config": {
+    "merge": {
+      "operator": "<operator JWT>",
+      "system_account": "<SYS account public key>",
+      "resolver": "MEMORY",
+      "resolver_preload": {
+        "<SYS account public key>": "<SYS account JWT>",
+        "<CORVUS account public key>": "<CORVUS account JWT>"
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+# Dedicated owner of the corvus-lake bucket (products/corvus/.../bucket.yaml).
+# The lake holds recorded player behaviour, so it must not share access or a
+# bucket owner with anything else. No admin capabilities: a plain S3 user only
+# sees its own buckets; the quota caps the lake and limits the user to one bucket.
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: corvus
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: corvus
+  quotas:
+    maxBuckets: 1
+    maxSize: 1Ti

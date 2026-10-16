@@ -20,6 +20,7 @@ resources:
   - penpot.yaml
   - sentry.yaml
   - sturnus.yaml
+  - corvus.yaml
   - vikunja.yaml
   - mongodb.yaml
   - cloudnet.yaml

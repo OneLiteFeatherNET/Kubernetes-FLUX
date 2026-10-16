@@ -1,0 +1,111 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nats
+  namespace: nats
+spec:
+  # Operator JWT and account JWTs (decentralised auth); deep-merged with the
+  # inline values below, which win on conflicts.
+  valuesFrom:
+    - kind: Secret
+      name: nats-auth
+      valuesKey: values.yaml
+  values:
+    config:
+      cluster:
+        enabled: true
+        replicas: 3
+      jetstream:
+        enabled: true
+        fileStore:
+          # Headroom below the PVC size: ext4 reserves blocks and JetStream
+          # must never fill the volume it lives on.
+          maxSize: 45Gi
+          pvc:
+            size: 50Gi
+            storageClassName: ceph-rbd-fr01
+      # The WebSocket listener is the only way in from outside the cluster
+      # (Velocity runs elsewhere, reaches it through the Cloudflare tunnel, see
+      # ingress.yaml). TLS ends at Cloudflare, so the listener itself is
+      # plaintext HTTP (the chart renders no_tls: true) and is never exposed
+      # except through that Ingress.
+      websocket:
+        enabled: true
+      merge:
+        # Server-initiated PINGs every 30 s keep idle WebSocket connections
+        # alive through Cloudflare, which closes connections it sees as idle
+        # (the jnats default client ping interval is 2 min).
+        ping_interval: 30s
+
+    container:
+      env:
+        # ~90% of the memory limit below, so the Go GC works before the OOM killer does.
+        GOMEMLIMIT: 900MiB
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+      merge:
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+
+    reloader:
+      merge:
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+
+    # Metrics: the exporter sidecar plus a PodMonitor (the chart has no
+    # ServiceMonitor; Alloy scrapes PodMonitors without extra labels, same as
+    # the dragonfly one).
+    promExporter:
+      enabled: true
+      podMonitor:
+        enabled: true
+      merge:
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+
+    podTemplate:
+      # One server per node: losing a node must cost at most one of three
+      # (the PDB below allows one voluntary disruption at a time).
+      topologySpreadConstraints:
+        kubernetes.io/hostname:
+          maxSkew: 1
+          whenUnsatisfiable: DoNotSchedule
+      merge:
+        spec:
+          priorityClassName: feather-high
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+
+    podDisruptionBudget:
+      enabled: true
+
+    # nats-box needs credentials to be useful; administration happens from a
+    # workstation with the corvus-admin credentials instead.
+    natsBox:
+      enabled: false

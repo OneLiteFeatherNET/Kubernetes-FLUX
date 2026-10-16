@@ -1,0 +1,27 @@
+# Publishes `corvus.onelitefeather.dev` through the Cloudflare Tunnel, same pattern as
+# sturnus/ingress.yaml. One host and one backend: the UI's nginx serves the SPA and
+# proxies /api/ to the API Service (ui.proxyApi in release.yaml), so the browser stays
+# same-origin and the API needs no Ingress or CORS of its own.
+#
+# What is reachable from the internet: the static SPA (no data), /api/v1/plugin/blocklist
+# (machine endpoint, accepts only the proxy tokens) and every other /api/v1 endpoint,
+# which answer 401 without a valid Entra ID token and 403 without the right app role.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: corvus-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: corvus.onelitefeather.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: corvus-ui
+                port:
+                  number: 8080
