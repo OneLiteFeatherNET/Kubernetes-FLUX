@@ -106,12 +106,9 @@ spec:
       # Microsoft Entra ID, the same tenant dependency-track and apus use. Issuer and JWKS
       # are public discovery metadata. The audience is the client id of the "Corvus" app
       # registration (v2 access tokens carry it as `aud`).
-      #
-      # TODO(entra): the app registration does not exist yet, see the pull request. Replace
-      # the all-zero client id here and in ui.config.oidc.clientId below.
       oidc:
         issuer: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
-        audience: 00000000-0000-0000-0000-000000000000
+        audience: 90037351-20fd-45f0-b8b5-98285553bdb5
         jwksUrl: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/discovery/v2.0/keys
         rolesClaim: roles
         # Entra app roles of the registration -> Corvus roles.
@@ -169,11 +166,11 @@ spec:
             Corvus.Viewer: viewer
         oidc:
           issuer: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
-          # TODO(entra): client id of the "Corvus" app registration (a public client, no secret).
-          clientId: 00000000-0000-0000-0000-000000000000
+          # Client id of the "Corvus" app registration (a public client, no secret).
+          clientId: 90037351-20fd-45f0-b8b5-98285553bdb5
           # Entra needs the API's own scope, or the access token is addressed to Microsoft
           # Graph and the API rejects it (see the apus release for the same trap).
-          scopes: openid profile api://00000000-0000-0000-0000-000000000000/access_as_user
+          scopes: openid profile api://90037351-20fd-45f0-b8b5-98285553bdb5/access_as_user
 
     serviceMonitor:
       enabled: true
