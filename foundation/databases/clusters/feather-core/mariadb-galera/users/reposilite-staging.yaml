@@ -1,0 +1,16 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: User
+metadata:
+  name: reposilite-staging
+spec:
+  name: reposilite_staging
+  mariaDbRef:
+    name: mariadb-galera
+  passwordSecretKeyRef:
+    name: user-reposilite-staging-secret
+    key: password
+  maxUserConnections: 10
+  host: "%"
+  cleanupPolicy: Delete
+  requeueInterval: 10h
+  retryInterval: 30s

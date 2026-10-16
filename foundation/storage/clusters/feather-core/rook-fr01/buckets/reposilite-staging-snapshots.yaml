@@ -1,0 +1,12 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: reposilite-staging-snapshots
+  namespace: rook-ceph-fr01
+  labels:
+    purpose: ingot-staging-rehearsal
+spec:
+  bucketName: reposilite-staging-snapshots
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: reposilite-staging

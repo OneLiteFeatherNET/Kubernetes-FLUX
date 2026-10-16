@@ -26,3 +26,8 @@ resources:
   - sturnus.yaml
   - mongodb-backup.yaml
   - cloudnet-templates.yaml
+  - reposilite-staging-onelitefeather-releases.yaml
+  - reposilite-staging-onelitefeather-snapshots.yaml
+  - reposilite-staging-onelitefeather-proxy.yaml
+  - reposilite-staging-releases.yaml
+  - reposilite-staging-snapshots.yaml

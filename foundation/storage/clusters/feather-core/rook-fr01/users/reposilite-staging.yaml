@@ -1,0 +1,13 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: reposilite-staging
+  namespace: rook-ceph-fr01
+  labels:
+    purpose: ingot-staging-rehearsal
+spec:
+  store: feather-s3
+  displayName: reposilite-staging
+  capabilities:
+    bucket: "*"
+    user: "*"

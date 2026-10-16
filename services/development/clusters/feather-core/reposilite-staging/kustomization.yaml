@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: reposilite-staging
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/reposilite/
+  - ingress.yaml
+patches:
+  - path: release.yaml
+  # Namespace name comes from the namespace transformer; only the label is added.
+  - target:
+      kind: Namespace
+    patch: |-
+      - op: add
+        path: /metadata/labels/purpose
+        value: ingot-staging-rehearsal
+
+secretGenerator:
+  - name: reposilite-secrets
+    envs:
+      - reposilite-staging.sops.env
