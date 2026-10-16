@@ -15,6 +15,10 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+              # Chart renders `default 1 .Values.deployment.replicas`, so 0 must be forced here.
+              - op: replace
+                path: /spec/replicas
+                value: 0
   values:
     # Ingot is a drop-in fork of Reposilite. `tag` is mandatory, not cosmetic:
     # without it the chart asks for a tag that does not exist. Bump it together
@@ -23,8 +27,8 @@ spec:
       name: ghcr.io/onelitefeathernet/ingot
       tag: "1.1.0"
     deployment:
-      # 0 until the prod data copy is restored and the settings are rewritten.
-      # Not `suspend`: a never-installed suspended release would stall the layer health check.
+      # Held at 0 by the post-renderer until the prod data copy is restored and the
+      # settings are rewritten. Not `suspend`: a never-installed release would stall the layer.
       replicas: 0
       # Probed against ghcr.io/onelitefeathernet/ingot:1.1.0 in-cluster: comes
       # up 1/1 as uid 1000 with drop-ALL and a read-only rootfs. Data is an
