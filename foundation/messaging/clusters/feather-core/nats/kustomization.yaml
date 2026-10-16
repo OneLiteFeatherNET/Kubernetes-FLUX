@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../base/nats/
   - ingress.yaml
+  - httproute.yaml
 patches:
   - path: release.yaml
 

@@ -81,3 +81,7 @@ spec:
             name: kavita-apps-onelite-feather-tls
           - kind: Secret
             name: opencost-apps-onelite-feather-tls
+          - kind: Secret
+            name: nats-apps-onelite-feather-tls
+          - kind: Secret
+            name: corvus-apps-onelite-feather-tls

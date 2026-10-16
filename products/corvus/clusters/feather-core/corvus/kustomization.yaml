@@ -7,6 +7,7 @@ resources:
   - ../../../base/corvus/
   - bucket.yaml
   - ingress.yaml
+  - httproute.yaml
   - serviceaccount-jobs.yaml
 patches:
   - path: release.yaml

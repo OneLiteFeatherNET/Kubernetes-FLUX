@@ -1,0 +1,48 @@
+# Internal front door for the NATS WebSocket listener, for clients inside the
+# internal network (the CloudNet node mc01) that cannot use the public
+# nats.onelitefeather.dev host: Cloudflare serves a managed JS challenge to
+# the server's IP. Envoy terminates TLS (step-ca cert, see foundation-certificates)
+# and forwards plain HTTP to the same backend as the Cloudflare tunnel Ingress
+# (service nats, WebSocket port 8080). Clients connect with
+# wss://nats.apps.onelite.feather and must trust the step-ca root.
+#
+# The NATS WebSocket listener sets no allowed origins / same_origin, so the
+# internal hostname is accepted as is. Envoy Gateway enables HTTP/1.1 Upgrade
+# on routes by default; the BackendTrafficPolicy only lifts the timeouts that
+# would otherwise cut long-lived connections.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: nats-websocket
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - nats.apps.onelite.feather
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: nats
+          port: 8080
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: nats-websocket
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: nats-websocket
+  timeout:
+    http:
+      # No request or stream deadline for long-lived WebSocket sessions; the
+      # server pings every 30 s (release.yaml), so the idle timeout is a backstop.
+      requestTimeout: 0s
+      maxStreamDuration: 0s
+      streamIdleTimeout: 1h
