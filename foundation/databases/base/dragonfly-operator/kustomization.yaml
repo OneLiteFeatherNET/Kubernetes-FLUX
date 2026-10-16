@@ -4,4 +4,4 @@ kind: Kustomization
 # (dragonfly-operator-system), CRDs, RBAC and the controller Deployment.
 # Renovate can bump the pinned tag in this URL.
 resources:
-  - https://raw.githubusercontent.com/dragonflydb/dragonfly-operator/v1.6.1/manifests/dragonfly-operator.yaml
+  - https://raw.githubusercontent.com/dragonflydb/dragonfly-operator/v1.7.0/manifests/dragonfly-operator.yaml
