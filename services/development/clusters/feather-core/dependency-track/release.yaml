@@ -14,6 +14,31 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # The chart has no affinity key; keep the soft zone preference and spread via patch.
+          - target:
+              kind: Deployment
+              name: dependency-track-frontend
+            patch: |
+              - op: add
+                path: /spec/template/spec/affinity
+                value:
+                  nodeAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        preference:
+                          matchExpressions:
+                            - key: topology.kubernetes.io/zone
+                              operator: In
+                              values:
+                                - fr01
+                  podAntiAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                          labelSelector:
+                            matchLabels:
+                              app.kubernetes.io/name: dependency-track-frontend
+                          topologyKey: kubernetes.io/hostname
           - target:
               kind: StatefulSet
               name: dependency-track-api-server
@@ -34,24 +59,6 @@ spec:
         limits:
           cpu: 500m
           memory: 64Mi
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              preference:
-                matchExpressions:
-                  - key: topology.kubernetes.io/zone
-                    operator: In
-                    values:
-                      - fr01
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: dependency-track-frontend
-                topologyKey: kubernetes.io/hostname
       extraEnv:
         - name: API_BASE_URL
           value: "https://dependency-track.onelitefeather.dev"
@@ -89,15 +96,9 @@ spec:
         limits:
           cpu: "4"
           memory: 6Gi
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: topology.kubernetes.io/zone
-                    operator: In
-                    values:
-                      - fr01
+      # The chart has no affinity key; nodeSelector is the equivalent of the old required zone rule.
+      nodeSelector:
+        topology.kubernetes.io/zone: fr01
       serviceMonitor:
         enabled: true
       persistentVolume:
