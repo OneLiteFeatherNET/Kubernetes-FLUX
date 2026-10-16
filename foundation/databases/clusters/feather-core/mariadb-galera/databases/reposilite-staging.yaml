@@ -1,0 +1,14 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Database
+metadata:
+  name: reposilite-staging
+spec:
+  mariaDbRef:
+    name: mariadb-galera
+  # SQL name differs from the resource name: hyphens need quoting in SQL.
+  name: reposilite_staging
+  characterSet: utf8
+  collate: utf8_general_ci
+  cleanupPolicy: Delete
+  requeueInterval: 10h
+  retryInterval: 30s

@@ -9,6 +9,7 @@ resources:
   - postgresql-cluster-backup.yaml
   - bluemap.yaml
   - reposilite.yaml
+  - reposilite-staging.yaml
   - outline.yaml
   - mimir.yaml
   - reposilite-public.yaml
