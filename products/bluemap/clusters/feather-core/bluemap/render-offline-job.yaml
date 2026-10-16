@@ -271,7 +271,7 @@ spec:
               mountPath: /app/config
         # 3) Pull ONLY the selected world save-folder from the olf bucket.
         - name: fetch-world
-          image: rclone/rclone:1.69.3@sha256:1f497a86a6466395e62a5886613a14b7b18809543566ef9fa35fa1371a7ecc0f
+          image: rclone/rclone:1.75.2@sha256:2687085f718d3c628f7fdfb77c52a1d344332aed543110bb88088f2c70d43eb5
           envFrom:
             - configMapRef:
                 name: bluemap-render-params
