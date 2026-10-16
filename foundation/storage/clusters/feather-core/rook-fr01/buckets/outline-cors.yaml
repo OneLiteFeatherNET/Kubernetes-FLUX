@@ -54,7 +54,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: apply-cors
-              image: amazon/aws-cli:2.36.50@sha256:c240dd63cdbab17197486d55460675ef2b94c9cc372dedae34dee53ccd30657c
+              image: amazon/aws-cli:2.38.0@sha256:ed3233c28ad56d6a66e9e7623a495ab2d7eb08d425f8eea0fdbdfacb12de2ba8
               env:
                 # Credentials des Bucket-Owners, vom ObjectBucketClaim erzeugt.
                 - name: AWS_ACCESS_KEY_ID
