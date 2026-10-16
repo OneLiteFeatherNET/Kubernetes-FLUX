@@ -411,3 +411,39 @@ spec:
     rotationPolicy: Always
   dnsNames:
     - opencost.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nats-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: nats-apps-onelite-feather-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - nats.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: corvus-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: corvus-apps-onelite-feather-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - corvus.apps.onelite.feather
