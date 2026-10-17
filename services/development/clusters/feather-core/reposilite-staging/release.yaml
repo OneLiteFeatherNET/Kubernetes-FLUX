@@ -21,8 +21,8 @@ spec:
     # with the chart pin above.
     image:
       name: ghcr.io/onelitefeathernet/ingot
-      # 1.2.0 rehearsal: nightly from ingot main 402ae39 (1.2.0 candidate), pinned by digest.
-      tag: "nightly@sha256:58216ea74d4a4ed84bdfc803ca586f2f138b5ecdbb07d1646a4c0b9540075a93"
+      # 1.2.0 rehearsal: nightly from ingot main 19189c7, pinned by digest.
+      tag: "nightly@sha256:2348685631e1385a1af4e1df1a295d6df2c1e80621efed26e6fd5a3f52cfe6ae"
     deployment:
       # The chart treats 0 as 1 (`default 1`); park staging with a post-render patch on /spec/replicas.
       replicas: 1
