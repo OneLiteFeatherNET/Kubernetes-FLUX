@@ -26,6 +26,8 @@ spec:
   interval: 1m0s
   timeout: 10m0s
   values:
+    enableDiscoveryDaemon: true
+    discoveryDaemonInterval: 5m
     crds:
       enabled: true
     monitoring:
