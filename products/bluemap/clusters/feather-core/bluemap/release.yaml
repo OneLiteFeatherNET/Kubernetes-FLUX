@@ -42,7 +42,7 @@ spec:
     image:
       repository: ghcr.io/bluemap-minecraft/bluemap
       pullPolicy: IfNotPresent
-      tag: "v5.22"
+      tag: "v5.28"
     resources:
       limits:
         cpu: 2000m
@@ -97,7 +97,7 @@ spec:
         subPath: world_op_nether.conf
     bluemap:
       packs:
-        - https://github.com/TheMeinerLP/BlueMapS3Storage/releases/download/v1.5.1/BlueMapS3Storage-1.5.1.jar
+        - https://github.com/TheMeinerLP/BlueMapS3Storage/releases/download/v1.6.1/BlueMapS3Storage-1.6.1.jar
       config:
         - path: "/app/config/core.conf"
           configMap:
