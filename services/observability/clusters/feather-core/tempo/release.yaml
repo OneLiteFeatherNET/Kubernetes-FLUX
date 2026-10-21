@@ -41,7 +41,14 @@ spec:
                         type: RuntimeDefault
   values:
     # Bundled trace cache; live ~6-8m/90Mi.
+    # Chart 1.61.3 still ships appVersion 2.9.0; 2.9.5 is the same-minor patch
+    # with the grpc fix (GHSA-hrxh-6v49-42gf).
+    tempo:
+      image:
+        tag: "2.9.5"
     memcached:
+      image:
+        tag: "1.6.45-alpine"
       resources:
         requests:
           cpu: 10m
