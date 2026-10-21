@@ -31,7 +31,7 @@ spec:
     image:
       registry: docker.io
       repository: grafana/grafana
-      tag: "12.4.13"
+      tag: "13.2.4"
     podLabels:
       logs.onelitefeather.net/env: prod
     replicas: 2
