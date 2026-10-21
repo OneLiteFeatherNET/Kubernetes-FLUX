@@ -5,3 +5,8 @@ kind: Kustomization
 # Renovate can bump the pinned tag in this URL.
 resources:
   - https://raw.githubusercontent.com/dragonflydb/dragonfly-operator/v1.7.1/manifests/dragonfly-operator.yaml
+# Upstream manifest still pins kube-rbac-proxy v0.16.0 (Go stdlib/grpc CVEs).
+# Only the operator metrics sidecar restarts, never the Dragonfly data plane.
+images:
+  - name: quay.io/brancz/kube-rbac-proxy
+    newTag: v0.23.0
