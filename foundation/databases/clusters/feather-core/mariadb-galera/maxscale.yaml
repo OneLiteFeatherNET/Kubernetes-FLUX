@@ -56,11 +56,12 @@ spec:
       params:
         # === Failover resilience (the important part) ===
         transaction_replay: "true"            # replay interrupted transactions on the new primary
-        transaction_replay_timeout: "30s"     # give up replaying after 30s
+        transaction_replay_timeout: "90s"     # give up replaying after 90s
         master_reconnection: "true"           # migrate session to new primary instead of killing it
         master_failure_mode: "fail_on_write"  # keep read-only sessions alive when primary is down
         delayed_retry: "true"                 # queue queries briefly while no primary is available
-        delayed_retry_timeout: "10s"
+        # raised for the galera re-bootstrap on 2026-10-21; revert afterwards
+        delayed_retry_timeout: "90s"
 
         # === Connection hygiene ===
         connection_keepalive: "240s"          # ping idle backend connections (align with Hikari maxLifetime!)
