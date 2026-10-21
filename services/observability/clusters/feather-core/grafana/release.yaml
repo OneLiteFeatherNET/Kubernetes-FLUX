@@ -232,6 +232,10 @@ spec:
     # next to this file); the providers above are left with remote gnetId/url
     # dashboards, which the chart's initContainer downloads.
     sidecar:
+      image:
+        registry: quay.io
+        repository: kiwigrid/k8s-sidecar
+        tag: "2.14.1"
       resources:
         requests:
           cpu: 10m

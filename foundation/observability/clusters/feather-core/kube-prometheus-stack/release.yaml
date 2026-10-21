@@ -35,6 +35,8 @@ spec:
             sourceLabels: [__name__]
             regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
     kube-state-metrics:
+      image:
+        tag: v2.19.1
       resources:
         requests:
           cpu: 20m
