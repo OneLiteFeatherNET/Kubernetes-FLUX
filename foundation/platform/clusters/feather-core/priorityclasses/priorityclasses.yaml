@@ -1,8 +1,11 @@
 # Cluster priority tiers for workload hardening (5 levels).
 # All sit below the built-in system-cluster-critical (2000000000) /
-# system-node-critical (2000001000), which stay reserved for kube-system.
+# system-node-critical (2000001000), reserved for kube-system and the
+# exceptions noted below.
 # Higher value wins: under resource pressure the scheduler preempts and the
 # kubelet evicts lower-priority pods first.
+# Pods without a priorityClassName get feather-standard (globalDefault).
+# Exception: Ceph mon/osd use system-node-critical (Rook recommendation).
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
@@ -10,7 +13,7 @@ metadata:
 value: 1000000000
 globalDefault: false
 preemptionPolicy: PreemptLowerPriority
-description: "Storage layer (Ceph OSD/mon/mgr) — underpins every PVC; eviction means data unavailability."
+description: "Storage control plane (Ceph mgr, Rook operator, CSI drivers) — underpins every PVC. Ceph mon/osd run at system-node-critical."
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
@@ -35,7 +38,7 @@ kind: PriorityClass
 metadata:
   name: feather-standard
 value: 1000
-globalDefault: false
+globalDefault: true
 preemptionPolicy: PreemptLowerPriority
 description: "Standard applications (outline, penpot, reposilite, dependency-track, shlink, otis)."
 ---
