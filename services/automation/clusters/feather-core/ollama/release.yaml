@@ -5,6 +5,7 @@ metadata:
   namespace: ollama
 spec:
   values:
+    priorityClassName: feather-standard
     # Conservative on purpose. ollama keeps 11 GB of models on a 30 Gi PVC
     # mounted at /root/.ollama; moving off uid 0 changes HOME, so the models
     # would be re-pulled, and fsGroup would recursively chown the volume on

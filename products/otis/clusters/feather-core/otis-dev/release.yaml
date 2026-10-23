@@ -20,8 +20,9 @@ spec:
         namespace: flux-system
   values:
     # Single replica, no PDB -> dev is best-effort and yields to prod under
-    # pressure (no priorityClassName). Same logging/JSON setup as prod so the
+    # pressure (feather-low). Same logging/JSON setup as prod so the
     # behaviour matches; only the DB, domain and image tag differ.
+    priorityClassName: feather-low
     replicaCount: 1
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/otis

@@ -14,7 +14,7 @@ spec:
             patch: |
               - op: add
                 path: /spec/template/spec/priorityClassName
-                value: feather-standard
+                value: feather-low
   values:
     # Ingot is a drop-in fork of Reposilite. `tag` is mandatory, not cosmetic:
     # without it the chart asks for a tag that does not exist. Bump it together

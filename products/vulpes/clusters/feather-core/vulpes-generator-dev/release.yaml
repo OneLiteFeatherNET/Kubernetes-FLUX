@@ -24,7 +24,8 @@ spec:
     # exist there and no copy of either has to be made.
     #
     # Single replica, no PDB -> dev is best-effort and yields to prod under
-    # pressure (no priorityClassName).
+    # pressure (feather-low).
+    priorityClassName: feather-low
     replicaCount: 1
     podDisruptionBudget:
       enabled: false

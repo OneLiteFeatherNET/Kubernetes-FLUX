@@ -51,6 +51,8 @@ spec:
     mon: system-node-critical
     osd: system-node-critical
     mgr: feather-critical
+    crashcollector: feather-high
+    exporter: feather-high
   storage:
     useAllNodes: false
     useAllDevices: false

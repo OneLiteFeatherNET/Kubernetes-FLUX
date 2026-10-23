@@ -15,6 +15,17 @@ spec:
     kind: OCIRepository
     name: stelaris-ui
     namespace: flux-system
+  # The chart has no priorityClassName value; inject it post-render.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: stelaris-ui
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
     # HA: two replicas, spread over nodes by the chart's topology constraint, and
     # a PDB so a node drain never takes the UI down.

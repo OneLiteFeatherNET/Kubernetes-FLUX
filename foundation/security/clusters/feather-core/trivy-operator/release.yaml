@@ -5,6 +5,8 @@ metadata:
   namespace: trivy-system
 spec:
   values:
+    priorityClassName: feather-low
+
     resources:
       requests:
         cpu: 100m
@@ -24,6 +26,7 @@ spec:
         type: RuntimeDefault
 
     trivy:
+      priorityClassName: feather-low
       # ClientServer, not Standalone: a Standalone scan job runs one trivy
       # container per container in the target pod, all sharing one cache dir,
       # and they deadlock each other on the DB lock. ~25% of pods here are

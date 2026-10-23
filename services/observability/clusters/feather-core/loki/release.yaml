@@ -289,12 +289,14 @@ spec:
         limits:
           memory: 64Mi
     chunksCache:
+      priorityClassName: feather-high
       # Trimmed well below the chart's 8Gi default for this cluster's log volume.
       allocatedMemory: 1024
       allocatedCPU: 250m
       nodeSelector:
         topology.kubernetes.io/zone: fr01
     resultsCache:
+      priorityClassName: feather-high
       allocatedMemory: 256
       allocatedCPU: 100m
       nodeSelector:

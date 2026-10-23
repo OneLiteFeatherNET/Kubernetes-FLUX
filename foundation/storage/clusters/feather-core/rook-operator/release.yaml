@@ -26,7 +26,13 @@ spec:
   interval: 1m0s
   timeout: 10m0s
   values:
+    priorityClassName: feather-critical
     enableDiscoveryDaemon: true
+    discover:
+      priorityClassName: feather-critical
+    ceph-csi-operator:
+      controllerManager:
+        priorityClassName: feather-critical
     discoveryDaemonInterval: 5m
     crds:
       enabled: true

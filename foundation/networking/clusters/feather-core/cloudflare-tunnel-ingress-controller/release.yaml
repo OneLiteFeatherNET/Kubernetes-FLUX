@@ -42,6 +42,7 @@ spec:
       pdb:
         enabled: true
         maxUnavailable: 1
+      priorityClassName: feather-platform
       resources:
         requests:
           cpu: 50m

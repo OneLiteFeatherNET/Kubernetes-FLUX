@@ -7,6 +7,7 @@ spec:
   values:
     controller:
       type: daemonset
+      priorityClassName: feather-high
       podLabels:
         logs.onelitefeather.net/env: prod
     serviceMonitor:
