@@ -5,6 +5,16 @@ metadata:
   name: telepresence
   namespace: ambassador
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: StatefulSet
+              name: traffic-manager
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
     # Dev namespaces only; the manager gets Roles there instead of a ClusterRole.
     namespaces:

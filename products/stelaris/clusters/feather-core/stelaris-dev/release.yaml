@@ -19,6 +19,17 @@ spec:
     kind: OCIRepository
     name: stelaris-ui-dev
     namespace: flux-system
+  # The chart has no priorityClassName value; inject it post-render.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: stelaris-ui-dev
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-low
   values:
     # Single replica, no PDB -> dev is best-effort and yields to prod under
     # pressure. Only the backend it talks to and the hostname differ from prod.

@@ -22,6 +22,17 @@ spec:
   upgrade:
     disableWait: true
   interval: 1m0s
+  # The chart has no priorityClassName value; inject it post-render.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: StatefulSet
+              name: step-ca-step-certificates
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-platform
   # Default values
   # https://github.com/smallstep/helm-charts/blob/master/step-certificates/values.yaml
   values: {}

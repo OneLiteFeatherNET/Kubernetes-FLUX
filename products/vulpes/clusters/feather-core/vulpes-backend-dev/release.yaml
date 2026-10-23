@@ -25,9 +25,10 @@ spec:
     namespace: flux-system
   values:
     # Single replica, no PDB -> dev is best-effort and yields to prod under
-    # pressure (no priorityClassName). Same logging/JSON setup as prod so the
+    # pressure (feather-low). Same logging/JSON setup as prod so the
     # behaviour matches; only the DB, the domain and which chart release each
     # tracks differ.
+    priorityClassName: feather-low
     replicaCount: 1
     # The chart is named vulpes-backend, the old shared one was named micronaut,
     # and .Chart.Name reaches app.kubernetes.io/name -- which is in the

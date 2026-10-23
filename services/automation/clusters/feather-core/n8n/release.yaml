@@ -4,6 +4,23 @@ metadata:
   name: n8n
   namespace: n8n
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: n8n-main
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+          - target:
+              kind: Deployment
+              name: n8n-worker
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
   values:
     # Covers main, worker and webhook-processor pod templates.
     podLabels:

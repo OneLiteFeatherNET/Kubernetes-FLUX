@@ -14,6 +14,7 @@ spec:
     - broker
   template:
     pod:
+      priorityClassName: feather-platform
       # One pool pod per worker node; the 4 xl workers are untainted and the pool has no nodeSelector.
       affinity:
         podAntiAffinity:

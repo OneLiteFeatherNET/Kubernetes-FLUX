@@ -5,6 +5,8 @@ metadata:
   namespace: strimzi-system
 spec:
   values:
+    priorityClassName: feather-platform
+
     # Cluster-scoped on purpose. The namespace-scoped alternative
     # (watchNamespaces: [sentry]) makes the chart render RoleBindings into
     # those namespaces, which must therefore already exist when this layer

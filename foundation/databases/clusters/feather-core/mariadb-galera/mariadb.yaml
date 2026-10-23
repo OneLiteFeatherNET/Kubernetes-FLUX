@@ -93,7 +93,7 @@ spec:
     name: maxscale-galera
 
   # Ensure that the Pods are not preempted by Kubernetes to make room for new scheduled Pods.
-  priorityClassName: system-node-critical
+  priorityClassName: feather-platform
   # Configure enough compute resources. This is just an example, take a look at your historic compute metrics to estimate.
   resources:
     requests:
@@ -126,6 +126,7 @@ spec:
   metrics:
     enabled: true
     exporter:
+      priorityClassName: feather-high
       resources:
         requests:
           cpu: 10m

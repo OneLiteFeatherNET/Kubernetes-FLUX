@@ -12,6 +12,7 @@ spec:
       enabled: false
     # Live operator uses ~4m/29Mi.
     prometheusOperator:
+      priorityClassName: feather-high
       resources:
         requests:
           cpu: 10m
@@ -35,6 +36,7 @@ spec:
             sourceLabels: [__name__]
             regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
     kube-state-metrics:
+      priorityClassName: feather-high
       image:
         tag: v2.19.1
       resources:
@@ -298,6 +300,7 @@ spec:
                   phase: [status, phase]
                   method: [spec, method]
     prometheus-node-exporter:
+      priorityClassName: feather-high
       resources:
         requests:
           cpu: 20m
