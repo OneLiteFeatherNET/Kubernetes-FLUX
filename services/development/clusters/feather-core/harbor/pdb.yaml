@@ -66,3 +66,16 @@ spec:
       app: harbor
       component: nginx
       release: harbor
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: harbor-exporter
+  namespace: harbor
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: harbor
+      component: exporter
+      release: harbor

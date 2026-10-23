@@ -11,6 +11,9 @@ spec:
       priorityClassName: feather-high
       podLabels:
         logs.onelitefeather.net/env: prod
+      podDisruptionBudget:
+        enabled: true
+        maxUnavailable: 1
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

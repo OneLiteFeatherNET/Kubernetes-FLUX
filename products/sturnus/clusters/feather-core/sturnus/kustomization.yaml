@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../base/sturnus/
   - ingress.yaml
+  - pdb.yaml
 patches:
   - path: release.yaml
 

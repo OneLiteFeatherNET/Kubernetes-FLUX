@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../base/cloudflare-tunnel-ingress-controller
+  - pdb.yaml
 patches:
   - path: release.yaml
 

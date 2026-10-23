@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - replicaset.yaml
+  - pdb.yaml
   - backup-cronjob.yaml
   - servicemonitor.yaml
 

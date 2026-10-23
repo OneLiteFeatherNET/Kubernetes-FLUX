@@ -39,6 +39,9 @@ spec:
       # via config — it relies on the default scheduler's soft spread. Only the
       # controller pods get explicit pod anti-affinity (below).
       replicaCount: 2
+      pdb:
+        enabled: true
+        maxUnavailable: 1
       resources:
         requests:
           cpu: 50m
