@@ -5,3 +5,4 @@ resources:
   - secrets.sops.yaml
   - release.yaml
   - csi-drivers-release.yaml
+  - pdb.yaml

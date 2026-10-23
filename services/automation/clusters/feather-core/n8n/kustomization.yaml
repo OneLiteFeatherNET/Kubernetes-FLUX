@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../base/n8n/
   - httproute.yaml
+  - pdb.yaml
 patches:
   - path: release.yaml
 

@@ -12,6 +12,7 @@ resources:
   - pooler-rw.yaml
   - pooler-rw-tx.yaml
   - pooler-ro.yaml
+  - pdb.yaml
   - database/harbor.yaml
   - database/outline.yaml
   - database/otis.yaml

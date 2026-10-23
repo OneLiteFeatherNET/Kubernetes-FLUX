@@ -1,0 +1,38 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sturnus-api
+  namespace: sturnus
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sturnus
+      app.kubernetes.io/instance: sturnus
+      app.kubernetes.io/component: api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sturnus-console
+  namespace: sturnus
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sturnus
+      app.kubernetes.io/instance: sturnus
+      app.kubernetes.io/component: console
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sturnus-link
+  namespace: sturnus
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sturnus
+      app.kubernetes.io/instance: sturnus
+      app.kubernetes.io/component: link

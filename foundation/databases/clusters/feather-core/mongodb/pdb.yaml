@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: feather-core-mongodb
+  namespace: mongodb
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: feather-core-mongodb-svc

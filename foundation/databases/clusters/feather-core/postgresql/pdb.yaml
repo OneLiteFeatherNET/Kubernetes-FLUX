@@ -1,0 +1,32 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: feather-core-cluster-pg-pooler-rw
+  namespace: cnpg-system
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      cnpg.io/poolerName: feather-core-cluster-pg-pooler-rw
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: feather-core-cluster-pg-pooler-rw-tx
+  namespace: cnpg-system
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      cnpg.io/poolerName: feather-core-cluster-pg-pooler-rw-tx
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: feather-core-cluster-pg-pooler-ro
+  namespace: cnpg-system
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      cnpg.io/poolerName: feather-core-cluster-pg-pooler-ro
