@@ -5,3 +5,4 @@ resources:
   - ../../../stelaris/clusters/feather-core/stelaris-dev
   - ../../../vulpes/clusters/feather-core/vulpes-backend-dev
   - ../../../vulpes/clusters/feather-core/vulpes-generator-dev
+  - ../../../blackhole/clusters/feather-core/blackhole-dev
