@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: blackhole
+spec:
+  name: blackhole
+  owner: blackhole
+  cluster:
+    name: feather-core-cluster-pg

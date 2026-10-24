@@ -34,6 +34,8 @@ resources:
   - database/cygnus-stats.yaml
   - database/cygnus-stats-dev.yaml
   - database/skygridng.yaml
+  - database/blackhole.yaml
+  - database/blackhole-dev.yaml
 
 secretGenerator:
   - name: role-corvus
@@ -183,3 +185,15 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/skygridng.sops.env
+  - name: role-blackhole
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/blackhole.sops.env
+  - name: role-blackhole-dev
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/blackhole-dev.sops.env
