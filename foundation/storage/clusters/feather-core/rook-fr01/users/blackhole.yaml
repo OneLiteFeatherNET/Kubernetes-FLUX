@@ -1,0 +1,16 @@
+# Dedicated owner of the blackhole-evidence bucket (ObjectBucketClaim in
+# products/blackhole/clusters/feather-core/blackhole/evidence-bucket.yaml). The bucket holds
+# moderation evidence uploaded by players and staff, so it must not share access with
+# anything else. No admin capabilities: a plain S3 user only sees its own buckets; the
+# quota limits it to one bucket and caps the evidence store.
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: blackhole
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: blackhole
+  quotas:
+    maxBuckets: 1
+    maxSize: 500Gi
