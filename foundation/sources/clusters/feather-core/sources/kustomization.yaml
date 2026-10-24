@@ -36,6 +36,8 @@ resources:
   - stelaris-image-automation.yaml
   - vulpes-backend.yaml
   - vulpes-backend-image-automation.yaml
+  - blackhole.yaml
+  - blackhole-image-automation.yaml
   - vulpes-generator.yaml
   - vulpes-generator-image-automation.yaml
   - metallb.yaml

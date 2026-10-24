@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: blackhole
+  labels:
+    # The backend runs its Flyway migration on start: retry, but never roll back automatically.
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: blackhole
+spec:
+  releaseName: blackhole
+  # The chart comes from Harbor, released together with the images it deploys
+  # (see foundation/sources/.../sources/blackhole.yaml). The exact version lives on the
+  # OCIRepository, so there is nothing to pin here.
+  chartRef:
+    kind: OCIRepository
+    name: blackhole
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Default values
+  #
+  values: {}

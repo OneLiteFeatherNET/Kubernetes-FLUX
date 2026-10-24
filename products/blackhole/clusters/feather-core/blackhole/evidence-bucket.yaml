@@ -1,0 +1,14 @@
+# The evidence store. Deliberately NOT in rook-ceph-fr01 like most claims: Rook creates the
+# credentials Secret (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) and the ConfigMap (BUCKET_NAME,
+# BUCKET_HOST, ...) in the namespace of the claim, and the backend reads the Secret from its
+# own (same approach as apus/bundle-bucket.yaml and corvus/bucket.yaml). The owner is the
+# dedicated CephObjectStoreUser in foundation/storage/.../rook-fr01/users/blackhole.yaml.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: blackhole-evidence
+spec:
+  bucketName: blackhole-evidence
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: blackhole

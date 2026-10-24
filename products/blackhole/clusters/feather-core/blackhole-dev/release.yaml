@@ -1,0 +1,142 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: blackhole
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: blackhole-dev
+spec:
+  releaseName: blackhole
+  interval: 1m0s
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  # Tracks the newest chart build rather than an exact version (see
+  # foundation/sources/.../sources/blackhole.yaml); global.image.tag below is kept current by
+  # ImageUpdateAutomation/blackhole-dev (foundation-sources), which rolls out every main image
+  # as CI on the Blackhole repo pushes it. prod (blackhole/release.yaml) gets its images from
+  # the chart's appVersion -- only dev has this override.
+  chartRef:
+    kind: OCIRepository
+    name: blackhole-dev
+    namespace: flux-system
+  # See blackhole/release.yaml: the bot needs its own NATS credentials. Remove together with it.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: blackhole-discord
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: blackhole-discord
+              spec:
+                template:
+                  spec:
+                    volumes:
+                      - name: nats
+                        secret:
+                          secretName: blackhole-nats-discord
+  values:
+    # Single replica, no real HA -> dev is best-effort and yields to prod under pressure.
+    global:
+      environment: dev
+      priorityClassName: feather-low
+      imagePullSecrets:
+        - name: harbor-pull
+      image:
+        # Kept current by ImageUpdateAutomation/blackhole-dev. Left empty until the first main
+        # image lands in Harbor; an empty tag falls back to the chart's appVersion. Never
+        # "latest": Spegel caches it P2P and kept resolving to a stale digest.
+        tag: "" # {"$imagepolicy": "flux-system:blackhole-dev:tag"}
+
+    database:
+      existingSecret: blackhole-db
+    redis:
+      existingSecret: blackhole-redis
+    keys:
+      existingSecret: blackhole-keys
+    nats:
+      url: nats://nats.nats.svc:4222
+      existingSecret: blackhole-nats
+      stream:
+        replicas: 1
+    s3:
+      endpoint: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+      bucket: blackhole-evidence-dev
+      existingSecret: blackhole-evidence-dev
+      accessKeyKey: AWS_ACCESS_KEY_ID
+      secretKeyKey: AWS_SECRET_ACCESS_KEY
+
+    auth:
+      tenantId: 1a14dfb5-0eac-41bf-94cb-195c2e387520
+      # PLACEHOLDER: client id of the "Blackhole (dev)" API app registration.
+      apiClientId: 00000000-0000-0000-0000-000000000000
+      # PLACEHOLDER: object ids of the Entra groups.
+      roles:
+        admin: 00000000-0000-0000-0000-000000000000
+        moderator: 00000000-0000-0000-0000-000000000000
+        viewer: 00000000-0000-0000-0000-000000000000
+        metrics: 00000000-0000-0000-0000-000000000000
+
+    backend:
+      replicaCount: 1
+      secretRevision: "1"
+      config:
+        # Swagger UI on dev only.
+        BLACKHOLE_DOCS_ENABLED: "true"
+
+    # Internal Envoy hosts instead of Cloudflare Tunnel Ingresses. The chart's default parentRefs
+    # (envoy/eg) are the wrong way round for this cluster; lists replace, so they are set in full.
+    web:
+      replicaCount: 1
+      secretRevision: "1"
+      oidc:
+        # PLACEHOLDER: client id of the public "Blackhole Panel (dev)" app registration.
+        clientId: 00000000-0000-0000-0000-000000000000
+        apiScope: api://00000000-0000-0000-0000-000000000000/access_as_user
+      httpRoute:
+        enabled: true
+        parentRefs:
+          - name: eg
+            namespace: envoy
+            sectionName: https
+        hostnames:
+          - blackhole-dev.apps.onelite.feather
+
+    portal:
+      replicaCount: 1
+      secretRevision: "1"
+      origin: https://appeal-dev.apps.onelite.feather
+      httpRoute:
+        enabled: true
+        parentRefs:
+          - name: eg
+            namespace: envoy
+            sectionName: https
+        hostnames:
+          - appeal-dev.apps.onelite.feather
+
+    discord:
+      secretRevision: "1"
+      existingSecret: blackhole-discord
+      # PLACEHOLDER: client id of the "Blackhole Discord (dev)" app registration.
+      clientId: 00000000-0000-0000-0000-000000000000
+      panelUrl: https://blackhole-dev.apps.onelite.feather
+      # PLACEHOLDER: ids of a Discord test guild, not the production one.
+      ids:
+        guildId: "000000000000000000"
+        teamChannelId: "000000000000000000"
+        staffRoleId: "000000000000000000"
+        ticketCategoryId: "000000000000000000"
+        archiveCategoryId: "000000000000000000"
+
+    # Dev uses the scanner of the prod release: a second 3 GiB ClamAV is not worth it.
+    clamav:
+      enabled: false
+      externalHost: blackhole-clamav.blackhole.svc
