@@ -1,0 +1,43 @@
+---
+# Blackhole ships its chart as an OCI artifact from our own Harbor, versioned together with the
+# images it deploys: the chart leaves global.image.tag empty and falls back to .Chart.AppVersion,
+# so pinning the chart pins the images. Two repositories, not one, so dev can run a newer chart
+# than prod: prod is pinned to an exact version and moved deliberately, dev follows the newest
+# build on its own. Same shape as vulpes-backend.yaml beside this file.
+#
+# PLACEHOLDER: nothing is published to Harbor yet (openspec change deploy-to-kubernetes, group 7).
+# Replace the tag with the first released chart version before this layer is merged; until then
+# the OCIRepository stays NotReady and so does the HelmRelease in the blackhole namespace.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: blackhole
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/blackhole
+  ref:
+    tag: "0.0.0-replace-me" # PLACEHOLDER: first published chart version
+  secretRef:
+    name: harbor-pull
+---
+# Every main build publishes a pre-release chart (X.Y.(Z+1)-main.<unix>); the semver range with a
+# pre-release floor is what lets Flux see those at all.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: blackhole-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/blackhole
+  ref:
+    semver: ">=0.0.0-0"
+  secretRef:
+    name: harbor-pull
