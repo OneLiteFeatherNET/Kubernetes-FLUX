@@ -11,7 +11,7 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 - `clusters/feather-core/` — Flux control plane. `flux-system/` is the bootstrap (GitRepository + root sync). Each `*.yaml` here is one Flux `Kustomization` CR (a "layer") pointing at a path under `foundation/layers/`, `services/layers/` or `products/layers/`.
 - `foundation/` — cluster plumbing, grouped by **domain** (`sources`, `access`, `certificates`, `networking`, `storage`, `databases`, `messaging`, `observability`, `security`, `platform`): Flux sources, controllers/operators, and configs (databases, storage, PKI). `foundation/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer; it only lists domain overlays.
 - `services/` — third-party software, grouped by domain (`observability`, `development`, `collaboration`, `automation`, `media`). `services/layers/feather-core/<layer>/` holds one entry `kustomization.yaml` per Flux layer (`automation`, `collaboration`, `development`, `media`, `observability`).
-- `products/` — OneLiteFeather's own projects (`otis`, `stelaris`, `vulpes`, `apus`, `sturnus`, `bluemap`); `-dev` variants are siblings. `products/layers/feather-core/{prod,dev}/` are the entries for the `products` and `products-dev` layers.
+- `products/` — OneLiteFeather's own projects (`otis`, `stelaris`, `vulpes`, `apus`, `sturnus`, `bluemap`, `blackhole`); `-dev` variants are siblings. `products/layers/feather-core/{prod,dev}/` are the entries for the `products` and `products-dev` layers.
 - `helm/` — in-repo Helm charts (`shlink`, `outline`, `vikunja`, `micronaut`). `micronaut` is the generic chart reused by several Micronaut services (e.g. otis, vulpes).
 - `.github/scripts/validate.sh` — local/CI manifest validation.
 
