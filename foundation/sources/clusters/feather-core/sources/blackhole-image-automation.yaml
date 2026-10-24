@@ -1,0 +1,70 @@
+---
+# Scans the Harbor repository of the Blackhole backend image. CI pushes the four images
+# (blackhole, blackhole-web, blackhole-portal, blackhole-discord) with the same tag
+# main-<commit-unix-ts>-<short-sha7> on every push to main, so one policy on the backend
+# image drives the tag of all of them (global.image.tag in the dev HelmRelease).
+#
+# blackhole (prod) is untouched: its chart is pinned to an exact version (see blackhole.yaml)
+# and follows the chart's appVersion, and no ImagePolicy here targets it.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: blackhole
+  namespace: flux-system
+spec:
+  image: harbor.onelitefeather.dev/onelitefeather/blackhole
+  interval: 5m
+  secretRef:
+    name: harbor-pull
+---
+# Extracting the timestamp and ordering numerically means the newest commit always wins,
+# regardless of sha or push order.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: blackhole-dev
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: blackhole
+  filterTags:
+    pattern: '^main-(?P<ts>[0-9]+)-[0-9a-f]{7}$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
+---
+# Writes the tag ImagePolicy/blackhole-dev picks back into
+# products/blackhole/clusters/feather-core/blackhole-dev/release.yaml, and only there -
+# update.path keeps it from ever touching blackhole (prod) or anything else in the tree.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: blackhole-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: |
+        chore(blackhole-dev): roll out {{ range $resource, $changes := .Changed.Objects }}{{ range $_, $change := $changes }}blackhole:{{ $change.NewValue }}{{ end }}{{ end }}
+
+        Automation: {{ .AutomationObject }}
+        Files:
+        {{ range $filename, $_ := .Changed.FileChanges -}}
+        - {{ $filename }}
+        {{ end -}}
+    push:
+      branch: main
+  update:
+    path: ./products/blackhole/clusters/feather-core/blackhole-dev
+    strategy: Setters
