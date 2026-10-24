@@ -173,6 +173,21 @@ spec:
         connectionLimit: 10
         passwordSecret:
           name: role-cygnus-stats-dev
+      # Blackhole ban system. Capped: the shared cluster sits near saturation
+      # (max_connections: 200). The backend's pool is sized per replica, and prod
+      # runs 2 replicas plus one surge pod during a rollout.
+      - name: blackhole
+        login: true
+        ensure: present
+        connectionLimit: 30
+        passwordSecret:
+          name: role-blackhole
+      - name: blackhole_dev
+        login: true
+        ensure: present
+        connectionLimit: 10
+        passwordSecret:
+          name: role-blackhole-dev
     services:
       additional:
         - selectorType: rw
