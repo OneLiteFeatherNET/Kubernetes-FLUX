@@ -13,6 +13,14 @@
 #
 # Changing this file does not restart the pods: the config reloader re-reads
 # nats.conf after the HelmRelease upgrade rewrites the ConfigMap.
+#
+# BLACKHOLE and BLACKHOLE_DEV (Blackhole ban system, prod and dev) are separate
+# accounts so a dev backend can never publish into the stream prod and the
+# Velocity proxies read. Add both next to CORVUS with `sops nats-auth.sops.conf`;
+# the nsc commands and the per-user subject permissions are in
+# products/blackhole/clusters/feather-core/blackhole/SECRETS.sops.env.TEMPLATE.
+# Copy only the account public key and the signed account JWT
+# (`nsc describe account <name> --raw`), never a seed or a .creds file.
 # =============================================================================
 {
   "config": {
@@ -22,7 +30,9 @@
       "resolver": "MEMORY",
       "resolver_preload": {
         "<SYS account public key>": "<SYS account JWT>",
-        "<CORVUS account public key>": "<CORVUS account JWT>"
+        "<CORVUS account public key>": "<CORVUS account JWT>",
+        "<BLACKHOLE account public key>": "<BLACKHOLE account JWT>",
+        "<BLACKHOLE_DEV account public key>": "<BLACKHOLE_DEV account JWT>"
       }
     }
   }
