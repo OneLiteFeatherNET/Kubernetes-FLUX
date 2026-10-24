@@ -22,6 +22,8 @@ resources:
   - sentry.yaml
   - sturnus.yaml
   - corvus.yaml
+  - blackhole.yaml
+  - blackhole-dev.yaml
   - vikunja.yaml
   - mongodb.yaml
   - cloudnet.yaml
