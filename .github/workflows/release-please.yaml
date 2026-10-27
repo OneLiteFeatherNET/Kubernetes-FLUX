@@ -19,7 +19,7 @@ jobs:
       contents: write
       pull-requests: write
     # The release App opens the release PR, so the required checks run on it (GITHUB_TOKEN PRs do not trigger workflows).
-    uses: OneLiteFeatherNET/workflows/.github/workflows/release-please.yml@ec5d37fed94ad59e54868d63af6ea4ef4ee4e84c # v2.9.0
+    uses: OneLiteFeatherNET/workflows/.github/workflows/release-please.yml@7c683feadd3cb43eee719802aac690bc845e5a98 # v2.9.1
     # Org secrets carry the App's client ID; GitHub accepts it in place of the numeric App ID.
     secrets:
       RELEASE_APP_ID: ${{ secrets.RELEASE_PLEASE_APP_CLIENT_ID }}
