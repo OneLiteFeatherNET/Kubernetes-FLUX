@@ -33,6 +33,7 @@ resources:
   - database/metabase.yaml
   - database/cygnus-stats.yaml
   - database/cygnus-stats-dev.yaml
+  - database/skygridng.yaml
 
 secretGenerator:
   - name: role-corvus
@@ -176,3 +177,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/cygnus-stats-dev.sops.env
+  - name: role-skygridng
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/skygridng.sops.env
