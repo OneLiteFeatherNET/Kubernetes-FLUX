@@ -21,7 +21,7 @@ jobs:
       contents: read
       security-events: write
     # v2.9.0 of OneLiteFeatherNET/workflows; the reusable workflow takes no secrets.
-    uses: OneLiteFeatherNET/workflows/.github/workflows/security-scan.yml@ec5d37fed94ad59e54868d63af6ea4ef4ee4e84c # v2.9.0
+    uses: OneLiteFeatherNET/workflows/.github/workflows/security-scan.yml@7c683feadd3cb43eee719802aac690bc845e5a98 # v2.9.1
     with:
       scan-type: "fs"
       scanners: "vuln,secret"
