@@ -1,0 +1,129 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: quelea
+  namespace: quelea
+spec:
+  values:
+    # HA prod: 2 replicas with seamless rollouts (surge +1, 0 unavailable),
+    # spread across nodes, and a PDB so node drains never take the service down.
+    replicaCount: 2
+    priorityClassName: feather-standard
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: quelea
+                  app.kubernetes.io/name: micronaut
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 1
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/quelea
+      pullPolicy: IfNotPresent
+      tag: "0.1.0"
+    imagePullSecrets:
+      - name: harbor-pull
+    service:
+      port: 8080
+    metrics:
+      enabled: true
+      path: /prometheus
+      serviceMonitor:
+        enabled: true
+    ingress:
+      enabled: false
+    # Routed by the own HTTPRoute (httproute.yaml), which carries the
+    # no-timeout rule for the SSE stream.
+    httpRoute:
+      enabled: false
+    profiles: ["prod"]
+
+    rbac:
+      create: false
+
+    # Opt in to Alloy's JSON log pipeline (LOG_JSON=true emits structured logs).
+    podLabels:
+      logs.onelitefeather.net/format: json
+      logs.onelitefeather.net/env: prod
+
+    # The app exports its own traces via OTLP (OTEL_* env below); no
+    # javaagent injection.
+    tracing:
+      enabled: false
+
+    startupProbe:
+      enabled: true
+    # The image runs as its own unprivileged user (uid 10001), not the chart's 1000.
+    securityContext:
+      enabled: true
+      runAsNonRoot: true
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      seccompProfile:
+        type: RuntimeDefault
+
+    config:
+      base: |-
+        micronaut:
+          application:
+            name: quelea
+          server:
+            port: 8080
+            netty:
+              access-logger:
+                enabled: true
+                # Drop probe/metrics noise: kubelet hits /health every 5-10s and
+                # Prometheus scrapes /prometheus. Regexes match the request URI.
+                exclusions:
+                  - /health.*
+                  - /prometheus.*
+      profiles:
+        prod: |-
+          logger:
+            levels:
+              root: INFO
+              # root is INFO, but keep per-request access logs explicit.
+              HTTP_ACCESS_LOGGER: INFO
+    envFrom:
+      - secretRef:
+          name: quelea-redis
+    # Helm replaces list values: this env list must carry every variable itself.
+    env:
+      - name: LOG_JSON
+        value: "true"
+      - name: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=50.0 -Duser.timezone=UTC"
+      - name: OTEL_TRACES_EXPORTER
+        value: "otlp"
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: "http://alloy-receiver.grafana.svc:4317"
+      - name: OTEL_EXPORTER_OTLP_PROTOCOL
+        value: "grpc"
+      - name: OTEL_SERVICE_NAME
+        value: "quelea"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+      limits:
+        cpu: 1
+        memory: 768Mi
+    readinessProbe:
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    livenessProbe:
+      path: /health
+      initialDelaySeconds: 15
+      periodSeconds: 10

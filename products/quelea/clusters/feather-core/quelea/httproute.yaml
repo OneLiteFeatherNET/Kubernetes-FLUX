@@ -1,0 +1,41 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: quelea
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - quelea.apps.onelite.feather
+  rules:
+    # /v1/events is a long-lived Server-Sent-Events stream: no request or
+    # backend deadline, otherwise the gateway cuts it.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      timeouts:
+        request: "0s"
+        backendRequest: "0s"
+      backendRefs:
+        - name: quelea-micronaut
+          port: 8080
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: quelea
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: quelea
+  timeout:
+    http:
+      # Same as nats-websocket: no stream deadline for the SSE stream; the app
+      # sends a keep-alive every 15 s, so the idle timeout is a backstop.
+      requestTimeout: 0s
+      maxStreamDuration: 0s
+      streamIdleTimeout: 1h
