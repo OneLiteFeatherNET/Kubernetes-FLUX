@@ -8,3 +8,33 @@ spec:
   storageClassName: ceph-bucket-fr01
   additionalConfig:
     bucketOwner: cloudnet
+    # The explicit owner statement lets cloudnet read objects uploaded by team members.
+    bucketPolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "OwnerObjects",
+            "Effect": "Allow",
+            "Principal": {"AWS": ["arn:aws:iam:::user/cloudnet"]},
+            "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+            "Resource": ["arn:aws:s3:::cloudnet-templates", "arn:aws:s3:::cloudnet-templates/*"]
+          },
+          {
+            "Sid": "TeamReadWrite",
+            "Effect": "Allow",
+            "Principal": {"AWS": [
+              "arn:aws:iam:::user/theevilreaper",
+              "arn:aws:iam:::user/themeinerlp",
+              "arn:aws:iam:::user/theshadowsdust",
+              "arn:aws:iam:::user/onelitefeather"
+            ]},
+            "Action": [
+              "s3:ListBucket", "s3:ListBucketMultipartUploads", "s3:GetBucketLocation",
+              "s3:GetObject", "s3:PutObject", "s3:DeleteObject",
+              "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"
+            ],
+            "Resource": ["arn:aws:s3:::cloudnet-templates", "arn:aws:s3:::cloudnet-templates/*"]
+          }
+        ]
+      }
