@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: skygridng
+spec:
+  name: skygridng
+  owner: skygridng
+  cluster:
+    name: feather-core-cluster-pg

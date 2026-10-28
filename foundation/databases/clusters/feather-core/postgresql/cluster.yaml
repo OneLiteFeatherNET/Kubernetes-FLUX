@@ -125,6 +125,12 @@ spec:
         ensure: present
         passwordSecret:
           name: role-sturnus
+      - name: skygridng
+        login: true
+        ensure: present
+        connectionLimit: 20
+        passwordSecret:
+          name: role-skygridng
       # Ingest, score and the migrate hook connect to the -rw service directly
       # (advisory locks do not survive the transaction pooler). Capped so a
       # runaway worker count cannot exhaust the shared 200 connection slots.
