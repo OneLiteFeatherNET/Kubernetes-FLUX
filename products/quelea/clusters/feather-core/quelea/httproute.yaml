@@ -39,3 +39,13 @@ spec:
       requestTimeout: 0s
       maxStreamDuration: 0s
       streamIdleTimeout: 1h
+  # Local = each Envoy proxy pod counts on its own (no rate-limit service in this
+  # cluster), so the effective ceiling is 100 rps x Envoy replicas. 100 rps is far
+  # above normal use of the API. The rule has no selectors, so it covers the whole
+  # route. The SSE stream counts once per connection, not once per event.
+  rateLimit:
+    local:
+      rules:
+        - limit:
+            requests: 100
+            unit: Second
