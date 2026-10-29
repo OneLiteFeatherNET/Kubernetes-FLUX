@@ -80,6 +80,9 @@ spec:
         # implementation" error and file logging is silently lost.
         - name: logging
           emptyDir: {}
+        - name: shared-config
+          secret:
+            secretName: reposilite-shared-config
       additionalVolumeMounts:
         - name: otel-agent
           mountPath: /otel
@@ -88,6 +91,9 @@ spec:
           mountPath: /tmp
         - name: logging
           mountPath: /var/log/reposilite/
+        - name: shared-config
+          mountPath: /etc/ingot
+          readOnly: true
     ## Readiness and liveness probes
     probes:
       port: 8080 # The port Reposilite is running on inside the pod.
@@ -168,6 +174,8 @@ spec:
           secretKeyRef:
             name: reposilite-secrets
             key: DATABASE
+      - name: INGOT_OPTS
+        value: "--shared-configuration=/etc/ingot/configuration.shared.json"
       - name: JDK_JAVA_OPTIONS
         value: "-javaagent:/otel/javaagent.jar"
       - name: OTEL_SERVICE_NAME

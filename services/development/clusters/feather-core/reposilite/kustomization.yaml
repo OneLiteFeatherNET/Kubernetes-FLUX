@@ -14,3 +14,8 @@ secretGenerator:
   - name: reposilite-secrets
     envs:
       - reposilite.sops.env
+  # Shared configuration (repositories, upstreams) lives in Git instead of the DB;
+  # Ingot then treats it as read-only. Change it via PR, then restart the Deployment.
+  - name: reposilite-shared-config
+    files:
+      - configuration.shared.json=configuration.shared.sops.json
