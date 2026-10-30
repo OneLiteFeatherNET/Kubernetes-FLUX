@@ -40,8 +40,7 @@ secretGenerator:
   - name: blackhole-nats
     files:
       - nats.creds=nats-backend.sops.conf
-  # Same key, credentials of the user blackhole-discord. The chart mounts one Secret for every
-  # component, so the HelmRelease swaps the volume of the bot (postRenderers).
+  # Same key, credentials of the user blackhole-discord, used by the bot through discord.nats.existingSecret.
   - name: blackhole-nats-discord
     files:
       - nats.creds=nats-discord.sops.conf

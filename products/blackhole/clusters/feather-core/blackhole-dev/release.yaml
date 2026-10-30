@@ -23,25 +23,6 @@ spec:
     kind: OCIRepository
     name: blackhole-dev
     namespace: flux-system
-  # See blackhole/release.yaml: the bot needs its own NATS credentials. Remove together with it.
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: blackhole-discord
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: blackhole-discord
-              spec:
-                template:
-                  spec:
-                    volumes:
-                      - name: nats
-                        secret:
-                          secretName: blackhole-nats-discord
   values:
     # Single replica, no real HA -> dev is best-effort and yields to prod under pressure.
     global:
@@ -91,6 +72,10 @@ spec:
         # Swagger UI on dev only.
         BLACKHOLE_DOCS_ENABLED: "true"
 
+    # security.txt is off in dev: no contact, no route (the chart would otherwise require an expiry and a panel origin).
+    securityTxt:
+      contact: ""
+
     # Internal Envoy hosts instead of Cloudflare Tunnel Ingresses. The chart's default parentRefs
     # (envoy/eg) are the wrong way round for this cluster; lists replace, so they are set in full.
     web:
@@ -125,6 +110,9 @@ spec:
     discord:
       secretRevision: "1"
       existingSecret: blackhole-discord
+      # The bot is its own NATS user (blackhole-dev-discord), not the backend's.
+      nats:
+        existingSecret: blackhole-nats-discord
       # PLACEHOLDER: client id of the "Blackhole Discord (dev)" app registration.
       clientId: 00000000-0000-0000-0000-000000000000
       panelUrl: https://blackhole-dev.apps.onelite.feather

@@ -4,28 +4,6 @@ metadata:
   name: blackhole
   namespace: blackhole
 spec:
-  # The bot connects as its own NATS user (blackhole-discord), with other subject permissions
-  # than the backend. The chart mounts the single Secret named by nats.existingSecret into
-  # every component, so the bot's volume is pointed at its own Secret here. Remove this patch
-  # once the chart takes the credentials per component.
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: blackhole-discord
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: blackhole-discord
-              spec:
-                template:
-                  spec:
-                    volumes:
-                      - name: nats
-                        secret:
-                          secretName: blackhole-nats-discord
   values:
     global:
       environment: prod
@@ -68,6 +46,12 @@ spec:
         viewer: 00000000-0000-0000-0000-000000000000
         metrics: 00000000-0000-0000-0000-000000000000
 
+    # /.well-known/security.txt of the panel and the appeal portal. The contact is the chart default
+      # (mailto:security@onelitefeather.net). Renew expires at least yearly: the apps refuse to start on
+      # a past or more-than-a-year-ahead date. See the Blackhole chart README, Security disclosure.
+    securityTxt:
+      expires: "2027-06-30T12:00:00Z"
+
     backend:
       replicaCount: 2
       # Raise after rotating a Secret: the generated Secrets keep stable names and do not roll pods.
@@ -87,6 +71,8 @@ spec:
     web:
       replicaCount: 2
       secretRevision: "1"
+      # Panel origin: security.txt names its Canonical URL on it (the chart requires it with securityTxt.contact).
+      origin: https://blackhole.onelitefeather.net
       oidc:
         # PLACEHOLDER: client id of the public "Blackhole Panel" app registration.
         clientId: 00000000-0000-0000-0000-000000000000
@@ -110,6 +96,9 @@ spec:
     discord:
       secretRevision: "1"
       existingSecret: blackhole-discord
+      # The bot is its own NATS user (blackhole-discord), not the backend's.
+      nats:
+        existingSecret: blackhole-nats-discord
       # PLACEHOLDER: client id of the "Blackhole Discord (prod)" app registration.
       clientId: 00000000-0000-0000-0000-000000000000
       panelUrl: https://blackhole.onelitefeather.net
