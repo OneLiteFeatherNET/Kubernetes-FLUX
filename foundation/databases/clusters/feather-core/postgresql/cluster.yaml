@@ -188,6 +188,11 @@ spec:
         connectionLimit: 30
         passwordSecret:
           name: role-blackhole
+      # Group role of the Blackhole analytics views. Migration V37 only creates it when it is missing,
+      # and the application role may not create roles.
+      - name: analytics_reader
+        login: false
+        ensure: present
     services:
       additional:
         - selectorType: rw
