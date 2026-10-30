@@ -64,6 +64,7 @@ configMapGenerator:
       - dashboards/kubernetes/coredns.json
       - dashboards/kubernetes/kube-state-metrics.json
       - dashboards/kubernetes/kube-state-metrics-v2.json
+      - dashboards/kubernetes/node-stalls.json
     options:
       labels:
         grafana_dashboard: "1"
