@@ -17,3 +17,6 @@ secretGenerator:
   - name: quelea-redis
     envs:
       - redis.sops.env
+  - name: quelea-sentry
+    envs:
+      - sentry.sops.env

@@ -30,16 +30,16 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/quelea
       pullPolicy: IfNotPresent
-      tag: "0.1.0"
+      tag: "0.4.0"
     imagePullSecrets:
       - name: harbor-pull
     service:
       port: 8080
+    # 0.2.0 pushes metrics over OTLP instead of exposing /prometheus; no ServiceMonitor.
     metrics:
-      enabled: true
-      path: /prometheus
+      enabled: false
       serviceMonitor:
-        enabled: true
+        enabled: false
     ingress:
       enabled: false
     # Routed by the own HTTPRoute (httproute.yaml), which carries the
@@ -83,11 +83,9 @@ spec:
             netty:
               access-logger:
                 enabled: true
-                # Drop probe/metrics noise: kubelet hits /health every 5-10s and
-                # Prometheus scrapes /prometheus. Regexes match the request URI.
+                # Drop probe noise: kubelet hits /health every 5-10s. Regexes match the request URI.
                 exclusions:
                   - /health.*
-                  - /prometheus.*
       profiles:
         prod: |-
           logger:
@@ -98,6 +96,8 @@ spec:
     envFrom:
       - secretRef:
           name: quelea-redis
+      - secretRef:
+          name: quelea-sentry
     # Helm replaces list values: this env list must carry every variable itself.
     env:
       - name: LOG_JSON
@@ -112,6 +112,22 @@ spec:
         value: "grpc"
       - name: OTEL_SERVICE_NAME
         value: "quelea"
+      # Metrics go to Alloy over OTLP/HTTP (the traces above use gRPC on 4317).
+      - name: QUELEA_METRICS_OTLP_ENABLED
+        value: "true"
+      - name: QUELEA_METRICS_OTLP_URL
+        value: "http://alloy-receiver.grafana.svc:4318/v1/metrics"
+      # Entra ID: the backend validates bearer tokens. Tenant is the one shared by
+      # the other OLF apps (corvus, apus). Not secrets.
+      - name: QUELEA_AUTH_ISSUER
+        value: "https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0"
+      - name: QUELEA_AUTH_JWKS_URL
+        value: "https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/discovery/v2.0/keys"
+      - name: QUELEA_AUTH_TENANT_ID
+        value: "1a14dfb5-0eac-41bf-94cb-195c2e387520"
+      # Client id of the "Quelea API" app registration (docs/entra-setup.md in the Quelea repo).
+      - name: QUELEA_AUTH_AUDIENCE
+        value: "86b73583-f75f-424a-a619-b39ba7ba457f"
     resources:
       requests:
         cpu: 100m
