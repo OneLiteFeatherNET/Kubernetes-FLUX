@@ -75,6 +75,7 @@ configMapGenerator:
       - dashboards/minecraft/cygnus-traces.json
       - dashboards/minecraft/minecraft-fleet.json
       - dashboards/minecraft/minecraft-jvm.json
+      - dashboards/minecraft/minecraft-proxy.json
     options:
       labels:
         grafana_dashboard: "1"
