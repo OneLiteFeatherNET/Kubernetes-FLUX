@@ -20,7 +20,8 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/onelitefeather/charts/blackhole
   ref:
-    tag: "0.0.0-replace-me" # PLACEHOLDER: first published chart version
+    # PLACEHOLDER: becomes 2.0.0, the release this deployment is prepared for (not published yet).
+    tag: "0.0.0-replace-me"
   secretRef:
     name: harbor-pull
 ---
