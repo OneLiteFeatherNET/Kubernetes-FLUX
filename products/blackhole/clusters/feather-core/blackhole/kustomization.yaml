@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: blackhole
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/blackhole/
+  - evidence-bucket.yaml
+patches:
+  - path: release.yaml
+
+# Every Secret is referenced by name from the chart (see release.yaml); the keys inside are fixed
+# by the chart and listed in SECRETS.sops.env.TEMPLATE next to the encrypted inputs.
+# Stable names mean a changed value does not roll the pods: raise the component's secretRevision
+# in release.yaml after rotating a secret.
+secretGenerator:
+  # Harbor pull credentials, the shared robot of the onelitefeather project.
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json
+  # JDBC_URL, JDBC_USER, JDBC_PASSWORD for the "blackhole" role (rw service).
+  - name: blackhole-db
+    envs:
+      - database.sops.env
+  # REDIS_URI (Dragonfly, password inside the URI).
+  - name: blackhole-redis
+    envs:
+      - redis.sops.env
+  # BLACKHOLE_BANID_KEY, BLACKHOLE_EVASION_IP_SALT. The Ban ID key can never be replaced.
+  - name: blackhole-keys
+    envs:
+      - keys.sops.env
+  # NATS credentials (.creds) of the user blackhole-backend of the BLACKHOLE account.
+  - name: blackhole-nats
+    files:
+      - nats.creds=nats-backend.sops.conf

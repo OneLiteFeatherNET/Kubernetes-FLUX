@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: blackhole-dev
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - namespace.yaml
+  - release.yaml
+  - evidence-bucket.yaml
+
+# Same Secrets under the same names as in the blackhole namespace, with the dev values. None of
+# the encrypted inputs is committed yet: the build fails until they exist (draft pull request).
+# See SECRETS.sops.env.TEMPLATE next to this file and the one in the blackhole overlay.
+secretGenerator:
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json
+  - name: blackhole-db
+    envs:
+      - database.sops.env
+  - name: blackhole-redis
+    envs:
+      - redis.sops.env
+  - name: blackhole-keys
+    envs:
+      - keys.sops.env
+  - name: blackhole-discord
+    envs:
+      - discord.sops.env
+  # NATS credentials of blackhole-dev-backend / blackhole-dev-discord (account BLACKHOLE_DEV).
+  - name: blackhole-nats
+    files:
+      - nats.creds=nats-backend.sops.conf
+  - name: blackhole-nats-discord
+    files:
+      - nats.creds=nats-discord.sops.conf

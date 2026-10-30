@@ -1,0 +1,21 @@
+---
+# Blackhole ships its chart as an OCI artifact from our own Harbor, versioned together with the
+# images it deploys: the chart leaves global.image.tag empty and falls back to .Chart.AppVersion,
+# so pinning the chart pins the images. Two repositories, not one, so dev can run a newer chart
+# than prod: prod is pinned to an exact version and moved deliberately, dev follows the newest
+# build on its own. Same shape as vulpes-backend.yaml beside this file.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: blackhole
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  url: oci://harbor.onelitefeather.dev/onelitefeather/charts/blackhole
+  ref:
+    tag: "2.0.0"
+  secretRef:
+    name: harbor-pull
