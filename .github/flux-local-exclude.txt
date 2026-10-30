@@ -9,4 +9,3 @@ clusters/feather-core::products-dev::stelaris-dev/stelaris-ui-dev
 clusters/feather-core::products-dev::vulpes-dev/vulpes-backend-dev
 clusters/feather-core::products-dev::vulpes-dev/vulpes-generator-dev
 clusters/feather-core::products::blackhole/blackhole
-clusters/feather-core::products-dev::blackhole-dev/blackhole

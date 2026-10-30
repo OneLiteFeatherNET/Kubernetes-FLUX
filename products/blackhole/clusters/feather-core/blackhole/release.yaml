@@ -38,13 +38,17 @@ spec:
       # The OneLiteFeather Entra tenant (same one apus and dependency-track use).
       tenantId: 1a14dfb5-0eac-41bf-94cb-195c2e387520
       # PLACEHOLDER: client id of the "Blackhole" API app registration (also the token audience).
-      apiClientId: 00000000-0000-0000-0000-000000000000
+      apiClientId: 1661e815-9d35-43e1-a3dd-4dee48f78fbd # gitleaks:allow (public client id)
       # PLACEHOLDER: object ids of the Entra groups.
       roles:
-        admin: 00000000-0000-0000-0000-000000000000
-        moderator: 00000000-0000-0000-0000-000000000000
-        viewer: 00000000-0000-0000-0000-000000000000
-        metrics: 00000000-0000-0000-0000-000000000000
+        admin: f49e8fc2-6966-4f21-b04a-8cbfb57eeb10
+        moderator: 15818bfc-1231-42b8-bfc8-6127c0fbf76a
+        viewer: d6909b73-c6e7-4555-937a-c3e985227e3b
+        metrics: 5e403ac4-0254-4c78-a2cc-786af25ffeaa
+      machineClients:
+        proxy: 439fd999-e77a-4462-89ec-70e7de56790b
+        metrics: 6e9be876-30ca-4ac9-8e9b-4ec910c5ca8c
+        discord: 377ca1e1-ef17-4161-8c31-78168f9d92dd
 
     # /.well-known/security.txt of the panel and the appeal portal. The contact is the chart default
       # (mailto:security@onelitefeather.net). Renew expires at least yearly: the apps refuse to start on
@@ -75,9 +79,9 @@ spec:
       origin: https://blackhole.onelitefeather.net
       oidc:
         # PLACEHOLDER: client id of the public "Blackhole Panel" app registration.
-        clientId: 00000000-0000-0000-0000-000000000000
+        clientId: 1ded6f32-02ec-4fc1-be99-67764a815f3c
         # PLACEHOLDER: api://<auth.apiClientId>/access_as_user
-        apiScope: api://00000000-0000-0000-0000-000000000000/access_as_user
+        apiScope: api://1661e815-9d35-43e1-a3dd-4dee48f78fbd/access_as_user
       # Cloudflare Tunnel, same pattern as apus and corvus; TLS ends at the edge.
       ingress:
         enabled: true
@@ -93,27 +97,10 @@ spec:
         host: appeal.onelitefeather.net
         className: cloudflare-tunnel
 
+    # Off until the Discord bot token and the guild ids exist.
     discord:
-      secretRevision: "1"
-      existingSecret: blackhole-discord
-      # The bot is its own NATS user (blackhole-discord), not the backend's.
-      nats:
-        existingSecret: blackhole-nats-discord
-      # PLACEHOLDER: client id of the "Blackhole Discord (prod)" app registration.
-      clientId: 00000000-0000-0000-0000-000000000000
-      panelUrl: https://blackhole.onelitefeather.net
-      # PLACEHOLDER: Discord snowflakes of the OneLiteFeather guild (Developer Mode, Copy ID).
-      ids:
-        guildId: "000000000000000000"
-        teamChannelId: "000000000000000000"
-        staffRoleId: "000000000000000000"
-        ticketCategoryId: "000000000000000000"
-        archiveCategoryId: "000000000000000000"
-      metrics:
-        podMonitor:
-          enabled: true
+      enabled: false
 
-    # The scanner lives in this release; dev points at it. ceph-rbd-fr01 like the other PVCs.
     clamav:
       enabled: true
       secretRevision: "1"
