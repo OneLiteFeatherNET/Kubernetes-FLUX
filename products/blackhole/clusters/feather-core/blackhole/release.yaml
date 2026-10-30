@@ -71,6 +71,8 @@ spec:
       externalApi:
         enabled: true
         host: blackhole-api.onelitefeather.net
+        # The API server refuses an Ingress path that starts with ^, so the allow-list runs in the chart's nginx.
+        mode: nginx
 
     web:
       replicaCount: 2
