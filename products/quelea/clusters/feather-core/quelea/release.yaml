@@ -30,7 +30,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/quelea
       pullPolicy: IfNotPresent
-      tag: "0.4.0"
+      tag: "0.5.0"
     imagePullSecrets:
       - name: harbor-pull
     service:
