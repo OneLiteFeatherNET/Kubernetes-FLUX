@@ -61,6 +61,8 @@ spec:
       # CNPG puts its PgBouncer function public.user_search into every database, so Flyway sees a
       # non-empty schema on the first start. Baseline at 0: every migration from V1 still runs.
       config:
+        BLACKHOLE_APPEAL_MIN_DAYS_MANUAL: "0"
+        BLACKHOLE_APPEAL_MIN_DAYS_AUTO: "0"
         FLYWAY_DATASOURCES_DEFAULT_BASELINE_ON_MIGRATE: "true"
         FLYWAY_DATASOURCES_DEFAULT_BASELINE_VERSION: "0"
       # Raise after rotating a Secret: the generated Secrets keep stable names and do not roll pods.
