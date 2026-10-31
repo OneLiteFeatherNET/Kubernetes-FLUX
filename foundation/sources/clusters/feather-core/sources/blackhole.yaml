@@ -16,6 +16,6 @@ spec:
     operation: copy
   url: oci://harbor.onelitefeather.dev/onelitefeather/charts/blackhole
   ref:
-    tag: "2.1.0"
+    tag: "2.1.1"
   secretRef:
     name: harbor-pull
