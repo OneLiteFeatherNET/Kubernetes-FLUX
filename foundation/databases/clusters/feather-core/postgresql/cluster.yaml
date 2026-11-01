@@ -193,6 +193,13 @@ spec:
       - name: analytics_reader
         login: false
         ensure: present
+      # Fed by a scheduled metrics import, so a handful of connections is enough.
+      - name: content_pipeline
+        login: true
+        ensure: present
+        connectionLimit: 5
+        passwordSecret:
+          name: role-content-pipeline
     services:
       additional:
         - selectorType: rw
