@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../base/vulpes-backend/
+  - asset-bucket.yaml
 patches:
   - path: release.yaml
 

@@ -1,0 +1,16 @@
+# Dedicated owner of the vulpes-assets-dev bucket (ObjectBucketClaim in
+# products/vulpes/clusters/feather-core/vulpes-backend-dev/asset-bucket.yaml). The bucket holds
+# Stelaris project assets (textures and models), so it must not share access with anything
+# else. No admin capabilities: a plain S3 user only sees its own buckets; the quota limits it
+# to one bucket and caps the asset store.
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: vulpes-dev
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: vulpes-dev
+  quotas:
+    maxBuckets: 1
+    maxSize: 50Gi
