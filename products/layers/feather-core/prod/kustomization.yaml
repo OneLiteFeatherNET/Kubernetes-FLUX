@@ -12,3 +12,4 @@ resources:
   - ../../../vulpes/clusters/feather-core/vulpes-backend
   - ../../../vulpes/clusters/feather-core/vulpes-generator
   - ../../../blackhole/clusters/feather-core/blackhole
+  - ../../../menura/clusters/feather-core/menura

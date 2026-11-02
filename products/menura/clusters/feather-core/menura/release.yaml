@@ -1,0 +1,47 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: menura
+  namespace: menura
+spec:
+  # The chart has no priorityClassName or pod label value, so both are set
+  # post-render on the Deployments (server, web and jobs), the same way the
+  # sturnus overlay does it.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+              - op: add
+                path: /spec/template/metadata/labels/logs.onelitefeather.net~1env
+                value: prod
+  values:
+    imagePullSecrets:
+      - name: harbor-pull
+
+    # Exposed via the Cloudflare Tunnel (see ingress.yaml), not the chart's
+    # Gateway API routes.
+    httpRoute:
+      enabled: false
+
+    database:
+      # The rw pooler of the shared CloudNativePG cluster (session mode, the
+      # same host form sturnus uses). Credentials come from menura-secrets.
+      url: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432/menura"
+      existingSecret: menura-secrets
+
+    server:
+      env:
+        # Entra ID sign-in. Issuer, client id, client secret and the group-to-role
+        # mapping come from menura-secrets (envFrom), so no tenant or group ids
+        # sit in this public repository.
+        MENURA_ENTRA_REDIRECT_URI: "https://api-menura.onelitefeather.net/auth/callback"
+        # Own token issuer of the API: where the web app is sent back to, and
+        # the issuer and audience of the access tokens it signs.
+        MENURA_AUTH_WEB_APP_URL: "https://menura.onelitefeather.net/"
+        MENURA_AUTH_ISSUER: "https://api-menura.onelitefeather.net"
+        MENURA_AUTH_AUDIENCE: "https://api-menura.onelitefeather.net"

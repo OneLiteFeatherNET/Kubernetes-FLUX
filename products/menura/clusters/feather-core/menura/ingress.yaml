@@ -1,0 +1,35 @@
+# Publishes the web app and the API through the Cloudflare Tunnel, same pattern
+# as sturnus/ingress.yaml. The chart's own HTTPRoutes stay disabled (see
+# release.yaml), so this Ingress alone decides what is reachable.
+#
+# The MCP endpoint (mcp-menura.onelitefeather.net) is not published yet; it
+# comes with the MCP server phase.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: menura-cloudflare-tunnel
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - host: menura.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: menura-web
+                port:
+                  number: 8080
+    - host: api-menura.onelitefeather.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: menura-server
+                port:
+                  number: 8080

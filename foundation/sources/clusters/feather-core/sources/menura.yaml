@@ -1,0 +1,14 @@
+# Menura's Helm chart lives in the Menura repo (deploy/helm/menura), not in
+# this repo's helm/ dir and not in a registry. Same "chart living in a Git
+# source" pattern as sturnus.yaml: the HelmRelease references this source and
+# the chart by its in-repo path.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: menura
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://github.com/OneLiteFeatherNET/Menura.git
+  ref:
+    branch: main

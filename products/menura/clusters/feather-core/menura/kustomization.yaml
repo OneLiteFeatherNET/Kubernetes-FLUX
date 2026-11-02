@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: menura
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/menura/
+  - ingress.yaml
+patches:
+  - path: release.yaml
+
+# The chart references this Secret by name through `database.existingSecret`
+# and injects its keys as environment variables via envFrom (the database user
+# and password, plus the Entra client secret and the auth signing key).
+secretGenerator:
+  - name: menura-secrets
+    envs:
+      - menura-secrets.sops.env
+  # The `onelitefeather` Harbor project is private, so pulling needs
+  # credentials. Same shared robot the other apps in that project use (see
+  # products/sturnus/clusters/feather-core/sturnus/kustomization.yaml).
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json

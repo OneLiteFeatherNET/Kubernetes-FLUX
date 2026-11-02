@@ -193,6 +193,11 @@ spec:
       - name: analytics_reader
         login: false
         ensure: present
+      - name: menura
+        login: true
+        ensure: present
+        passwordSecret:
+          name: role-menura
     services:
       additional:
         - selectorType: rw
