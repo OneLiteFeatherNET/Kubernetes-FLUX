@@ -143,7 +143,8 @@ spec:
             default:
               properties:
                 hibernate:
-                  hbm2ddl.auto: none
+                  # No migrations exist yet; Hibernate keeps the schema in step with the model.
+                  hbm2ddl.auto: update
                   format_sql: false
                   show_sql: false
                   jdbc.lob.non_contextual_creation: true
