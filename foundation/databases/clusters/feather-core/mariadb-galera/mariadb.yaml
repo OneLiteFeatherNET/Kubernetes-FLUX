@@ -27,7 +27,7 @@ spec:
     recovery:
       enabled: true
       minClusterSize: 1
-      clusterHealthyTimeout: 10m
+      clusterHealthyTimeout: 30m # > a full SST (~6 min for 42 GB on 2026-11-03) so recovery never restarts pods mid-transfer
       clusterBootstrapTimeout: 20m
       podRecoveryTimeout: 10m
       podSyncTimeout: 10m
