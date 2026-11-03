@@ -133,6 +133,132 @@ groups:
           dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
         labels:
           severity: critical
+      # Core namespaces only; rook-ceph and rook-ceph-fr01 are listed separately because PromQL regexes are anchored.
+      - uid: core-container-oom-killed
+        title: Core container OOM-killed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1200
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Filters the OOMKilled reason to containers restarted within 15m; the reason series itself persists until the next restart.
+              expr: max by (namespace, pod, container) (kube_pod_container_status_last_terminated_reason{job="kube-state-metrics", reason="OOMKilled", namespace=~"mariadb-galera|mariadb-operator|cnpg-system|mongodb|dragonfly|dragonfly-operator-system|kafka|strimzi-system|nats|rook-ceph|rook-ceph-fr01|flux-system|envoy|cert-manager|step-ca|step-issuer|monitoring|grafana|harbor"}) * on (namespace, pod, container) group_left () (max by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace=~"mariadb-galera|mariadb-operator|cnpg-system|mongodb|dragonfly|dragonfly-operator-system|kafka|strimzi-system|nats|rook-ceph|rook-ceph-fr01|flux-system|envoy|cert-manager|step-ca|step-issuer|monitoring|grafana|harbor"}[15m])) > 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # No data means no OOM-killed container in the watched namespaces, which is the healthy state.
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        keepFiringFor: 15m
+        annotations:
+          summary: "Container {{ $labels.container }} in pod {{ $labels.pod }} (namespace {{ $labels.namespace }}) was OOM-killed: its memory limit was hit."
+          problem: "Container OOM-killed (memory limit hit)"
+          service: "Kubernetes"
+          threshold: "no OOMKilled restart in the last 15 min"
+          object_label: "Pod"
+          object_key: "pod"
+          location_key: "namespace"
+          check: "Compare the container's memory usage with its limit; a database or broker needs its limit raised or its cache capped, a leak needs a fix. Read the previous log first."
+          check_command: "kubectl -n <namespace> describe pod <pod>"
+        labels:
+          severity: warning
+      - uid: core-container-crashloop
+        title: Core container crash-looping
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max by (namespace, pod, container) (kube_pod_container_status_waiting_reason{job="kube-state-metrics", reason="CrashLoopBackOff", namespace=~"mariadb-galera|mariadb-operator|cnpg-system|mongodb|dragonfly|dragonfly-operator-system|kafka|strimzi-system|nats|rook-ceph|rook-ceph-fr01|flux-system|envoy|cert-manager|step-ca|step-issuer|monitoring|grafana|harbor"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # No data means no crash-looping container in the watched namespaces, which is the healthy state.
+        noDataState: OK
+        execErrState: Alerting
+        for: 10m
+        keepFiringFor: 5m
+        annotations:
+          summary: "Container {{ $labels.container }} in pod {{ $labels.pod }} (namespace {{ $labels.namespace }}) has been in CrashLoopBackOff for 10 minutes."
+          problem: "Container crash-looping (CrashLoopBackOff)"
+          service: "Kubernetes"
+          threshold: "not in CrashLoopBackOff (sustained 10 min)"
+          object_label: "Pod"
+          object_key: "pod"
+          location_key: "namespace"
+          check: "Read the previous container's log and the termination reason (OOMKilled, failing migration, unreachable dependency)."
+          check_command: "kubectl -n <namespace> logs <pod> --previous --tail=100"
+        labels:
+          severity: critical
   - orgId: 1
     name: backups
     folder: Backups
