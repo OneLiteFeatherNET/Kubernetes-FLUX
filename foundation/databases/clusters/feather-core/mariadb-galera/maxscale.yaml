@@ -21,6 +21,19 @@ spec:
     limits:
       memory: 256Mi
 
+  # Satisfies the namespace's PodSecurity "restricted" warn level; ids match the image's maxscale user.
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 998
+    runAsGroup: 996
+    fsGroup: 996
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+
   # Soft, and only against the other MaxScale replica — antiAffinityEnabled would
   # make it hard against MariaDB too and leave the 2nd pod Pending. The field is
   # immutable, so changing it means deleting and recreating the MaxScale CR:
