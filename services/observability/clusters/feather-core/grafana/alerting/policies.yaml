@@ -9,7 +9,7 @@ policies:
     # Membership churn is fixed at the source, so no routing damping is needed here; 5m
     # halves both the RESOLVED delay and the wait for a newly added object.
     group_interval: 5m
-    # A repeat carries no new information; two people, no on-call rotation.
+    # Warnings repeat daily; critical alerts repeat every 4h via the route below so an unacknowledged outage does not go silent overnight.
     repeat_interval: 24h
     # The meta alarm must not travel the path it reports as broken, so it goes to the
     # fault-tolerant discord contact point. Everything else falls through to discord.
@@ -20,3 +20,7 @@ policies:
       - receiver: discord-fallback
         matchers:
           - alertname = "Alert notifications failing"
+      - receiver: discord
+        matchers:
+          - severity = "critical"
+        repeat_interval: 4h
