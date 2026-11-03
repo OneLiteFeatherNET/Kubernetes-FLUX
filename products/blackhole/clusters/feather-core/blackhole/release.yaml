@@ -65,8 +65,10 @@ spec:
         BLACKHOLE_APPEAL_MIN_DAYS_AUTO: "0"
         FLYWAY_DATASOURCES_DEFAULT_BASELINE_ON_MIGRATE: "true"
         FLYWAY_DATASOURCES_DEFAULT_BASELINE_VERSION: "0"
+        # 5 per pod (Hikari default 10); the shared Postgres has 200 slots for all apps.
+        DATASOURCES_DEFAULT_MAXIMUM_POOL_SIZE: "5"
       # Raise after rotating a Secret: the generated Secrets keep stable names and do not roll pods.
-      secretRevision: "1"
+      secretRevision: "2"
       # Off until an Entra client for Blackhole.Metrics exists; then add metrics.sops.env as
       # Secret blackhole-metrics (see SECRETS.sops.env.TEMPLATE) and set
       # metrics.serviceMonitor.oauth2.existingSecret.
