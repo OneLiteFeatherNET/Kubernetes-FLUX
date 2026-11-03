@@ -6,6 +6,13 @@ metadata:
 spec:
   ipAddressPools:
   - lb-dc06
+  # One announcing site per VIP: the same VIP from two sites routes replies asymmetrically.
+  peers:
+  - fr01-peer
+  - fr01-peer-v6
+  nodeSelectors:
+  - matchLabels:
+      topology.kubernetes.io/zone: "fr01"
   # Per family. Both are host routes, no aggregation on either side.
   aggregationLength: 32
   aggregationLengthV6: 128
