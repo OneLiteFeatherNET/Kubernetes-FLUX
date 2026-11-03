@@ -13,9 +13,6 @@ spec:
     - name: MARIADB_AUTO_UPGRADE
       value: "1"
   replicas: 3
-  # Temporary: keep the operator from rolling pods while galera-1 is down; revert once it rejoined.
-  updateStrategy:
-    type: Never
   livenessProbe:
     failureThreshold: 15
     timeoutSeconds: 10
