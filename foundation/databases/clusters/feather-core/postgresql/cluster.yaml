@@ -15,6 +15,10 @@ spec:
       # below (~5-10MB/backend). See the postgres-connection-saturation memory note;
       # the proper fix is pooler adoption + trimming idle pools.
       max_connections: "200"
+      # Drop dead clients in ~2 min instead of the kernel's ~2 h (stale backends after a LB path change on 2026-11-03).
+      tcp_keepalives_idle: "60"
+      tcp_keepalives_interval: "10"
+      tcp_keepalives_count: "6"
   storage:
     size: 75Gi
     storageClass: ceph-rbd-fr01
