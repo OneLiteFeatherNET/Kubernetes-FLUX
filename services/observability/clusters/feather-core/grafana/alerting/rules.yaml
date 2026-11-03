@@ -133,7 +133,6 @@ groups:
           dashboard_url: "https://grafana.apps.onelite.feather/d/flux-control-plane"
         labels:
           severity: critical
-      # Core namespaces only; rook-ceph and rook-ceph-fr01 are listed separately because PromQL regexes are anchored.
       - uid: core-container-oom-killed
         title: Core container OOM-killed
         condition: B
@@ -203,12 +202,12 @@ groups:
         data:
           - refId: A
             relativeTimeRange:
-              from: 600
+              from: 900
               to: 0
             datasourceUid: mimir
             model:
               editorMode: code
-              expr: max by (namespace, pod, container) (kube_pod_container_status_waiting_reason{job="kube-state-metrics", reason="CrashLoopBackOff", namespace=~"mariadb-galera|mariadb-operator|cnpg-system|mongodb|dragonfly|dragonfly-operator-system|kafka|strimzi-system|nats|rook-ceph|rook-ceph-fr01|flux-system|envoy|cert-manager|step-ca|step-issuer|monitoring|grafana|harbor"})
+              expr: max by (namespace, pod, container) (max_over_time(kube_pod_container_status_waiting_reason{job="kube-state-metrics", reason="CrashLoopBackOff", namespace=~"mariadb-galera|mariadb-operator|cnpg-system|mongodb|dragonfly|dragonfly-operator-system|kafka|strimzi-system|nats|rook-ceph|rook-ceph-fr01|flux-system|envoy|cert-manager|step-ca|step-issuer|monitoring|grafana|harbor"}[5m]))
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
