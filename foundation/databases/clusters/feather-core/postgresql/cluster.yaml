@@ -208,6 +208,7 @@ spec:
                 metallb.io/loadBalancerIPs: 10.200.90.3
             spec:
               type: LoadBalancer
+              externalTrafficPolicy: Local
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
