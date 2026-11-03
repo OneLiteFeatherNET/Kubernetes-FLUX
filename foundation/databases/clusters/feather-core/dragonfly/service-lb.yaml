@@ -9,6 +9,8 @@ metadata:
     metallb.io/loadBalancerIPs: "10.200.90.5"
 spec:
   type: LoadBalancer
+  # Only the master's node announces the VIP: one path, no cross-node hop.
+  externalTrafficPolicy: Local
   # IP is pinned via the metallb.io/loadBalancerIPs annotation above. Do NOT
   # also set spec.loadBalancerIP — metallb rejects a service that has both
   # ("service can not have both metallb.io/loadBalancerIPs and svc.Spec.LoadBalancerIP").
