@@ -126,6 +126,18 @@ spec:
                 exclusions:
                   - /health.*
                   - /prometheus.*
+          object-storage:
+            # Assets live in the bucket from asset-bucket.yaml, not in the container filesystem.
+            aws:
+              assets:
+                bucket: vulpes-assets-dev
+        aws:
+          services:
+            s3:
+              # In-cluster RGW; the public host would go through Cloudflare's upload limit.
+              endpoint-override: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+          s3:
+            path-style-access-enabled: true
       profiles:
         prod: |-
           endpoints:
@@ -207,12 +219,18 @@ spec:
     envFrom:
       - secretRef:
           name: vulpes-dev-app-db
+      # S3 keys (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) Rook generated for the bucket claim in asset-bucket.yaml.
+      - secretRef:
+          name: vulpes-assets-dev
     # Helm replaces list values: this env list must carry the heap flag itself.
     env:
       - name: LOG_JSON
         value: "true"
       - name: JAVA_TOOL_OPTIONS
         value: "-XX:MaxRAMPercentage=50.0 -Duser.timezone=UTC"
+      # Ceph RGW ignores the region but the AWS SDK needs one.
+      - name: AWS_REGION
+        value: "us-east-1"
     resources:
       requests:
         cpu: 100m
