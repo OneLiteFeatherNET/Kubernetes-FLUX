@@ -8,6 +8,7 @@ resources:
   - dragonfly.yaml
   - service-lb.yaml
   - podmonitor.yaml
+  - networkpolicy.yaml
 
 # Password for the Dragonfly instance. Create + encrypt before committing:
 #   cd foundation/databases/clusters/feather-core/dragonfly

@@ -1,0 +1,50 @@
+# Additive to the operator's policy, which only admits 6379 from this namespace.
+# Clients and DB numbers: https://outline.onelitefeather.dev/doc/dragonfly-belegung-der-redis-datenbanken-AcDqZ4M5Te
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: dragonfly-clients
+spec:
+  podSelector:
+    matchLabels:
+      app: dragonfly
+      app.kubernetes.io/name: dragonfly
+      app.kubernetes.io/part-of: dragonfly
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - blackhole
+                  - harbor
+                  - n8n
+                  - outline
+                  - penpot
+                  - quelea
+                  - sentry
+                  - shlink
+                  - vikunja
+        # External clients of the LB VIP 10.200.90.5 (IPv4 only): fr01 node network and Helsinki MGMT (mc01).
+        - ipBlock:
+            cidr: 192.168.15.0/24
+        - ipBlock:
+            cidr: 10.200.2.0/24
+      ports:
+        - port: 6379
+          protocol: TCP
+    # PodMonitor scrape of the admin port by Alloy.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: grafana
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: alloy-metrics
+              app.kubernetes.io/name: alloy
+      ports:
+        - port: 9999
+          protocol: TCP
