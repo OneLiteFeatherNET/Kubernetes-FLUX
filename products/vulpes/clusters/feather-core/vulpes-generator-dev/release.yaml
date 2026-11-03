@@ -34,7 +34,7 @@ spec:
     # back to the chart's appVersion, so dev keeps today's behaviour until then.
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/vulpes-generator
-      tag: "develop-1793657024-e18ad52" # {"$imagepolicy": "flux-system:vulpes-generator-dev:tag"}
+      tag: "develop-1793715415-7a3da79" # {"$imagepolicy": "flux-system:vulpes-generator-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     metrics:
