@@ -13,6 +13,9 @@ spec:
     - name: MARIADB_AUTO_UPGRADE
       value: "1"
   replicas: 3
+  # Temporary: keep the operator from rolling pods while galera-1 is down; revert once it rejoined.
+  updateStrategy:
+    type: Never
   livenessProbe:
     failureThreshold: 15
     timeoutSeconds: 10
@@ -76,6 +79,9 @@ spec:
 
     # slow_query_log stays off: without rotation it grew to 17GB / 96% disk in
     # six days, and there was no performance signal to justify it.
+
+    [sst]
+    use-memory=1G                         # default = innodb_buffer_pool_size; 5G pool + 5G backup OOM-killed the donor
   affinity:
     antiAffinityEnabled: true
     nodeAffinity:
