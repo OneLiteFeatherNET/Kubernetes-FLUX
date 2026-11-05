@@ -37,6 +37,14 @@ spec:
     enableIPv6Masquerade: true
     loadBalancer:
       mode: snat
+    # BGP for LoadBalancer IPs, handed over from MetalLB node by node (label bgp.onelite.feather/speaker=cilium).
+    bgpControlPlane:
+      enabled: true
+      # Same ORIGIN as MetalLB (INCOMPLETE) so mixed MetalLB/Cilium nodes stay equal-cost on the router.
+      legacyOriginAttribute:
+        enabled: true
+    # MetalLB still assigns the LoadBalancer IPs.
+    defaultLBServiceIPAM: none
     policyEnforcementMode: default
     policyAuditMode: true
     cni:
