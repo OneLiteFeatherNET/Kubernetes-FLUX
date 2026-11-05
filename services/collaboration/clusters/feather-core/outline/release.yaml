@@ -15,7 +15,7 @@ spec:
       # Overrides the image tag whose default is the chart appVersion.
       # Einzige versionierte Stelle für dieses Image. Der Chart-Default ist
       # absichtlich leer, damit Renovate nicht zwei Kandidaten sieht.
-      tag: "1.11.0"
+      tag: "1.12.0"
     # Applied to every component pod (replaces the former post-render patch).
     priorityClassName: feather-standard
     # One Node process per pod — we scale horizontally via replicas, not via
