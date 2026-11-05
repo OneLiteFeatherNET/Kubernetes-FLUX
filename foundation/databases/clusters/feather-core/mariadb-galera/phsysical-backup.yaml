@@ -48,7 +48,7 @@ spec:
   timeout: 2h
   # Required: the backup Job mounts the target Pod's RWO data volume, so it must run on that Node.
   podAffinity: true
-  # Must land on galera-0's node; on a full node (maxPods 110) it preempts lower-priority pods instead of staying Pending.
+  # On a full target Node (maxPods 110) preempt lower-priority pods instead of staying Pending.
   priorityClassName: feather-high
   #  serviceAccountName: backup
   resources:
