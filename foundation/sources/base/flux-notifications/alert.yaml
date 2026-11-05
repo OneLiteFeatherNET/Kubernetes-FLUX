@@ -59,9 +59,6 @@ spec:
       namespace: metabase
     - kind: HelmRelease
       name: "*"
-      namespace: metallb-system
-    - kind: HelmRelease
-      name: "*"
       namespace: mongodb
     - kind: HelmRelease
       name: "*"
