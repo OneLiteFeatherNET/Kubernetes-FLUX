@@ -43,8 +43,8 @@ spec:
       # Same ORIGIN as MetalLB (INCOMPLETE) so mixed MetalLB/Cilium nodes stay equal-cost on the router.
       legacyOriginAttribute:
         enabled: true
-    # MetalLB still assigns the LoadBalancer IPs.
-    defaultLBServiceIPAM: none
+    # Cilium LB-IPAM assigns LoadBalancer IPs (pinned per Service via lbipam.cilium.io/ips).
+    defaultLBServiceIPAM: lbipam
     policyEnforcementMode: default
     policyAuditMode: true
     cni:
