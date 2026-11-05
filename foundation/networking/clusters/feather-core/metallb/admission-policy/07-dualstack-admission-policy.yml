@@ -1,4 +1,4 @@
-# Makes the MetalLB annotation the single switch for dual-stack.
+# Makes the Cilium LB-IPAM pin (lbipam.cilium.io/ips) the single switch for dual-stack.
 #
 # A Service needs spec.ipFamilyPolicy to get a second address family, but that
 # is a spec field: most charts render only service.annotations, so the value
@@ -7,8 +7,8 @@
 # already name an IPv6 one.
 #
 # Coupling the two is deliberate. A v6 in the annotation while the Service is
-# still SingleStack does not degrade to IPv4 - MetalLB rejects the allocation
-# outright and the Service loses every external address:
+# still SingleStack does not degrade to IPv4 - MetalLB rejected the allocation
+# outright and the Service lost every external address (Cilium not verified):
 #   requested loadBalancer IP(s) [...] does not match the ipFamily of the service
 # Deriving the spec from the annotation makes that state unrepresentable.
 apiVersion: admissionregistration.k8s.io/v1

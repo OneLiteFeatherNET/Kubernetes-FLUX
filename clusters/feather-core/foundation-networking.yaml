@@ -4,7 +4,7 @@ metadata:
   name: foundation-networking
   namespace: flux-system
 spec:
-  # MetalLB pools and BGP, the shared Gateway with its certificates, and MetalLB monitoring.
+  # Cilium BGP peers and LB-IPAM pool, and the shared Gateway with its certificates.
   dependsOn:
     - name: foundation-networking-operators
     - name: foundation-certificates

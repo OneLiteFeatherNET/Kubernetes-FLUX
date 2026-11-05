@@ -5,7 +5,7 @@ metadata:
 spec:
   transport:
     peerPort: 179
-  # Same timers and graceful restart as the MetalLB sessions today.
+  # Same timers and graceful restart as the former MetalLB sessions.
   timers:
     holdTimeSeconds: 180
     keepAliveTimeSeconds: 60

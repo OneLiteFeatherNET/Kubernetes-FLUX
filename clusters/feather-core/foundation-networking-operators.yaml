@@ -4,7 +4,7 @@ metadata:
   name: foundation-networking-operators
   namespace: flux-system
 spec:
-  # MetalLB controller, Envoy Gateway and the Cloudflare tunnel ingress controller.
+  # Cilium, Envoy Gateway and the Cloudflare tunnel ingress controller.
   dependsOn:
     - name: foundation-platform
   interval: 10m0s
