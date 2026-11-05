@@ -65,6 +65,11 @@ spec:
       priorityClassName: feather-high
     loki:
       auth_enabled: false
+      # Own gossip cluster: without a label Loki and Mimir merged their rings after pod IPs were reused (2026-11-05).
+      structuredConfig:
+        memberlist:
+          cluster_label: loki
+          cluster_label_verification_disabled: false
       # Default 4MiB gRPC message size is too small for larger query
       # results (querier -> query-scheduler/-frontend), causing
       # "grpc: received message larger than max" / ResourceExhausted.

@@ -35,6 +35,10 @@ spec:
         logs.onelitefeather.net/env: prod
     mimir:
       structuredConfig:
+        # Own gossip cluster: without a label Mimir and Loki merged their rings after pod IPs were reused (2026-11-05).
+        memberlist:
+          cluster_label: mimir
+          cluster_label_verification_disabled: false
         multitenancy_enabled: false
         ingest_storage:
           enabled: false
