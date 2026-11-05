@@ -15,5 +15,8 @@ spec:
       # Pin to the existing PVC capacity; the chart default is smaller and a
       # PVC cannot shrink, which made every helm upgrade fail.
       size: 10Gi
+    image:
+      # Bare appVersion tag equals the -20 (Alpine, Node 20) variant; keep that flavour.
+      tag: "4.1.17-20"
     ingress:
       enabled: false
