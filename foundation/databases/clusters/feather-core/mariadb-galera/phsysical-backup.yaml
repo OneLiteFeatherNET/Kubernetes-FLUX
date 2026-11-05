@@ -3,6 +3,9 @@ kind: PhysicalBackup
 metadata:
   name: mariadb-galera-backup
   namespace: mariadb-galera
+  annotations:
+    # priorityClassName is immutable; let Flux recreate the CR (no finalizer, S3 backups stay).
+    kustomize.toolkit.fluxcd.io/force: enabled
 spec:
   mariaDbRef:
     name: mariadb-galera
@@ -43,10 +46,10 @@ spec:
       emptyDir:
         sizeLimit: 100Gi
   timeout: 2h
-  # Disabled: hard podAffinity pins the backup Pod onto the primary's Node
-  # (mariadb-galera-0 on a saturated general worker), leaving it Pending.
-  # The backup streams over the network, so co-location is not required.
+  # Required: the backup Job mounts the target Pod's RWO data volume, so it must run on that Node.
   podAffinity: true
+  # Must land on galera-0's node; on a full node (maxPods 110) it preempts lower-priority pods instead of staying Pending.
+  priorityClassName: feather-high
   #  serviceAccountName: backup
   resources:
     requests:
