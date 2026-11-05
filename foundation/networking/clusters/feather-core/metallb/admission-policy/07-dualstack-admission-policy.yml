@@ -31,8 +31,10 @@ spec:
       expression: >
         object.spec.type == 'LoadBalancer' &&
         has(object.metadata.annotations) &&
-        'metallb.io/loadBalancerIPs' in object.metadata.annotations &&
-        object.metadata.annotations['metallb.io/loadBalancerIPs'].contains(':')
+        (('metallb.io/loadBalancerIPs' in object.metadata.annotations &&
+          object.metadata.annotations['metallb.io/loadBalancerIPs'].contains(':')) ||
+         ('lbipam.cilium.io/ips' in object.metadata.annotations &&
+          object.metadata.annotations['lbipam.cilium.io/ips'].contains(':')))
   mutations:
     # ipFamilies is left alone on purpose - the apiserver derives it and keeps
     # the primary family, so an IPv6-primary Service is not flipped to IPv4.

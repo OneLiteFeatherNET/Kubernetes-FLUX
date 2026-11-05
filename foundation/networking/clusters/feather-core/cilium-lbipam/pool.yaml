@@ -1,0 +1,10 @@
+# Same range as MetalLB's lb-dc06; every LoadBalancer Service pins its IP via lbipam.cilium.io/ips.
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lb-fr01
+spec:
+  blocks:
+    - start: 10.200.90.1
+      stop: 10.200.90.15
+    - cidr: fd83:4192:3b5e:90::/64
