@@ -14,7 +14,7 @@ spec:
         kind: HelmRepository
         name: smallstep
         namespace: flux-system
-  # The LB IP comes from a MetalLB pool applied in a later layer; waiting deadlocks a fresh bootstrap.
+  # The LB IP comes from a Cilium LB-IPAM pool applied in a later layer; waiting deadlocks a fresh bootstrap.
   install:
     disableWait: true
     remediation:

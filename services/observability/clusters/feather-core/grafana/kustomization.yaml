@@ -31,7 +31,6 @@ configMapGenerator:
       - dashboards/controllers/flux.json
       - dashboards/controllers/flux-cluster-stats.json
       - dashboards/controllers/flux-control-plane.json
-      - dashboards/controllers/metallb.json
       - dashboards/controllers/spegel-monitoring.json
     options:
       labels:
