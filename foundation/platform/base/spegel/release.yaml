@@ -32,6 +32,10 @@ spec:
   interval: 1m0s
   timeout: 5m
   values:
+    service:
+      registry:
+        # Outside the NodePort range (30000-32767): Cilium ignores colliding hostPorts.
+        hostPort: 29020
     resources:
       requests:
         cpu: 10m
