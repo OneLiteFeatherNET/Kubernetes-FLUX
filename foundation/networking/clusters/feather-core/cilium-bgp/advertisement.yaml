@@ -1,0 +1,17 @@
+# All LoadBalancer IPs as host routes; eTP=Local services only from nodes with local endpoints.
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: lb-ips
+  labels:
+    bgp.onelite.feather/advertise: lb-ips
+spec:
+  advertisements:
+    - advertisementType: Service
+      service:
+        addresses:
+          - LoadBalancerIP
+      selector:
+        matchExpressions:
+          - key: bgp.onelite.feather/no-advertise
+            operator: DoesNotExist

@@ -13,6 +13,10 @@ spec:
   nodeSelectors:
   - matchLabels:
       topology.kubernetes.io/zone: "fr01"
+    matchExpressions:
+      - key: bgp.onelite.feather/speaker
+        operator: NotIn
+        values: [cilium]
   # Per family. Both are host routes, no aggregation on either side.
   aggregationLength: 32
   aggregationLengthV6: 128

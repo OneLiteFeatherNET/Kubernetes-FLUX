@@ -22,3 +22,7 @@ spec:
   nodeSelectors:
     - matchLabels:
         topology.kubernetes.io/zone: "fr01"
+      matchExpressions:
+        - key: bgp.onelite.feather/speaker
+          operator: NotIn
+          values: [cilium]
