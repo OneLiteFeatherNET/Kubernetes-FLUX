@@ -25,7 +25,8 @@ spec:
   galera:
     enabled: true
     recovery:
-      enabled: true
+      # Off since 2026-11-05: it re-bootstrapped a node while another still held the primary component (3x in the CNI window).
+      enabled: false
       minClusterSize: 1
       clusterHealthyTimeout: 30m # > a full SST (~6 min for 42 GB on 2026-11-03) so recovery never restarts pods mid-transfer
       clusterBootstrapTimeout: 20m
