@@ -95,7 +95,6 @@ spec:
     externalTrafficPolicy: Local
     metadata:
       annotations:
-        metallb.io/loadBalancerIPs: 10.200.90.4
         lbipam.cilium.io/ips: 10.200.90.4
 
   guiKubernetesService:
@@ -103,7 +102,6 @@ spec:
     externalTrafficPolicy: Local
     metadata:
       annotations:
-        metallb.io/loadBalancerIPs: 10.200.90.7
         lbipam.cilium.io/ips: 10.200.90.7
 
   metrics:
