@@ -15,5 +15,8 @@ spec:
       # Pin to the existing PVC capacity; the chart default is smaller and a
       # PVC cannot shrink, which made every helm upgrade fail.
       size: 10Gi
+    image:
+      # Chart default is the bare appVersion tag; 4.1.17 has only the -debian variant.
+      tag: "4.1.17-debian"
     ingress:
       enabled: false
