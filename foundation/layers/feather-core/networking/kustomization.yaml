@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - ../../../networking/clusters/feather-core/metallb/bgp
   - ../../../networking/clusters/feather-core/cilium-bgp
+  - ../../../networking/clusters/feather-core/cilium-lbipam
   - ../../../networking/clusters/feather-core/metallb/monitoring
   - ../../../networking/clusters/feather-core/gateway

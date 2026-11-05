@@ -106,6 +106,7 @@ spec:
         # Annotations on the loadBalancer service
         annotations:
           "metallb.io/loadBalancerIPs": "10.200.90.6"
+          "lbipam.cilium.io/ips": "10.200.90.6"
         # loadBalancer-specific labels
         labels: { }
         sourceRanges: [ ]
