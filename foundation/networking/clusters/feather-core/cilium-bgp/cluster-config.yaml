@@ -1,4 +1,4 @@
-# Only nodes labelled bgp.onelite.feather/speaker=cilium speak BGP via Cilium; MetalLB excludes them.
+# Every fr01 node announces LoadBalancer IPs via Cilium (MetalLB is gone).
 apiVersion: cilium.io/v2
 kind: CiliumBGPClusterConfig
 metadata:
@@ -7,7 +7,6 @@ spec:
   nodeSelector:
     matchLabels:
       topology.kubernetes.io/zone: fr01
-      bgp.onelite.feather/speaker: cilium
   bgpInstances:
     - name: fr01
       localASN: 64606
