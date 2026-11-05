@@ -560,6 +560,8 @@ spec:
           memory: 1066Mi
 
     memcached:
+      image:
+        tag: "1.6.45"
       # Cache capped at 256 MB so it stays under the 384Mi pod limit.
       config:
         memoryLimit: 256

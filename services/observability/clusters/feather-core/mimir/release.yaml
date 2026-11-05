@@ -374,6 +374,13 @@ spec:
       allocatedMemory: 1024
       nodeSelector:
         topology.kubernetes.io/zone: fr01
+    # Shared by all four memcached caches above.
+    memcached:
+      image:
+        tag: "1.6.45-alpine"
+    memcachedExporter:
+      image:
+        tag: "v0.18.0"
     metaMonitoring:
       serviceMonitor:
         enabled: true
