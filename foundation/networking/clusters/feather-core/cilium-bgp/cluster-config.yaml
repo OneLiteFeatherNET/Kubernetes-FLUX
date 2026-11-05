@@ -1,0 +1,25 @@
+# Only nodes labelled bgp.onelite.feather/speaker=cilium speak BGP via Cilium; MetalLB excludes them.
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
+metadata:
+  name: fr01
+spec:
+  nodeSelector:
+    matchLabels:
+      topology.kubernetes.io/zone: fr01
+      bgp.onelite.feather/speaker: cilium
+  bgpInstances:
+    - name: fr01
+      localASN: 64606
+      peers:
+        # One session per family, never multiprotocol (see 2026-08-27 in MetalLB's fr01-peer-v6).
+        - name: mkgfire-v4
+          peerAddress: 192.168.15.1
+          peerASN: 64501
+          peerConfigRef:
+            name: mkgfire-v4
+        - name: mkgfire-v6
+          peerAddress: fd83:4192:3b5e:15::1
+          peerASN: 64501
+          peerConfigRef:
+            name: mkgfire-v6

@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v2
+kind: CiliumBGPPeerConfig
+metadata:
+  name: mkgfire-v6
+spec:
+  transport:
+    peerPort: 179
+  # Same timers and graceful restart as the MetalLB sessions today.
+  timers:
+    holdTimeSeconds: 180
+    keepAliveTimeSeconds: 60
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 120
+  families:
+    - afi: ipv6
+      safi: unicast
+      advertisements:
+        matchLabels:
+          bgp.onelite.feather/advertise: lb-ips
