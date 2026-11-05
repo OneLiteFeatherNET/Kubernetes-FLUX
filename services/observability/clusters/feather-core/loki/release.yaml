@@ -285,8 +285,13 @@ spec:
         limits:
           cpu: "1"
           memory: 512Mi
+    memcached:
+      image:
+        tag: "1.6.45-alpine"
     # Shared by the chunks-cache and results-cache exporter sidecars.
     memcachedExporter:
+      image:
+        tag: "v0.18.0"
       resources:
         requests:
           cpu: 10m
