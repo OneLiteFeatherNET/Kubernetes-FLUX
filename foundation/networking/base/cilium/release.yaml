@@ -6,6 +6,9 @@ metadata:
     # Adopts the release installed by hand: no central rollback defaults, no uninstall.
     flux.onelitefeather.dev/remediation: manual
   namespace: kube-system
+  annotations:
+    # Never prune: deleting this HelmRelease would uninstall the cluster's CNI.
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   releaseName: cilium
   targetNamespace: kube-system
