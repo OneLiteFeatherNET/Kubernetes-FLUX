@@ -6,15 +6,12 @@ metadata:
   annotations:
     # Reuse the external IP the old Bitnami redis master used (freed when the
     # bitnami redis was decommissioned). Clients keep the same host:port.
-    metallb.io/loadBalancerIPs: "10.200.90.5"
     lbipam.cilium.io/ips: "10.200.90.5"
 spec:
   type: LoadBalancer
   # Only the master's node announces the VIP: one path, no cross-node hop.
   externalTrafficPolicy: Local
-  # IP is pinned via the metallb.io/loadBalancerIPs annotation above. Do NOT
-  # also set spec.loadBalancerIP — metallb rejects a service that has both
-  # ("service can not have both metallb.io/loadBalancerIPs and svc.Spec.LoadBalancerIP").
+  # IP is pinned via the lbipam.cilium.io/ips annotation above; do not also set spec.loadBalancerIP.
   # Master-only: the dragonfly-operator maintains `role: master` on exactly one
   # pod and moves the label to the new master on failover, so this LB always
   # points at the current write master (never a read-only replica).

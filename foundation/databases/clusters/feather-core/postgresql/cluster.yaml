@@ -205,7 +205,6 @@ spec:
             metadata:
               name: "feather-core-cluster-pg-rw-external"
               annotations:
-                metallb.io/loadBalancerIPs: 10.200.90.3
                 lbipam.cilium.io/ips: 10.200.90.3
             spec:
               type: LoadBalancer
