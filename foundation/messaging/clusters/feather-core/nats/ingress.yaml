@@ -1,6 +1,6 @@
 # NATS over WebSocket for the Velocity proxies, which run outside the cluster.
 #
-# Why this and not a TCP LoadBalancer: the only MetalLB pool (lb-dc06,
+# Why this and not a TCP LoadBalancer: the only Cilium LB-IPAM pool (lb-fr01,
 # 10.200.90.1-15) is RFC 1918 space advertised over BGP to the internal
 # network; every service on it (gateway, postgres, maxscale, dragonfly, harbor)
 # is reached through the internal network or an external reverse proxy, none is

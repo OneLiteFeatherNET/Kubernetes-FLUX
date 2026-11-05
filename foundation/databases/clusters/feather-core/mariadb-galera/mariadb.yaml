@@ -126,7 +126,6 @@ spec:
 #    type: LoadBalancer
 #    metadata:
 #      annotations:
-#        metallb.io/loadBalancerIPs: 10.200.32.4
   metrics:
     enabled: true
     # exporter.priorityClassName is immutable (operator webhook); leave unset.

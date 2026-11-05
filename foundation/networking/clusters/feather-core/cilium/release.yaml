@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 spec:
   values:
-    # Cilium as CNI and kube-proxy replacement. MetalLB keeps BGP; policies audit-only.
+    # Cilium as CNI, kube-proxy replacement, BGP and LB-IPAM; policies audit-only.
     kubeProxyReplacement: true
     # Explicit, not implied by kubeProxyReplacement.
     socketLB:
@@ -37,10 +37,10 @@ spec:
     enableIPv6Masquerade: true
     loadBalancer:
       mode: snat
-    # BGP for LoadBalancer IPs, handed over from MetalLB node by node (label bgp.onelite.feather/speaker=cilium).
+    # BGP for LoadBalancer IPs (peers in cilium-bgp/).
     bgpControlPlane:
       enabled: true
-      # Same ORIGIN as MetalLB (INCOMPLETE) so mixed MetalLB/Cilium nodes stay equal-cost on the router.
+      # ORIGIN INCOMPLETE, as MetalLB announced it, so the router's existing path preference stays unchanged.
       legacyOriginAttribute:
         enabled: true
     # Cilium LB-IPAM assigns LoadBalancer IPs (pinned per Service via lbipam.cilium.io/ips).
