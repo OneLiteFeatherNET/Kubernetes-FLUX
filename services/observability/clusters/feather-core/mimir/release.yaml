@@ -22,12 +22,6 @@ spec:
                 path: /spec/template/spec/priorityClassName
                 value: feather-high
   values:
-    # Temporary since 2026-11-05: lets Alloy drain its backlog after the gossip outage. Hot-reloaded, no pod restart; remove afterwards.
-    runtimeConfig:
-      overrides:
-        anonymous:
-          ingestion_rate: 100000
-          ingestion_burst_size: 2000000
     minio:
       enabled: false
     kafka:
