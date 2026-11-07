@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - ../../../menura/clusters/feather-core/menura-dev
   - ../../../otis/clusters/feather-core/otis-dev
   - ../../../stelaris/clusters/feather-core/stelaris-dev
   - ../../../vulpes/clusters/feather-core/vulpes-backend-dev

@@ -361,6 +361,24 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  name: menura-dev-apps-onelite-feather
+  namespace: envoy
+spec:
+  secretName: menura-dev-apps-onelite-feather-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-issuer
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - menura-dev.apps.onelite.feather
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
   name: files-apps-onelite-feather
   namespace: envoy
 spec:

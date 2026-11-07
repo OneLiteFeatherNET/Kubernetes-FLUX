@@ -1,0 +1,54 @@
+# Rate limits on the prototype's route, the chart's api budget (routes.api.rateLimit).
+# The chart renders this policy only for httpRoute.enabled, which stays false here,
+# so it is written out for the route that the cluster owns (httproute.yaml).
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: menura-dev-ratelimit
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: menura-dev
+  rateLimit:
+    type: Local
+    local:
+      rules:
+        # One Distinct rule per address family: every client address gets its own budget.
+        - clientSelectors:
+            - sourceCIDR:
+                type: Distinct
+                value: "0.0.0.0/0"
+          limit:
+            requests: 300
+            unit: Minute
+        - clientSelectors:
+            - sourceCIDR:
+                type: Distinct
+                value: "::/0"
+          limit:
+            requests: 300
+            unit: Minute
+        # One budget per Authorization token: the client of the API.
+        - clientSelectors:
+            - headers:
+                - name: Authorization
+                  type: Distinct
+          limit:
+            requests: 120
+            unit: Minute
+  # Every 429 on the route becomes Problem Details with Retry-After (the server's own 429 already is).
+  responseOverride:
+    - match:
+        statusCodes:
+          - type: Value
+            value: 429
+      response:
+        contentType: application/problem+json
+        body:
+          type: Inline
+          inline: '{"type":"about:blank","title":"Too Many Requests","status":429,"detail":"The request rate of this client is over its limit."}'
+        header:
+          set:
+            - name: Retry-After
+              value: "60"

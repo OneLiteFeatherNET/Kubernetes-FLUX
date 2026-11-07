@@ -1,0 +1,81 @@
+# Internal prototype for the stream, reachable only through the internal gateway
+# (httproute.yaml). Runs in its own namespace with its own Secret and no
+# database access, on in-memory demo data. Remove when the prototype is done.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: menura-dev
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: menura-dev
+spec:
+  releaseName: menura-dev
+  chart:
+    spec:
+      chart: ./deploy/helm/menura
+      # Revision repackages on every commit to the prototype branch, same as the
+      # prod release (see products/menura/base/menura/release.yaml).
+      reconcileStrategy: Revision
+      sourceRef:
+        kind: GitRepository
+        name: menura-prototype
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-standard
+              - op: add
+                path: /spec/template/metadata/labels/logs.onelitefeather.net~1env
+                value: dev
+  values:
+    image:
+      # Placeholder, replaced by the main session with the published prototype tag.
+      tag: prototype-0b22c7a2a421219112e380c5d2da5eb7a742d8ec
+      pullPolicy: IfNotPresent
+    imagePullSecrets:
+      - name: harbor-pull
+
+    # Prototype images are published separately from the production images.
+    web:
+      image:
+        repository: harbor.onelitefeather.dev/onelitefeather/menura-prototype-web
+    jobs:
+      image:
+        repository: harbor.onelitefeather.dev/onelitefeather/menura-prototype-jobs
+      replicaCount: 0
+
+    # Served by httproute.yaml, not the chart's Gateway API routes.
+    httpRoute:
+      enabled: false
+    # No migration: the prototype runs without a database.
+    migrate:
+      enabled: false
+
+    database:
+      # Prototype runs in-memory; the URL is a placeholder and must not resolve.
+      # The Secret below has no MENURA_DB_* keys, so no credentials exist either.
+      url: jdbc:postgresql://unused.invalid:5432/unused
+      existingSecret: menura-dev-secrets
+
+    server:
+      image:
+        repository: harbor.onelitefeather.dev/onelitefeather/menura-prototype-server
+      env:
+        MICRONAUT_ENVIRONMENTS: prod,prototype
+        MENURA_WEB_ORIGIN: https://menura-dev.apps.onelite.feather
+        MENURA_AUTH_ISSUER: https://menura-dev.apps.onelite.feather
+        MENURA_AUTH_AUDIENCE: https://menura-dev.apps.onelite.feather
+        MENURA_AUTH_WEB_APP_URL: https://menura-dev.apps.onelite.feather/
+        MENURA_ENTRA_REDIRECT_URI: https://menura-dev.apps.onelite.feather/auth/callback

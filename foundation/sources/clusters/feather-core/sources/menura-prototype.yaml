@@ -1,0 +1,15 @@
+# Prototype branch of the Menura repo for the internal menura-dev release
+# (products/menura/clusters/feather-core/menura-dev). Remove together with that
+# release once the prototype is done.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: menura-prototype
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://github.com/OneLiteFeatherNET/Menura.git
+  # Pinned to one commit of the prototype branch, never a moving branch. Bump it
+  # together with the image tag in menura-dev/release.yaml, through a pull request.
+  ref:
+    commit: 0b22c7a2a421219112e380c5d2da5eb7a742d8ec
