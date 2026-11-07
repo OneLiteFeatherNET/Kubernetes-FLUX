@@ -1603,6 +1603,128 @@ groups:
           check_command: "kubectl -n grafana get pods -l app.kubernetes.io/name=alloy-metrics"
         labels:
           severity: critical
+      - uid: loki-ingestion-stalled
+        title: Loki ingestion stalled
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Mimir-based on purpose: a Loki-based rule goes blind exactly when Loki breaks.
+              expr: 'sum(rate(loki_request_duration_seconds_count{job="grafana/loki-distributor", route="loki_api_v1_push", status_code=~"2.."}[10m])) or vector(0)'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.5
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "Loki distributors accept almost no log pushes. Normal is several pushes per second; logs written now are lost. Most likely the loki-gateway (nginx) cannot reach the distributors, e.g. its DNS resolver is wedged after a network change."
+          problem: "Loki ingestion stalled"
+          service: "Loki"
+          threshold: ">= 0.5 successful pushes/s"
+          value_unit: "pushes/s"
+          value_fmt: "%.2f"
+          location: "grafana"
+          check: "Look for 'could not be resolved' in the loki-gateway logs; a rollout restart of loki-gateway fixes a wedged resolver."
+          check_command: "kubectl -n grafana logs deploy/loki-gateway --since=15m | grep -c 'could not be resolved'"
+        labels:
+          severity: critical
+      - uid: loki-queries-stalled
+        title: Loki queries stalled
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Canaries and Loki-based alert rules query every minute, so zero successes means the read path is down.
+              expr: 'sum(rate(loki_request_duration_seconds_count{job="grafana/loki-query-frontend", route=~"loki_api_v1_query|loki_api_v1_query_range", status_code=~"2.."}[10m])) or vector(0)'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.05
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Almost no Loki queries succeed at the query frontend. Log search in Grafana and every Loki-based alert rule are blind while this fires. Most likely the loki-gateway (nginx) cannot reach the query frontend, e.g. its DNS resolver is wedged after a network change."
+          problem: "Loki queries stalled"
+          service: "Loki"
+          threshold: ">= 0.05 successful queries/s"
+          value_unit: "queries/s"
+          value_fmt: "%.2f"
+          location: "grafana"
+          check: "Look for 'could not be resolved' in the loki-gateway logs; a rollout restart of loki-gateway fixes a wedged resolver."
+          check_command: "kubectl -n grafana logs deploy/loki-gateway --since=15m | grep -c 'could not be resolved'"
+        labels:
+          severity: critical
       - uid: kube-state-metrics-down
         title: kube-state-metrics producing no data
         condition: B
