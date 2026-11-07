@@ -5,6 +5,10 @@ metadata:
   namespace: metabase
 spec:
   values:
+    # Chart 2.27.8 (newest) still defaults to v0.61.1.x; pin until the chart catches up.
+    image:
+      tag: v0.65.3.x
+
     # Probed against metabase/metabase:v0.61.1.x in-cluster: comes up as
     # uid 2000 with drop-ALL. /plugins is baked 0777 in the image, so the
     # driver-plugin directory stays writable without a volume.
