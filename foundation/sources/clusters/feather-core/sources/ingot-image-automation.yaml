@@ -1,0 +1,69 @@
+# Mutable nightly tag of the Ingot image. Excludes the cosign/attestation
+# side-artifacts so only real image tags are listed.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: ingot
+  namespace: flux-system
+spec:
+  image: ghcr.io/onelitefeathernet/ingot
+  interval: 5m
+  exclusionList:
+    - "^.*\\.sig$"
+    - "^.*\\.att$"
+    - "^sha256-.*$"
+---
+# Selects exactly the nightly tag. digestReflectionPolicy Always makes the
+# controller record the digest that nightly currently points at on every
+# scan, so a re-pushed nightly is noticed even though the tag name is unchanged.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: ingot-staging
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: ingot
+  filterTags:
+    pattern: '^nightly$'
+  policy:
+    alphabetical:
+      order: asc
+  # Required by the API once digestReflectionPolicy is not Never: how often
+  # the digest of the nightly tag is re-read from the registry.
+  interval: 5m
+  digestReflectionPolicy: Always
+---
+# Writes the digest ImagePolicy/ingot-staging reflects into the staging
+# HelmRelease only. update.path keeps it away from the prod release.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: ingot-staging
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: |
+        chore(reposilite-staging): roll out {{ range $resource, $changes := .Changed.Objects }}{{ range $_, $change := $changes }}ingot@{{ $change.NewValue }}{{ end }}{{ end }}
+
+        Automation: {{ .AutomationObject }}
+        Files:
+        {{ range $filename, $_ := .Changed.FileChanges -}}
+        - {{ $filename }}
+        {{ end -}}
+    push:
+      branch: main
+  update:
+    path: ./services/development/clusters/feather-core/reposilite-staging
+    strategy: Setters
