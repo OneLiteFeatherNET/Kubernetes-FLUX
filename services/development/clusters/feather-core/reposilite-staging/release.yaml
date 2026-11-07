@@ -15,14 +15,19 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-low
+        images:
+          - name: ghcr.io/onelitefeathernet/ingot
+            digest: sha256:2348685631e1385a1af4e1df1a295d6df2c1e80621efed26e6fd5a3f52cfe6ae # {"$imagepolicy": "flux-system:ingot-staging:digest"}
   values:
     # Ingot is a drop-in fork of Reposilite. `tag` is mandatory, not cosmetic:
     # without it the chart asks for a tag that does not exist. Bump it together
     # with the chart pin above.
     image:
       name: ghcr.io/onelitefeathernet/ingot
-      # 1.2.0 rehearsal: nightly from ingot main 19189c7, pinned by digest.
-      tag: "nightly@sha256:2348685631e1385a1af4e1df1a295d6df2c1e80621efed26e6fd5a3f52cfe6ae"
+      # Follows the nightly tag. The digest lives in postRenderers.images below,
+      # which the chart's name:tag template cannot carry; the rendered image is
+      # name@digest.
+      tag: "nightly"
     deployment:
       # The chart treats 0 as 1 (`default 1`); park staging with a post-render patch on /spec/replicas.
       replicas: 1

@@ -36,6 +36,7 @@ resources:
   - pmint93.yml
   - stelaris-ui.yaml
   - stelaris-image-automation.yaml
+  - ingot-image-automation.yaml
   - vulpes-backend.yaml
   - vulpes-backend-image-automation.yaml
   - blackhole.yaml
