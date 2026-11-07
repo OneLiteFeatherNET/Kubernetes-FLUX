@@ -17,7 +17,7 @@ spec:
                 value: feather-low
         images:
           - name: ghcr.io/onelitefeathernet/ingot
-            digest: sha256:2348685631e1385a1af4e1df1a295d6df2c1e80621efed26e6fd5a3f52cfe6ae # {"$imagepolicy": "flux-system:ingot-staging:digest"}
+            digest: sha256:a964dda1f9a5b026a21d57a5c538ec70f6a20730076c6c705bf0c67e9fa7b76c # {"$imagepolicy": "flux-system:ingot-staging:digest"}
   values:
     # Ingot is a drop-in fork of Reposilite. `tag` is mandatory, not cosmetic:
     # without it the chart asks for a tag that does not exist. Bump it together
@@ -154,12 +154,12 @@ spec:
             target:
               type: Utilization
               averageUtilization: 75
-#        - type: Resource
-#          resource:
-#            name: memory
-#            target:
-#              type: Utilization
-#              averageUtilization: 99
+              #        - type: Resource
+              #          resource:
+              #            name: memory
+              #            target:
+              #              type: Utilization
+              #              averageUtilization: 99
       behavior:
         scaleDown:
           stabilizationWindowSeconds: 300
