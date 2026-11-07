@@ -130,6 +130,7 @@ spec:
     enabled: true
     # exporter.priorityClassName is immutable (operator webhook); leave unset.
     exporter:
+      image: prom/mysqld-exporter:v0.21.0
       resources:
         requests:
           cpu: 10m
