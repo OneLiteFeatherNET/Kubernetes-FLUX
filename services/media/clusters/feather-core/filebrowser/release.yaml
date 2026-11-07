@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: ghcr.io/gtsteffaniak/filebrowser
-              tag: 1.5.6-stable
+              tag: 1.5.8-stable
             env:
               # Getrennt vom Datenverzeichnis, damit das PVC die Datei nicht verdeckt.
               FILEBROWSER_CONFIG: /etc/filebrowser/config.yaml
