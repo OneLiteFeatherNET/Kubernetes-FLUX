@@ -3,6 +3,7 @@
 clusters/feather-core::products::sturnus/sturnus
 clusters/feather-core::products::corvus/corvus
 clusters/feather-core::products::menura/menura
+clusters/feather-core::products-dev::menura-dev/menura-dev
 clusters/feather-core::products::stelaris/stelaris-ui
 clusters/feather-core::products::vulpes/vulpes-backend
 clusters/feather-core::products::vulpes/vulpes-generator

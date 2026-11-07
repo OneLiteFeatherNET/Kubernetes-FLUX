@@ -31,6 +31,7 @@ resources:
   - sentry-kubernetes.yaml
   - sturnus.yaml
   - menura.yaml
+  - menura-prototype.yaml
   - corvus.yaml
   - pmint93.yml
   - stelaris-ui.yaml
