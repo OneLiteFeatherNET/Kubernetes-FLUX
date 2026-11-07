@@ -96,6 +96,15 @@ configMapGenerator:
         grafana_dashboard: "1"
       annotations:
         grafana_folder: Overview
+  # Trivy-Operator findings. Only fixable Critical/High/Medium (ignoreUnfixed=true).
+  - name: grafana-sc-dashboards-security
+    files:
+      - dashboards/security/trivy.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Security
   - name: grafana-sc-dashboards-storage
     files:
       - dashboards/storage/ceph-cluster.json
