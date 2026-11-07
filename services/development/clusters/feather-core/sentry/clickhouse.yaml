@@ -45,7 +45,7 @@ spec:
       # themselves marked in_progress, which blocks every later migration
       # attempt. Pin the image the upstream actually uses.
       image: altinity/clickhouse-server
-      imageVersion: "25.3.6.10034.altinitystable"
+      imageVersion: "25.8.28.10001.altinitystable"
 
       # Upstream self-hosted Sentry runs a single ClickHouse. The chart default
       # is 3, but replication here needs Zookeeper, which this cluster does not
