@@ -37,16 +37,12 @@ spec:
           limit:
             requests: 120
             unit: Minute
-  # Envoy's own refusal (plain text) becomes Problem Details with Retry-After.
+  # Every 429 on the route becomes Problem Details with Retry-After (the server's own 429 already is).
   responseOverride:
     - match:
         statusCodes:
           - type: Value
             value: 429
-        responseHeaders:
-          - name: content-type
-            type: Exact
-            value: text/plain
       response:
         contentType: application/problem+json
         body:
