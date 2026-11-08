@@ -1,0 +1,95 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: coloeus-admin
+  namespace: coloeus
+spec:
+  values:
+    # Staff web UI (Nitro BFF): 2 replicas share their sessions through Dragonfly.
+    replicaCount: 2
+    priorityClassName: feather-standard
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: coloeus-admin
+                  app.kubernetes.io/name: micronaut
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 1
+    image:
+      repository: harbor.onelitefeather.dev/onelitefeather/coloeus-admin
+      pullPolicy: IfNotPresent
+      tag: "0.3.0"
+    imagePullSecrets:
+      - name: harbor-pull
+    service:
+      port: 3000
+    metrics:
+      enabled: false
+      serviceMonitor:
+        enabled: false
+    ingress:
+      enabled: false
+    # Routed by the coloeus HTTPRoute (httproute.yaml): /admin goes here.
+    httpRoute:
+      enabled: false
+    rbac:
+      create: false
+    tracing:
+      enabled: false
+    startupProbe:
+      enabled: true
+    # The image runs as its own unprivileged user (uid 10001).
+    securityContext:
+      enabled: true
+      runAsNonRoot: true
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      seccompProfile:
+        type: RuntimeDefault
+    # Client secret, session secret and Dragonfly URL (DB 12) of the staff UI.
+    envFrom:
+      - secretRef:
+          name: coloeus-admin-web
+    # Helm replaces list values: this env list must carry every variable itself.
+    env:
+      - name: NODE_ENV
+        value: "production"
+      # Entra: tenant, API audience and the "Coloeus Admin Web" app registration. Public identifiers, not secrets.
+      - name: COLOEUS_TENANT_ID
+        value: "1a14dfb5-0eac-41bf-94cb-195c2e387520"
+      - name: COLOEUS_AUDIENCE
+        value: "e6ba3e14-7b03-4792-b6aa-d963f776bd0c"
+      - name: COLOEUS_WEB_CLIENT_ID
+        value: "d0a2421a-b061-439d-89c3-308eb0aa2c21"
+      - name: COLOEUS_WEB_BASE_URL
+        value: "https://coloeus.apps.onelite.feather"
+      # The backend's in-cluster service; staff calls go to its /v1/staff API.
+      - name: COLOEUS_BACKEND_URL
+        value: "http://coloeus-micronaut.coloeus.svc.cluster.local:8080"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    readinessProbe:
+      path: /admin/healthz
+      initialDelaySeconds: 3
+      periodSeconds: 5
+    livenessProbe:
+      path: /admin/healthz
+      initialDelaySeconds: 10
+      periodSeconds: 10
