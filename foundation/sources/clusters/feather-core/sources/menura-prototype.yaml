@@ -12,4 +12,4 @@ spec:
   # Pinned to one commit of the prototype branch, never a moving branch. Bump it
   # together with the image tag in menura-dev/release.yaml, through a pull request.
   ref:
-    commit: ed84cb905fe439e0cc177e5cab4b2024f4e8ec29
+    commit: f0797407f3877d0afa8965d7c783680079545ed7
