@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: coloeus
+spec:
+  name: coloeus
+  owner: coloeus
+  cluster:
+    name: feather-core-cluster-pg

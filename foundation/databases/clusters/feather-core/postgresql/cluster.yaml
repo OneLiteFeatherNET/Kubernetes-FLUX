@@ -198,6 +198,12 @@ spec:
         ensure: present
         passwordSecret:
           name: role-menura
+      - name: coloeus
+        login: true
+        ensure: present
+        connectionLimit: 20
+        passwordSecret:
+          name: role-coloeus
     services:
       additional:
         - selectorType: rw
