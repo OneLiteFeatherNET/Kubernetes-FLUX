@@ -114,6 +114,10 @@ spec:
     resources:
       requests:
         memory: 1Gi
+      # A base build without cache took 2m40s at the chart's 1 CPU, enough
+      # for parallel downloads to run into the gateway timeout.
+      limits:
+        cpu: 2
     profiles: ["prod"]
     config:
       base: |-
