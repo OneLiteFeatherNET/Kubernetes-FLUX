@@ -31,7 +31,7 @@ spec:
     database:
       # The rw pooler of the shared CloudNativePG cluster (session mode, the
       # same host form sturnus uses). Credentials come from menura-secrets.
-      url: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw.cnpg-system.svc.cluster.local:5432/menura"
+      url: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw-tx.cnpg-system.svc.cluster.local:5432/menura"
       existingSecret: menura-secrets
 
     server:
