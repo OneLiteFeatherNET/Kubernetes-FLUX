@@ -44,6 +44,9 @@ spec:
           enabled: false
         ingester:
           push_grpc_method_enabled: true
+        # Query sharding splits each query into 16 shards; 8 slots per querier made OpenCost queue.
+        querier:
+          max_concurrent: 16
         limits:
           compactor_blocks_retention_period: 365d
           # Temporarily 600k since 2026-07-13 (duplicate series from the
