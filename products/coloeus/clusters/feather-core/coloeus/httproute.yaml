@@ -10,6 +10,14 @@ spec:
   hostnames:
     - coloeus.apps.onelite.feather
   rules:
+    # The staff web UI (Nitro) owns /admin; everything else is the backend.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /admin
+      backendRefs:
+        - name: coloeus-admin-micronaut
+          port: 3000
     - matches:
         - path:
             type: PathPrefix

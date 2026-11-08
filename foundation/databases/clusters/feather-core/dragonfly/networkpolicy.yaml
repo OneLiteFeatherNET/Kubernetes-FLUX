@@ -20,6 +20,7 @@ spec:
                 operator: In
                 values:
                   - blackhole
+                  - coloeus
                   - harbor
                   - n8n
                   - outline

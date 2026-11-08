@@ -4,6 +4,10 @@ metadata:
   name: vllm
   namespace: sturnus
 spec:
+  # A first start downloads about 9 GB of weights and compiles kernels before
+  # /health answers; the startup probe allows 30 minutes for that, and Helm must
+  # wait as long, or it calls a healthy rollout failed and rolls it back.
+  timeout: 30m
   values:
     controllers:
       vllm:
@@ -119,7 +123,9 @@ spec:
       hf-cache:
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
-        size: 10Gi
+        # openai/whisper-large-v3 ships its weights twice, fp16 (3 GB) and fp32 (6 GB),
+        # and vLLM downloads both; 10Gi ran out mid-download and crash-looped the pod.
+        size: 30Gi
         storageClass: ceph-rbd-fr01
         globalMounts:
           - path: /cache

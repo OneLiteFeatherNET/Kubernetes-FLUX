@@ -1,0 +1,23 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: coloeus-admin
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: coloeus
+spec:
+  releaseName: coloeus-admin
+  # The staff web UI is a Nuxt/Nitro (Node) service. The micronaut chart is generic enough for it: the Micronaut-only
+  # variables it sets are ignored by Node, and the config files are not used.
+  chart:
+    spec:
+      chart: ./helm/micronaut
+      sourceRef:
+        kind: GitRepository
+        name: helmcharts
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  values: {}

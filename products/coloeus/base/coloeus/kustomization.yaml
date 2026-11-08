@@ -4,3 +4,4 @@ namespace: coloeus
 resources:
   - namespace.yaml
   - release.yaml
+  - release-admin.yaml
