@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: reposilite-staging-repositories
+  labels:
+    app.kubernetes.io/name: reposilite
+    app.kubernetes.io/part-of: ingot
+spec:
+  # Shared by every backend replica: the filesystem repositories live here.
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ceph-cephfs-fr01
+  resources:
+    requests:
+      storage: 5Gi

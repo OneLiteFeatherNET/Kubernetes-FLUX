@@ -34,8 +34,42 @@ spec:
   interval: 5m
   digestReflectionPolicy: Always
 ---
+# Mutable nightly tag of the Ingot dashboard image, as for the server above.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: ingot-dashboard
+  namespace: flux-system
+spec:
+  image: ghcr.io/onelitefeathernet/ingot-dashboard
+  interval: 5m
+  exclusionList:
+    - "^.*\\.sig$"
+    - "^.*\\.att$"
+    - "^sha256-.*$"
+---
+# Selects exactly the nightly tag of the dashboard image. The digest is reflected
+# on every scan, as for ingot-staging above.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: ingot-dashboard-staging
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: ingot-dashboard
+  filterTags:
+    pattern: '^nightly$'
+  policy:
+    alphabetical:
+      order: asc
+  interval: 5m
+  digestReflectionPolicy: Always
+---
 # Writes the digest ImagePolicy/ingot-staging reflects into the staging
 # HelmRelease only. update.path keeps it away from the prod release.
+# The dashboard Deployment lives in the same directory, so the same automation
+# also rolls out ingot-dashboard-staging there.
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageUpdateAutomation
 metadata:
