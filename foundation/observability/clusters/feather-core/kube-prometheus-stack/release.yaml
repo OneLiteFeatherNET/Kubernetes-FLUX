@@ -360,3 +360,10 @@ spec:
           memory: 32Mi
         limits:
           memory: 64Mi
+      # OpenCost groups node_cpu_seconds_total by kubernetes_node; without it the per-node CPU breakdown is empty.
+      prometheus:
+        monitor:
+          relabelings:
+            - action: replace
+              sourceLabels: [__meta_kubernetes_pod_node_name]
+              targetLabel: kubernetes_node
