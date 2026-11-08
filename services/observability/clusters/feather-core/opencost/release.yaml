@@ -75,7 +75,7 @@ spec:
               sourceLabels: [__name__]
               regex: daemonset_arguments
             - action: labeldrop
-              regex: label_(topology_location_.+|rook_version|ceph_version)
+              regex: label_(topology_location_.+|rook_version|ceph_version|pod_template_hash)
 
       ui:
         enabled: true
