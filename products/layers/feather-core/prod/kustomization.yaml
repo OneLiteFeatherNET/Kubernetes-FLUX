@@ -8,6 +8,7 @@ resources:
   - ../../../corvus/clusters/feather-core/corvus
   - ../../../otis/clusters/feather-core/otis
   - ../../../quelea/clusters/feather-core/quelea
+  - ../../../coloeus/clusters/feather-core/coloeus
   - ../../../stelaris/clusters/feather-core/stelaris
   - ../../../vulpes/clusters/feather-core/vulpes-backend
   - ../../../vulpes/clusters/feather-core/vulpes-generator

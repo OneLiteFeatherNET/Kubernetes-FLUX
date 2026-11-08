@@ -36,6 +36,7 @@ resources:
   - database/skygridng.yaml
   - database/blackhole.yaml
   - database/menura.yaml
+  - database/coloeus.yaml
 
 secretGenerator:
   - name: role-corvus
@@ -197,3 +198,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/menura.sops.env
+  - name: role-coloeus
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/coloeus.sops.env
