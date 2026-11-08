@@ -34,7 +34,7 @@ spec:
     # back to the chart's appVersion, so dev keeps today's behaviour until then.
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/vulpes-generator
-      tag: "develop-1794146134-d144e37" # {"$imagepolicy": "flux-system:vulpes-generator-dev:tag"}
+      tag: "develop-1794156137-75001b2" # {"$imagepolicy": "flux-system:vulpes-generator-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     metrics:
@@ -114,6 +114,10 @@ spec:
     resources:
       requests:
         memory: 1Gi
+      # A base build without cache took 2m40s at the chart's 1 CPU, enough
+      # for parallel downloads to run into the gateway timeout.
+      limits:
+        cpu: 2
     profiles: ["prod"]
     config:
       base: |-

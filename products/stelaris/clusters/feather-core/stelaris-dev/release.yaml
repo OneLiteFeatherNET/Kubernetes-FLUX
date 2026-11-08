@@ -45,7 +45,7 @@ spec:
       # charts/stelaris-ui/templates/_helpers.tpl in the stelaris repo), so dev
       # keeps today's behaviour until the first develop image lands and the
       # automation overwrites this value.
-      tag: "develop-1794142643-efa3859" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
+      tag: "develop-1794148149-5568d92" # {"$imagepolicy": "flux-system:stelaris-dev:tag"}
     imagePullSecrets:
       - name: harbor-pull
     # Read by the app at startup from /config.json, which the chart mounts as a
@@ -53,6 +53,10 @@ spec:
     config:
       backendUrl: https://vulpes-backend-dev.apps.onelite.feather
       generatorUrl: https://vulpes-generator-dev.apps.onelite.feather
+      # The dev generator serves the editor release routes, so the page calls
+      # it instead of simulating it. prod keeps the simulation until its
+      # generator does too.
+      generatorDemo: false
     # The image ships connect-src 'self' https:, because an image that is built
     # once and promoted cannot know its backend. Naming them turns "any HTTPS
     # host" into "these two". The unsafe-* entries are Flutter's, not ours - its loader

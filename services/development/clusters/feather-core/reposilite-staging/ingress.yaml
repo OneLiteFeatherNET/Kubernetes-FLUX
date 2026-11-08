@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: reposilite-cloudflare-tunnel
   annotations:
-    # reposilite serves plain HTTP on 8080
+    # The dashboard serves plain HTTP on 8080 and proxies everything else to the backend.
     cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
 spec:
   ingressClassName: cloudflare-tunnel
@@ -15,6 +15,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: reposilite
+                name: ingot-dashboard
                 port:
                   number: 8080

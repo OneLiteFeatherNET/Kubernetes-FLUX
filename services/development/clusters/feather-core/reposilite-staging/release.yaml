@@ -17,7 +17,7 @@ spec:
                 value: feather-low
         images:
           - name: ghcr.io/onelitefeathernet/ingot
-            digest: sha256:13ceeed1e5d13d1dd69ed455bd70edf04e617c906d2d47a062259e51c75f26b9 # {"$imagepolicy": "flux-system:ingot-staging:digest"}
+            digest: sha256:f3ce7342e1f8101a3edbae11adf892d3622b37f4f941ca023d2f1ffcf07c8efc # {"$imagepolicy": "flux-system:ingot-staging:digest"}
   values:
     # Ingot is a drop-in fork of Reposilite. `tag` is mandatory, not cosmetic:
     # without it the chart asks for a tag that does not exist. Bump it together
@@ -29,8 +29,9 @@ spec:
       # name@digest.
       tag: "nightly"
     deployment:
-      # The chart treats 0 as 1 (`default 1`); park staging with a post-render patch on /spec/replicas.
-      replicas: 1
+      # Two backends behind the dashboard, to test Ingot in a multi-instance setup. They share the
+      # filesystem repositories through the RWX volume below and the database through MariaDB.
+      replicas: 2
       # Probed against ghcr.io/onelitefeathernet/ingot:1.1.0 in-cluster: comes
       # up 1/1 as uid 1000 with drop-ALL and a read-only rootfs. Data is an
       # emptyDir here (persistence is off), so there is no volume ownership to
@@ -89,6 +90,16 @@ spec:
         # implementation" error and file logging is silently lost.
         - name: logging
           emptyDir: {}
+        # Filesystem repositories, shared by every backend replica. RWX on CephFS.
+        - name: repositories
+          persistentVolumeClaim:
+            claimName: reposilite-staging-repositories
+        # User credentials of the staging NATS broker (ingot-nats.yaml). defaultMode 0440 with the
+        # fsGroup above keeps the seed readable by the service user and nobody else.
+        - name: ingot-nats-creds
+          secret:
+            secretName: ingot-nats-creds
+            defaultMode: 288
       additionalVolumeMounts:
         - name: otel-agent
           mountPath: /otel
@@ -97,6 +108,12 @@ spec:
           mountPath: /tmp
         - name: logging
           mountPath: /var/log/reposilite/
+        - name: repositories
+          mountPath: /app/data/repositories
+        - name: ingot-nats-creds
+          mountPath: /app/cluster/ingot-staging.creds
+          subPath: ingot-staging.creds
+          readOnly: true
     ## Readiness and liveness probes
     probes:
       port: 8080 # The port Reposilite is running on inside the pod.
@@ -172,6 +189,14 @@ spec:
       # headroom on top of Reposilite's baseline heap use.
       - name: JAVA_OPTS
         value: "-Xmx256M -Dreposilite.s3.pathStyleAccessEnabled=true"
+      # The dashboard runs in its own Deployment (dashboard.yaml), so the backends do not answer for it.
+      - name: INGOT_LOCAL_DEFAULTFRONTEND
+        value: "false"
+      # Cluster bus broker (ingot-nats.yaml). Older Ingot images ignore these variables.
+      - name: INGOT_CLUSTER_URL
+        value: "nats://ingot-nats.reposilite-staging.svc.cluster.local:4222"
+      - name: INGOT_CLUSTER_CREDENTIALS
+        value: "/app/cluster/ingot-staging.creds"
       - name: REPOSILITE_LOCAL_DATABASE
         valueFrom:
           secretKeyRef:

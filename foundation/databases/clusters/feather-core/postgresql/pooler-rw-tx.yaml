@@ -9,12 +9,16 @@ spec:
   type: rw
   instances: 2
   pgbouncer:
-    # Transaction mode multiplexes idle clients (Sentry); the session pooler stays for the rest.
+    # Transaction mode multiplexes idle client pools onto few backends; apps move here from direct connections.
     poolMode: transaction
     parameters:
       max_client_conn: "400"
-      # Per (user,db) pool and per pooler pod: 2 pods * 20 caps Sentry at 40 backends.
+      # Per (user,db) pool and per pooler pod: 2 pods * 20 caps one app at 40 backends.
       default_pool_size: "20"
+      # Lets pgjdbc/pgx/asyncpg keep server-side prepared statements in transaction mode (PgBouncer >= 1.21).
+      max_prepared_statements: "200"
+      # Hand idle backends back to Postgres after 60s instead of 600s.
+      server_idle_timeout: "60"
   template:
     spec:
       priorityClassName: feather-high

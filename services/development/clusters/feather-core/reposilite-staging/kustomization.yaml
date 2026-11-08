@@ -5,7 +5,10 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../base/reposilite/
+  - repositories-pvc.yaml
+  - dashboard.yaml
   - ingress.yaml
+  - ingot-nats.yaml
 patches:
   - path: release.yaml
   # Namespace name comes from the namespace transformer; only the label is added.
@@ -20,3 +23,14 @@ secretGenerator:
   - name: reposilite-secrets
     envs:
       - reposilite-staging.sops.env
+
+  # Operator-mode config of the staging NATS broker (ingot-nats.yaml): the operator and account
+  # JWTs, the memory resolver preload. Mounted at /etc/nats.
+  - name: ingot-nats-config
+    files:
+      - nats.conf=ingot-nats.sops.conf
+  # The Ingot user credentials (NKEY seed, so encrypted). Mounted into the Ingot backends at
+  # /app/cluster/ingot-staging.creds (release.yaml).
+  - name: ingot-nats-creds
+    files:
+      - ingot-staging.creds=ingot-nats-creds.sops.conf
