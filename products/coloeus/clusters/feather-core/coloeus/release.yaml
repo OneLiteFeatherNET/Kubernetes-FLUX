@@ -116,6 +116,12 @@ spec:
       # The coloeus role allows 20 connections; 5 per pod keeps a rollout (2 replicas + 1 surge = 15) below it.
       - name: DATASOURCES_DEFAULT_MAXIMUM_POOL_SIZE
         value: "5"
+      # The cluster's template database carries a public.user_search function, so Flyway finds a non-empty schema.
+      # Baseline at version 0 records that state and still applies V1 and every later migration.
+      - name: FLYWAY_DATASOURCES_DEFAULT_BASELINE_ON_MIGRATE
+        value: "true"
+      - name: FLYWAY_DATASOURCES_DEFAULT_BASELINE_VERSION
+        value: "0"
     resources:
       requests:
         cpu: 100m
