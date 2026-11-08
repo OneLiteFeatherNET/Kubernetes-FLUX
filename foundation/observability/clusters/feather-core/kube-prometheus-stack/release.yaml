@@ -42,6 +42,10 @@ spec:
           - action: drop
             sourceLabels: [__name__]
             regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
+          # Unused histograms, ~64k series; they pushed Mimir to its series limit.
+          - action: drop
+            sourceLabels: [__name__]
+            regex: apiserver_(request_body_size_bytes|response_sizes|watch_events_sizes|watch_list_duration_seconds|watch_cache_read_wait_seconds)_bucket
     kubelet:
       serviceMonitor:
         authorization:
