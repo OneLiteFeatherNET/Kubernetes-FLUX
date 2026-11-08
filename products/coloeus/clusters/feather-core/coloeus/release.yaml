@@ -113,6 +113,9 @@ spec:
         value: "1a14dfb5-0eac-41bf-94cb-195c2e387520"
       - name: COLOEUS_AUDIENCE
         value: "e6ba3e14-7b03-4792-b6aa-d963f776bd0c"
+      # The coloeus role allows 20 connections; 5 per pod keeps a rollout (2 replicas + 1 surge = 15) below it.
+      - name: DATASOURCES_DEFAULT_MAXIMUM_POOL_SIZE
+        value: "5"
     resources:
       requests:
         cpu: 100m
