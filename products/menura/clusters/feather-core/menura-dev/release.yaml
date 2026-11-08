@@ -42,7 +42,7 @@ spec:
   values:
     image:
       # Placeholder, replaced by the main session with the published prototype tag.
-      tag: prototype-0b22c7a2a421219112e380c5d2da5eb7a742d8ec
+      tag: prototype-ed84cb905fe439e0cc177e5cab4b2024f4e8ec29
       pullPolicy: IfNotPresent
     imagePullSecrets:
       - name: harbor-pull
