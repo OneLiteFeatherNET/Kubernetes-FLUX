@@ -176,12 +176,13 @@ spec:
         enabled: false
     querier:
       replicas: 2
+      # 1 CPU throttled ~25% of periods; OpenCost's 7d allocation took 2.5 min.
       resources:
         requests:
-          cpu: 100m
+          cpu: 500m
           memory: 128Mi
         limits:
-          cpu: "1"
+          cpu: "2"
           memory: 1Gi
       affinity:
         nodeAffinity:
