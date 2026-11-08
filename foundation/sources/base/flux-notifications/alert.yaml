@@ -1,10 +1,11 @@
-apiVersion: notification.toolkit.fluxcd.io/v1beta3
+apiVersion: notification.toolkit.fluxcd.io/v1
 kind: Alert
 metadata:
   name: cluster-errors
   namespace: flux-system
 spec:
-  summary: "feather-core"
+  eventMetadata:
+    summary: "feather-core"
   providerRef:
     name: discord
   eventSeverity: error
