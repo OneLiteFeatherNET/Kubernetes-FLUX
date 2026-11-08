@@ -29,12 +29,61 @@ spec:
     # Apiserver duration-histogram buckets alone were ~127k of ~275k active
     # series and pushed Mimir into its per-tenant series limit; the
     # _sum/_count series survive, so rates and averages still work.
+    # Control-plane SMs scrape with the managed token in control-plane-scrape-token.yaml
+    # (chart 90+ no longer defaults to a Secret from prometheus, which is disabled here).
     kubeApiServer:
       serviceMonitor:
+        authorization:
+          type: Bearer
+          credentials:
+            name: control-plane-scrape-token
+            key: token
         metricRelabelings:
           - action: drop
             sourceLabels: [__name__]
             regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
+    kubelet:
+      serviceMonitor:
+        authorization:
+          type: Bearer
+          credentials:
+            name: control-plane-scrape-token
+            key: token
+    kubeControllerManager:
+      serviceMonitor:
+        authorization:
+          type: Bearer
+          credentials:
+            name: control-plane-scrape-token
+            key: token
+    coreDns:
+      serviceMonitor:
+        authorization:
+          type: Bearer
+          credentials:
+            name: control-plane-scrape-token
+            key: token
+    kubeEtcd:
+      serviceMonitor:
+        authorization:
+          type: Bearer
+          credentials:
+            name: control-plane-scrape-token
+            key: token
+    kubeScheduler:
+      serviceMonitor:
+        authorization:
+          type: Bearer
+          credentials:
+            name: control-plane-scrape-token
+            key: token
+    kubeProxy:
+      serviceMonitor:
+        authorization:
+          type: Bearer
+          credentials:
+            name: control-plane-scrape-token
+            key: token
     kube-state-metrics:
       priorityClassName: feather-high
       image:

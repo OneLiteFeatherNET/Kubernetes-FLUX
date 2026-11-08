@@ -1,0 +1,11 @@
+# Long-lived token for the control-plane-scrape ServiceAccount. The token controller
+# fills `data.token` in-cluster; no credential material is stored in git, so this
+# file is intentionally NOT a *.sops.yaml.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: control-plane-scrape-token
+  namespace: monitoring
+  annotations:
+    kubernetes.io/service-account.name: control-plane-scrape
+type: kubernetes.io/service-account-token
