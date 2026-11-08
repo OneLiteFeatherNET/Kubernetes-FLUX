@@ -5,6 +5,8 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../base/reposilite/
+  - repositories-pvc.yaml
+  - dashboard.yaml
   - ingress.yaml
 patches:
   - path: release.yaml

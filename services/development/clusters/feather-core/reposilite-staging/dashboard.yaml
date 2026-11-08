@@ -1,0 +1,142 @@
+# The Ingot dashboard in its own container. It serves the static dashboard and proxies every other
+# path to the backend Service, so one backend address is enough. See the split dashboard how-to in
+# the Ingot repository for the request routing.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingot-dashboard
+  labels:
+    app.kubernetes.io/name: ingot-dashboard
+    app.kubernetes.io/part-of: ingot
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingot-dashboard
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingot-dashboard
+        app.kubernetes.io/part-of: ingot
+        logs.onelitefeather.net/env: staging
+    spec:
+      # The dashboard talks to the backend over HTTP and needs no API access.
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        # The image's own unprivileged nginx user.
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: ingot-dashboard
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: ingot-dashboard
+          # Tag and digest, as Renovate and the image automation maintain them together. The digest
+          # is the one the nightly tag pointed at when this line was last rolled out.
+          image: ghcr.io/onelitefeathernet/ingot-dashboard:nightly@sha256:d33eaf9da76c3f7d6270f536507f50aebe88c77fb96454975a9c9c1afa97aebf # {"$imagepolicy": "flux-system:ingot-dashboard-staging"}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            # The backend Service of the staging Ingot server.
+            - name: INGOT_BACKEND
+              value: "http://reposilite.reposilite-staging.svc.cluster.local:8080"
+            # Cluster DNS (kube-dns), used to resolve INGOT_BACKEND per request.
+            - name: INGOT_RESOLVER
+              value: "10.96.0.10"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            # nginx writes its pid, cache, rendered config and temporary files here.
+            - name: tmp
+              mountPath: /tmp
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+        - name: nginx-conf
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingot-dashboard
+  labels:
+    app.kubernetes.io/name: ingot-dashboard
+    app.kubernetes.io/part-of: ingot
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ingot-dashboard
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ingot-dashboard
+  labels:
+    app.kubernetes.io/name: ingot-dashboard
+    app.kubernetes.io/part-of: ingot
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingot-dashboard
