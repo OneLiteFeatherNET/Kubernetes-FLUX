@@ -1,0 +1,15 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: vulpes-generator-dev-timeout
+spec:
+  # A local build or a release builds vulpes-base before it answers, which
+  # takes about 40 s warm and longer cold. The gateway default of 15 s cuts
+  # those requests off with a 504 while the generator is still working.
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: vulpes-generator-dev
+  timeout:
+    http:
+      requestTimeout: 300s
