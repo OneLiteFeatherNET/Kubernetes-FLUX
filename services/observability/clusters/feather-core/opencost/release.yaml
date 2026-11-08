@@ -69,6 +69,13 @@ spec:
       metrics:
         serviceMonitor:
           enabled: true
+          # Mimir rejects the whole batch for one series with >30 labels or a >2048-char value.
+          metricRelabelings:
+            - action: drop
+              sourceLabels: [__name__]
+              regex: daemonset_arguments
+            - action: labeldrop
+              regex: label_(topology_location_.+|rook_version|ceph_version)
 
       ui:
         enabled: true
