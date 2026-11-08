@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - release.yaml
   - backendtrafficpolicy.yaml
+  - pvc.yaml
 
 secretGenerator:
   # Publish credentials (username=, password=), added by the maintainer with sops.

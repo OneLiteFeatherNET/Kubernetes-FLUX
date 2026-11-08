@@ -1,0 +1,27 @@
+# Build caches of the dev generator. CephFS (RWX) so the old and the new pod of
+# a rolling update can both mount them while they run on different nodes.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vulpes-generator-dev-base-cache
+  namespace: vulpes-dev
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ceph-cephfs-fr01
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vulpes-generator-dev-gradle-cache
+  namespace: vulpes-dev
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ceph-cephfs-fr01
+  resources:
+    requests:
+      storage: 10Gi
