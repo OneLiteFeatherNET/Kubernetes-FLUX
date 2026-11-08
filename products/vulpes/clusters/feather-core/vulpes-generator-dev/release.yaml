@@ -84,8 +84,8 @@ spec:
     # Editor release flow (content releases, POST /generator/release). Dev gets
     # the whole flow: the generator reaches the dev backend to read project
     # snapshots and publishes to Reposilite, and builds the vulpes-base
-    # artifact. Caches are emptyDir (best-effort dev), so a restart rebuilds
-    # cold.
+    # artifact. Both build caches are PVCs (pvc.yaml), so a rollout keeps them
+    # warm.
     release:
       # In-cluster Service of vulpes-backend-dev (fullnameOverride
       # vulpes-backend-dev-micronaut, service.port 8080).
@@ -96,9 +96,9 @@ spec:
       # Cold base builds need a Gradle JVM plus javac on top of the service.
       memoryLimit: 3Gi
       baseCacheVolume:
-        sizeLimit: 2Gi
+        claimName: vulpes-generator-dev-base-cache
       gradleCacheVolume:
-        sizeLimit: 3Gi
+        claimName: vulpes-generator-dev-gradle-cache
       # Publish credentials: written by the maintainer with sops (see kustomization.yaml).
       mavenSecret:
         name: vulpes-generator-dev-maven
