@@ -53,6 +53,10 @@ spec:
     config:
       backendUrl: https://vulpes-backend-dev.apps.onelite.feather
       generatorUrl: https://vulpes-generator-dev.apps.onelite.feather
+      # The dev generator serves the editor release routes, so the page calls
+      # it instead of simulating it. prod keeps the simulation until its
+      # generator does too.
+      generatorDemo: false
     # The image ships connect-src 'self' https:, because an image that is built
     # once and promoted cannot know its backend. Naming them turns "any HTTPS
     # host" into "these two". The unsafe-* entries are Flutter's, not ours - its loader
