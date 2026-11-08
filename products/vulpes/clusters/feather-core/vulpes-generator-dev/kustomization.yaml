@@ -1,5 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: vulpes-dev
+generatorOptions:
+  disableNameSuffixHash: true
 resources:
   - release.yaml
+
+secretGenerator:
+  # Publish credentials (username=, password=), added by the maintainer with sops.
+  - name: vulpes-generator-dev-maven
+    envs:
+      - vulpes-generator-dev-maven.sops.env
+  # Read-only Reposilite token for the base build (username=, password=), added by the maintainer with sops.
+  - name: vulpes-generator-dev-base-maven
+    envs:
+      - vulpes-generator-dev-base-maven.sops.env

@@ -81,6 +81,39 @@ spec:
     envFrom:
       - secretRef:
           name: vulpes-dev-app-db
+    # Editor release flow (content releases, POST /generator/release). Dev gets
+    # the whole flow: the generator reaches the dev backend to read project
+    # snapshots and publishes to Reposilite, and builds the vulpes-base
+    # artifact. Caches are emptyDir (best-effort dev), so a restart rebuilds
+    # cold.
+    release:
+      # In-cluster Service of vulpes-backend-dev (fullnameOverride
+      # vulpes-backend-dev-micronaut, service.port 8080).
+      backendUrl: "http://vulpes-backend-dev-micronaut.vulpes-dev.svc.cluster.local:8080"
+      # The route needs no token, so it is only switched on where the generator
+      # is reachable from the internal network (per the chart).
+      editorRouteEnabled: true
+      # Cold base builds need a Gradle JVM plus javac on top of the service.
+      memoryLimit: 3Gi
+      baseCacheVolume:
+        sizeLimit: 2Gi
+      gradleCacheVolume:
+        sizeLimit: 3Gi
+      # Publish credentials: written by the maintainer with sops (see kustomization.yaml).
+      mavenSecret:
+        name: vulpes-generator-dev-maven
+        usernameKey: username
+        passwordKey: password
+      # Read-only Reposilite token for resolving base build dependencies.
+      baseMavenSecret:
+        name: vulpes-generator-dev-base-maven
+        usernameKey: username
+        passwordKey: password
+    # Chart default request is 256Mi; a cold base build needs more headroom.
+    # The limit comes from release.memoryLimit above.
+    resources:
+      requests:
+        memory: 1Gi
     profiles: ["prod"]
     config:
       base: |-
@@ -99,6 +132,9 @@ spec:
                 stelaris-ui:
                   allowed-origins:
                     - https://stelaris-dev.apps.onelite.feather
+                  # The browser client reads the download file name from this header.
+                  exposed-headers:
+                    - Content-Disposition
             netty:
               access-logger:
                 enabled: true
