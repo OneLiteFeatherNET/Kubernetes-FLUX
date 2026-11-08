@@ -79,9 +79,10 @@ spec:
       # Where the worker sends each speaker's audio, and whose host the bot names in
       # `/about` and the `/consent` prompt -- hence commonEnv, one value for both.
       # The client posts to <base>/audio/transcriptions, so the base carries /v1.
-      # In-cluster Speaches (../speaches): recordings never leave the cluster.
+      # In-cluster vLLM (../vllm, Speaches in ../speaches stays deployed as the fallback):
+      # recordings never leave the cluster.
       # Required and blank in the chart; a worker without it does not start.
-      STURNUS_TRANSCRIPTION_BASE_URL: "http://speaches.sturnus.svc.cluster.local:8000/v1"
+      STURNUS_TRANSCRIPTION_BASE_URL: "http://vllm.sturnus.svc.cluster.local:8000/v1"
 
     # Chart default (eu-central-1) is a placeholder the chart's own comment
     # says to override per-cluster. Every other region-pinned pod/PVC here
@@ -106,6 +107,7 @@ spec:
       # array and waits on HTTP, so the chart's own 1 CPU / 1Gi (2Gi limit) fits.
       # The 4 CPU / 12Gi that used to sit here moved to the speaches Deployment,
       # which is where large-v3 now runs (products/sturnus/.../speaches).
+      # Since then the model runs in vllm (products/sturnus/.../vllm).
       env:
         # The one thing the chart cannot know: how long a job may run here.
         # 0.5.0 made the worker transcribe the speech rather than 1% of it,
@@ -114,6 +116,10 @@ spec:
         # started a loop that never produces a protocol. 3 hours covers a
         # four-hour session in which one person speaks 40% of the time.
         STURNUS_JOB_LEASE_SECONDS: "10800"
+        # Windows of at most 30 s, cut in pauses. vLLM would cut a long upload into
+        # rigid 30 s blocks itself, giving wrong timestamps and invented text at each
+        # block boundary; Sturnus cuts at silences instead, so it sends it short windows.
+        STURNUS_TRANSCRIPTION_MAX_CHUNK_SECONDS: "30"
 
     api:
       env:

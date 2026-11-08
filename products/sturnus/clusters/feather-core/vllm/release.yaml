@@ -1,0 +1,129 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vllm
+  namespace: sturnus
+spec:
+  values:
+    controllers:
+      vllm:
+        type: deployment
+        replicas: 1
+        # The model cache is a ReadWriteOnce volume: a rolling update would start the
+        # new pod while the old one still holds it.
+        strategy: Recreate
+        pod:
+          priorityClassName: feather-standard
+          automountServiceAccountToken: false
+          labels:
+            logs.onelitefeather.net/env: prod
+          # The vLLM CPU image runs as root and has no USER directive, so the
+          # speaches runAsNonRoot settings do not apply. The namespace enforces
+          # baseline, which this satisfies: no privileged, no host namespaces.
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      # Whisper large-v3-turbo on CPU wants the 32-core xl workers,
+                      # which have AVX-512 (the vLLM CPU build relies on it).
+                      - key: node-role.feather/workload-class
+                        operator: In
+                        values: ["xl"]
+                      # The cache PVC is ceph-rbd-fr01, which only attaches in fr-rosenau.
+                      - key: topology.kubernetes.io/region
+                        operator: In
+                        values: ["fr-rosenau"]
+        containers:
+          app:
+            image:
+              repository: vllm/vllm-openai-cpu
+              tag: v0.32.0-x86_64@sha256:827ef38187f9b52f2bb838695ef815ec5b65f4bf3e4c061b002b2b0a19cb0701
+            # The image's entrypoint is `vllm serve`; these are its arguments.
+            # `whisper-1` is the name Sturnus posts, which the served-model-name maps to
+            # openai/whisper-large-v3-turbo.
+            args:
+              - openai/whisper-large-v3-turbo
+              - --served-model-name
+              - whisper-1
+              - --dtype
+              - float32
+              - --port
+              - "8000"
+            env:
+              # KV cache budget in GiB. Whisper's decoder needs little of it, so 2 keeps
+              # the 14Gi limit for weights, activations and the shared-memory mount.
+              VLLM_CPU_KVCACHE_SPACE: "2"
+              # Let OpenMP run unpinned: the pod's CPU set comes from the kubelet, and
+              # vLLM's own core binding fights it on a shared node.
+              VLLM_CPU_OMP_THREADS_BIND: nobind
+              # Match the CPU request below.
+              OMP_NUM_THREADS: "8"
+              # Hugging Face downloads and the compiled artefacts live on the cache volume,
+              # so a restart does not download the model again.
+              HF_HOME: /cache/huggingface
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: "8"
+                memory: 10Gi
+              limits:
+                cpu: "8"
+                memory: 14Gi
+            probes:
+              # The first start downloads the model and compiles kernels on an empty cache,
+              # which can take well over ten minutes. 180 x 10 s allows 30 minutes.
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8000
+                  periodSeconds: 10
+                  failureThreshold: 180
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8000
+                  periodSeconds: 30
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8000
+                  periodSeconds: 15
+    service:
+      app:
+        controller: vllm
+        type: ClusterIP
+        ports:
+          http:
+            port: 8000
+    persistence:
+      hf-cache:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        storageClass: ceph-rbd-fr01
+        globalMounts:
+          - path: /cache
+      dshm:
+        type: emptyDir
+        medium: Memory
+        # PyTorch uses /dev/shm for inter-thread tensor sharing; Docker's 64 MiB default is too small.
+        sizeLimit: 4Gi
+        globalMounts:
+          - path: /dev/shm
