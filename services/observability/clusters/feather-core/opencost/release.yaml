@@ -21,6 +21,8 @@ spec:
           # alloy-metrics hängt cluster an, OpenCost filtert per Default auf
           # cluster_id -- ohne das findet es seine eigenen Metriken nicht.
           PROM_CLUSTER_ID_LABEL: cluster
+          # Default 5 parallel Prometheus queries left Mimir's query sharding underused.
+          MAX_QUERY_CONCURRENCY: "10"
         resources:
           requests:
             cpu: 20m
