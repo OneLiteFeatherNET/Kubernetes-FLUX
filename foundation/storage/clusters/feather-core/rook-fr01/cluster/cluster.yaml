@@ -24,6 +24,8 @@ spec:
     ssl: false
   monitoring:
     enabled: true
+    # Match mgr/prometheus/scrape_interval (15s); 10s duplicates every third sample and zeroes irate().
+    interval: 15s
   network:
     provider: host
     addressRanges:
