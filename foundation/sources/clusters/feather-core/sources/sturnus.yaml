@@ -23,4 +23,4 @@ spec:
     # changes alike (release-please `bump-minor-pre-major`), so a new minor is
     # rolled out by raising this range here, together with any values it needs.
     # release-please tags look like `v0.17.0`; Flux accepts the `v` prefix.
-    semver: "~0.17.0"
+    semver: "~0.18.0"
