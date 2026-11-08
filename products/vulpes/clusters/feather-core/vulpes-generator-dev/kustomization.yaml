@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - release.yaml
+  - backendtrafficpolicy.yaml
 
 secretGenerator:
   # Publish credentials (username=, password=), added by the maintainer with sops.
