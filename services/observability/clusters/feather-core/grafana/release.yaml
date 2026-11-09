@@ -134,6 +134,10 @@ spec:
     datasources:
       datasources.yaml:
         apiVersion: 1
+        # Leftover from the retired in-cluster Prometheus; its DNS name no longer resolves.
+        deleteDatasources:
+          - name: Prometheus
+            orgId: 1
         datasources:
           - name: Mimir
             uid: mimir
@@ -153,6 +157,8 @@ spec:
             editable: false
             jsonData:
               maxLines: 1000
+              # No Loki ruler runs; without this the alert list panel fails on /rules with 502.
+              manageAlerts: false
               derivedFields:
                 - datasourceUid: tempo
                   matcherRegex: '"trace_id":"(\w+)"'
