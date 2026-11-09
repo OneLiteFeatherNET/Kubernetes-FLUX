@@ -197,6 +197,11 @@ spec:
         value: "nats://ingot-nats.reposilite-staging.svc.cluster.local:4222"
       - name: INGOT_CLUSTER_CREDENTIALS
         value: "/app/cluster/ingot-staging.creds"
+      # Requests reach the backends through the Cloudflare tunnel and the dashboard, both pods. Only
+      # a peer from the pod network may name the client in X-Forwarded-For, so the login lockout
+      # counts the real client, not whatever address a request claims. Older images ignore it.
+      - name: INGOT_TRUSTED_PROXIES
+        value: "10.244.0.0/16,fd83:4192:3b5e:1500::/56"
       - name: REPOSILITE_LOCAL_DATABASE
         valueFrom:
           secretKeyRef:
