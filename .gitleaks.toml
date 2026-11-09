@@ -11,4 +11,6 @@ paths = [
   '''\.sops\.(env|yaml|json|crt|key|conf)$''',
   '''\.env$''',
   '''clusters/feather-core/\.sops\.pub\.asc$''',
+  # Upstream release manifest; its only Secret holds the sidecar image name.
+  '''foundation/databases/base/cnpg-operator/plugin-barman-cloud-v0\.15\.1\.yaml$''',
 ]
