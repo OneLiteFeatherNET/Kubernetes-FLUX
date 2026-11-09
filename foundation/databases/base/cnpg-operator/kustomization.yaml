@@ -4,4 +4,5 @@ namespace: cnpg-system
 resources:
   - namespace.yaml
   - release.yaml
-  - https://github.com/cloudnative-pg/plugin-barman-cloud/releases/download/v0.15.1/manifest.yaml
+  # Vendored: Flux refetched the release URL every reconcile and failed on GitHub hiccups.
+  - plugin-barman-cloud-v0.15.1.yaml
