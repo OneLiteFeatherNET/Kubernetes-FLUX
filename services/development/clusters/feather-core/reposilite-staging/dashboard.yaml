@@ -1,6 +1,6 @@
-# The Ingot dashboard in its own container. It serves the static dashboard and proxies every other
-# path to the backend Service, so one backend address is enough. See the split dashboard how-to in
-# the Ingot repository for the request routing.
+# The Ingot dashboard in its own container: a small Node server (Nitro) on a distroless base. It
+# serves the dashboard and proxies every other path to the backend Service, so one backend address
+# is enough. See the split dashboard how-to in the Ingot repository for the request routing.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,9 +31,9 @@ spec:
       enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
-        # The image's own unprivileged nginx user.
-        runAsUser: 101
-        runAsGroup: 101
+        # The image's numeric nonroot user; the distroless base has no user database.
+        runAsUser: 65532
+        runAsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
       affinity:
@@ -59,12 +59,11 @@ spec:
             # The backend Service of the staging Ingot server.
             - name: INGOT_BACKEND
               value: "http://reposilite.reposilite-staging.svc.cluster.local:8080"
-            # Cluster DNS (kube-dns), used to resolve INGOT_BACKEND per request.
-            - name: INGOT_RESOLVER
-              value: "10.96.0.10"
+          # /healthz answers from the dashboard process alone, so a slow backend does not take the
+          # dashboard out of rotation.
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
             initialDelaySeconds: 2
             periodSeconds: 10
@@ -72,7 +71,7 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
             initialDelaySeconds: 5
             periodSeconds: 20
@@ -80,10 +79,10 @@ spec:
             failureThreshold: 3
           resources:
             requests:
-              cpu: 20m
-              memory: 32Mi
+              cpu: 50m
+              memory: 64Mi
             limits:
-              cpu: 250m
+              cpu: 500m
               memory: 128Mi
           securityContext:
             allowPrivilegeEscalation: false
@@ -91,25 +90,6 @@ spec:
             capabilities:
               drop:
                 - ALL
-          volumeMounts:
-            # nginx writes its pid, cache, rendered config and temporary files here.
-            - name: tmp
-              mountPath: /tmp
-            - name: nginx-cache
-              mountPath: /var/cache/nginx
-            - name: nginx-run
-              mountPath: /var/run
-            - name: nginx-conf
-              mountPath: /etc/nginx/conf.d
-      volumes:
-        - name: tmp
-          emptyDir: {}
-        - name: nginx-cache
-          emptyDir: {}
-        - name: nginx-run
-          emptyDir: {}
-        - name: nginx-conf
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
