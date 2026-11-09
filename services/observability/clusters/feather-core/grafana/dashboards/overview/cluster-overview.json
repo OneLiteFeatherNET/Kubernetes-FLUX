@@ -576,7 +576,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))) * on(instance) group_left(nodename) node_uname_info",
+          "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))) * on(instance) group_left(nodename) max by (instance, nodename) (node_uname_info)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -671,7 +671,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * on(instance) group_left(nodename) node_uname_info",
+          "expr": "100 * (1 - avg by (instance) (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * on(instance) group_left(nodename) max by (instance, nodename) (node_uname_info)",
           "range": true,
           "instant": false,
           "refId": "A",
