@@ -29,7 +29,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/coloeus-admin
       pullPolicy: IfNotPresent
-      tag: "0.4.0"
+      tag: "0.4.1"
     imagePullSecrets:
       - name: harbor-pull
     service:
