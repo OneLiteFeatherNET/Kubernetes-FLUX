@@ -1,0 +1,56 @@
+# Link to the publisher's private repository IsukuVerlag/IsukuVerlagFlux (runner scale set only).
+# Guards and identity live in services/development (base/actions-runners): the namespace is kept
+# on prune (annotation below), the ServiceAccount isuku-flux holds rights in arc-runners only.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: arc-runners
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted
+  annotations:
+    # Removing or renaming this file must never delete the namespace or the objects in it.
+    kustomize.toolkit.fluxcd.io/prune: disabled
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: isuku-flux
+  namespace: arc-runners
+spec:
+  interval: 10m
+  url: ssh://git@github.com/IsukuVerlag/IsukuVerlagFlux.git
+  ref:
+    branch: main
+  secretRef:
+    name: isuku-flux-deploy-key
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: tenant-isuku
+  namespace: arc-runners
+spec:
+  # Runs with the rights of the Role isuku-flux in arc-runners, nothing more.
+  serviceAccountName: isuku-flux
+  targetNamespace: arc-runners
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 10m0s
+  path: ./clusters/feather-core
+  sourceRef:
+    kind: GitRepository
+    name: isuku-flux
+  prune: true
+  wait: true
+  # Orphan: deleting this CR must never delete the runner objects it applied.
+  deletionPolicy: Orphan
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age-isuku
+  # Tenant failures must not block the OneLiteFeather layers; the guard ships in this layer.
+  dependsOn:
+    - name: services-development
+      namespace: flux-system
