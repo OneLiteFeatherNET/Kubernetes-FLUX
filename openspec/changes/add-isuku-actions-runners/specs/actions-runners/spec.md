@@ -51,11 +51,18 @@ EACH runner pod SHALL request 500m CPU and 2 GiB memory, and EACH runner pod SHA
 
 ### Requirement: Namespace quota
 
-THE runner namespace SHALL enforce a ResourceQuota of 4 CPU and 8 GiB memory on limits, and THE runner namespace SHALL apply a LimitRange so that pods without explicit resources receive defaults.
+THE runner namespace SHALL enforce a ResourceQuota of 4250m CPU and 8448Mi memory on limits (two runners at 2 CPU and 4Gi each plus the listener at 250m and 256Mi) and of 1050m CPU and 4224Mi memory on requests, THE listener SHALL set explicit requests of 50m CPU and 128Mi memory and limits of 250m CPU and 256Mi memory, and THE runner namespace SHALL apply a LimitRange so that pods without explicit resources receive defaults.
+
+#### Scenario: Two runners at their limits fit beside the listener
+
+- **GIVEN** the listener is running at its limits of 250m CPU and 256Mi memory
+- **WHEN** two runner pods are created at their limits of 2 CPU and 4Gi each
+- **THEN** both pods are admitted
+- **AND** the namespace limits are fully used (4250m CPU and 8448Mi memory)
 
 #### Scenario: Quota blocks a third runner at its limits
 
-- **GIVEN** two runner pods are running at their limits of 2 CPU and 4 GiB each
+- **GIVEN** the listener and two runner pods are running at their limits, using the whole namespace quota
 - **WHEN** a third runner pod is created
 - **THEN** the API server rejects the pod for exceeding the namespace quota
 - **AND** the pod is not scheduled

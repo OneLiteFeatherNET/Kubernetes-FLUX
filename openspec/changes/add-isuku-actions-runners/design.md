@@ -5,7 +5,7 @@
 The cluster has constraints that shape the design:
 
 - Shared cluster: no privileged pods are allowed. Docker-in-Docker needs them.
-- Memory is tight: requests on `xl-03` and `xl-04` are about 99 % booked, on `xl-01` and `xl-02` 82 to 85 %.
+- Memory is tight: measured memory requests are 84 % booked on `fr01-wrk-xl-01`, 84.5 % on `fr01-wrk-xl-02`, 95.6 % on `fr01-wrk-xl-03` and about 100 % on `fr01-wrk-xl-04`. Only xl-01 and xl-02 can take a runner.
 - The API server already sees about 90 requests per second from workload service accounts.
 - Third-party software reaches the cluster only through the official Helm chart, referenced by an `OCIRepository`, not as raw manifests.
 - Layers are never renamed or split. A new component extends an existing layer entry.
@@ -68,10 +68,12 @@ The cluster has constraints that shape the design:
 | `maxRunners` | 2 | Caps concurrent jobs |
 | Runner requests | 500m CPU, 2 GiB | Fits the memory headroom on the booked nodes |
 | Runner limits | 2 CPU, 4 GiB | Hard cap per job |
-| Namespace ResourceQuota (limits) | 4 CPU, 8 GiB | Equals two runners at their limits |
+| Listener requests / limits | 50m CPU, 128Mi / 250m CPU, 256Mi | Explicit, so the LimitRange default does not take a share of the quota |
+| Namespace ResourceQuota (requests) | 1050m CPU, 4224Mi | Two runners at requests plus the listener |
+| Namespace ResourceQuota (limits) | 4250m CPU, 8448Mi | Two runners at their limits (2 CPU, 4Gi each) plus the listener (250m, 256Mi) |
 | Namespace LimitRange | default requests and limits for any pod in the namespace | Pods without limits are not admitted |
 
-Runners request little but may burst to the limit, so the quota is sized for limits. Free requests on each worker must be checked before the rollout (see tasks). Without that check, runner pods can stay Pending on the booked nodes.
+Runners request little but may burst to the limit, so the quota is sized for limits: exactly two runners at their limits plus the listener. The listener is set explicitly because the LimitRange default would otherwise take half of the limits quota. A third runner at its limits is rejected by the quota until one of the two finishes. Free requests on each worker must be checked before the rollout (see tasks). Without that check, runner pods can stay Pending on the booked nodes.
 
 ### 5. Polling and API load
 
