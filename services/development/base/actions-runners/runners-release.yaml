@@ -33,7 +33,7 @@ spec:
       name: gha-runner-scale-set-controller
     minRunners: 0
     maxRunners: 2
-    # Explicit small listener limits, so the LimitRange default (2 CPU / 4Gi) does not
+    # Explicit small listener limits, so the LimitRange default (2 CPU / 6Gi) does not
     # eat the namespace quota. Quota is sized for two runners at limits plus this listener.
     listenerTemplate:
       spec:
@@ -68,6 +68,8 @@ spec:
               requests:
                 cpu: 500m
                 memory: 2Gi
+              # 6Gi, not 4Gi: the website's lint and build run Node with a 4 GB heap
+              # (--max-old-space-size=4096), which needs room beyond the heap itself.
               limits:
                 cpu: "2"
-                memory: 4Gi
+                memory: 6Gi
