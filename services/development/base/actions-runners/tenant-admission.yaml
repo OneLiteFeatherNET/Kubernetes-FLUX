@@ -1,0 +1,39 @@
+# Guard for the tenant: in arc-runners, a HelmRelease or Kustomization must run as isuku-flux
+# and must not target a remote cluster through spec.kubeConfig. Bound by namespace only.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: isuku-flux-tenant-guard
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["helm.toolkit.fluxcd.io"]
+        apiVersions: ["v2"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["helmreleases"]
+        scope: "Namespaced"
+      - apiGroups: ["kustomize.toolkit.fluxcd.io"]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["kustomizations"]
+        scope: "Namespaced"
+  validations:
+    - expression: "has(object.spec.serviceAccountName) && object.spec.serviceAccountName == 'isuku-flux'"
+      message: "Objects in arc-runners must set spec.serviceAccountName to isuku-flux."
+      reason: Invalid
+    - expression: "!has(object.spec.kubeConfig)"
+      message: "Objects in arc-runners must not set spec.kubeConfig (no remote cluster target)."
+      reason: Invalid
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: isuku-flux-tenant-guard
+spec:
+  policyName: isuku-flux-tenant-guard
+  validationActions: ["Deny"]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: arc-runners

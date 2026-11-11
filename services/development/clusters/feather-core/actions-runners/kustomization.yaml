@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/actions-runners/
+  - podmonitors.yaml
+  # Secrets in namespace arc-runners, SOPS-encrypted to the cluster, maintainer and CI keys.
+  # sops-age-isuku: the tenant's age private key (decrypts the tenant Kustomization).
+  # isuku-flux-deploy-key: read-only deploy key (GitRepository isuku-flux in the link file).
+  # validate.sh strips *.sops.yaml resources before rendering, so CI builds this overlay
+  # without the files; a local `kubectl kustomize` (and Flux) needs them present.
+  - sops-age-isuku.sops.yaml
+  - isuku-flux-deploy-key.sops.yaml

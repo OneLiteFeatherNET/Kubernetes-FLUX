@@ -47,6 +47,7 @@ resources:
   - app-template.yaml
   - opencost.yaml
   - telepresence.yaml
+  - gha-runner-scale-set-controller.yaml
 
 # The OCIRepositories above pull from the private onelitefeather Harbor project,
 # so flux-system needs the same pull credential the workloads use.

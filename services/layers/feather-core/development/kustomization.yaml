@@ -8,3 +8,4 @@ resources:
   - ../../../development/clusters/feather-core/penpot
   - ../../../development/clusters/feather-core/sentry
   - ../../../development/clusters/feather-core/telepresence
+  - ../../../development/clusters/feather-core/actions-runners

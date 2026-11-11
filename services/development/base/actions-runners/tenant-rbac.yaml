@@ -1,0 +1,61 @@
+# Identity of the publisher's tenant objects (IsukuVerlag/IsukuVerlagFlux, applied by the
+# Kustomization tenant-isuku in clusters/feather-core/tenant-isuku.yaml). Rights are limited to
+# arc-runners; no rights on NetworkPolicies, quotas, LimitRanges, admission policies, Flux
+# Kustomizations or GitRepositories. Runner chart rules: helm template gha-runner-scale-set 0.15.1.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: isuku-flux
+  namespace: arc-runners
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: isuku-flux
+  namespace: arc-runners
+rules:
+  # Chart-managed and tenant-managed objects.
+  - apiGroups: [""]
+    resources: ["secrets", "serviceaccounts", "configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  # Runner scale set: the tenant owns the AutoscalingRunnerSet; the controller owns the rest.
+  - apiGroups: ["actions.github.com"]
+    resources: ["autoscalingrunnersets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["actions.github.com"]
+    resources: ["ephemeralrunnersets", "ephemeralrunners", "autoscalinglisteners"]
+    verbs: ["get", "list", "watch"]
+  # Flux objects the tenant manages inside arc-runners (HelmRelease, OCIRepository).
+  - apiGroups: ["helm.toolkit.fluxcd.io"]
+    resources: ["helmreleases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["source.toolkit.fluxcd.io"]
+    resources: ["ocirepositories"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  # Runner pods and their status.
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/status"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: isuku-flux
+  namespace: arc-runners
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: isuku-flux
+subjects:
+  - kind: ServiceAccount
+    name: isuku-flux
+    namespace: arc-runners

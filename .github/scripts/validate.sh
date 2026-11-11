@@ -68,6 +68,12 @@ for f in sorted(glob.glob("clusters/feather-core/*.yaml")):
                 continue
             if doc.get("kind") == "Kustomization" and \
                doc.get("apiVersion", "").startswith("kustomize.toolkit.fluxcd.io"):
+                # Layers live in flux-system and build from this repo. A Kustomization in
+                # another namespace (tenant link) points at a path of another repository.
+                ns = (doc.get("metadata") or {}).get("namespace", "flux-system")
+                if ns != "flux-system":
+                    sys.stderr.write(f"skip {f}: {doc['metadata']['name']} builds another repository\n")
+                    continue
                 p = (doc.get("spec") or {}).get("path")
                 if p and p not in seen:
                     seen.append(p)

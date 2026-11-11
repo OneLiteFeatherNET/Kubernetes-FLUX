@@ -1,0 +1,58 @@
+# Runner namespace: no ingress; egress only to DNS and public HTTPS (runners need no API
+# access without the Kubernetes container mode). Runbook: https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA (actions runners section pending)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: isuku-runners-ingress
+  namespace: arc-runners
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  # No ingress: runner pods serve nothing. The listener runs in arc-systems.
+  ingress: []
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: isuku-runners-egress
+  namespace: arc-runners
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    # DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Public HTTPS: GitHub (API, actions, blob storage), npm registry, CMS and Cloudflare
+    # endpoints. Private ranges are excluded, so cluster services stay unreachable.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 169.254.0.0/16
+              - 100.64.0.0/10
+              - 127.0.0.0/8
+        - ipBlock:
+            cidr: ::/0
+            except:
+              - fc00::/7
+              - fe80::/10
+              - ::1/128
+      ports:
+        - protocol: TCP
+          port: 443
