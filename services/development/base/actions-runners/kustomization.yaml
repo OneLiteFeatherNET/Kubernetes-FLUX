@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# No namespace here: the base spans two namespaces (controller and runners),
+# so every manifest sets its own.
+resources:
+  - namespaces.yaml
+  - controller-release.yaml
+  - runners-limits.yaml
+  - runners-networkpolicy.yaml
+  - runners-release.yaml

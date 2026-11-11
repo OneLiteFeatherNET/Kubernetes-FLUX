@@ -1,0 +1,83 @@
+# Runner namespace: no ingress except metric scrapes; egress only to DNS, the API server and
+# public HTTPS. Runbook: https://outline.onelitefeather.dev/doc/kubernetes-flux-gitops-fur-feather-core-x27ljhcgMA (actions runners section pending)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: isuku-runners-ingress
+  namespace: arc-runners
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    # Alloy (grafana namespace) scrapes the listener's gha_* metrics on :8080.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: grafana
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: alloy
+              app.kubernetes.io/instance: alloy-metrics
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: isuku-runners-egress
+  namespace: arc-runners
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    # DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Kubernetes API server (listener creates ephemeral runners). Control-plane endpoints
+    # of the cluster; service ClusterIP traffic is translated to 6443 before policy applies.
+    - to:
+        - ipBlock:
+            cidr: 192.168.15.10/32
+        - ipBlock:
+            cidr: 192.168.15.11/32
+        - ipBlock:
+            cidr: 192.168.15.12/32
+      ports:
+        - protocol: TCP
+          port: 6443
+        - protocol: TCP
+          port: 443
+    # Public HTTPS: GitHub (API, actions, blob storage), npm registry, CMS and Cloudflare
+    # endpoints. Private ranges are excluded, so cluster services stay unreachable.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 169.254.0.0/16
+              - 100.64.0.0/10
+              - 127.0.0.0/8
+        - ipBlock:
+            cidr: ::/0
+            except:
+              - fc00::/7
+              - fe80::/10
+              - ::1/128
+      ports:
+        - protocol: TCP
+          port: 443

@@ -1,0 +1,30 @@
+# Sized for two runners at limits (2 x 2 CPU / 4Gi) plus the listener (250m / 256Mi,
+# set in runners-release.yaml). Requests: two runners (2 x 500m / 2Gi) plus the listener
+# (50m / 128Mi). Quota is counted on limits, the runner's burst ceiling.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: isuku-runners
+  namespace: arc-runners
+spec:
+  hard:
+    requests.cpu: 1050m
+    requests.memory: 4224Mi
+    limits.cpu: 4250m
+    limits.memory: 8448Mi
+---
+# Pods without explicit resources get these values (runner pods; the listener sets its own).
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: isuku-runners
+  namespace: arc-runners
+spec:
+  limits:
+    - type: Container
+      defaultRequest:
+        cpu: 500m
+        memory: 2Gi
+      default:
+        cpu: "2"
+        memory: 4Gi

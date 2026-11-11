@@ -1,0 +1,31 @@
+# Scraped by Alloy (cluster-wide PodMonitor discovery, see services/observability alloy-metrics).
+# Listener metrics (gha_* job counters and durations) and controller metrics, both on port "metrics".
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: isuku-runners-listener
+  namespace: arc-runners
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: runner-scale-set-listener
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: gha-runner-scale-set-controller
+  namespace: arc-systems
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: gha-rs-controller
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 30s

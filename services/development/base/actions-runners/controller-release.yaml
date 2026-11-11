@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gha-runner-scale-set-controller
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: arc-systems
+spec:
+  releaseName: gha-runner-scale-set-controller
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set-controller
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  values:
+    # Metrics on :8080 for the controller and for every listener it starts.
+    # The controller only passes --listener-metrics-addr when this block is set.
+    metrics:
+      controllerManagerAddr: ":8080"
+      listenerAddr: ":8080"
+      listenerEndpoint: "/metrics"

@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/actions-runners/
+  - podmonitors.yaml
+  # Secret `isuku-github-app` (namespace arc-runners) with the GitHub App credentials.
+  # Maintainer-created, SOPS-encrypted, not in git yet: keys github_app_id,
+  # github_app_installation_id, github_app_private_key. Create it with
+  #   sops services/development/clusters/feather-core/actions-runners/github-app.sops.yaml
+  # validate.sh strips *.sops.yaml resources before rendering, so CI builds this overlay
+  # without the file; a local `kubectl kustomize` (and Flux) needs it present.
+  - github-app.sops.yaml
