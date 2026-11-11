@@ -14,9 +14,9 @@
 
 - [ ] 3.1 Add `services/development/base/actions-runners/` with the controller namespace and a HelmRelease for `gha-runner-scale-set-controller` referencing the OCIRepository by `chartRef`
 - [ ] 3.2 Add the runner namespace, pod security labels following the existing namespace pattern, and a LimitRange with defaults
-- [ ] 3.3 Add the ResourceQuota for the runner namespace: 4250m CPU and 8448Mi on limits, 1050m CPU and 4224Mi on requests (two runners plus the listener), and explicit listener resources (50m / 128Mi requests, 250m / 256Mi limits)
+- [ ] 3.3 Add the ResourceQuota for the runner namespace: 4250m CPU and 12544Mi on limits, 1050m CPU and 4224Mi on requests (two runners plus the listener), and explicit listener resources (50m / 128Mi requests, 250m / 256Mi limits)
 - [ ] 3.4 Add the NetworkPolicy: deny all ingress; allow egress to DNS and to GitHub, the npm registry, and the CMS and Cloudflare endpoints, with a one-line comment and an Outline link
-- [ ] 3.5 Add the HelmRelease for `gha-runner-scale-set` named `isuku-runners`, with `githubConfigUrl: https://github.com/IsukuVerlag`, `minRunners: 0`, `maxRunners: 2`, runner requests 500m CPU and 2 GiB, limits 2 CPU and 4 GiB, no container mode (no Docker-in-Docker), non-root security context, ephemeral runners, and `dependsOn` the controller HelmRelease
+- [ ] 3.5 Add the HelmRelease for `gha-runner-scale-set` named `isuku-runners`, with `githubConfigUrl: https://github.com/IsukuVerlag`, `minRunners: 0`, `maxRunners: 2`, runner requests 500m CPU and 2 GiB, limits 2 CPU and 6 GiB, no container mode (no Docker-in-Docker), non-root security context, ephemeral runners, and `dependsOn` the controller HelmRelease
 - [ ] 3.6 Keep listener and controller polling at chart defaults; set no sync interval
 
 ## 4. Cluster overlay and secrets

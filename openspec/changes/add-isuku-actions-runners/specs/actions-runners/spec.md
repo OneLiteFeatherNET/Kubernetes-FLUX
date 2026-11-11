@@ -40,25 +40,25 @@ THE scale set SHALL scale between 0 and 2 runners, and THE scale set SHALL NOT k
 
 ### Requirement: Runner pod resources
 
-EACH runner pod SHALL request 500m CPU and 2 GiB memory, and EACH runner pod SHALL be limited to 2 CPU and 4 GiB memory.
+EACH runner pod SHALL request 500m CPU and 2 GiB memory, and EACH runner pod SHALL be limited to 2 CPU and 6 GiB memory.
 
 #### Scenario: Runner pod carries its requests and limits
 
 - **GIVEN** a runner pod is created for a job
 - **WHEN** its container spec is read
 - **THEN** its requests are 500m CPU and 2 GiB memory
-- **AND** its limits are 2 CPU and 4 GiB memory
+- **AND** its limits are 2 CPU and 6 GiB memory
 
 ### Requirement: Namespace quota
 
-THE runner namespace SHALL enforce a ResourceQuota of 4250m CPU and 8448Mi memory on limits (two runners at 2 CPU and 4Gi each plus the listener at 250m and 256Mi) and of 1050m CPU and 4224Mi memory on requests, THE listener SHALL set explicit requests of 50m CPU and 128Mi memory and limits of 250m CPU and 256Mi memory, and THE runner namespace SHALL apply a LimitRange so that pods without explicit resources receive defaults.
+THE runner namespace SHALL enforce a ResourceQuota of 4250m CPU and 12544Mi memory on limits (two runners at 2 CPU and 6Gi each plus the listener at 250m and 256Mi) and of 1050m CPU and 4224Mi memory on requests, THE listener SHALL set explicit requests of 50m CPU and 128Mi memory and limits of 250m CPU and 256Mi memory, and THE runner namespace SHALL apply a LimitRange so that pods without explicit resources receive defaults.
 
 #### Scenario: Two runners at their limits fit beside the listener
 
 - **GIVEN** the listener is running at its limits of 250m CPU and 256Mi memory
-- **WHEN** two runner pods are created at their limits of 2 CPU and 4Gi each
+- **WHEN** two runner pods are created at their limits of 2 CPU and 6Gi each
 - **THEN** both pods are admitted
-- **AND** the namespace limits are fully used (4250m CPU and 8448Mi memory)
+- **AND** the namespace limits are fully used (4250m CPU and 12544Mi memory)
 
 #### Scenario: Quota blocks a third runner at its limits
 
