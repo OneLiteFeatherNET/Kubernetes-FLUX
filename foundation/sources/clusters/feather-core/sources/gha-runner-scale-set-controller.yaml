@@ -1,0 +1,12 @@
+# GitHub actions-runner-controller (scale-set mode). Chart and runner image
+# versions are pinned together: the controller ships the CRDs the scale set needs.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: gha-runner-scale-set-controller
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+  ref:
+    tag: "0.15.1"

@@ -1,0 +1,11 @@
+# Runner scale set `isuku-runners`; must stay on the same chart version as the controller.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: gha-runner-scale-set
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+  ref:
+    tag: "0.15.1"
