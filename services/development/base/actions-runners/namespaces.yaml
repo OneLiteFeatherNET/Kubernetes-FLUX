@@ -1,18 +1,9 @@
-# arc-systems: the controller and the listener's control plane.
+# arc-systems: the controller and the listener's control plane. The arc-runners namespace
+# is created by the link file clusters/feather-core/tenant-isuku.yaml.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: arc-systems
-  labels:
-    pod-security.kubernetes.io/enforce: baseline
-    pod-security.kubernetes.io/warn: restricted
-    pod-security.kubernetes.io/audit: restricted
----
-# arc-runners: runner pods and their listener. Quota and LimitRange live in runners-limits.yaml.
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: arc-runners
   labels:
     pod-security.kubernetes.io/enforce: baseline
     pod-security.kubernetes.io/warn: restricted
