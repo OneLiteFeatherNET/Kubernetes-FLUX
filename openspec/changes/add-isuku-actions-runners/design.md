@@ -67,10 +67,10 @@ The cluster has constraints that shape the design:
 | `minRunners` | 0 | No idle pods on the cluster |
 | `maxRunners` | 2 | Caps concurrent jobs |
 | Runner requests | 500m CPU, 2 GiB | Fits the memory headroom on the booked nodes |
-| Runner limits | 2 CPU, 4 GiB | Hard cap per job |
+| Runner limits | 2 CPU, 6 GiB | Hard cap per job. 6 GiB, not 4 GiB: the website's lint and build run Node with a 4 GB heap (`--max-old-space-size=4096`), which needs room beyond the heap itself |
 | Listener requests / limits | 50m CPU, 128Mi / 250m CPU, 256Mi | Explicit, so the LimitRange default does not take a share of the quota |
 | Namespace ResourceQuota (requests) | 1050m CPU, 4224Mi | Two runners at requests plus the listener |
-| Namespace ResourceQuota (limits) | 4250m CPU, 8448Mi | Two runners at their limits (2 CPU, 4Gi each) plus the listener (250m, 256Mi) |
+| Namespace ResourceQuota (limits) | 4250m CPU, 12544Mi | Two runners at their limits (2 CPU, 6Gi each) plus the listener (250m, 256Mi) |
 | Namespace LimitRange | default requests and limits for any pod in the namespace | Pods without limits are not admitted |
 
 Runners request little but may burst to the limit, so the quota is sized for limits: exactly two runners at their limits plus the listener. The listener is set explicitly because the LimitRange default would otherwise take half of the limits quota. A third runner at its limits is rejected by the quota until one of the two finishes. Free requests on each worker must be checked before the rollout (see tasks). Without that check, runner pods can stay Pending on the booked nodes.
@@ -112,7 +112,7 @@ Runners request little but may burst to the limit, so the quota is sized for lim
 
 - **Pending pods on booked nodes:** mitigated by low requests and the pre-rollout capacity check. Residual risk: a node fills up later.
 - **Runner outage stops CI again:** the GitHub-hosted fallback stays one variable away (`RUNNER` unset) while the billing limit is still in place.
-- **Quota too small for a heavy job:** a job above 2 CPU or 4 GiB fails on the cluster. Such jobs stay on GitHub-hosted runners by setting the variable per repository.
+- **Quota too small for a heavy job:** a job above 2 CPU or 6 GiB fails on the cluster. Such jobs stay on GitHub-hosted runners by setting the variable per repository.
 - **Key expiry:** a GitHub App private key that is not rotated stops registration. Covered by the operating notes.
 
 ## Migration Plan
