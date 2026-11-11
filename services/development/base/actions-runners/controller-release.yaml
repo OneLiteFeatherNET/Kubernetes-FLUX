@@ -17,8 +17,12 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  interval: 1m0s
+  interval: 10m0s
   values:
+    # Watch only the runner namespace: no cluster-wide watches on pods and secrets
+    # (API-server load, smaller blast radius).
+    flags:
+      watchSingleNamespace: arc-runners
     # Metrics on :8080 for the controller and for every listener it starts.
     # The controller only passes --listener-metrics-addr when this block is set.
     metrics:
