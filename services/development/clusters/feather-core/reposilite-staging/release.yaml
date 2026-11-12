@@ -17,7 +17,7 @@ spec:
                 value: feather-low
         images:
           - name: ghcr.io/onelitefeathernet/ingot
-            digest: sha256:312b5107661567dfc8ac470377dec1232a63318ef10e52c42f2a1b27429d9b64 # {"$imagepolicy": "flux-system:ingot-staging:digest"}
+            digest: sha256:4c52af72f0fff0d659374055cc4a816bd88e9d4c39d34b9668ba28f9fc1b9306 # {"$imagepolicy": "flux-system:ingot-staging:digest"}
   values:
     # Ingot is a drop-in fork of Reposilite. `tag` is mandatory, not cosmetic:
     # without it the chart asks for a tag that does not exist. Bump it together
