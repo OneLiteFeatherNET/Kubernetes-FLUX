@@ -1,6 +1,5 @@
-# Sized for two runners at limits (2 x 2 CPU / 6Gi) plus the listener (250m / 256Mi,
-# set in runners-release.yaml). Requests: two runners (2 x 500m / 2Gi) plus the listener
-# (50m / 128Mi). Quota is counted on limits, the runner's burst ceiling.
+# Kubernetes container mode, two runners: each runner pod plus a workflow pod (job container and
+# service containers such as Postgres or Directus). Work volumes only from the ephemeral RBD class.
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -8,12 +7,16 @@ metadata:
   namespace: arc-runners
 spec:
   hard:
-    requests.cpu: 1050m
-    requests.memory: 4224Mi
-    limits.cpu: 4250m
-    limits.memory: 12544Mi
+    requests.cpu: 2500m
+    requests.memory: 12Gi
+    limits.cpu: "10"
+    limits.memory: 32Gi
+    persistentvolumeclaims: "4"
+    requests.storage: 40Gi
+    ceph-rbd-fr01.storageclass.storage.k8s.io/requests.storage: "0"
+    ceph-cephfs-fr01.storageclass.storage.k8s.io/requests.storage: "0"
 ---
-# Pods without explicit resources get these values (runner pods; the listener sets its own).
+# Containers without explicit resources (job and service containers of the workflow pod).
 apiVersion: v1
 kind: LimitRange
 metadata:
@@ -23,8 +26,8 @@ spec:
   limits:
     - type: Container
       defaultRequest:
-        cpu: 500m
-        memory: 2Gi
+        cpu: 100m
+        memory: 256Mi
       default:
-        cpu: "2"
-        memory: 6Gi
+        cpu: "1"
+        memory: 2Gi

@@ -7,5 +7,6 @@ resources:
   - controller-release.yaml
   - runners-limits.yaml
   - runners-networkpolicy.yaml
+  - runners-kube-api.yaml
   - tenant-rbac.yaml
   - tenant-admission.yaml

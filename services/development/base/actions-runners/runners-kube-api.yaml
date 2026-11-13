@@ -1,0 +1,18 @@
+# Kubernetes container mode: runner pods create and exec into workflow pods through the API server.
+# Cilium ipBlock rules do not match node IPs (host-network apiserver), hence the entity rule.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: isuku-runners-kube-api
+  namespace: arc-runners
+spec:
+  endpointSelector:
+    matchLabels:
+      actions-ephemeral-runner: "True"
+  egress:
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
