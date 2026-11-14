@@ -28,13 +28,13 @@ WHEN the image digest of a cluster image equals the digest stored on its project
 
 ### Requirement: Harbor artifacts are uploaded from their SBOM
 
-WHEN a Harbor artifact has an SBOM accessory, THE job SHALL download it, convert it to CycloneDX 1.6, and upload it to Dependency-Track as a project named `<harbor host>/<project>/<repository>` with version equal to the artifact tag, or its digest when untagged.
+WHEN a Harbor artifact has an SBOM accessory, THE job SHALL download it, convert it to CycloneDX 1.7, and upload it to Dependency-Track as a project named `<harbor host>/<project>/<repository>` with version equal to the artifact tag, or its digest when untagged.
 
 #### Scenario: Harbor artifact with SBOM is uploaded
 
 - **GIVEN** a Harbor artifact `library/app:2.0.0` with an SPDX SBOM accessory
 - **WHEN** the job runs
-- **THEN** the SBOM is converted to CycloneDX 1.6 and uploaded as project `<harbor host>/library/app` version `2.0.0` with tag `sbom-sync-harbor`
+- **THEN** the SBOM is converted to CycloneDX 1.7 and uploaded as project `<harbor host>/library/app` version `2.0.0` with tag `sbom-sync-harbor`
 
 ### Requirement: Missing Harbor SBOMs are generated, not uploaded
 
@@ -104,12 +104,42 @@ WHILE the environment variable `DRY_RUN` is `true`, THE job SHALL log the action
 - **WHEN** the job runs
 - **THEN** no upload, property write, deletion or scan request is sent, and the summary line reports `dry_run=true`
 
+### Requirement: Targets the Dependency-Track 5 API in-cluster
+
+THE job SHALL send its Dependency-Track requests to the in-cluster v5 API service in namespace `dependency-track-v5`, authenticated with an API key sent in header `X-Api-Key`, and SHALL NOT target any Dependency-Track 4.x instance.
+
+#### Scenario: Requests reach the v5 API
+
+- **GIVEN** a run of the CronJob in namespace `dependency-track-v5`
+- **WHEN** the job uploads one BOM
+- **THEN** the request goes to the v5 API service and carries the header `X-Api-Key` with a key of prefix `odt_`
+
+### Requirement: Every list call paginates explicitly
+
+EVERY list request to Dependency-Track, Harbor or the Kubernetes API SHALL send its page size explicitly and SHALL continue until a page returns fewer items than the page size.
+
+#### Scenario: Projects beyond one page are all seen
+
+- **GIVEN** 250 projects tagged `sbom-sync-cluster` in Dependency-Track
+- **WHEN** the job lists them for retention
+- **THEN** it requests pages 1, 2 and 3 with `pageSize=100` and evaluates all 250 projects
+
+### Requirement: Oversize BOMs are failed items
+
+WHEN a BOM exceeds the Dependency-Track upload limit of 100 MiB, THE job SHALL record that item as failed and SHALL NOT truncate or alter the BOM to fit.
+
+#### Scenario: Oversize BOM is rejected and recorded
+
+- **GIVEN** a Harbor SBOM that converts to a document larger than 100 MiB
+- **WHEN** the job uploads it
+- **THEN** the existing Dependency-Track project for that version is unchanged, the item counts as failed in the summary line, and the other items are processed
+
 ### Requirement: Least-privilege Kubernetes access
 
-THE ServiceAccount `dependency-track-sbom-sync` SHALL hold only `get` and `list` on `sbomreports` in group `aquasecurity.github.io`.
+THE ServiceAccount `dependency-track-sbom-sync` in namespace `dependency-track-v5` SHALL hold only `get` and `list` on `sbomreports` in group `aquasecurity.github.io`.
 
 #### Scenario: Job cannot modify reports
 
-- **GIVEN** the ServiceAccount `dependency-track-sbom-sync`
-- **WHEN** its permissions are checked with `kubectl auth can-i delete sbomreports --as=system:serviceaccount:dependency-track:dependency-track-sbom-sync -A`
+- **GIVEN** the ServiceAccount `dependency-track-sbom-sync` in namespace `dependency-track-v5`
+- **WHEN** its permissions are checked with `kubectl auth can-i delete sbomreports --as=system:serviceaccount:dependency-track-v5:dependency-track-sbom-sync -A`
 - **THEN** the answer is `no`
