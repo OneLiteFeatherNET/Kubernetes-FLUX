@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dependency-track-v5
+resources:
+  - ../../../base/dependency-track-sbom-sync
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: dependency-track-sbom-sync-config
+    literals:
+      # Placeholder until task 1.6 records the v5 service name; `.invalid` never resolves.
+      - DT_URL=http://dependency-track-v5.invalid:8080
+      - HARBOR_URL=https://harbor.onelitefeather.dev
+# Enable once sbom-sync.sops.env exists (task 3.1), then delete the TEMPLATE:
+# secretGenerator:
+#   - name: dependency-track-sbom-sync
+#     envs:
+#       - sbom-sync.sops.env
