@@ -2441,6 +2441,258 @@ groups:
           check_command: "kubectl get certificate -A | grep -v True"
         labels:
           severity: critical
+      - uid: apiserver-client-certificate-expiring-soon
+        title: API server client certificate expiring within 14 days
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Kubernetes' own histogram of the remaining validity of client certificates
+              # the API server authenticates. The 1% quantile is the least-valid client
+              # certificate, in days. Bucket boundaries are 7d and 30d, so the 14d threshold
+              # is interpolated, not exact. No observations -> no series -> noDataState OK.
+              expr: histogram_quantile(0.01, sum by (le) (rate(apiserver_client_certificate_expiration_seconds_bucket[5m]))) / 86400
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 14
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 1h
+        annotations:
+          summary: "The least-valid API server client certificate expires in under 14 days. Clients that authenticate with it (kubelet, controllers, cluster tooling) fail once it expires."
+          problem: "API server client certificate expires in <14 days"
+          service: "Kubernetes API server"
+          threshold: "> 14 days left"
+          value_unit: "days left"
+          value_fmt: "%.1f"
+          check: "Identify the client that presents the certificate (apiserver audit log or the client's kubeconfig) and rotate it before expiry."
+          check_command: "talosctl -n <control-plane-node> get certificates"
+        labels:
+          severity: warning
+      - uid: kubelet-serving-certificate-expiring-soon
+        title: Kubelet serving certificate expiring within 14 days
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Kubelet's own TTL gauge for the serving certificate (seconds, negative once
+              # expired), converted to days. Only emitted when the kubelet rotates its serving
+              # certificate; on nodes where it is not emitted there is no series and the rule
+              # stays OK. That gap is unverified in this repo (see the code PR).
+              expr: min by (node) (kubelet_certificate_manager_server_ttl_seconds) / 86400
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 14
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 1h
+        annotations:
+          summary: "Kubelet serving certificate on node {{ $labels.node }} expires in under 14 days. The API server cannot reach the kubelet (logs, exec, port-forward) once it expires."
+          problem: "Kubelet serving certificate expires in <14 days"
+          service: "Kubelet"
+          threshold: "> 14 days left"
+          value_unit: "days left"
+          value_fmt: "%.1f"
+          object_label: "Node"
+          object_key: "node"
+          check: "Check the node's kubelet serving certificate and whether rotation is still running on that node."
+          check_command: "kubectl get csr | grep kubelet-serving"
+        labels:
+          severity: warning
+  - orgId: 1
+    name: etcd
+    folder: Core Services
+    interval: 60s
+    rules:
+      - uid: etcd-no-leader
+        title: etcd reports no leader
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # min across members: one member without a leader is enough. Scraped via the
+              # chart's kubeEtcd ServiceMonitor; whether the Talos etcd metrics endpoint is
+              # reachable from the cluster is unverified (see annotation "limitation").
+              expr: min(etcd_server_has_leader)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "An etcd member reports no leader for 1 minute. The API server cannot write until a leader is elected."
+          problem: "etcd has no leader"
+          service: "etcd"
+          threshold: "etcd_server_has_leader = 1"
+          check: "Check etcd member health and quorum on the control-plane nodes before restarting anything."
+          check_command: "talosctl -n <control-plane-node> etcd status"
+          limitation: "Fires only if the etcd metrics endpoint is scraped. No series means no alert, not a healthy etcd."
+        labels:
+          severity: critical
+      - uid: etcd-leader-changes-high
+        title: etcd leader changes above 3 in 15 minutes
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1200
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              expr: max(increase(etcd_server_leader_changes_seen_total[15m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: "etcd has changed leader more than 3 times in 15 minutes. The cluster is flapping and API latency will follow."
+          problem: "etcd leader changes > 3 in 15 min"
+          service: "etcd"
+          threshold: "<= 3 leader changes in 15 min"
+          check: "Look for disk latency or network loss between control-plane nodes; a slow member triggers elections."
+          check_command: "talosctl -n <control-plane-node> etcd status"
+          limitation: "Fires only if the etcd metrics endpoint is scraped. No series means no alert, not a healthy etcd."
+        labels:
+          severity: warning
   - orgId: 1
     name: minecraft
     folder: Minecraft

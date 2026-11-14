@@ -8,6 +8,7 @@ resources:
   - ../../../observability/clusters/feather-core/alloy-logs
   - ../../../observability/clusters/feather-core/alloy-metrics
   - ../../../observability/clusters/feather-core/alloy-receiver
+  - ../../../observability/clusters/feather-core/alloy-talos-logs
   - ../../../observability/clusters/feather-core/loki
   - ../../../observability/clusters/feather-core/mimir
   - ../../../observability/clusters/feather-core/opencost
