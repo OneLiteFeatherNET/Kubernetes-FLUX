@@ -1,0 +1,12 @@
+# CoreDNS is owned by Talos; this PDB is the only object Flux owns for it.
+# Valid only while CoreDNS runs at least two replicas.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: coredns
+  namespace: kube-system
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-dns

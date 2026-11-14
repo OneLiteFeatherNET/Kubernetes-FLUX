@@ -10,3 +10,4 @@ resources:
   - ../../../storage/clusters/feather-core/snapshot-controller
   - ../../../platform/clusters/feather-core/descheduler
   - ../../../platform/clusters/feather-core/workload-admission-policies
+  - ../../../platform/clusters/feather-core/coredns-pdb
