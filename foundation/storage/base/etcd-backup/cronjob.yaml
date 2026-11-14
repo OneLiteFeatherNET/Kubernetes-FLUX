@@ -46,6 +46,8 @@ spec:
               args:
                 - --talosconfig=/var/run/secrets/talos.dev/config
                 - --endpoints=192.168.15.10,192.168.15.11,192.168.15.12
+                # A down cp-01 makes this run fail; the 26h alert catches it.
+                - --nodes=192.168.15.10
                 - etcd
                 - snapshot
                 - /scratch/snapshot.db
