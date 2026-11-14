@@ -1,0 +1,59 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dependency-track-v5
+  namespace: dependency-track-v5
+spec:
+  values:
+    frontend:
+      # Test hostname until cutover; the public hostname replaces it in the cutover PR.
+      apiBaseUrl: "https://dependency-track-next.onelitefeather.dev"
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      extraEnv:
+        - name: OIDC_ISSUER
+          valueFrom:
+            secretKeyRef:
+              key: oidc-issuer
+              name: dependency-track-v5-env
+        - name: OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: oidc-client-id
+              name: dependency-track-v5-env
+        - name: OIDC_LOGIN_BUTTON_TEXT
+          value: "Azure AD"
+    apiServer:
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      extraEnv:
+        - name: DT_OIDC_ENABLED
+          value: "true"
+        - name: DT_OIDC_ISSUER
+          valueFrom:
+            secretKeyRef:
+              key: oidc-issuer
+              name: dependency-track-v5-env
+        - name: DT_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: oidc-client-id
+              name: dependency-track-v5-env
+        - name: DT_OIDC_USERNAME_CLAIM
+          value: email
+        - name: DT_OIDC_USER_PROVISIONING
+          value: "true"
+        - name: DT_OIDC_TEAMS_CLAIM
+          value: groups
+        - name: DT_OIDC_TEAM_SYNCHRONIZATION
+          value: "true"
+        # The chart does not enable pooling by default in the apiserver; the code default is off.
+        - name: DT_DATASOURCE_POOL_ENABLED
+          value: "true"
+        # Capped for the shared cluster (max_connections 200); see the connection budget in the PR.
+        - name: DT_DATASOURCE_POOL_MAX_SIZE
+          value: "10"
+        - name: DT_DATASOURCE_POOL_MIN_IDLE
+          value: "1"
+        - name: DT_DATASOURCE_POOL_IDLE_TIMEOUT_MS
+          value: "60000"

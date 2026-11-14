@@ -1,0 +1,90 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dependency-track-v5
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: dependency-track-v5
+spec:
+  releaseName: dependency-track-v5
+  chart:
+    spec:
+      chart: dependency-track
+      version: "=2.9.0"
+      sourceRef:
+        kind: HelmRepository
+        name: dependency-track-chart
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 1m0s
+  # Stays suspended until the migrator has bootstrapped and verified the target
+  # (openspec migrate-dependency-track-v5, rehearsal step 4).
+  suspend: true
+  # Chart values: https://github.com/DependencyTrack/helm-charts/blob/dependency-track-2.9.0/charts/dependency-track/values.yaml
+  values:
+    database:
+      jdbcUrl: "jdbc:postgresql://feather-core-cluster-pg-pooler-rw.cnpg-system.svc:5432/dependency-track-v5"
+      existingSecret:
+        name: dependency-track-v5-env
+    secretManagement:
+      database:
+        kek:
+          mode: keyset
+          existingSecret:
+            name: dependency-track-v5-kek
+    fileStorage:
+      provider: local
+      local:
+        storageClassName: ceph-rbd-fr01
+        size: 10Gi
+        accessModes:
+          - ReadWriteOnce
+    apiServer:
+      image:
+        repository: dependencytrack/apiserver
+        tag: "5.2.1"
+      # The migrator bootstraps the schema; the chart initializer would run first on the empty target.
+      initializer:
+        enabled: false
+      serviceMonitor:
+        enabled: true
+        namespace: dependency-track-v5
+      web:
+        priorityClassName: feather-standard
+        # Hard zone pin, as in v4. Limit stays at the chart default until the rehearsal measures it.
+        nodeSelector:
+          topology.kubernetes.io/zone: fr01
+        resources:
+          requests:
+            cpu: "1"
+            memory: 2Gi
+    frontend:
+      image:
+        repository: dependencytrack/frontend
+        tag: "5.2.1"
+      replicaCount: 3
+      priorityClassName: feather-standard
+      pdb:
+        enabled: true
+        maxUnavailable: 1
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - fr01
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: dependency-track-frontend
+                    app.kubernetes.io/instance: dependency-track-v5
+                topologyKey: kubernetes.io/hostname

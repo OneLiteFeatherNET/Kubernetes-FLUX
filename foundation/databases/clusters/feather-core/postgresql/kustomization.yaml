@@ -23,6 +23,8 @@ resources:
   - database/titan-dev.yaml
   - database/backstage.yaml
   - database/dependency-track.yaml
+  - database/dependency-track-v5.yaml
+  - database/dependency-track-v4-copy.yaml
   - database/grafana.yaml
   - database/n8n.yaml
   - database/penpot.yaml
