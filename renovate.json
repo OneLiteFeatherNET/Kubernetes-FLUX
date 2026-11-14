@@ -108,6 +108,12 @@
       "groupName": "stateful updates",
       "automerge": false,
       "addLabels": ["stateful"]
+    },
+    {
+      "description": "The v4 release stays on chart <2: DT 5 needs the offline migration, so the parallel v5 release is not capped",
+      "matchFileNames": ["services/development/base/dependency-track/release.yaml"],
+      "matchPackageNames": ["dependency-track"],
+      "allowedVersions": "<2"
     }
   ],
   "bumpVersions": [
