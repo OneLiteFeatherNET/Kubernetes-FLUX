@@ -1,0 +1,14 @@
+# Velero selects the snapshot class per driver via this label.
+# Retain: deleting a Velero backup must not delete the Ceph snapshot a restore still needs.
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: rbd-snapshot
+  labels:
+    velero.io/csi-volumesnapshot-class: "true"
+driver: rook-ceph.rbd.csi.ceph.com
+deletionPolicy: Retain
+parameters:
+  clusterID: rook-ceph-fr01
+  csi.storage.k8s.io/snapshotter-secret-name: rook-csi-rbd-provisioner
+  csi.storage.k8s.io/snapshotter-secret-namespace: rook-ceph-fr01

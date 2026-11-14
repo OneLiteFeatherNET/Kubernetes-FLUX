@@ -319,6 +319,70 @@ groups:
           check_command: "kubectl -n etcd-backup get cronjob,jobs"
         labels:
           severity: warning
+      - uid: velero-backup-missing
+        title: Velero backup missing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Hours since the last successful backup of the daily schedule (schedule name from the
+              # velero chart: <release>-<schedule>). No series means no successful backup ever ran.
+              expr: (time() - max(velero_backup_last_successful_timestamp{schedule="velero-daily"})) / 3600
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 26
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        # Absent series is not treated as an alert: the daily schedule ships paused, and the
+        # first scheduled backup creates the series. Same convention as cnpg-backup-stale.
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "No successful Velero backup of the daily schedule in over 26 h."
+          problem: "No Velero backup for over 26 h"
+          service: "Velero"
+          threshold: "< 26 h since last successful backup"
+          value_unit: "h since last backup"
+          value_fmt: "%.1f"
+          location: "velero"
+          check: "Check whether the schedule is unpaused and whether the default BackupStorageLocation is Available."
+          check_command: "kubectl -n velero get schedules.velero.io,backupstoragelocations.velero.io"
+        labels:
+          severity: warning
   - orgId: 1
     name: backups
     folder: Backups

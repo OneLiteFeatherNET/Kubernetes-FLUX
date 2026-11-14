@@ -5,3 +5,4 @@ resources:
   - rbd-ephemeral.yaml
   - cephfs.yaml
   - bucket.yaml
+  - rbd-snapshot.yaml
