@@ -8,6 +8,15 @@ spec:
     controller:
       type: daemonset
       priorityClassName: feather-high
+      # Collect logs on control-plane and storage nodes too. Exists on the key
+      # only, so the collector follows the taint's key and effect, not a value.
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.feather/storage
+          operator: Exists
+          effect: NoSchedule
       podLabels:
         logs.onelitefeather.net/env: prod
     serviceMonitor:

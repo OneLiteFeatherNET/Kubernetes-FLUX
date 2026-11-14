@@ -1,0 +1,114 @@
+# Talos machine.logging intake (json_lines over TCP). Separate from alloy-receiver
+# so Talos traffic never shares pods or ports with the public OTLP path.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy-talos-logs
+  namespace: grafana
+spec:
+  values:
+    controller:
+      type: deployment
+      replicas: 2
+      priorityClassName: feather-high
+      podLabels:
+        logs.onelitefeather.net/env: prod
+      podDisruptionBudget:
+        enabled: true
+        maxUnavailable: 1
+    service:
+      type: LoadBalancer
+      # Fixed address from Cilium pool lb-fr01. Talos machine.logging destination:
+      # tcp://10.200.90.8:5140 (format json_lines).
+      annotations:
+        lbipam.cilium.io/ips: "10.200.90.8"
+    serviceMonitor:
+      enabled: true
+    configReloader:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          memory: 64Mi
+    alloy:
+      extraPorts:
+        - name: talos-json-lines
+          port: 5140
+          targetPort: 5140
+          protocol: TCP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      configMap:
+        content: |
+          // Talos sends each service log line as one JSON object (json_lines) over TCP.
+          // The OTel tcplog receiver splits the stream into one record per line and
+          // hands the raw line to loki.process via otelcol.exporter.loki; the Talos
+          // fields are lifted into labels there.
+          otelcol.receiver.tcplog "talos" {
+            listen_address = "0.0.0.0:5140"
+
+            output {
+              logs = [otelcol.exporter.loki.talos.input]
+            }
+          }
+
+          otelcol.exporter.loki "talos" {
+            forward_to = [loki.process.talos.receiver]
+          }
+
+          loki.process "talos" {
+            stage.static_labels {
+              values = {
+                job = "talos",
+              }
+            }
+
+            // talos-level / talos-service / talos-time are the fields Talos always sends.
+            // node is not sent by Talos by default; the Talos side adds it with
+            // machine.logging.destinations[].extraTags (see the code PR).
+            stage.json {
+              expressions = {
+                msg     = "msg",
+                level   = "\"talos-level\"",
+                service = "\"talos-service\"",
+                node    = "node",
+                log_ts  = "\"talos-time\"",
+              }
+            }
+
+            stage.timestamp {
+              source = "log_ts"
+              format = "RFC3339Nano"
+            }
+
+            stage.labels {
+              values = {
+                level   = "level",
+                service = "service",
+                node    = "node",
+              }
+            }
+
+            // The stored line is the Talos message text, not the JSON envelope.
+            stage.output {
+              source = "msg"
+            }
+
+            forward_to = [loki.write.default.receiver]
+          }
+
+          loki.write "default" {
+            endpoint {
+              url = "http://loki-gateway.grafana.svc.cluster.local/loki/api/v1/push"
+            }
+
+            external_labels = {
+              cluster = "feather-core",
+            }
+          }
