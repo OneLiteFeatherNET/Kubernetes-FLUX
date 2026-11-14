@@ -72,7 +72,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) / 1e6",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval])) / 1e6",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -84,7 +84,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) / 1e6",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval])) / 1e6",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -158,7 +158,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) / 1048576",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval])) / 1048576",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -170,7 +170,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) / 1048576",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval])) / 1048576",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -244,7 +244,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) * 8 / 1e6",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8 / 1e6",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -256,7 +256,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) * 8 / 1e6",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8 / 1e6",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -330,7 +330,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) * 8 / 1048576",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8 / 1048576",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -342,7 +342,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) * 8 / 1048576",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8 / 1048576",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -429,7 +429,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m]))",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -441,7 +441,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -515,7 +515,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m]))",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -527,7 +527,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -601,7 +601,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -613,7 +613,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -687,7 +687,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -699,7 +699,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval])) * 8",
           "range": true,
           "instant": false,
           "refId": "B",

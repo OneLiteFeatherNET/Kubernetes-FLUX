@@ -88,7 +88,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
+          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[$__rate_interval])))",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -368,7 +368,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) + sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval])) + sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -576,7 +576,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))) * on(instance) group_left(nodename) max by (instance, nodename) (node_uname_info)",
+          "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[$__rate_interval]))) * on(instance) group_left(nodename) max by (instance, nodename) (node_uname_info)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -765,7 +765,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m]))",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -777,7 +777,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -1059,7 +1059,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\"}[5m]))",
+          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",

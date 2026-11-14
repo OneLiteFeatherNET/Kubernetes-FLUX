@@ -425,7 +425,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (operation) (rate(harbor_core_http_request_total[5m]))",
+          "expr": "sum by (operation) (rate(harbor_core_http_request_total[$__rate_interval]))",
           "legendFormat": "{{operation}}",
           "range": true,
           "refId": "A"

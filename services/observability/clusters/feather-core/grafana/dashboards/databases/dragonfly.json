@@ -424,7 +424,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(dragonfly_commands_processed_total{namespace=\"$namespace\",pod=~\"$instance\"}[5m])",
+          "expr": "rate(dragonfly_commands_processed_total{namespace=\"$namespace\",pod=~\"$instance\"}[$__rate_interval])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -651,7 +651,7 @@
             "uid": "mimir"
           },
           "exemplar": true,
-          "expr": "rate(dragonfly_net_input_bytes_total{namespace=\"$namespace\",pod=~\"$instance\"}[5m])",
+          "expr": "rate(dragonfly_net_input_bytes_total{namespace=\"$namespace\",pod=~\"$instance\"}[$__rate_interval])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -665,7 +665,7 @@
             "uid": "mimir"
           },
           "exemplar": true,
-          "expr": "rate(dragonfly_net_output_bytes_total{namespace=\"$namespace\",pod=~\"$instance\"}[5m])",
+          "expr": "rate(dragonfly_net_output_bytes_total{namespace=\"$namespace\",pod=~\"$instance\"}[$__rate_interval])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -1181,7 +1181,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(dragonfly_keyspace_hits_total{namespace=\"$namespace\",pod=~\"$instance\"}[5m])",
+          "expr": "rate(dragonfly_keyspace_hits_total{namespace=\"$namespace\",pod=~\"$instance\"}[$__rate_interval])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -1198,7 +1198,7 @@
             "uid": "mimir"
           },
           "editorMode": "code",
-          "expr": "rate(dragonfly_keyspace_misses_total{namespace=\"$namespace\",pod=~\"$instance\"}[5m])",
+          "expr": "rate(dragonfly_keyspace_misses_total{namespace=\"$namespace\",pod=~\"$instance\"}[$__rate_interval])",
           "hide": false,
           "instant": false,
           "legendFormat": "misses",
@@ -1314,7 +1314,7 @@
             "uid": "mimir"
           },
           "exemplar": true,
-          "expr": "sum(rate(dragonfly_expired_keys_total{namespace=\"$namespace\",pod=~\"$instance\"}[5m])) by (instance)",
+          "expr": "sum(rate(dragonfly_expired_keys_total{namespace=\"$namespace\",pod=~\"$instance\"}[$__rate_interval])) by (instance)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1331,7 +1331,7 @@
             "uid": "mimir"
           },
           "exemplar": true,
-          "expr": "sum(rate(dragonfly_evicted_keys_total{namespace=\"$namespace\",pod=~\"$instance\"}[5m])) by (instance)",
+          "expr": "sum(rate(dragonfly_evicted_keys_total{namespace=\"$namespace\",pod=~\"$instance\"}[$__rate_interval])) by (instance)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,

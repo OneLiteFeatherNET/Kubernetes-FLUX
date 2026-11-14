@@ -1076,7 +1076,7 @@
             "type": "prometheus",
             "uid": "$${DS_PROMETHEUS}"
           },
-          "expr": "sum without (instance) (rate(ceph_osd_op_r_latency_sum{ceph_daemon='$osd'}[5m]) / rate(ceph_osd_op_r_latency_count{ceph_daemon='$osd'}[5m]) >= 0)",
+          "expr": "sum without (instance) (rate(ceph_osd_op_r_latency_sum{ceph_daemon='$osd'}[$__rate_interval]) / rate(ceph_osd_op_r_latency_count{ceph_daemon='$osd'}[$__rate_interval]) >= 0)",
           "format": "time_series",
           "instant": false,
           "interval": "$interval",
@@ -1186,7 +1186,7 @@
             "type": "prometheus",
             "uid": "$${DS_PROMETHEUS}"
           },
-          "expr": "sum without (instance) (rate(ceph_osd_op_w_latency_sum{ceph_daemon='$osd'}[5m]) / rate(ceph_osd_op_w_latency_count{ceph_daemon='$osd'}[5m]) >= 0)",
+          "expr": "sum without (instance) (rate(ceph_osd_op_w_latency_sum{ceph_daemon='$osd'}[$__rate_interval]) / rate(ceph_osd_op_w_latency_count{ceph_daemon='$osd'}[$__rate_interval]) >= 0)",
           "format": "time_series",
           "instant": false,
           "interval": "$interval",
@@ -1297,7 +1297,7 @@
             "type": "prometheus",
             "uid": "$${DS_PROMETHEUS}"
           },
-          "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_r_latency_sum{ceph_daemon='$osd'}[5m]) / rate(ceph_osd_op_r_latency_count{ceph_daemon='$osd'}[5m]) >= 0)",
+          "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_r_latency_sum{ceph_daemon='$osd'}[$__rate_interval]) / rate(ceph_osd_op_r_latency_count{ceph_daemon='$osd'}[$__rate_interval]) >= 0)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1309,7 +1309,7 @@
             "type": "prometheus",
             "uid": "$${DS_PROMETHEUS}"
           },
-          "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_w_latency_sum{ceph_daemon='$osd'}[5m]) / rate(ceph_osd_op_w_latency_count{ceph_daemon='$osd'}[5m]) >= 0)",
+          "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_w_latency_sum{ceph_daemon='$osd'}[$__rate_interval]) / rate(ceph_osd_op_w_latency_count{ceph_daemon='$osd'}[$__rate_interval]) >= 0)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,

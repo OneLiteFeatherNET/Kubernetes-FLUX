@@ -295,7 +295,7 @@
           "datasource": {
             "uid": "mimir"
           },
-          "expr": "sum(rate(rest_client_requests_total{namespace=\"$namespace\",pod=~\".*-controller-.*\"}[1m]))",
+          "expr": "sum(rate(rest_client_requests_total{namespace=\"$namespace\",pod=~\".*-controller-.*\"}[$__rate_interval]))",
           "interval": "",
           "legendFormat": "requests",
           "refId": "A"
@@ -390,7 +390,7 @@
           "datasource": {
             "uid": "mimir"
           },
-          "expr": "sum(rate(rest_client_requests_total{namespace=\"$namespace\"}[1m]))",
+          "expr": "sum(rate(rest_client_requests_total{namespace=\"$namespace\"}[$__rate_interval]))",
           "hide": false,
           "interval": "",
           "legendFormat": "total",
@@ -400,7 +400,7 @@
           "datasource": {
             "uid": "mimir"
           },
-          "expr": "sum(rate(rest_client_requests_total{namespace=\"$namespace\",code!~\"2..\"}[1m]))",
+          "expr": "sum(rate(rest_client_requests_total{namespace=\"$namespace\",code!~\"2..\"}[$__rate_interval]))",
           "hide": false,
           "interval": "",
           "legendFormat": "errors",
@@ -519,7 +519,7 @@
           "datasource": {
             "uid": "mimir"
           },
-          "expr": "rate(process_cpu_seconds_total{namespace=\"$namespace\",pod=~\".*-controller-.*\"}[1m])",
+          "expr": "rate(process_cpu_seconds_total{namespace=\"$namespace\",pod=~\".*-controller-.*\"}[$__rate_interval])",
           "interval": "",
           "legendFormat": "{{pod}}",
           "refId": "A"
@@ -1406,7 +1406,7 @@
           "datasource": {
             "uid": "mimir"
           },
-          "expr": "histogram_quantile(0.50, sum(rate(controller_runtime_reconcile_time_seconds_bucket{controller=\"helmrelease\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(controller_runtime_reconcile_time_seconds_bucket{controller=\"helmrelease\"}[$__rate_interval])) by (le))",
           "hide": true,
           "interval": "",
           "legendFormat": "P50",
@@ -1416,7 +1416,7 @@
           "datasource": {
             "uid": "mimir"
           },
-          "expr": "histogram_quantile(0.90, sum(rate(controller_runtime_reconcile_time_seconds_bucket{controller=\"helmrelease\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(controller_runtime_reconcile_time_seconds_bucket{controller=\"helmrelease\"}[$__rate_interval])) by (le))",
           "hide": true,
           "interval": "",
           "legendFormat": "P90",
@@ -1426,7 +1426,7 @@
           "datasource": {
             "uid": "mimir"
           },
-          "expr": "histogram_quantile(0.99, sum(rate(controller_runtime_reconcile_time_seconds_bucket{controller=\"helmrelease\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(controller_runtime_reconcile_time_seconds_bucket{controller=\"helmrelease\"}[$__rate_interval])) by (le))",
           "hide": false,
           "interval": "",
           "legendFormat": "P99",
