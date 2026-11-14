@@ -91,6 +91,7 @@ configMapGenerator:
   - name: grafana-sc-dashboards-overview
     files:
       - dashboards/overview/cluster-overview.json
+      - dashboards/overview/network-throughput-units.json
     options:
       labels:
         grafana_dashboard: "1"
