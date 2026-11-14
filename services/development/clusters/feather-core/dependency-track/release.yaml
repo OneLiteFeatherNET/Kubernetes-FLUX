@@ -82,8 +82,7 @@ spec:
     common:
       secretKey:
         createSecret: true
-    # Chart 0.39.0 has NO httpRoute support (only top-level ingress).
-    # Routing is done by a standalone HTTPRoute (httproute.yaml).
+    # Chart ingress is off; the Cloudflare tunnel Ingress (ingress.yaml) routes the host.
     ingress:
       enabled: false
     apiServer:
