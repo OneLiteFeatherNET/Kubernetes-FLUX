@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Cluster network throughput (physical NICs) shown side by side in MB/s, MiB/s, Mbit/s and Mibit/s, with a German explanation of the units.",
+  "description": "Cluster network throughput (physical NICs) shown side by side in MB/s, MiB/s, Mbit/s and Mibit/s (fixed) and auto-scaled SI/IEC byte and bit rates, with a German explanation of the units.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -34,9 +34,22 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "Alle vier Panels zeigen **dieselbe Messung** (physische NICs `ens*` aller Nodes, Summe, `rate` über 5 Minuten), nur in einer anderen Einheit.\n\n| Einheit | Zählt | Präfix | Umrechnung | Wofür |\n|---|---|---|---|---|\n| **MB/s** | Byte | dezimal, 10⁶ | Ausgangswert | Grafana-Standard, Datenblätter |\n| **MiB/s** | Byte | binär, 2²⁰ | MB/s ÷ 1,048576 | Betriebssystem, Dateigrößen |\n| **Mbit/s** | Bit | dezimal, 10⁶ | MB/s × 8 | Netzwerk: NIC, Leitung, iperf |\n| **Mibit/s** | Bit | binär, 2²⁰ | MiB/s × 8 | selten |\n\n**Faustregeln:** Byte → Bit = × 8. Ein binäres „Mi“ ist ~4,9 % größer als ein dezimales „M“, darum ist die IEC-Zahl immer etwas kleiner. Für den Vergleich mit der Link-Geschwindigkeit (z. B. 10 GbE = 10.000 Mbit/s) die Mbit/s-Ansicht nehmen."
+        "content": "Alle vier Panels zeigen **dieselbe Messung** (physische NICs `ens*` aller Nodes, Summe, `rate` über 5 Minuten), nur in einer anderen Einheit.\n\n| Einheit | Zählt | Präfix | Umrechnung | Wofür |\n|---|---|---|---|---|\n| **MB/s** | Byte | dezimal, 10⁶ | Ausgangswert | Grafana-Standard, Datenblätter |\n| **MiB/s** | Byte | binär, 2²⁰ | MB/s ÷ 1,048576 | Betriebssystem, Dateigrößen |\n| **Mbit/s** | Bit | dezimal, 10⁶ | MB/s × 8 | Netzwerk: NIC, Leitung, iperf |\n| **Mibit/s** | Bit | binär, 2²⁰ | MiB/s × 8 | selten |\n\n**Faustregeln:** Byte → Bit = × 8. Ein binäres „Mi“ ist ~4,9 % größer als ein dezimales „M“, darum ist die IEC-Zahl immer etwas kleiner. Für den Vergleich mit der Link-Geschwindigkeit (z. B. 10 GbE = 10.000 Mbit/s) die Mbit/s-Ansicht nehmen.\n\n**Zwei Bereiche:** *Feste Einheiten* bleiben immer in M bzw. Mi, auch bei Gigabit-Spitzen – gut zum Ablesen und Vergleichen. *Automatische Skalierung* wählt je nach Wert selbst k, M oder G (SI, Faktor 1000) bzw. Ki, Mi, Gi (IEC, Faktor 1024) – gut für den schnellen Überblick. Hinweis: In der Auto-Ansicht schreibt Grafana Bit als kleines „b“ (Gb/s = Gbit/s)."
       },
       "id": 1
+    },
+    {
+      "type": "row",
+      "title": "Feste Einheiten",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "panels": [],
+      "id": 2
     },
     {
       "type": "timeseries",
@@ -50,7 +63,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 9
       },
       "targets": [
         {
@@ -122,7 +135,7 @@
           "sort": "desc"
         }
       },
-      "id": 2
+      "id": 3
     },
     {
       "type": "timeseries",
@@ -136,7 +149,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 9
       },
       "targets": [
         {
@@ -208,7 +221,7 @@
           "sort": "desc"
         }
       },
-      "id": 3
+      "id": 4
     },
     {
       "type": "timeseries",
@@ -222,7 +235,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 18
       },
       "targets": [
         {
@@ -294,7 +307,7 @@
           "sort": "desc"
         }
       },
-      "id": 4
+      "id": 5
     },
     {
       "type": "timeseries",
@@ -308,7 +321,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 18
       },
       "targets": [
         {
@@ -380,7 +393,364 @@
           "sort": "desc"
         }
       },
-      "id": 5
+      "id": 6
+    },
+    {
+      "type": "row",
+      "title": "Automatische Skalierung (k → M → G)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
+      "panels": [],
+      "id": 7
+    },
+    {
+      "type": "timeseries",
+      "title": "Byte/s dezimal – automatisch (kB/s, MB/s, GB/s)",
+      "description": "Dezimal (SI), Grafana skaliert in 1000er-Schritten: kB/s → MB/s → GB/s.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "in"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "out"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "decimals": 1,
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 8
+    },
+    {
+      "type": "timeseries",
+      "title": "Byte/s binär – automatisch (KiB/s, MiB/s, GiB/s)",
+      "description": "Binär (IEC), Grafana skaliert in 1024er-Schritten: KiB/s → MiB/s → GiB/s.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "in"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "out"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "binBps",
+          "decimals": 1,
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 9
+    },
+    {
+      "type": "timeseries",
+      "title": "Bit/s dezimal – automatisch (kb/s, Mb/s, Gb/s)",
+      "description": "Dezimal (SI) in Bit, Grafana skaliert in 1000er-Schritten bis Gb/s. Direkt mit der Link-Geschwindigkeit vergleichbar.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "in"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "out"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "decimals": 1,
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 10
+    },
+    {
+      "type": "timeseries",
+      "title": "Bit/s binär – automatisch (Kib/s, Mib/s, Gib/s)",
+      "description": "Binär (IEC) in Bit, Grafana skaliert in 1024er-Schritten.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_receive_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "in"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_transmit_bytes_total{device=~\"ens.*\"}[5m])) * 8",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "out"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "binbps",
+          "decimals": 1,
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 11
     }
   ],
   "refresh": "5m",
