@@ -376,7 +376,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",pod=~\"sturnus-worker-.*\",container!=\"\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",pod=~\"sturnus-worker-.*\",container!=\"\"}[$__rate_interval]))",
           "legendFormat": "cores",
           "range": false,
           "instant": true,
@@ -460,7 +460,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (model) (rate(sturnus_transcription_decoded_seconds_total[5m]))",
+          "expr": "sum by (model) (rate(sturnus_transcription_decoded_seconds_total[$__rate_interval]))",
           "legendFormat": "{{model}}",
           "range": true,
           "instant": false,
@@ -696,7 +696,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",pod=~\"sturnus-worker-.*\",container!=\"\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",pod=~\"sturnus-worker-.*\",container!=\"\"}[$__rate_interval]))",
           "legendFormat": "used",
           "range": true,
           "instant": false,

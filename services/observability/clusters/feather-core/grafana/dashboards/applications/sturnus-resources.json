@@ -544,7 +544,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",container!=\"\"}[5m]))",
+          "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{namespace=\"sturnus\",container!=\"\"}[$__rate_interval]))",
           "legendFormat": "{{container}}",
           "range": true,
           "instant": false,
@@ -650,7 +650,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 * sum by (container) (rate(container_cpu_cfs_throttled_periods_total{namespace=\"sturnus\",container!=\"\"}[5m])) / clamp_min(sum by (container) (rate(container_cpu_cfs_periods_total{namespace=\"sturnus\",container!=\"\"}[5m])), 1)",
+          "expr": "100 * sum by (container) (rate(container_cpu_cfs_throttled_periods_total{namespace=\"sturnus\",container!=\"\"}[$__rate_interval])) / clamp_min(sum by (container) (rate(container_cpu_cfs_periods_total{namespace=\"sturnus\",container!=\"\"}[$__rate_interval])), 1)",
           "legendFormat": "{{container}}",
           "range": true,
           "instant": false,
