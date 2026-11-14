@@ -11,6 +11,7 @@ resources:
   - strrl.yml
   - smallstep.yml
   - jetstack.yml
+  - kyverno.yaml
   - spegel.yaml
   - harbor.yml
   - dependency-track.yml

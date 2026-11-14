@@ -1,0 +1,20 @@
+# Policy report counts for Mimir. The chart's own ServiceMonitor is off, so
+# the scrape target is declared here, next to the reports it exports.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kyverno-reports-controller
+  namespace: kyverno
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: kyverno
+      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/component: reports-controller
+  namespaceSelector:
+    matchNames:
+      - kyverno
+  endpoints:
+    - port: metrics-port
+      interval: 60s
+      scrapeTimeout: 25s

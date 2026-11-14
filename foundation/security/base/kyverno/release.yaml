@@ -1,0 +1,40 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kyverno
+  labels:
+    flux.onelitefeather.dev/remediation: manual
+  namespace: kyverno
+spec:
+  releaseName: kyverno
+  chart:
+    spec:
+      chart: kyverno
+      version: "=3.10.0"
+      sourceRef:
+        kind: HelmRepository
+        name: kyverno
+        namespace: flux-system
+  install:
+    crds: Create
+    remediation:
+      retries: 0
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: warn
+  interval: 1m0s
+  values:
+    # Zero-downtime invariant: when no Kyverno pod answers, the API server
+    # admits the request. Kyverno must never stall a request it cannot answer.
+    features:
+      forceFailurePolicyIgnore:
+        enabled: true
+      backgroundScan:
+        enabled: true
+    admissionController:
+      # The chart's default preferred hostname anti-affinity spreads the
+      # replicas. The PodDisruptionBudget lives in the cluster overlay.
+      replicas: 3

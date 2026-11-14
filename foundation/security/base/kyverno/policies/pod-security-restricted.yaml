@@ -1,0 +1,33 @@
+# Audit only: results land in PolicyReport objects, requests are never denied.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pod-security-restricted
+  annotations:
+    policies.kyverno.io/title: Pod Security Restricted (audit)
+    policies.kyverno.io/category: Pod Security Standards
+    policies.kyverno.io/description: >-
+      Pod Security Standards restricted profile, reported in audit mode.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: restricted
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - flux-system
+                - kyverno
+      validate:
+        failureAction: Audit
+        message: "Pod violates the Pod Security Standards restricted profile."
+        podSecurity:
+          level: restricted
+          version: latest
