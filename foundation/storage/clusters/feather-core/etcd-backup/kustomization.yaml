@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: etcd-backup
+resources:
+  - ../../../base/etcd-backup
+  # Claim lives in this namespace, not in rook-ceph-fr01: Rook writes the credentials
+  # Secret and ConfigMap into the claim's namespace, and the CronJob reads them from
+  # here (same approach as apus-bundles and corvus-lake). The owner is the
+  # CephObjectStoreUser etcd-backup in rook-fr01/users.
+  - objectbucketclaim.yaml
