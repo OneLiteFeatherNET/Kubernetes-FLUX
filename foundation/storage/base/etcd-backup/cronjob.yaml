@@ -1,0 +1,172 @@
+# Daily etcd snapshot through the Talos API (talosctl etcd snapshot), uploaded to
+# every active S3 target. Suspended for the first merge: resume it (remove
+# `suspend: true`) after one manual Job has been verified in the bucket.
+#
+# Target 1 (in-cluster RGW) is always used. Target 2 (external S3) is switched on by
+# creating the Secret `etcd-snapshot-external` in this namespace with keys
+# EXTERNAL_S3_ENDPOINT, EXTERNAL_S3_BUCKET, EXTERNAL_S3_ACCESS_KEY_ID and
+# EXTERNAL_S3_SECRET_ACCESS_KEY. Without that Secret the job logs
+# `external target not configured` and still succeeds.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-snapshot
+spec:
+  schedule: "30 3 * * *"
+  timeZone: Etc/UTC
+  suspend: true
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: etcd-snapshot
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            # The talosctl image has no shell. Talosctl connects to one of the three
+            # control-plane endpoints; a failed run is retried by the Job (backoffLimit),
+            # which picks an endpoint again.
+            - name: snapshot
+              image: ghcr.io/siderolabs/talosctl:v1.13.9@sha256:46174be488e0250fc9e8f1b15a1d260fd971f82fbaf66237d10609f5a41c084f
+              args:
+                - --talosconfig=/var/run/secrets/talos.dev/config
+                - --endpoints=192.168.15.10,192.168.15.11,192.168.15.12
+                - etcd
+                - snapshot
+                - /scratch/snapshot.db
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: [ALL]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 512Mi
+              volumeMounts:
+                - name: talos-config
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+                - name: scratch
+                  mountPath: /scratch
+                - name: tmp
+                  mountPath: /tmp
+          containers:
+            - name: upload
+              image: amazon/aws-cli:2.39.7@sha256:bba262340b0bc7cbf3a8a48612531263b56f4b280c4f036a07816af1b271bda0
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  test -s /scratch/snapshot.db || { echo "snapshot missing or empty"; exit 1; }
+                  ts=$(date -u +%Y%m%dT%H%M%SZ)
+                  key="etcd/etcd-snapshot-${ts}.db"
+
+                  # Keep the newest $3 objects under prefix etcd/ in bucket $2 at endpoint $1.
+                  # Snapshot names carry a UTC timestamp, so a sorted key list is oldest first.
+                  prune() {
+                    keys=$(aws --endpoint-url "$1" s3api list-objects-v2 --bucket "$2" \
+                      --prefix etcd/ --query 'sort(Contents[].Key)' --output text)
+                    [ "$keys" = "None" ] && keys=""
+                    printf '%s\n' $keys | grep -v '^$' | head -n "-$3" | while read -r old; do
+                      echo "pruning $old"
+                      aws --endpoint-url "$1" s3api delete-object --bucket "$2" --key "$old"
+                    done
+                  }
+
+                  # Target 1: in-cluster RGW. The lifecycle rule is a safety net for prune.
+                  aws --endpoint-url "$RGW_ENDPOINT" s3api put-bucket-lifecycle-configuration \
+                    --bucket "$BUCKET_NAME" \
+                    --lifecycle-configuration '{"Rules":[{"ID":"etcd-snapshot-expire-14d","Filter":{"Prefix":"etcd/"},"Status":"Enabled","Expiration":{"Days":14}}]}'
+                  aws --endpoint-url "$RGW_ENDPOINT" s3api put-object \
+                    --bucket "$BUCKET_NAME" --key "$key" --body /scratch/snapshot.db
+                  echo "in-cluster: uploaded $key"
+                  prune "$RGW_ENDPOINT" "$BUCKET_NAME" 14
+
+                  # Target 2: external S3, inactive until its Secret exists.
+                  if [ -n "${EXTERNAL_S3_BUCKET:-}" ]; then
+                    (
+                      export AWS_ACCESS_KEY_ID="$EXTERNAL_S3_ACCESS_KEY_ID"
+                      export AWS_SECRET_ACCESS_KEY="$EXTERNAL_S3_SECRET_ACCESS_KEY"
+                      aws --endpoint-url "$EXTERNAL_S3_ENDPOINT" s3api put-object \
+                        --bucket "$EXTERNAL_S3_BUCKET" --key "$key" --body /scratch/snapshot.db
+                      echo "external: uploaded $key"
+                      prune "$EXTERNAL_S3_ENDPOINT" "$EXTERNAL_S3_BUCKET" 30
+                    )
+                  else
+                    echo "external target not configured"
+                  fi
+              envFrom:
+                - secretRef:
+                    name: etcd-snapshot-external
+                    optional: true
+              env:
+                - name: RGW_ENDPOINT
+                  value: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+                - name: BUCKET_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: etcd-snapshots
+                      key: BUCKET_NAME
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: etcd-snapshots
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: etcd-snapshots
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_DEFAULT_REGION
+                  # RGW ignores the value but the CLI refuses to run without one.
+                  value: us-east-1
+                - name: AWS_EC2_METADATA_DISABLED
+                  value: "true"
+                - name: HOME
+                  value: /tmp
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: [ALL]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 256Mi
+              volumeMounts:
+                - name: scratch
+                  mountPath: /scratch
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: talos-config
+              secret:
+                secretName: etcd-snapshot
+            - name: scratch
+              emptyDir:
+                sizeLimit: 2Gi
+            - name: tmp
+              emptyDir:
+                sizeLimit: 64Mi

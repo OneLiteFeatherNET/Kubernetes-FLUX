@@ -1,0 +1,49 @@
+# The snapshot pod is the only pod in this namespace. Egress only: Talos API on the
+# control-plane nodes, the in-cluster RGW and DNS. The external S3 target (inactive)
+# needs its own egress rule when it is switched on.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: etcd-snapshot-egress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    # Talos API (apid) on the control-plane node addresses.
+    - to:
+        - ipBlock:
+            cidr: 192.168.15.10/32
+        - ipBlock:
+            cidr: 192.168.15.11/32
+        - ipBlock:
+            cidr: 192.168.15.12/32
+      ports:
+        - port: 50000
+          protocol: TCP
+    # Rook-Ceph RGW (feather-s3) in rook-ceph-fr01.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: rook-ceph-fr01
+          podSelector:
+            matchLabels:
+              app: rook-ceph-rgw
+      ports:
+        - port: 8080
+          protocol: TCP
+        - port: 80
+          protocol: TCP
+    # DNS.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

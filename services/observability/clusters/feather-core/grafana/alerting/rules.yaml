@@ -258,6 +258,67 @@ groups:
           check_command: "kubectl -n <namespace> logs <pod> --previous --tail=100"
         labels:
           severity: critical
+      - uid: etcd-snapshot-missing
+        title: etcd snapshot missing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # 24 h schedule plus 2 h slack; no data (CronJob never succeeded) alerts too.
+              expr: (time() - max(kube_cronjob_status_last_successful_time{job="kube-state-metrics", namespace="etcd-backup", cronjob="etcd-snapshot"})) / 3600
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 26
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "No successful etcd snapshot in over 26 h (schedule is daily)."
+          problem: "No etcd snapshot for over 26 h"
+          service: "Kubernetes"
+          threshold: "< 26 h since last successful snapshot"
+          value_unit: "h since last snapshot"
+          value_fmt: "%.1f"
+          location: "etcd-backup"
+          check: "Check whether the CronJob is suspended, its Jobs fail, or the Talos etcd-backup role is missing."
+          check_command: "kubectl -n etcd-backup get cronjob,jobs"
+        labels:
+          severity: warning
   - orgId: 1
     name: backups
     folder: Backups

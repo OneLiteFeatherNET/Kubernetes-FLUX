@@ -32,3 +32,4 @@ resources:
   - onelitefeather.yaml
   - vulpes.yaml
   - vulpes-dev.yaml
+  - etcd-backup.yaml

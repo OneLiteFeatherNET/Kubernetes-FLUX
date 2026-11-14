@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../../../storage/clusters/feather-core/rook-fr01
   - ../../../storage/clusters/feather-core/s3-proxy
+  - ../../../storage/clusters/feather-core/etcd-backup
