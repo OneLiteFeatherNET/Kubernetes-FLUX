@@ -33,7 +33,7 @@ spec:
           memory: 64Mi
     alloy:
       extraPorts:
-        - name: talos-json-lines
+        - name: talos-logs
           port: 5140
           targetPort: 5140
           protocol: TCP
