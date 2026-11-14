@@ -32,6 +32,9 @@ spec:
         limits:
           memory: 64Mi
     alloy:
+      # otelcol.receiver.tcplog (the Talos json_lines listener) is "experimental";
+      # Alloy refuses to load it at the default generally-available level.
+      stabilityLevel: experimental
       extraPorts:
         - name: talos-logs
           port: 5140
