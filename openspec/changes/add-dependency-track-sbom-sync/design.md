@@ -37,8 +37,8 @@ Each item states what was checked and against which source. Items marked **unver
 
 - Kind `SbomReport`, group `aquasecurity.github.io/v1alpha1`, namespaced, plural `sbomreports`. The CRD index lists no cluster-scoped SBOM CRD, so `clustersbomreports` is not used.
 - Name convention `<workload kind>-<workload name>-<container name>`. Labels `trivy-operator.resource.kind|name|namespace` and `trivy-operator.container.name`. Owner reference to the workload pod, so a report is garbage-collected with its workload.
-- `report.artifact` contains `repository` and `tag`. **The sample has no `digest` field.** The sample also has no `registry` field in `report`. `report.components` is CycloneDX (the sample shows `bomFormat: CycloneDX`, spec version not stated).
-- Consequence: the image digest cannot be taken from the SbomReport as documented. Decision 3 below changes the dedupe key accordingly.
+- The documented sample has `report.artifact.repository` and `tag` only, with no digest and no registry field. A live SbomReport on the `feather-core` cluster (Trivy 0.76.2) differs from the sample: it carries `report.artifact.digest` (`sha256:...`), `report.artifact.repository`, `report.artifact.tag` and `report.registry.server` (for example `ghcr.io`). `report.components` is CycloneDX specVersion 1.7. This live evidence resolves open question 1.
+- Consequence: the image identity is `registry.server/repository@digest`, and the project name is `registry.server/repository` (decision 3).
 
 **DT permission names:** the permissions page (`https://docs.dependencytrack.org/operations/permissions/`) returned 404 at the time of writing. The names used here come from the `Requires permission` annotations in the OpenAPI document above, which is partial verification.
 
@@ -79,9 +79,9 @@ Each item states what was checked and against which source. Items marked **unver
 
 ### 3. Identity and dedupe
 
-**Cluster source:** identity is `(registry/repository, tag)`. The digest is not in the documented SbomReport, so change detection uses a **content fingerprint**: SHA-256 over the canonical JSON of `report.components`. A DT project property `sbom-sync` / `fingerprint` holds it. The upload is skipped when the fingerprint is unchanged. If the live CRD carries a digest (task 1.1), it is stored as `sbom-sync` / `digest` for information.
+**Cluster source:** the dedupe key is the image digest, `report.registry.server/report.artifact.repository@report.artifact.digest`. The DT project name is `registry.server/repository` and the version is `report.artifact.tag`, or the digest when the tag is empty.
 
-This deviates from "dedupe by image digest" in the proposal request. The reason is the documented CRD shape, recorded here so the reviewer can decide.
+Dedupe is applied per DT project. The job skips an upload when the project `(name, version)` already stores the same digest in property `sbom-sync` / `digest`. A tag that points at a digest already uploaded under another tag is still uploaded once under its own version. DT has no alias between versions, and this keeps every running tag visible in DT. The cost is one extra upload of identical content.
 
 **Harbor source:** identity is `(harbor host/project/repository, tag or digest)`. The artifact digest is stored as `sbom-sync` / `digest` and compared on each run. An untagged artifact uses its digest as version.
 
@@ -113,11 +113,11 @@ This deviates from "dedupe by image digest" in the proposal request. The reason 
 
 **Ownership:** the job creates DT projects with tag `sbom-sync-cluster` or `sbom-sync-harbor`. Deletion considers only projects listed by `GET /api/v1/tag/{name}/project` for those tags. A project without the tag is never read as stale, never updated and never deleted.
 
-**State:** each owned project carries DT properties in group `sbom-sync`: `last-seen` (epoch seconds, type `TIMESTAMP` or `STRING`), and `fingerprint` or `digest` (values up to 1024 characters). The job reads and writes them through the property endpoints.
+**State:** each owned project carries DT properties in group `sbom-sync`: `last-seen` (epoch seconds, type `TIMESTAMP` or `STRING`) and `digest` (the image digest, or the artifact digest for Harbor; values up to 1024 characters). The job reads and writes them through the property endpoints.
 
 **Run logic for each owned version:**
 
-- Present in this run's source listing: set `last-seen` to now; upload if the fingerprint or digest changed.
+- Present in this run's source listing: set `last-seen` to now; upload if the stored `digest` differs from the current one.
 - Absent in this run, `last-seen` newer than 30 days (`RETENTION_DAYS`, default 30): keep, unchanged.
 - Absent in this run, `last-seen` 30 days old or more: delete the project.
 
@@ -149,7 +149,7 @@ One SOPS-encrypted file `sbom-sync.sops.env` with `DT_API_KEY`, `HARBOR_USERNAME
 
 These are not verified and must be settled in the preflight tasks before the code PR.
 
-1. **SbomReport digest and registry fields.** The documented sample has `artifact.repository` and `artifact.tag` but no digest, and no `registry` field. Check a live `SbomReport` (task 1.1). If there is no registry field, the project name falls back to the repository alone, which can collide across registries.
+1. **Resolved.** A live SbomReport carries `report.artifact.digest`, `report.artifact.repository`, `report.artifact.tag` and `report.registry.server` (Trivy 0.76.2, evidence from the cluster; see Verified facts). The dedupe key and project name in decision 3 rest on it. Task 1.1 keeps a check that the fields are present on every report, including untagged ones.
 2. **DT 4.14.6 OpenAPI.** The schema above comes from a public instance of unknown version. Compare with the cluster's `/api/openapi.json` (task 1.2), and confirm `isLatest`, `projectTags` and the permission names.
 3. **CycloneDX 1.7 on DT 4.14.6.** Whether the 1.6 downgrade is still needed (task 1.2).
 4. **`isLatest` on an existing project** that already points to another version (task 1.2).

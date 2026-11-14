@@ -1,6 +1,6 @@
 ## 1. Preflight
 
-- [ ] 1.1 Inspect one live `SbomReport` (`kubectl get sbomreports -A -o yaml`, one item): record whether `report.artifact` has a digest and whether `report.registry.server` exists (design open question 1)
+- [ ] 1.1 Confirm on the cluster that every `SbomReport` carries `report.artifact.digest` and `report.registry.server`, including untagged ones (`kubectl get sbomreports -A -o yaml`). Open question 1 is resolved by a live sample; this task checks the rest of the population
 - [ ] 1.2 Fetch `/api/openapi.json` from the cluster's DT 4.14.6 and confirm the `/v1/bom` fields, `isLatest` on existing projects, CycloneDX 1.7 acceptance and the permission names (design open questions 2 to 4)
 - [ ] 1.3 On a Harbor test artifact with an SBOM accessory: download `additions/sbom`, confirm SPDX, run the stdlib converter on it and compare component counts; confirm the robot permission mapping in the Harbor UI for chart 1.19.4 and record the Harbor app version (design open questions 5 and 6)
 - [ ] 1.4 Decide where the stdlib unit tests run (`validate.sh` or a dedicated CI step) and record it in the design (open question 7)
@@ -19,7 +19,7 @@
 
 ## 4. Script (red, then green)
 
-- [ ] 4.1 Write the unit tests first, following F.I.R.S.T.: fingerprint, dedupe decision, SPDX to CycloneDX conversion, CycloneDX 1.6 rewrite, retention decision, Harbor pagination, incomplete-listing rule. They use fixtures, no network and no system time
+- [ ] 4.1 Write the unit tests first, following F.I.R.S.T.: digest identity, dedupe decision, SPDX to CycloneDX conversion, CycloneDX 1.6 rewrite, retention decision, Harbor pagination, incomplete-listing rule. They use fixtures, no network and no system time
 - [ ] 4.2 Implement the stdlib script to make the tests pass: cluster source, Harbor source, upload, retention, dry run, summary line, no credentials in logs
 
 ## 5. Manifests

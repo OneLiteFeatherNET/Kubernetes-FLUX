@@ -7,7 +7,7 @@ A small bridge that reuses the SBOMs both producers already create closes the ga
 ## What Changes
 
 - A new hourly `CronJob` `dependency-track-sbom-sync` in namespace `dependency-track`, running a Python standard-library script from a ConfigMap, `concurrencyPolicy: Forbid`.
-- **Cluster source:** reads `SbomReport` CRs (read-only, paginated), uploads one DT project per unique image content, named `registry/repository`, version = tag.
+- **Cluster source:** reads `SbomReport` CRs (read-only, paginated), uploads one DT project per image digest, named `registry.server/repository`, version = tag (digest when untagged).
 - **Harbor source:** enumerates all artifacts in all Harbor projects, uploads their SBOMs (converted from SPDX to CycloneDX 1.6). Artifacts without an SBOM get one requested through the Harbor scan API and are picked up on a later run.
 - **Retention:** a version the job created and that is no longer present is deleted after 30 days. The job never touches projects it did not create.
 - A ServiceAccount with `get,list` on `sbomreports` only, and a read-only Harbor robot account.

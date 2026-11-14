@@ -12,17 +12,17 @@ WHEN the CronJob `dependency-track-sbom-sync` runs, THE job SHALL upload the SBO
 
 ### Requirement: Unchanged cluster images are not uploaded again
 
-WHEN the content fingerprint of a cluster image's SBOM equals the fingerprint stored on its project, THE job SHALL NOT upload the SBOM again.
+WHEN the image digest of a cluster image equals the digest stored on its project version, THE job SHALL NOT upload the SBOM again.
 
 #### Scenario: Duplicate reports upload once
 
-- **GIVEN** three `SbomReport` CRs for the same image `otis:1.4.0` with identical components, from three replicas
+- **GIVEN** three `SbomReport` CRs for the same image `ghcr.io/onelitefeather/otis@sha256:...` with tag `1.4.0`, from three replicas
 - **WHEN** the job runs
-- **THEN** exactly one upload request is sent for `otis:1.4.0`
+- **THEN** exactly one upload request is sent for `ghcr.io/onelitefeather/otis` version `1.4.0`
 
 #### Scenario: Unchanged image is skipped
 
-- **GIVEN** a project `otis` version `1.4.0` whose stored fingerprint equals the current fingerprint
+- **GIVEN** a project `ghcr.io/onelitefeather/otis` version `1.4.0` whose stored digest equals the current image digest
 - **WHEN** the job runs
 - **THEN** no upload request is sent for `otis:1.4.0` and the summary line counts it as skipped
 
