@@ -1,7 +1,6 @@
 # CIS 1.10 "master" checks on control-plane nodes. Read-only: no API access,
 # no node or pod change. Output goes to stdout; Alloy ships it to Loki.
 # Talos commands and skip lists: see skips.yaml for the cited source.
-# Suspended for the first merge; resume by setting suspend: false (rollout runbook).
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -14,7 +13,7 @@ spec:
   # Weekly, Sunday 04:00 UTC.
   schedule: "0 4 * * 0"
   timeZone: Etc/UTC
-  suspend: true
+  suspend: false
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 3600
   successfulJobsHistoryLimit: 2
