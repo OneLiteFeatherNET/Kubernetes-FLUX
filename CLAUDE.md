@@ -23,7 +23,7 @@ A **FluxCD GitOps** repository that declaratively manages OneLiteFeather's singl
 
 ## Flux layer dependency graph
 
-Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `flux-system` at `./clusters/feather-core` (`prune: true`). The 22 layers below all decrypt SOPS via provider `sops` / secret `sops-age`, have `deletionPolicy: Orphan` (deleting a layer CR never deletes what it owns) and `interval: 10m0s` (`foundation-access`: `1h`):
+Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `flux-system` at `./clusters/feather-core` (`prune: true`). The 23 layers below all decrypt SOPS via provider `sops` / secret `sops-age`, have `deletionPolicy: Orphan` (deleting a layer CR never deletes what it owns) and `interval: 10m0s` (`foundation-access`: `1h`):
 
 | Layer | Path | dependsOn |
 |---|---|---|
@@ -41,7 +41,8 @@ Root `GitRepository flux-system` (ssh, branch `main`) → root `Kustomization` `
 | `foundation-storage` | foundation/layers/feather-core/storage | foundation-storage-operators, foundation-networking |
 | `foundation-databases` | foundation/layers/feather-core/databases | foundation-databases-operators, foundation-storage, foundation-networking |
 | `foundation-messaging` | foundation/layers/feather-core/messaging | foundation-messaging-operators, foundation-storage |
-| `foundation-security` | foundation/layers/feather-core/security | foundation-storage |
+| `foundation-security-operators` | foundation/layers/feather-core/security-operators | foundation-storage |
+| `foundation-security` | foundation/layers/feather-core/security | foundation-storage, foundation-security-operators |
 | `services-automation` | services/layers/feather-core/automation | foundation-networking, foundation-storage, foundation-databases |
 | `services-collaboration` | services/layers/feather-core/collaboration | foundation-networking, foundation-storage, foundation-databases |
 | `services-development` | services/layers/feather-core/development | foundation-networking, foundation-storage, foundation-databases, foundation-messaging, foundation-certificates |

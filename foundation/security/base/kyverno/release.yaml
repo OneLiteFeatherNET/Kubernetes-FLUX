@@ -35,6 +35,40 @@ spec:
       backgroundScan:
         enabled: true
     admissionController:
-      # The chart's default preferred hostname anti-affinity spreads the
-      # replicas. The PodDisruptionBudget lives in the cluster overlay.
-      replicas: 3
+      # Two replicas (design fallback): the xl workers are at 74-99% memory
+      # requests, so a third webhook pod does not fit. The chart's default
+      # preferred hostname anti-affinity spreads them. The PodDisruptionBudget
+      # (maxUnavailable: 1) lives in the operator overlay.
+      replicas: 2
+      container:
+        resources:
+          # Memory requests equal the chart default; the CPU request is cut
+          # from 100m because it also reserves scheduler capacity. No CPU
+          # limit, so admission latency is not throttled (same reasoning as
+          # cert-manager).
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 384Mi
+    backgroundController:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    cleanupController:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    reportsController:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
