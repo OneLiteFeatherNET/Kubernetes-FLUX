@@ -49,7 +49,7 @@ spec:
         - name: ingot-dashboard
           # Tag and digest, as Renovate and the image automation maintain them together. The digest
           # is the one the nightly tag pointed at when this line was last rolled out.
-          image: ghcr.io/onelitefeathernet/ingot-dashboard:nightly@sha256:706cfe3a5b2f6599dc116e49e63046bedfb90929b7e24a7e2638c201348e87c7 # {"$imagepolicy": "flux-system:ingot-dashboard-staging"}
+          image: ghcr.io/onelitefeathernet/ingot-dashboard:nightly@sha256:52333d4f4d3778c74cebc2b237299f03be948a8629f77f740b654c0c36122be3 # {"$imagepolicy": "flux-system:ingot-dashboard-staging"}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
