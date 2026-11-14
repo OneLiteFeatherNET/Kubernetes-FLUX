@@ -1,8 +1,8 @@
 # Audit only: results land in PolicyReport objects, requests are never denied.
 # Same rule as the olf-require-memory-resources ValidatingAdmissionPolicy,
 # kept as a second opinion in the reports.
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   name: require-memory-resources
   annotations:
@@ -11,36 +11,39 @@ metadata:
     policies.kyverno.io/description: >-
       Every container needs a memory request and a memory limit.
 spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-    - name: require-memory-resources
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - flux-system
-                - kyverno
-      validate:
-        failureAction: Audit
-        message: "Every container needs a memory request and a memory limit."
-        pattern:
-          spec:
-            containers:
-              - resources:
-                  requests:
-                    memory: "?*"
-                  limits:
-                    memory: "?*"
-            =(initContainers):
-              - resources:
-                  requests:
-                    memory: "?*"
-                  limits:
-                    memory: "?*"
+  # Fail open: a CEL evaluation error must never block a request.
+  failurePolicy: Ignore
+  matchConstraints:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - kube-system
+            - flux-system
+            - kyverno
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  autogen:
+    podControllers:
+      controllers:
+        - deployments
+        - statefulsets
+        - daemonsets
+        - replicasets
+        - jobs
+        - cronjobs
+  validationActions:
+    - Audit
+  variables:
+    - name: containers
+      expression: "object.spec.containers + object.spec.?initContainers.orValue([])"
+  validations:
+    - expression: >-
+        variables.containers.all(c,
+          c.?resources.?requests.?memory.orValue('') != '' &&
+          c.?resources.?limits.?memory.orValue('') != '')
+      message: "Every container needs a memory request and a memory limit."
