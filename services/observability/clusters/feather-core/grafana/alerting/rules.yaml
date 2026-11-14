@@ -366,8 +366,8 @@ groups:
               maxDataPoints: 43200
               refId: B
               type: threshold
-        # Absent series is not treated as an alert: the daily schedule ships paused, and the
-        # first scheduled backup creates the series. Same convention as cnpg-backup-stale.
+        # Absent series is not treated as an alert: the first scheduled backup creates the series.
+        # Same convention as cnpg-backup-stale.
         noDataState: OK
         execErrState: Alerting
         for: 5m
