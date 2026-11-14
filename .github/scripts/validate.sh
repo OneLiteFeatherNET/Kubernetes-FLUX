@@ -53,10 +53,39 @@ fi
 echo "::endgroup::"
 
 # 1b. Kyverno starter policies are audit-only (openspec policy-audit spec).
-# Switching a policy to Enforce is a separate change with its own rollout.
+# Switching a policy to Enforce or Deny is a separate change with its own rollout.
 echo "::group::Kyverno audit-only guard"
 if grep -rInE 'validationFailureAction:[[:space:]]*"?[Ee]nforce|failureAction:[[:space:]]*"?[Ee]nforce' foundation/security/base/kyverno; then
   echo "::error::Kyverno policy under foundation/security/base/kyverno sets Enforce; only Audit is allowed"
+  rc=1
+fi
+# CEL ValidatingPolicy (policies.kyverno.io/v1) uses validationActions, a list.
+if ! python3 - foundation/security/base/kyverno <<'PY'
+import glob, sys, yaml
+
+def deny_paths(node, source):
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "validationActions":
+                actions = value if isinstance(value, list) else [value]
+                if any(str(a).strip().lower() == "deny" for a in actions):
+                    yield source
+            yield from deny_paths(value, source)
+    elif isinstance(node, list):
+        for item in node:
+            yield from deny_paths(item, source)
+
+bad = []
+for path in sorted(glob.glob(sys.argv[1] + "/**/*.y*ml", recursive=True)):
+    with open(path) as fh:
+        for doc in yaml.safe_load_all(fh):
+            bad.extend(deny_paths(doc, path))
+for path in sorted(set(bad)):
+    print(f"{path}: validationActions contains Deny")
+sys.exit(1 if bad else 0)
+PY
+then
+  echo "::error::Kyverno policy under foundation/security/base/kyverno sets validationActions Deny; only Audit is allowed"
   rc=1
 fi
 echo "::endgroup::"
