@@ -12,7 +12,7 @@ spec:
   # Weekly, Sunday 04:00 UTC.
   schedule: "0 4 * * 0"
   timeZone: Etc/UTC
-  suspend: true
+  suspend: false
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 3600
   successfulJobsHistoryLimit: 2
