@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dependency-track-v5
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/dependency-track-v5
+  - ingress.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  - name: dependency-track-v5-env
+    envs:
+      - dependency-track-v5-env.sops.env
+  - name: dependency-track-v5-kek
+    files:
+      - kek-keyset.json=kek-keyset.sops.json

@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dependency-track-next-cloudflare-tunnel
+  annotations:
+    # both frontend and api-server serve plain HTTP on 8080
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    # Same /api and /health split as v4. Test hostname behind Cloudflare Access until cutover.
+    - host: dependency-track-next.onelitefeather.dev
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: dependency-track-v5-api-server
+                port:
+                  number: 8080
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: dependency-track-v5-api-server
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dependency-track-v5-frontend
+                port:
+                  number: 8080
