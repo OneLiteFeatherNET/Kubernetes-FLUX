@@ -188,6 +188,12 @@ spec:
         value: "true"
       - name: JAVA_TOOL_OPTIONS
         value: "-XX:MaxRAMPercentage=50.0 -Duser.timezone=UTC"
+      # Account link events (transactional outbox -> topic otis.account-links). Merge only after an Otis
+      # release containing add-account-link-events is deployed.
+      - name: KAFKA_ENABLED
+        value: "true"
+      - name: KAFKA_BOOTSTRAP_SERVERS
+        value: feather-kafka-kafka-bootstrap.kafka.svc:9092
     resources:
       requests:
         cpu: 100m
