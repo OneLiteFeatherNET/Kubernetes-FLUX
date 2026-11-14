@@ -1,0 +1,77 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: velero
+  labels:
+    flux.onelitefeather.dev/remediation: manual
+  namespace: velero
+spec:
+  releaseName: velero
+  chart:
+    spec:
+      chart: velero
+      version: "=12.2.2"
+      sourceRef:
+        kind: HelmRepository
+        name: vmware-tanzu
+        namespace: flux-system
+  # No automatic rollback: a failed install leaves Velero down but never touches running workloads.
+  install:
+    remediation:
+      retries: 0
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+  interval: 1m0s
+  # Default values
+  # https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/values.yaml
+  values:
+    # AWS object store plugin for Velero 1.18 (chart appVersion 1.18.2).
+    initContainers:
+      - name: velero-plugin-for-aws
+        image: velero/velero-plugin-for-aws:v1.14.4
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: /target
+            name: plugins
+    # Native volume snapshot locations are not used: RBD volumes go through CSI snapshots
+    # (VolumeSnapshotClass rbd-snapshot), so the chart's empty VolumeSnapshotLocation is dropped.
+    snapshotsEnabled: false
+    configuration:
+      # CSI snapshots for RBD volumes (VolumeSnapshotClass rbd-snapshot).
+      features: EnableCSI
+    # File-system backup stays off until a volume without CSI snapshot class needs it.
+    deployNodeAgent: false
+    # No cloud-credentials file. The Secret from the bucket claim (velero, created by Rook in this
+    # namespace) is loaded as environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
+    # The Deployment waits for that Secret, which Rook creates once the bucket claim is bound.
+    credentials:
+      useSecret: false
+      extraSecretRef: velero
+    metrics:
+      serviceMonitor:
+        enabled: true
+    schedules:
+      daily:
+        schedule: "0 2 * * *"
+        paused: true
+        template:
+          ttl: 336h
+          storageLocation: default
+          includedNamespaces:
+            - "*"
+          excludedNamespaces:
+            - kube-system
+            - velero
+      weekly:
+        schedule: "0 3 * * 0"
+        paused: true
+        template:
+          ttl: 1344h
+          storageLocation: default
+          includedNamespaces:
+            - "*"
+          excludedNamespaces:
+            - kube-system
+            - velero

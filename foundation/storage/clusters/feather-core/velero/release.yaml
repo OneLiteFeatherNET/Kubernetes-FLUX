@@ -1,0 +1,35 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: velero
+  namespace: velero
+spec:
+  values:
+    configuration:
+      backupStorageLocation:
+        # In-cluster RGW (feather-s3). Bucket velero from objectbucketclaim.yaml. No credential
+        # reference: the AWS plugin takes AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY from the
+        # environment (credentials.extraSecretRef, the OBC Secret).
+        - name: default
+          provider: aws
+          bucket: velero
+          default: true
+          accessMode: ReadWrite
+          config:
+            region: us-west-1
+            s3ForcePathStyle: "true"
+            s3Url: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+        # External S3 target. Inactive: ReadOnly and not default until the maintainer delivers the
+        # provider, bucket, endpoint and credentials (follow-up change 7.1).
+        # TODO placeholders below, replace when the target is known.
+        - name: external
+          provider: aws
+          bucket: TODO-external-bucket
+          default: false
+          accessMode: ReadOnly
+          credential:
+            name: velero-external-credentials
+            key: cloud
+          config:
+            region: TODO-external-region
+            s3Url: https://TODO-external-endpoint
