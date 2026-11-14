@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  # Same labels as trivy-system. The Kyverno controllers run non-root, so
+  # `restricted` is reported as a warning, never enforced.
+  name: kyverno
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted

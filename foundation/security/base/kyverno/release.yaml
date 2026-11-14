@@ -1,0 +1,74 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kyverno
+  labels:
+    flux.onelitefeather.dev/remediation: manual
+  namespace: kyverno
+spec:
+  releaseName: kyverno
+  chart:
+    spec:
+      chart: kyverno
+      version: "=3.10.0"
+      sourceRef:
+        kind: HelmRepository
+        name: kyverno
+        namespace: flux-system
+  install:
+    crds: Create
+    remediation:
+      retries: 0
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: warn
+  interval: 1m0s
+  values:
+    # Zero-downtime invariant: when no Kyverno pod answers, the API server
+    # admits the request. Kyverno must never stall a request it cannot answer.
+    features:
+      forceFailurePolicyIgnore:
+        enabled: true
+      backgroundScan:
+        enabled: true
+    admissionController:
+      # Two replicas (design fallback): the xl workers are at 74-99% memory
+      # requests, so a third webhook pod does not fit. The chart's default
+      # preferred hostname anti-affinity spreads them. The PodDisruptionBudget
+      # (maxUnavailable: 1) lives in the operator overlay.
+      replicas: 2
+      container:
+        resources:
+          # Memory requests equal the chart default; the CPU request is cut
+          # from 100m because it also reserves scheduler capacity. No CPU
+          # limit, so admission latency is not throttled (same reasoning as
+          # cert-manager).
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 384Mi
+    backgroundController:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    cleanupController:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    reportsController:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi

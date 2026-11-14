@@ -5,8 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   # Trivy operator (ClientServer). The server PVC needs storage; ServiceMonitor CRDs come from observability (via platform).
+  # Kyverno policies need the Kyverno CRDs from foundation-security-operators.
   dependsOn:
     - name: foundation-storage
+    - name: foundation-security-operators
   interval: 10m0s
   retryInterval: 30s
   timeout: 10m0s

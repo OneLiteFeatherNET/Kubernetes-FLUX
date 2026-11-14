@@ -1,0 +1,25 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-security-operators
+  namespace: flux-system
+spec:
+  # Kyverno (admission webhooks, failurePolicy Ignore). Installs the Kyverno CRDs,
+  # so the policies in foundation-security can only apply after this layer is Ready.
+  dependsOn:
+    - name: foundation-storage
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 15m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/security-operators
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kyverno
+  namespace: kyverno
+spec:
+  values:
+    admissionController:
+      # A drain may evict at most one webhook pod. The chart rejects a PDB
+      # that sets both fields, and a patch cannot delete the chart's default
+      # minAvailable (null is dropped on merge), so it is zeroed: the chart
+      # then renders only maxUnavailable.
+      podDisruptionBudget:
+        minAvailable: 0
+        maxUnavailable: 1

@@ -1,0 +1,46 @@
+# Audit only: results land in PolicyReport objects, requests are never denied.
+# Same rule as the olf-require-memory-resources ValidatingAdmissionPolicy,
+# kept as a second opinion in the reports.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-memory-resources
+  annotations:
+    policies.kyverno.io/title: Require memory requests and limits (audit)
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      Every container needs a memory request and a memory limit.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: require-memory-resources
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - flux-system
+                - kyverno
+      validate:
+        failureAction: Audit
+        message: "Every container needs a memory request and a memory limit."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    memory: "?*"
+                  limits:
+                    memory: "?*"
+            =(initContainers):
+              - resources:
+                  requests:
+                    memory: "?*"
+                  limits:
+                    memory: "?*"

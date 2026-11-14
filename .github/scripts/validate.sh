@@ -52,6 +52,15 @@ if ! kubeconform "${KUBECONFORM_COMMON[@]}" \
 fi
 echo "::endgroup::"
 
+# 1b. Kyverno starter policies are audit-only (openspec policy-audit spec).
+# Switching a policy to Enforce is a separate change with its own rollout.
+echo "::group::Kyverno audit-only guard"
+if grep -rInE 'validationFailureAction:[[:space:]]*"?[Ee]nforce|failureAction:[[:space:]]*"?[Ee]nforce' foundation/security/base/kyverno; then
+  echo "::error::Kyverno policy under foundation/security/base/kyverno sets Enforce; only Audit is allowed"
+  rc=1
+fi
+echo "::endgroup::"
+
 # 2. Discover every Flux Kustomization spec.path and build it.
 mapfile -t PATHS < <(
   python3 - <<'PY'
