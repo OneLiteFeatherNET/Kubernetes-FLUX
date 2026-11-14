@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../../../security/clusters/feather-core/trivy-operator
   - ../../../security/clusters/feather-core/kyverno
+  - ../../../security/clusters/feather-core/kube-bench

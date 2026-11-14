@@ -383,6 +383,68 @@ groups:
           check_command: "kubectl -n velero get schedules.velero.io,backupstoragelocations.velero.io"
         labels:
           severity: warning
+      - uid: kube-bench-stale
+        title: kube-bench scan stale
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: mimir
+            model:
+              editorMode: code
+              # Days since the last successful run, per kube-bench CronJob (control-plane and worker).
+              # No series before the first successful run, so noDataState stays OK while the CronJobs are suspended.
+              expr: (time() - max by (cronjob) (kube_cronjob_status_last_successful_time{namespace="kube-bench"})) / 86400
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 8
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "CIS kube-bench CronJob {{ $labels.cronjob }} has not completed successfully for more than 8 days."
+          problem: "CIS kube-bench scan stale"
+          service: "kube-bench"
+          threshold: "< 8 days since last successful run"
+          value_unit: "days since last successful run"
+          value_fmt: "%.1f"
+          location: "kube-bench"
+          check: "Check whether the weekly Job runs and whether Alloy still collects its logs on the node; a manual run is kubectl -n kube-bench create job --from=cronjob/<name>."
+          check_command: "kubectl -n kube-bench get cronjobs,jobs"
+        labels:
+          severity: warning
   - orgId: 1
     name: backups
     folder: Backups
