@@ -53,6 +53,10 @@ spec:
       uninstall: false
     operator:
       replicas: 2
+      # Voluntary evictions never remove both operator replicas at once.
+      podDisruptionBudget:
+        enabled: true
+        maxUnavailable: 1
       unmanagedPodWatcher:
         restart: false
     securityContext:
