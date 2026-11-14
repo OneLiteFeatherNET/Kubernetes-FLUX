@@ -6,3 +6,4 @@ resources:
   - cephfs.yaml
   - bucket.yaml
   - rbd-snapshot.yaml
+  - cephfs-snapshot.yaml
