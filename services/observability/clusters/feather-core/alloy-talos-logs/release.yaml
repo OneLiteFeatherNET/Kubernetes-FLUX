@@ -72,10 +72,18 @@ spec:
               }
             }
 
-            // talos-level / talos-service / talos-time are the fields Talos always sends.
-            // node is not sent by Talos by default; the Talos side adds it with
-            // machine.logging.destinations[].extraTags (see the code PR).
+            // otelcol.exporter.loki wraps the OTel record as {"body": "<line>"};
+            // unwrap it first, then parse the Talos JSON inside.
             stage.json {
+              expressions = {
+                talos_raw = "body",
+              }
+            }
+
+            // talos-level / talos-service / talos-time are the fields Talos always sends.
+            // node comes from machine.logging.destinations[].extraTags on the Talos side.
+            stage.json {
+              source      = "talos_raw"
               expressions = {
                 msg     = "msg",
                 level   = "\"talos-level\"",
@@ -96,6 +104,14 @@ spec:
                 service = "service",
                 node    = "node",
               }
+            }
+
+            // auditd alone sends several hundred lines per second per node (SELinux
+            // audit records), drowning every other service. Drop it until there is a
+            // use for audit records and a filter that keeps only the relevant ones.
+            stage.drop {
+              source = "service"
+              value  = "auditd"
             }
 
             // The stored line is the Talos message text, not the JSON envelope.
