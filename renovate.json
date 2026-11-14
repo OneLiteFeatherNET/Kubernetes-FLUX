@@ -108,6 +108,11 @@
       "groupName": "stateful updates",
       "automerge": false,
       "addLabels": ["stateful"]
+    },
+    {
+      "description": "Dependency-Track chart 2.x ships DT 5, which needs a separate database migration (no in-place helm upgrade); stay on 1.x until that migration is planned",
+      "matchPackageNames": ["dependency-track"],
+      "allowedVersions": "<2"
     }
   ],
   "bumpVersions": [
