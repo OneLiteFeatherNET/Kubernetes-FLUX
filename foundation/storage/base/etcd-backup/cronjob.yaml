@@ -1,6 +1,5 @@
 # Daily etcd snapshot through the Talos API (talosctl etcd snapshot), uploaded to
-# every active S3 target. Suspended for the first merge: resume it (remove
-# `suspend: true`) after one manual Job has been verified in the bucket.
+# every active S3 target. Verified by a manual run on 2026-11-14 (744 MB snapshot in the in-cluster bucket).
 #
 # Target 1 (in-cluster RGW) is always used. Target 2 (external S3) is switched on by
 # creating the Secret `etcd-snapshot-external` in this namespace with keys
@@ -14,7 +13,7 @@ metadata:
 spec:
   schedule: "30 3 * * *"
   timeZone: Etc/UTC
-  suspend: true
+  suspend: false
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 3600
   successfulJobsHistoryLimit: 3
