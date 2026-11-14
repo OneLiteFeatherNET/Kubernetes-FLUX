@@ -1,0 +1,11 @@
+# Temporary copy of the v4 database for the v5 migrator; removing this CR drops it.
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: dependency-track-v4-copy
+spec:
+  name: dependency-track-v4-copy
+  owner: dependency-track
+  databaseReclaimPolicy: delete
+  cluster:
+    name: feather-core-cluster-pg
