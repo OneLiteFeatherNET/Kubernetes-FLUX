@@ -1,0 +1,12 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: velero
+  namespace: velero
+spec:
+  # Fixed name, so the BackupStorageLocation can refer to it.
+  bucketName: velero
+  storageClassName: ceph-bucket-fr01
+# No bucketOwner: the OBC creates its own RGW user and owns the bucket with it. Its keys are
+# written to Secret velero (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) in namespace velero, and
+# the bucket name to ConfigMap velero (BUCKET_NAME). Velero reads the Secret as env vars.

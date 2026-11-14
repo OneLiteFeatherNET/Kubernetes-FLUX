@@ -43,10 +43,12 @@ spec:
       features: EnableCSI
     # File-system backup stays off until a volume without CSI snapshot class needs it.
     deployNodeAgent: false
-    # Credentials come per BackupStorageLocation (credential refs in the cluster overlay), so the
-    # Deployment starts even before the secrets exist and only the location reports Unavailable.
+    # No cloud-credentials file. The Secret from the bucket claim (velero, created by Rook in this
+    # namespace) is loaded as environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
+    # The Deployment waits for that Secret, which Rook creates once the bucket claim is bound.
     credentials:
       useSecret: false
+      extraSecretRef: velero
     metrics:
       serviceMonitor:
         enabled: true

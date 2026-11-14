@@ -7,17 +7,14 @@ spec:
   values:
     configuration:
       backupStorageLocation:
-        # In-cluster RGW (feather-s3). Bucket from rook-fr01/buckets/velero.yaml, owned by the
-        # CephObjectStoreUser velero. Credentials: Secret velero-s3-credentials, key cloud.
-        # TODO: the Secret is not created in this repo yet (see the PR body).
+        # In-cluster RGW (feather-s3). Bucket velero from objectbucketclaim.yaml. No credential
+        # reference: the AWS plugin takes AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY from the
+        # environment (credentials.extraSecretRef, the OBC Secret).
         - name: default
           provider: aws
           bucket: velero
           default: true
           accessMode: ReadWrite
-          credential:
-            name: velero-s3-credentials
-            key: cloud
           config:
             region: us-west-1
             s3ForcePathStyle: "true"

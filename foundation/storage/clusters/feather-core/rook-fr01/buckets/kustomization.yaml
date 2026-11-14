@@ -31,4 +31,3 @@ resources:
   - reposilite-staging-onelitefeather-proxy.yaml
   - reposilite-staging-releases.yaml
   - reposilite-staging-snapshots.yaml
-  - velero.yaml
