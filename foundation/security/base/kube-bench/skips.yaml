@@ -1,0 +1,27 @@
+# Talos false positives for kube-bench CIS 1.10. Skip lists are copied from the
+# Talos hardening page, which kube-bench is run against:
+# https://docs.siderolabs.com/talos/v1.14/security/talos-default-hardening-and-cis-compliance
+# Reasons per check: see reasons.txt below; each skip cites the page.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-bench-skips
+  namespace: kube-bench
+data:
+  master.skip: "1.1.1,1.1.2,1.1.3,1.1.4,1.1.5,1.1.6,1.1.7,1.1.8,1.1.11,1.1.12,1.1.13,1.1.14,1.1.15,1.1.16,1.1.17,1.1.18,1.1.19,1.2.5,1.2.6,1.2.7,1.2.8"
+  node.skip: "4.1.1,4.1.5,4.1.6,4.1.9,4.1.10,4.2.1,4.2.2,4.2.3"
+  reasons.txt: |
+    Source for every entry: https://docs.siderolabs.com/talos/v1.14/security/talos-default-hardening-and-cis-compliance
+
+    master.skip (control-plane target)
+    1.1.1-1.1.8    Pod spec files expected under /etc/kubernetes/manifests do not exist; Talos has no static pod manifests.
+    1.1.11-1.1.12  etcd data directory ownership check; Talos manages etcd itself.
+    1.1.13-1.1.19  kubeconfig and PKI files are expected at kubeadm paths; Talos keeps them internally.
+    1.2.5          Expects an explicit kubelet CA flag on the apiserver; Talos trusts the kubelet through certificate bootstrapping.
+    1.2.6-1.2.8    Expects an --authorization-mode flag; Talos always enables Node and RBAC authorization.
+
+    node.skip (worker target)
+    4.1.1          Expects a kubeadm systemd drop-in; Talos does not run the kubelet under systemd.
+    4.1.5-4.1.6    Expects a kubeadm kubelet.conf path; Talos uses /etc/kubernetes/kubelet.yaml.
+    4.1.9-4.1.10   Expects /var/lib/kubelet/config.yaml; not present on Talos.
+    4.2.1-4.2.3    kube-bench reads the wrong file; Talos sets anonymous auth, authorization mode and client CA in /etc/kubernetes/kubelet.yaml.

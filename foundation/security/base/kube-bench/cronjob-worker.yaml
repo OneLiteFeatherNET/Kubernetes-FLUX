@@ -1,0 +1,93 @@
+# CIS 1.10 "node" checks on worker nodes, including the storage nodes.
+# Read-only; see cronjob-control-plane.yaml for the rationale and skips.yaml for the skip list.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kube-bench-worker
+  namespace: kube-bench
+  labels:
+    app.kubernetes.io/name: kube-bench
+    kube-bench/target: node
+spec:
+  # Weekly, Sunday 04:00 UTC.
+  schedule: "0 4 * * 0"
+  timeZone: Etc/UTC
+  suspend: true
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 900
+      ttlSecondsAfterFinished: 259200
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: kube-bench
+            kube-bench/target: node
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          priorityClassName: feather-low
+          hostPID: true
+          tolerations:
+            # Storage nodes carry this taint; the worker check covers them too.
+            - key: node-role.feather/storage
+              operator: Exists
+              effect: NoSchedule
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  # Worker target: never on control-plane nodes.
+                  - matchExpressions:
+                      - key: node-role.kubernetes.io/control-plane
+                        operator: DoesNotExist
+          containers:
+            - name: kube-bench
+              image: docker.io/aquasec/kube-bench:v0.16.0@sha256:75506f222d1eb6ce2a751a5533bdc0a3b54c898e2e49e7751d0ee22cfb862679
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  kube-bench run --targets node --benchmark cis-1.10 \
+                    --skip "$(cat /etc/kube-bench-skips/node.skip)" > /tmp/out/result.txt
+                  cat /tmp/out/result.txt
+                  # One summary line per run for LogQL counting in Loki.
+                  echo "kube-bench-summary target=node pass=$(grep -c '^\[PASS\]' /tmp/out/result.txt || true) fail=$(grep -c '^\[FAIL\]' /tmp/out/result.txt || true) warn=$(grep -c '^\[WARN\]' /tmp/out/result.txt || true) info=$(grep -c '^\[INFO\]' /tmp/out/result.txt || true)"
+              securityContext:
+                runAsUser: 0
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+              volumeMounts:
+                - name: etc-kubernetes
+                  mountPath: /etc/kubernetes
+                  readOnly: true
+                - name: skips
+                  mountPath: /etc/kube-bench-skips
+                  readOnly: true
+                - name: out
+                  mountPath: /tmp/out
+          volumes:
+            - name: etc-kubernetes
+              hostPath:
+                path: /etc/kubernetes
+                type: Directory
+            - name: skips
+              configMap:
+                name: kube-bench-skips
+            - name: out
+              emptyDir:
+                sizeLimit: 64Mi
