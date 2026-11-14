@@ -41,7 +41,7 @@ spec:
       repository: louislam/uptime-kuma
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "2.5.9"
+      tag: "2.5.11"
     ingress:
       enabled: false
 
