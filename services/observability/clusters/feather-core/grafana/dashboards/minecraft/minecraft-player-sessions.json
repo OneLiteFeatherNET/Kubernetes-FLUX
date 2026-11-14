@@ -1,0 +1,517 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Who joined and left the Minecraft network and when, based on Velocity proxy logs in Loki. IP addresses are never shown.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Jetzt online",
+      "description": "Spieler, die gerade über den Proxy verbunden sind.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "expr": "sum(minecraft_proxy_players_online_ratio)",
+          "refId": "A",
+          "queryType": "instant",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Verschiedene Spieler",
+      "description": "Wie viele unterschiedliche Spieler im gewählten Zeitraum das Netzwerk betreten haben.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "count(sum by (player) (count_over_time({job=~\"proxy/.*\"} |= \"[connected player]\" |= \"connected\" | json body=\"body\" | line_format \"{{.body}}\" | drop body | regexp `^\\[connected player\\] (?P<player>\\S+) \\(.*\\) has (?P<action>connected|disconnected)$` | action!=\"\" | player=~\"(?i)$player\" | action=\"connected\" [$__range])))",
+          "refId": "A",
+          "queryType": "instant",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Beitritte",
+      "description": "Anzahl der Netzwerk-Beitritte im gewählten Zeitraum.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum(count_over_time({job=~\"proxy/.*\"} |= \"[connected player]\" |= \"connected\" | json body=\"body\" | line_format \"{{.body}}\" | drop body | regexp `^\\[connected player\\] (?P<player>\\S+) \\(.*\\) has (?P<action>connected|disconnected)$` | action!=\"\" | player=~\"(?i)$player\" | action=\"connected\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Serverwechsel",
+      "description": "Anzahl der Wechsel auf einen Server (inkl. Lobby nach dem Beitritt).",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum(count_over_time({job=~\"proxy/.*\"} |= \"[server connection]\" | json body=\"body\" | line_format \"{{.body}}\" | drop body | regexp `^\\[server connection\\] (?P<player>\\S+) -> (?P<server>\\S+) has (?P<action>connected|disconnected)$` | action=\"connected\" | player=~\"(?i)$player\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Spieler online",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "mimir"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "mimir"
+          },
+          "expr": "sum(minecraft_proxy_players_online_ratio)",
+          "legendFormat": "online",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "stepAfter",
+            "fillOpacity": 15,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "logs",
+      "title": "Wer kam und ging",
+      "description": "Betreten und Verlassen des Netzwerks laut Proxy. IP-Adressen werden bewusst nicht angezeigt.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 11
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=~\"proxy/.*\"} |= \"[connected player]\" |= \"connected\" | json body=\"body\" | line_format \"{{.body}}\" | drop body | regexp `^\\[connected player\\] (?P<player>\\S+) \\(.*\\) has (?P<action>connected|disconnected)$` | action!=\"\" | player=~\"(?i)$player\" | line_format \"{{if eq .action \\\"connected\\\"}}🟢 {{.player}} hat das Netzwerk betreten{{else}}🔴 {{.player}} hat das Netzwerk verlassen{{end}}\"",
+          "refId": "A",
+          "editorMode": "code",
+          "queryType": "range"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": false,
+        "dedupStrategy": "none"
+      }
+    },
+    {
+      "id": 7,
+      "type": "logs",
+      "title": "Serverwechsel",
+      "description": "Auf welchen Server ein Spieler gewechselt ist.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 11
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=~\"proxy/.*\"} |= \"[server connection]\" | json body=\"body\" | line_format \"{{.body}}\" | drop body | regexp `^\\[server connection\\] (?P<player>\\S+) -> (?P<server>\\S+) has (?P<action>connected|disconnected)$` | action=\"connected\" | player=~\"(?i)$player\" | line_format \"➡️ {{.player}} → {{.server}}\"",
+          "refId": "A",
+          "editorMode": "code",
+          "queryType": "range"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": false,
+        "dedupStrategy": "none"
+      }
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Beitritte pro Spieler",
+      "description": "Wie oft jeder Spieler im gewählten Zeitraum das Netzwerk betreten hat.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 25
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum by (player) (count_over_time({job=~\"proxy/.*\"} |= \"[connected player]\" |= \"connected\" | json body=\"body\" | line_format \"{{.body}}\" | drop body | regexp `^\\[connected player\\] (?P<player>\\S+) \\(.*\\) has (?P<action>connected|disconnected)$` | action!=\"\" | player=~\"(?i)$player\" | action=\"connected\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant",
+          "instant": true,
+          "range": false,
+          "editorMode": "code",
+          "legendFormat": "{{player}}"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "lastNotNull"
+            ],
+            "mode": "seriesToRows"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Field": "Spieler",
+              "Last *": "Beitritte",
+              "Last": "Beitritte"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "Beitritte",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Beitritte pro Stunde",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 25
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum(count_over_time({job=~\"proxy/.*\"} |= \"[connected player]\" |= \"connected\" | json body=\"body\" | line_format \"{{.body}}\" | drop body | regexp `^\\[connected player\\] (?P<player>\\S+) \\(.*\\) has (?P<action>connected|disconnected)$` | action!=\"\" | player=~\"(?i)$player\" | action=\"connected\" [1h]))",
+          "legendFormat": "Beitritte",
+          "refId": "A",
+          "editorMode": "code",
+          "queryType": "range",
+          "step": "1h"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "tags": [
+    "minecraft",
+    "players"
+  ],
+  "templating": {
+    "list": [
+      {
+        "type": "textbox",
+        "name": "player",
+        "label": "Spieler (Regex)",
+        "query": ".+",
+        "current": {
+          "text": ".+",
+          "value": ".+"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": ".+",
+            "value": ".+"
+          }
+        ],
+        "hide": 0
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Minecraft Player Sessions",
+  "uid": "minecraft-player-sessions",
+  "version": 1,
+  "weekStart": ""
+}
