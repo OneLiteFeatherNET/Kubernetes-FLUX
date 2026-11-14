@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: ingot-staging
+spec:
+  name: ingot_staging
+  owner: ingot_staging
+  # Keep the database when this CR is deleted; staging data must not vanish with the object.
+  databaseReclaimPolicy: retain
+  cluster:
+    name: feather-core-cluster-pg

@@ -208,6 +208,14 @@ spec:
         connectionLimit: 20
         passwordSecret:
           name: role-coloeus
+      # Ingot staging (PostgreSQL). Connects through the session pooler only:
+      # advisory locks do not survive the transaction pooler.
+      - name: ingot_staging
+        login: true
+        ensure: present
+        connectionLimit: 10
+        passwordSecret:
+          name: role-ingot-staging
     services:
       additional:
         - selectorType: rw

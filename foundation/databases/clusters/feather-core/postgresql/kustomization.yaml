@@ -37,6 +37,7 @@ resources:
   - database/blackhole.yaml
   - database/menura.yaml
   - database/coloeus.yaml
+  - database/ingot-staging.yaml
 
 secretGenerator:
   - name: role-corvus
@@ -204,3 +205,10 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/coloeus.sops.env
+  - name: role-ingot-staging
+    type: kubernetes.io/basic-auth
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/ingot-staging.sops.env
