@@ -6,6 +6,7 @@ generatorOptions:
 resources:
   - ../../../base/dependency-track-v5
   - ingress.yaml
+  - migration-jobs.yaml
 patches:
   - path: release.yaml
 

@@ -1,0 +1,410 @@
+# Rehearsal run 1, in order: copy, bootstrap, verify, dry-run, run, verify, cleanup.
+# Suspended until a commit sets suspend: false; a new run gets new names (Job pod templates are immutable).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dependency-track-v5-copy-1
+spec:
+  suspend: true
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        logs.onelitefeather.net/env: prod
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 26
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: copy
+          image: ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -o pipefail
+              pg_dump --host=feather-core-cluster-pg-rw.cnpg-system.svc --format=custom --no-owner --no-acl --dbname=dependency-track \
+                | pg_restore --host=feather-core-cluster-pg-rw.cnpg-system.svc --clean --if-exists --no-owner --no-acl --dbname=dependency-track-v4-copy
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: password
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dependency-track-v5-bootstrap-1
+spec:
+  suspend: true
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        logs.onelitefeather.net/env: prod
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrator
+          image: ghcr.io/dependencytrack/v4-migrator:5.2.1
+          # Inline password: the migrator has no env or file option, and two prompts cannot share one stdin.
+          args:
+            - bootstrap
+            - --target-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v5
+            - --target-user=$(DB_USERNAME)
+            - --target-pass=$(DB_PASSWORD)
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: password
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dependency-track-v5-verify-1
+spec:
+  suspend: true
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        logs.onelitefeather.net/env: prod
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrator
+          image: ghcr.io/dependencytrack/v4-migrator:5.2.1
+          args:
+            - verify
+            - --target-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v5
+            - --target-user=$(DB_USERNAME)
+            - --target-pass=$(DB_PASSWORD)
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: password
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dependency-track-v5-dry-run-1
+spec:
+  suspend: true
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        logs.onelitefeather.net/env: prod
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrator
+          image: ghcr.io/dependencytrack/v4-migrator:5.2.1
+          args:
+            - run
+            - --dry-run
+            - --target-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v5
+            - --target-user=$(DB_USERNAME)
+            - --target-pass=$(DB_PASSWORD)
+            - --source-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v4-copy
+            - --source-user=$(DB_USERNAME)
+            - --source-pass=$(DB_PASSWORD)
+            # Retention in days; 90 is the upstream example. Set in the rehearsal (task 3.2).
+            - --metrics-retention-days=90
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: password
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dependency-track-v5-run-1
+spec:
+  suspend: true
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        logs.onelitefeather.net/env: prod
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrator
+          image: ghcr.io/dependencytrack/v4-migrator:5.2.1
+          args:
+            - run
+            - --target-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v5
+            - --target-user=$(DB_USERNAME)
+            - --target-pass=$(DB_PASSWORD)
+            - --source-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v4-copy
+            - --source-user=$(DB_USERNAME)
+            - --source-pass=$(DB_PASSWORD)
+            # Same value as the dry run.
+            - --metrics-retention-days=90
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: password
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dependency-track-v5-verify-2
+spec:
+  suspend: true
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        logs.onelitefeather.net/env: prod
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrator
+          image: ghcr.io/dependencytrack/v4-migrator:5.2.1
+          # Source options make verify print source, staging and v5 row counts.
+          args:
+            - verify
+            - --target-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v5
+            - --target-user=$(DB_USERNAME)
+            - --target-pass=$(DB_PASSWORD)
+            - --source-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v4-copy
+            - --source-user=$(DB_USERNAME)
+            - --source-pass=$(DB_PASSWORD)
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: password
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dependency-track-v5-cleanup-1
+spec:
+  suspend: true
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        logs.onelitefeather.net/env: prod
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrator
+          image: ghcr.io/dependencytrack/v4-migrator:5.2.1
+          args:
+            - cleanup
+            - --target-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v5
+            - --target-user=$(DB_USERNAME)
+            - --target-pass=$(DB_PASSWORD)
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dependency-track-v5-env
+                  key: password
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
