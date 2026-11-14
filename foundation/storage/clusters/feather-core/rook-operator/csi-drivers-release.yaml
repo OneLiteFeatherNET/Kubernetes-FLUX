@@ -31,6 +31,9 @@ spec:
       rbd:
         enabled: true
         name: rook-ceph.rbd.csi.ceph.com
+        # Chart default for rbd is "none": without it the controller plugin has
+        # no csi-snapshotter sidecar and VolumeSnapshots (Velero CSI) never get ready.
+        snapshotPolicy: volumeSnapshot
         nodePlugin:
           tolerations:
             - key: node-role.feather/storage
