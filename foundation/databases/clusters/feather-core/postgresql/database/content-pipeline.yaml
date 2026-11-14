@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: content-pipeline
+spec:
+  name: content_pipeline
+  owner: content_pipeline
+  cluster:
+    name: feather-core-cluster-pg

@@ -37,6 +37,7 @@ resources:
   - database/blackhole.yaml
   - database/menura.yaml
   - database/coloeus.yaml
+  - database/content-pipeline.yaml
 
 secretGenerator:
   - name: role-corvus
@@ -204,3 +205,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/coloeus.sops.env
+  - name: role-content-pipeline
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/content-pipeline.sops.env
