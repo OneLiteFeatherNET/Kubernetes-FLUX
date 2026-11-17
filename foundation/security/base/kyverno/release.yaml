@@ -25,7 +25,7 @@ spec:
       retries: 3
   driftDetection:
     mode: warn
-  interval: 1m0s
+  interval: 10m0s
   values:
     # Zero-downtime invariant: when no Kyverno pod answers, the API server
     # admits the request. Kyverno must never stall a request it cannot answer.
