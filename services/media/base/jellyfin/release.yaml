@@ -21,7 +21,7 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  interval: 1m0s
+  interval: 10m0s
   # Default values
   # https://github.com/jellyfin/jellyfin-helm/blob/master/charts/jellyfin/values.yaml
   values: {}

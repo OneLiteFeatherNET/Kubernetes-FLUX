@@ -21,7 +21,7 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  interval: 1m0s
+  interval: 10m0s
   # Default values
   # https://github.com/pmint93/helm-charts/blob/master/charts/metabase/values.yaml
   values: {}

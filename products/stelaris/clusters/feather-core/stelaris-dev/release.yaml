@@ -5,7 +5,7 @@ metadata:
   namespace: stelaris-dev
 spec:
   releaseName: stelaris-ui-dev
-  interval: 1m0s
+  interval: 10m0s
   install:
     remediation:
       retries: 3

@@ -24,7 +24,7 @@ spec:
   # Loki SingleBinary + chunk/result caches need more than the
   # default 5m; the cutover upgrade timed out at ~5m12s.
   timeout: 20m0s
-  interval: 1m0s
+  interval: 10m0s
   # Default values
   # https://github.com/grafana/helm-charts/blob/main/charts/loki-stack/values.yaml
   values: {}

@@ -14,7 +14,7 @@ spec:
     kind: OCIRepository
     name: apus-platform
     namespace: flux-system
-  interval: 1m0s
+  interval: 10m0s
   install:
     remediation:
       retries: 3

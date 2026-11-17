@@ -23,7 +23,7 @@ spec:
     remediation:
       retries: 3
     crds: CreateReplace
-  interval: 1m0s
+  interval: 10m0s
   timeout: 10m0s
   values:
     priorityClassName: feather-critical
