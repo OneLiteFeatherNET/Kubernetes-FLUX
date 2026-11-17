@@ -5,7 +5,6 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - ../../../base/dependency-track
-  - ingress.yaml
   - pdb.yaml
 patches:
   - path: release.yaml

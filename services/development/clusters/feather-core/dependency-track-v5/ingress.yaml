@@ -8,8 +8,8 @@ metadata:
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    # Same /api and /health split as v4. Test hostname behind Cloudflare Access until cutover.
-    - host: dependency-track-next.onelitefeather.dev
+    # Same /api and /health split as v4 had.
+    - host: dependency-track.onelitefeather.dev
       http:
         paths:
           - path: /api

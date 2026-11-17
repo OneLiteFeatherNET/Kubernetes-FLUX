@@ -6,8 +6,7 @@ metadata:
 spec:
   values:
     frontend:
-      # Test hostname until cutover; the public hostname replaces it in the cutover PR.
-      apiBaseUrl: "https://dependency-track-next.onelitefeather.dev"
+      apiBaseUrl: "https://dependency-track.onelitefeather.dev"
       podLabels:
         logs.onelitefeather.net/env: prod
       extraEnv:
