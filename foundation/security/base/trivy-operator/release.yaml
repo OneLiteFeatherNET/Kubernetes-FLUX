@@ -27,5 +27,5 @@ spec:
       retries: 3
   driftDetection:
     mode: warn
-  interval: 1m0s
+  interval: 10m0s
   values: {}
