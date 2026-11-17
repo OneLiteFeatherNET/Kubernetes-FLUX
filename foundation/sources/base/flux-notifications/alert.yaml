@@ -36,6 +36,9 @@ spec:
       namespace: dependency-track
     - kind: HelmRelease
       name: "*"
+      namespace: dependency-track-v5
+    - kind: HelmRelease
+      name: "*"
       namespace: descheduler
     - kind: HelmRelease
       name: "*"
