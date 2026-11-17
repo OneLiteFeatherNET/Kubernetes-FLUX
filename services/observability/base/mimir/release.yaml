@@ -24,7 +24,7 @@ spec:
   # Rolling all mimir-distributed components exceeds the default 5m;
   # the 2026-07-14 upgrade timed out at 5m9s and stalled for 29 days.
   timeout: 20m0s
-  interval: 1m0s
+  interval: 10m0s
   # Default values
   # https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/values.yaml
   values: {}

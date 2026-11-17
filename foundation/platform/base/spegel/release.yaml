@@ -29,7 +29,7 @@ spec:
         target:
           kind: DaemonSet
           name: spegel
-  interval: 1m0s
+  interval: 10m0s
   timeout: 5m
   values:
     service:

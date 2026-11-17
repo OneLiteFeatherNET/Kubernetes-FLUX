@@ -18,7 +18,7 @@ spec:
   install:
     remediation:
       retries: 3
-  interval: 1m0s
+  interval: 10m0s
   # Default values
   # https://github.com/dirsigler/uptime-kuma-helm/blob/main/charts/uptime-kuma/values.yaml
   values: {}

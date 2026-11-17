@@ -17,6 +17,6 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  interval: 1m0s
+  interval: 10m0s
   timeout: 5m
   values: {}

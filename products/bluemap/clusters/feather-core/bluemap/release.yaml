@@ -15,7 +15,7 @@ spec:
       retries: 3
       remediateLastFailure: true
       strategy: rollback
-  interval: 1m0s
+  interval: 10m0s
   # bluemap's chart has no priorityClassName value; inject it post-render.
   postRenderers:
     - kustomize:

@@ -20,7 +20,7 @@ spec:
     remediation:
       retries: 3
       remediateLastFailure: true
-  interval: 1m0s
+  interval: 10m0s
   # Default values
   # https://github.com/SchwarzIT/node-red-chart/blob/main/charts/node-red/values.yaml
   values: {}

@@ -31,5 +31,5 @@ spec:
     remediation:
       retries: 0
       remediateLastFailure: false
-  interval: 1m0s
+  interval: 10m0s
   values: {}

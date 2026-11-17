@@ -26,7 +26,7 @@ spec:
     ignore:
       # The documented rollout-restart workflow (CLAUDE.md) mutates this.
       - paths: ["/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"]
-  interval: 1m0s
+  interval: 10m0s
   # Default values
   #
   values: {}
