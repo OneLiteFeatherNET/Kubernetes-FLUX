@@ -199,7 +199,7 @@ spec:
             - --source-url=jdbc:postgresql://feather-core-cluster-pg-rw.cnpg-system.svc:5432/dependency-track-v4-copy
             - --source-user=$(DB_USERNAME)
             - --source-pass=$(DB_PASSWORD)
-            # Same value as the dry run.
+            # Retention in days; 90 is the upstream example.
             - --metrics-retention-days=90
           env:
             - name: DB_USERNAME
