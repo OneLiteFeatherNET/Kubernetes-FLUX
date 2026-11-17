@@ -19,9 +19,7 @@ spec:
     remediation:
       retries: 3
   interval: 10m0s
-  # Stays suspended until the migrator has bootstrapped and verified the target
-  # (openspec migrate-dependency-track-v5, rehearsal step 4).
-  suspend: true
+  suspend: false
   # Chart values: https://github.com/DependencyTrack/helm-charts/blob/dependency-track-2.9.0/charts/dependency-track/values.yaml
   values:
     database:
