@@ -94,7 +94,9 @@ spec:
         command:
           - /bin/sh
           - -c
-          - python -m pip install --no-cache-dir --disable-pip-version-check --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13
+          # The image's venv (/app/.venv) has no pip; the image installs packages with uv
+          # (/usr/local/bin/uv, see the upstream Dockerfile), so the init container does the same.
+          - uv pip install --no-cache --python /app/.venv/bin/python --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13
         volumeMounts:
           - name: pydeps
             mountPath: /opt/pydeps
