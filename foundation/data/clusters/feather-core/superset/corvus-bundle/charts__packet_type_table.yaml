@@ -1,0 +1,36 @@
+slice_name: Packet types
+description: Count, share and payload size per packet type.
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 1__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  query_mode: aggregate
+  groupby:
+  - packet_name
+  - private
+  - payload_policy
+  metrics:
+  - count
+  - avg_payload_size
+  - p95_payload_size
+  - max_payload_size
+  percent_metrics:
+  - count
+  timeseries_limit_metric: count
+  order_desc: true
+  include_search: true
+  page_length: 25
+  show_totals: true
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 8b38c69c-6a2e-43da-a20d-f7d7958a62fd
+version: 1.0.0
+dataset_uuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10

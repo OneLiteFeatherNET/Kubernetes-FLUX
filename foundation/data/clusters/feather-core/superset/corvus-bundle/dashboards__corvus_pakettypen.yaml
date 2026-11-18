@@ -1,0 +1,328 @@
+dashboard_title: "Corvus \u2013 Pakettypen"
+description: Packet type analysis of the Corvus capture (packets, sessions, payload
+  sizes).
+css: ''
+slug: corvus-pakettypen
+certified_by: null
+certification_details: null
+published: false
+uuid: e48275d7-2ac3-4093-bbf8-2a56f794b783
+position:
+  DASHBOARD_VERSION_KEY: v2
+  ROOT_ID:
+    type: ROOT
+    id: ROOT_ID
+    children:
+    - GRID_ID
+  GRID_ID:
+    type: GRID
+    id: GRID_ID
+    children:
+    - ROW-1
+    - ROW-2
+    - ROW-3
+    - ROW-4
+    - ROW-5
+    - ROW-6
+    parents:
+    - ROOT_ID
+  CHART-total_packets:
+    type: CHART
+    id: CHART-total_packets
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-1
+    meta:
+      width: 4
+      height: 25
+      chartId: 6
+      sliceName: Total packets
+      uuid: 5bc7bf7d-14f8-4565-aba0-faa4c62a75b2
+  CHART-total_sessions:
+    type: CHART
+    id: CHART-total_sessions
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-1
+    meta:
+      width: 4
+      height: 25
+      chartId: 7
+      sliceName: Sessions
+      uuid: 34bc01d2-f453-4b3c-9306-e7c508641bae
+  CHART-total_types:
+    type: CHART
+    id: CHART-total_types
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-1
+    meta:
+      width: 4
+      height: 25
+      chartId: 8
+      sliceName: Distinct packet types
+      uuid: 8d37cbab-348b-4e4e-8c58-3a9f98359824
+  ROW-1:
+    type: ROW
+    id: ROW-1
+    children:
+    - CHART-total_packets
+    - CHART-total_sessions
+    - CHART-total_types
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-top_types_by_direction:
+    type: CHART
+    id: CHART-top_types_by_direction
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-2
+    meta:
+      width: 8
+      height: 60
+      chartId: 5
+      sliceName: Top 25 packet types by direction
+      uuid: ecae84e2-99d1-4fa5-8f93-db3b363d56ee
+  CHART-direction_share:
+    type: CHART
+    id: CHART-direction_share
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-2
+    meta:
+      width: 4
+      height: 60
+      chartId: 1
+      sliceName: Serverbound vs clientbound
+      uuid: 634ccc4d-548d-4c30-9d1f-ca9e482c5f11
+  ROW-2:
+    type: ROW
+    id: ROW-2
+    children:
+    - CHART-top_types_by_direction
+    - CHART-direction_share
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-packet_type_table:
+    type: CHART
+    id: CHART-packet_type_table
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-3
+    meta:
+      width: 12
+      height: 70
+      chartId: 4
+      sliceName: Packet types
+      uuid: 8b38c69c-6a2e-43da-a20d-f7d7958a62fd
+  ROW-3:
+    type: ROW
+    id: ROW-3
+    children:
+    - CHART-packet_type_table
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-minute_by_direction:
+    type: CHART
+    id: CHART-minute_by_direction
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-4
+    meta:
+      width: 12
+      height: 50
+      chartId: 3
+      sliceName: Packets per session minute by direction
+      uuid: c8c7fd39-d79c-4991-8e01-a94839e2c1e3
+  ROW-4:
+    type: ROW
+    id: ROW-4
+    children:
+    - CHART-minute_by_direction
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-heatmap_types_minutes:
+    type: CHART
+    id: CHART-heatmap_types_minutes
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-5
+    meta:
+      width: 12
+      height: 70
+      chartId: 2
+      sliceName: Top 15 packet types per session minute
+      uuid: 4633aa36-74fd-4b1b-b2e0-588c4dd3d672
+  ROW-5:
+    type: ROW
+    id: ROW-5
+    children:
+    - CHART-heatmap_types_minutes
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-unknown_types:
+    type: CHART
+    id: CHART-unknown_types
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-6
+    meta:
+      width: 12
+      height: 40
+      chartId: 9
+      sliceName: Packet types not in the vocabulary
+      uuid: ac29f37a-b464-4359-802d-99d48c206d1e
+  ROW-6:
+    type: ROW
+    id: ROW-6
+    children:
+    - CHART-unknown_types
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+metadata:
+  native_filter_configuration:
+  - id: NATIVE_FILTER-date
+    controlValues: {}
+    name: Date range
+    filterType: filter_time
+    targets:
+    - column:
+        name: date
+      datasetUuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  - id: NATIVE_FILTER-session
+    controlValues:
+      enableEmptyFilter: false
+      defaultToFirstItem: false
+      multiSelect: true
+      searchAllOptions: false
+      inverseSelection: false
+    name: Session
+    filterType: filter_select
+    targets:
+    - column:
+        name: session
+      datasetUuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  - id: NATIVE_FILTER-direction
+    controlValues:
+      enableEmptyFilter: false
+      defaultToFirstItem: false
+      multiSelect: true
+      searchAllOptions: false
+      inverseSelection: false
+    name: Direction
+    filterType: filter_select
+    targets:
+    - column:
+        name: direction_label
+      datasetUuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  - id: NATIVE_FILTER-state
+    controlValues:
+      enableEmptyFilter: false
+      defaultToFirstItem: false
+      multiSelect: true
+      searchAllOptions: false
+      inverseSelection: false
+    name: State
+    filterType: filter_select
+    targets:
+    - column:
+        name: state_label
+      datasetUuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  color_scheme: ''
+  refresh_frequency: 0
+  label_colors: {}
+  shared_label_colors: {}
+  color_scheme_domain: []
+  cross_filters_enabled: false
+  expanded_slices: {}
+  timed_refresh_immune_slices: []
+theme_uuid: null
+version: 1.0.0

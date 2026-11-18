@@ -1,0 +1,29 @@
+slice_name: Packets per session minute by direction
+description: null
+certified_by: null
+certification_details: null
+viz_type: echarts_timeseries_line
+params:
+  datasource: 1__table
+  viz_type: echarts_timeseries_line
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  x_axis: session_minute
+  groupby:
+  - direction_label
+  metrics:
+  - count
+  order_desc: true
+  y_axis_format: SMART_NUMBER
+  rich_tooltip: true
+  show_legend: true
+  x_axis_title: Minute of session
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: c8c7fd39-d79c-4991-8e01-a94839e2c1e3
+version: 1.0.0
+dataset_uuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10

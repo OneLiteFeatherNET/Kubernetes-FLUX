@@ -1,0 +1,23 @@
+slice_name: Sessions
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number_total
+params:
+  datasource: 1__table
+  viz_type: big_number_total
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  metric: session_count
+  header_font_size: 0.4
+  subheader_font_size: 0.15
+  y_axis_format: SMART_NUMBER
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 34bc01d2-f453-4b3c-9306-e7c508641bae
+version: 1.0.0
+dataset_uuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10

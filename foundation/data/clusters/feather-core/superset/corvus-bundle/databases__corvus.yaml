@@ -1,0 +1,18 @@
+database_name: corvus
+sqlalchemy_uri: trino://superset@trino.data.svc.cluster.local:8080/corvus
+cache_timeout: null
+expose_in_sqllab: true
+allow_run_async: false
+allow_ctas: false
+allow_cvas: false
+allow_dml: false
+allow_file_upload: false
+extra:
+  metadata_params: {}
+  engine_params: {}
+  metadata_cache_timeout: {}
+  schemas_allowed_for_file_upload: []
+impersonate_user: false
+configuration_method: sqlalchemy_form
+uuid: 2601a04b-ec63-4dec-9763-91b41e285890
+version: 1.0.0

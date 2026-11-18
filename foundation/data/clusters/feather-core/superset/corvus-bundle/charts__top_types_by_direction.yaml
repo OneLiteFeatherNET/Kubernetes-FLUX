@@ -1,0 +1,32 @@
+slice_name: Top 25 packet types by direction
+description: The 25 most frequent packet types; bars are split by direction.
+certified_by: null
+certification_details: null
+viz_type: echarts_timeseries_bar
+params:
+  datasource: 1__table
+  viz_type: echarts_timeseries_bar
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  x_axis: direction_label
+  groupby:
+  - packet_name
+  metrics:
+  - count
+  series_limit: 25
+  series_limit_metric: count
+  order_desc: true
+  stack: Stack
+  orientation: vertical
+  show_legend: true
+  y_axis_format: SMART_NUMBER
+  rich_tooltip: true
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: ecae84e2-99d1-4fa5-8f93-db3b363d56ee
+version: 1.0.0
+dataset_uuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10

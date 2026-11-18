@@ -114,6 +114,10 @@ spec:
       - name: datasource-import
         configMap:
           name: superset-datasources
+      # Corvus dashboard bundle (flat ConfigMap keys, see corvus-bundle/). Plain, no secret.
+      - name: corvus-bundle
+        configMap:
+          name: superset-corvus-bundle
     container:
       securityContext:
         allowPrivilegeEscalation: false
@@ -127,6 +131,9 @@ spec:
           mountPath: /opt/pydeps
         - name: datasource-import
           mountPath: /app/configs
+          readOnly: true
+        - name: corvus-bundle
+          mountPath: /app/corvus-bundle
           readOnly: true
       env:
         - name: ENTRA_CLIENT_SECRET
@@ -171,4 +178,16 @@ spec:
           superset init
           if [ -f /app/configs/import_datasources.yaml ]; then
             superset import_datasources -p /app/configs/import_datasources.yaml
+          fi
+          # Corvus dashboard bundle: zip the flat keys, then import with an Admin as owner. Overwrites
+          # the bundle objects on every start (code is the source). Skipped until a user has logged in.
+          if [ -f /app/corvus-bundle/metadata.yaml ]; then
+            /app/.venv/bin/python /app/corvus-bundle/build_bundle.py /app/corvus-bundle /tmp/corvus-packet-types.zip
+            # The config loader prints a line on stdout; the username is the last line.
+            owner="$(/app/.venv/bin/python /app/corvus-bundle/owner_username.py | tail -n 1)"
+            if [ -n "$owner" ]; then
+              superset import-dashboards -p /tmp/corvus-packet-types.zip -u "$owner" || echo "corvus bundle import failed"
+            else
+              echo "no Superset user yet, corvus bundle import skipped"
+            fi
           fi

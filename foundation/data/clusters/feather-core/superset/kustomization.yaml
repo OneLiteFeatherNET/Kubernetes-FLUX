@@ -20,3 +20,22 @@ configMapGenerator:
   - name: superset-datasources
     files:
       - import_datasources.yaml
+  # Mounted at /app/corvus-bundle. Flat keys (ConfigMap keys cannot contain '/'), zipped by
+  # build_bundle.py at pod start and imported by lifecycle.init. Plain, no secret.
+  - name: superset-corvus-bundle
+    files:
+      - corvus-bundle/build_bundle.py
+      - corvus-bundle/owner_username.py
+      - corvus-bundle/metadata.yaml
+      - corvus-bundle/databases__corvus.yaml
+      - corvus-bundle/datasets__corvus_packet_types.yaml
+      - corvus-bundle/charts__total_packets.yaml
+      - corvus-bundle/charts__total_sessions.yaml
+      - corvus-bundle/charts__total_types.yaml
+      - corvus-bundle/charts__top_types_by_direction.yaml
+      - corvus-bundle/charts__direction_share.yaml
+      - corvus-bundle/charts__packet_type_table.yaml
+      - corvus-bundle/charts__minute_by_direction.yaml
+      - corvus-bundle/charts__heatmap_types_minutes.yaml
+      - corvus-bundle/charts__unknown_types.yaml
+      - corvus-bundle/dashboards__corvus_pakettypen.yaml

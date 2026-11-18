@@ -1,0 +1,27 @@
+slice_name: Top 15 packet types per session minute
+description: null
+certified_by: null
+certification_details: null
+viz_type: heatmap_v2
+params:
+  datasource: 1__table
+  viz_type: heatmap_v2
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  x_axis: session_minute
+  groupby:
+  - packet_name
+  metric: count
+  series_limit: 15
+  series_limit_metric: count
+  linear_color_scheme: blue_white_yellow
+  normalize_across: heatmap
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 4633aa36-74fd-4b1b-b2e0-588c4dd3d672
+version: 1.0.0
+dataset_uuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10
