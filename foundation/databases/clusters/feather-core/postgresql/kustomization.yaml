@@ -40,6 +40,8 @@ resources:
   - database/menura.yaml
   - database/coloeus.yaml
   - database/ingot-staging.yaml
+  - database/polaris.yaml
+  - database/airflow.yaml
 
 secretGenerator:
   - name: role-corvus
@@ -214,3 +216,15 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/ingot-staging.sops.env
+  - name: role-polaris
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/polaris.sops.env
+  - name: role-airflow
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/airflow.sops.env

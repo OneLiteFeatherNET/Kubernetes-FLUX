@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: airflow
+spec:
+  name: airflow
+  owner: airflow
+  # Keep the metadata database when this CR is deleted; it holds the DAG run history.
+  databaseReclaimPolicy: retain
+  cluster:
+    name: feather-core-cluster-pg
