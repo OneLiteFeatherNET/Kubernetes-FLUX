@@ -61,10 +61,11 @@ GRANTS = {
         {"type": "catalog", "privilege": p}
         for p in ("TABLE_READ_DATA", "TABLE_WRITE_DATA", "TABLE_LIST", "NAMESPACE_LIST")
     ],
-    # Trino (Superset SQL) reads only: no write privilege anywhere in this role.
+    # Trino (Superset SQL) reads only: no write privilege anywhere in this role. VIEW_LIST because
+    # Trino lists views next to tables (SHOW TABLES fails with LIST_VIEWS denied otherwise).
     "sql": [
         {"type": "catalog", "privilege": p}
-        for p in ("TABLE_LIST", "NAMESPACE_LIST", "TABLE_READ_PROPERTIES", "TABLE_READ_DATA")
+        for p in ("TABLE_LIST", "VIEW_LIST", "NAMESPACE_LIST", "TABLE_READ_PROPERTIES", "TABLE_READ_DATA")
     ],
     "admin": [{"type": "catalog", "privilege": "CATALOG_MANAGE_METADATA"}],
 }
