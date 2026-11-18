@@ -7,13 +7,13 @@ generatorOptions:
 resources:
   - ../../../base/polaris
   - token-keys.sops.yaml
-  - bootstrap-job.yaml
   - setup-job.yaml
 patches:
   - path: release.yaml
 
 secretGenerator:
-  # ROOT_CLIENT_ID / ROOT_CLIENT_SECRET for the one-off admin-tool bootstrap and the setup Job.
+  # Root principal credentials for the setup Job. The realm was bootstrapped once with the
+  # polaris-admin-tool (runbook in Outline); the credentials were rotated afterwards.
   - name: polaris-bootstrap
     namespace: data
     envs:
