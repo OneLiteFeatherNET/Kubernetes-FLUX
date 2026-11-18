@@ -1,40 +1,34 @@
 table_name: corvus_seq_segments
 main_dttm_col: date
-currency_code_column: null
-description: 'Per session and segment: sequence range and missing sequence numbers
-  (data-loss indicator).'
+description: 'Per session and segment: sequence range and missing sequence numbers (data-loss indicator).'
 default_endpoint: null
 offset: 0
 cache_timeout: null
-catalog: null
 schema: null
-sql: "SELECT\n  min(date) AS date,\n  substr(to_hex(session_id), 1, 12) AS session,\n\
-  \  segment,\n  count(*) AS frames,\n  min(seq) AS seq_min,\n  max(seq) AS seq_max,\n\
-  \  max(seq) - min(seq) + 1 - count(DISTINCT seq) AS missing_seq\nFROM corvus.capture.events\n\
-  GROUP BY session_id, segment\n"
+sql: "{% if from_dttm %}{% set lo = \"DATE '\" ~ (from_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set lo = \"current_date - INTERVAL '7' DAY\" %}{% endif %}{% if to_dttm %}{% set hi\
+  \ = \"DATE '\" ~ (to_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set hi = \"current_date\" %}{% endif %}\nSELECT\n  min(date) AS date,\n  substr(to_hex(session_id), 1, 12) AS session,\n\
+  \  segment,\n  count(*) AS frames,\n  min(seq) AS seq_min,\n  max(seq) AS seq_max,\n  max(seq) - min(seq) + 1 - count(DISTINCT seq) AS missing_seq\nFROM corvus.capture.events\nWHERE date >= {{ lo }} AND\
+  \ date <= {{ hi }}\nGROUP BY session_id, segment\n"
 params: null
 template_params: null
 filter_select_enabled: true
 fetch_values_predicate: null
 extra: null
-normalize_columns: false
-always_filter_main_dttm: false
-folders: null
 uuid: e5f7a8b9-0d1e-4f2a-8b3c-9d0e1f2a3b4c
 metrics:
-- metric_name: missing_seq
-  verbose_name: Missing sequence numbers
+- metric_name: frames
+  verbose_name: Frames
   metric_type: null
-  expression: SUM(missing_seq)
+  expression: SUM(frames)
   description: null
   d3format: ',.0f'
   currency: null
   extra: null
   warning_text: null
-- metric_name: frames
-  verbose_name: Frames
+- metric_name: missing_seq
+  verbose_name: Missing sequence numbers
   metric_type: null
-  expression: SUM(frames)
+  expression: SUM(missing_seq)
   description: null
   d3format: ',.0f'
   currency: null
@@ -50,19 +44,6 @@ metrics:
   extra: null
   warning_text: null
 columns:
-- column_name: session
-  verbose_name: null
-  is_dttm: false
-  is_active: true
-  type: VARCHAR
-  advanced_data_type: null
-  groupby: true
-  filterable: true
-  expression: null
-  description: null
-  python_date_format: null
-  datetime_format: null
-  extra: null
 - column_name: date
   verbose_name: null
   is_dttm: true
@@ -74,59 +55,18 @@ columns:
   expression: null
   description: null
   python_date_format: null
-  datetime_format: null
   extra: null
-- column_name: seq_max
+- column_name: session
   verbose_name: null
   is_dttm: false
   is_active: true
-  type: BIGINT
+  type: VARCHAR
   advanced_data_type: null
-  groupby: false
+  groupby: true
   filterable: true
   expression: null
   description: null
   python_date_format: null
-  datetime_format: null
-  extra: null
-- column_name: missing_seq
-  verbose_name: null
-  is_dttm: false
-  is_active: true
-  type: BIGINT
-  advanced_data_type: null
-  groupby: false
-  filterable: true
-  expression: null
-  description: null
-  python_date_format: null
-  datetime_format: null
-  extra: null
-- column_name: seq_min
-  verbose_name: null
-  is_dttm: false
-  is_active: true
-  type: BIGINT
-  advanced_data_type: null
-  groupby: false
-  filterable: true
-  expression: null
-  description: null
-  python_date_format: null
-  datetime_format: null
-  extra: null
-- column_name: frames
-  verbose_name: null
-  is_dttm: false
-  is_active: true
-  type: BIGINT
-  advanced_data_type: null
-  groupby: false
-  filterable: true
-  expression: null
-  description: null
-  python_date_format: null
-  datetime_format: null
   extra: null
 - column_name: segment
   verbose_name: null
@@ -139,7 +79,54 @@ columns:
   expression: null
   description: null
   python_date_format: null
-  datetime_format: null
   extra: null
-version: 1.0.0
+- column_name: frames
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: seq_min
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: seq_max
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: missing_seq
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
 database_uuid: 2601a04b-ec63-4dec-9763-91b41e285890
+version: 1.0.0
