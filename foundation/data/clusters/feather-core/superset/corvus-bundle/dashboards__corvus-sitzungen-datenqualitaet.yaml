@@ -1,11 +1,10 @@
-dashboard_title: "Corvus \u2013 Sitzungen & Datenqualit\xE4t"
-description: "Sitzungen, Frame-L\xFCcken, abgeschnittene Payloads und Protokollversionen."
+dashboard_title: Corvus – Sitzungen & Datenqualität
+description: Sitzungen, Frame-Lücken, abgeschnittene Payloads und Protokollversionen.
 css: ''
 slug: corvus-sitzungen-datenqualitaet
 certified_by: null
 certification_details: null
 published: false
-uuid: e2f5a718-0d1c-4e4f-9a3b-5c6d7e8f9012
 position:
   DASHBOARD_VERSION_KEY: v2
   ROOT_ID:
@@ -34,7 +33,7 @@ position:
     meta:
       width: 3
       height: 25
-      chartId: 26
+      chartId: 0
       sliceName: Frames gesamt
       uuid: 45ce70e3-7a94-4cb9-ad62-d79474c353f8
   CHART-sess_seq_gaps:
@@ -48,23 +47,9 @@ position:
     meta:
       width: 3
       height: 25
-      chartId: 30
+      chartId: 0
       sliceName: Fehlende Sequenznummern (Datenverlust)
       uuid: 50d46393-92b5-4db0-af9d-3451d662aa12
-  CHART-sess_truncated:
-    type: CHART
-    id: CHART-sess_truncated
-    children: []
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-1
-    meta:
-      width: 3
-      height: 25
-      chartId: 32
-      sliceName: Abgeschnittene Payloads
-      uuid: 8da428b7-f677-42fd-8850-7021504fa335
   CHART-sess_unknown:
     type: CHART
     id: CHART-sess_unknown
@@ -76,7 +61,7 @@ position:
     meta:
       width: 3
       height: 25
-      chartId: 33
+      chartId: 0
       sliceName: Ungemappte Pakettypen
       uuid: 05ab43bd-0f70-4dca-9eb1-8f439ba31372
   ROW-1:
@@ -85,7 +70,6 @@ position:
     children:
     - CHART-sess_frames
     - CHART-sess_seq_gaps
-    - CHART-sess_truncated
     - CHART-sess_unknown
     parents:
     - ROOT_ID
@@ -103,7 +87,7 @@ position:
     meta:
       width: 6
       height: 50
-      chartId: 28
+      chartId: 0
       sliceName: Sitzungen pro Tag
       uuid: ca85f9d7-3e73-4a55-8614-1ffacf558bad
   CHART-sess_protocol:
@@ -117,7 +101,7 @@ position:
     meta:
       width: 6
       height: 50
-      chartId: 29
+      chartId: 0
       sliceName: Protokollversion je Sitzung
       uuid: 2d8b27ab-55bf-440d-b3d1-49081edcdfe9
   ROW-2:
@@ -142,7 +126,7 @@ position:
     meta:
       width: 12
       height: 60
-      chartId: 31
+      chartId: 0
       sliceName: Sitzungen im Detail
       uuid: 9589a40f-67a1-45bb-9df7-38c995fe8b81
   ROW-3:
@@ -166,7 +150,7 @@ position:
     meta:
       width: 12
       height: 50
-      chartId: 27
+      chartId: 0
       sliceName: Fehlende Sequenznummern je Sitzung und Segment
       uuid: ad3064a9-2448-4c65-b0dc-2e8aefd2eed7
   ROW-4:
@@ -186,12 +170,12 @@ metadata:
     name: Datum
     filterType: filter_time
     targets:
-    - column:
+    - datasetUuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31
+      column:
         name: date
-      datasetUuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31
-    - column:
+    - datasetUuid: e5f7a8b9-0d1e-4f2a-8b3c-9d0e1f2a3b4c
+      column:
         name: date
-      datasetUuid: e5f7a8b9-0d1e-4f2a-8b3c-9d0e1f2a3b4c
     defaultDataMask:
       extraFormData: {}
       filterState: {}
@@ -215,12 +199,12 @@ metadata:
     name: Sitzung
     filterType: filter_select
     targets:
-    - column:
+    - datasetUuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31
+      column:
         name: session
-      datasetUuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31
-    - column:
+    - datasetUuid: e5f7a8b9-0d1e-4f2a-8b3c-9d0e1f2a3b4c
+      column:
         name: session
-      datasetUuid: e5f7a8b9-0d1e-4f2a-8b3c-9d0e1f2a3b4c
     defaultDataMask:
       extraFormData: {}
       filterState: {}
@@ -240,7 +224,9 @@ metadata:
   shared_label_colors: {}
   color_scheme_domain: []
   cross_filters_enabled: false
+  default_filters: '{}'
+  filter_scopes: {}
   expanded_slices: {}
   timed_refresh_immune_slices: []
-theme_uuid: null
+uuid: e2f5a718-0d1c-4e4f-9a3b-5c6d7e8f9012
 version: 1.0.0

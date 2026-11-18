@@ -51,10 +51,9 @@ sql: "WITH vocabulary (id, name, vocab_direction, private, payload_policy) AS (\
   \ true, 'frame_dropped')\n),\nev AS (\n  SELECT e.session_id, e.date, e.segment, e.offset_nanos, e.packet_type,\n    CAST(v.id IS NULL AS integer) AS unmapped\n  FROM corvus.capture.events AS e\n  LEFT\
   \ JOIN vocabulary AS v ON v.id = e.packet_type\n  WHERE e.date >= current_date - INTERVAL '7' DAY AND e.date <= current_date\n),\nev_agg AS (\n  SELECT session_id, min(date) AS start_date, count(*) AS\
   \ frames,\n    max(offset_nanos) / 1e9 AS duration_s, count(DISTINCT segment) AS segments,\n    count(DISTINCT packet_type) AS packet_type_count, sum(unmapped) AS unmapped_frames\n  FROM ev\n  GROUP BY\
-  \ session_id\n),\nraw_agg AS (\n  SELECT session_id, count(*) AS payload_frames,\n    sum(CAST(payload_original_size > COALESCE(length(payload), 0) AS integer)) AS truncated_frames,\n    max(protocol_version)\
-  \ AS protocol_version_max\n  FROM corvus.capture.raw\n  WHERE date >= current_date - INTERVAL '7' DAY AND date <= current_date\n  GROUP BY session_id\n)\nSELECT\n  e.start_date AS date,\n  substr(to_hex(e.session_id),\
-  \ 1, 12) AS session,\n  e.frames,\n  e.duration_s,\n  e.segments,\n  e.packet_type_count,\n  e.unmapped_frames,\n  COALESCE(r.payload_frames, 0) AS payload_frames,\n  COALESCE(r.truncated_frames, 0) AS\
-  \ truncated_frames,\n  r.protocol_version_max\nFROM ev_agg AS e\nLEFT JOIN raw_agg AS r ON r.session_id = e.session_id\n"
+  \ session_id\n),\nraw_agg AS (\n  SELECT session_id, count(*) AS payload_frames,\n    max(protocol_version) AS protocol_version_max\n  FROM corvus.capture.raw\n  WHERE date >= current_date - INTERVAL\
+  \ '7' DAY AND date <= current_date\n  GROUP BY session_id\n)\nSELECT\n  e.start_date AS date,\n  substr(to_hex(e.session_id), 1, 12) AS session,\n  e.frames,\n  e.duration_s,\n  e.segments,\n  e.packet_type_count,\n\
+  \  e.unmapped_frames,\n  COALESCE(r.payload_frames, 0) AS payload_frames,\n  r.protocol_version_max\nFROM ev_agg AS e\nLEFT JOIN raw_agg AS r ON r.session_id = e.session_id\n"
 params: null
 template_params: null
 filter_select_enabled: true
@@ -131,15 +130,6 @@ metrics:
   expression: MAX(protocol_version_max)
   description: null
   d3format: null
-  currency: null
-  extra: null
-  warning_text: null
-- metric_name: truncated_share
-  verbose_name: Truncated payload share
-  metric_type: null
-  expression: SUM(truncated_frames) * 1.0 / NULLIF(SUM(payload_frames), 0)
-  description: null
-  d3format: .2%
   currency: null
   extra: null
   warning_text: null
@@ -238,18 +228,6 @@ columns:
   python_date_format: null
   extra: null
 - column_name: payload_frames
-  verbose_name: null
-  is_dttm: false
-  is_active: true
-  type: BIGINT
-  advanced_data_type: null
-  groupby: false
-  filterable: true
-  expression: null
-  description: null
-  python_date_format: null
-  extra: null
-- column_name: truncated_frames
   verbose_name: null
   is_dttm: false
   is_active: true

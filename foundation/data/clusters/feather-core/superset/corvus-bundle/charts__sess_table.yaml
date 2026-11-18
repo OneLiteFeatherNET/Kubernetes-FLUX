@@ -21,7 +21,6 @@ params:
   - segments
   - protocol_version_max
   - packet_type_count
-  - truncated_share
   - unmapped_share
   order_desc: true
   timeseries_limit_metric: frames

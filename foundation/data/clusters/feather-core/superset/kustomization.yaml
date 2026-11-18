@@ -51,7 +51,6 @@ configMapGenerator:
       - corvus-bundle/charts__sess_protocol.yaml
       - corvus-bundle/charts__sess_seq_gaps.yaml
       - corvus-bundle/charts__sess_table.yaml
-      - corvus-bundle/charts__sess_truncated.yaml
       - corvus-bundle/charts__sess_unknown.yaml
       - corvus-bundle/charts__top_types_by_direction.yaml
       - corvus-bundle/charts__total_packets.yaml
