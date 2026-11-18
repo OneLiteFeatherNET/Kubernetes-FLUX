@@ -10,40 +10,54 @@ spec:
       tag: "484"
 
     server:
-      # One worker is enough for the smoke tests and the read-only SQL workload; scale later.
-      workers: 1
+      # Two workers, so a crashed worker leaves Trino slower instead of unavailable.
+      workers: 2
       config:
         query:
-          # Cluster-wide query memory, below the worker heap (2400M).
-          maxMemory: "1GB"
+          # Cluster-wide query memory: per-node limit (1500MB) times the two workers.
+          maxMemory: "3GB"
 
     coordinator:
       priorityClassName: feather-standard
+      # Heap at about two thirds of the limit: the rest is metaspace, thread stacks and the
+      # native buffers of the S3 client. A heap at 75% of the limit got the pod OOM-killed.
       jvm:
-        maxHeapSize: "1536M"
+        maxHeapSize: "2G"
       config:
         query:
           maxMemoryPerNode: "1GB"
       resources:
         requests:
           cpu: 250m
-          memory: 2Gi
+          memory: 3Gi
         limits:
-          memory: 2Gi
+          memory: 3Gi
 
     worker:
       priorityClassName: feather-standard
+      # Heap at about two thirds of the limit, as on the coordinator: Parquet reads from S3 use
+      # off-heap buffers, and a heap of 2400M in 3Gi got the worker OOM-killed under dashboards.
       jvm:
-        maxHeapSize: "2400M"
+        maxHeapSize: "3G"
       config:
         query:
-          maxMemoryPerNode: "1GB"
+          maxMemoryPerNode: "1500MB"
       resources:
         requests:
           cpu: 500m
-          memory: 3Gi
+          memory: 4608Mi
         limits:
-          memory: 3Gi
+          memory: 4608Mi
+      # One worker per node, so losing a node never takes both workers.
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: trino
+                  app.kubernetes.io/instance: trino
+                  app.kubernetes.io/component: worker
 
     # Environment for the catalog properties (${ENV:...}). Applies to coordinator and worker.
     # The client id is not a secret; the client secret and the trino-lake keys are.
