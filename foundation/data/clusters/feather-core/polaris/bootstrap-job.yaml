@@ -4,7 +4,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: polaris-bootstrap-1
+  name: polaris-bootstrap-2
   namespace: data
   labels:
     app.kubernetes.io/name: polaris-bootstrap
@@ -21,6 +21,10 @@ spec:
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
+        # The image user "polaris" is not numeric, so runAsNonRoot needs the UID/GID explicitly
+        # (same values as the chart's server pods).
+        runAsUser: 10000
+        runAsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
       containers:
