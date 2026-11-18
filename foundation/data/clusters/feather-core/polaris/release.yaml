@@ -1,0 +1,82 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: polaris
+  namespace: data
+spec:
+  values:
+    replicaCount: 2
+    priorityClassName: feather-high
+
+    image:
+      # Chart default; pinned explicitly so a chart bump cannot move the server.
+      tag: "1.9.0"
+
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 1
+
+    resources:
+      requests:
+        cpu: 250m
+        memory: 1Gi
+      limits:
+        memory: 2Gi
+
+    # Internal only: ClusterIP services from the chart; no ingress, httproute or gateway.
+    ingress:
+      enabled: false
+    httproute:
+      enabled: false
+    gateway:
+      enabled: false
+
+    serviceMonitor:
+      enabled: true
+
+    persistence:
+      type: relational-jdbc
+      relationalJdbc:
+        # Set in the chart's relational-jdbc values; the DB is dedicated to polaris, so
+        # the schema is public (see the report: the CNPG Database cannot pre-create a schema).
+        additionalProperties:
+          currentSchema: public
+        secret:
+          name: polaris-db
+
+    storage:
+      secret:
+        # Keys of the Rook ObjectBucketClaim Secret (bucket polaris-corvus).
+        name: polaris-corvus
+        awsAccessKeyId: AWS_ACCESS_KEY_ID
+        awsSecretAccessKey: AWS_SECRET_ACCESS_KEY
+
+    # mixed: Entra ID tokens are accepted (external) and the bootstrap root principal can
+    # use internal tokens for the setup Job. See the report before switching to external.
+    authentication:
+      type: mixed
+      tokenBroker:
+        type: rsa-key-pair
+        secret:
+          name: polaris-token-keys
+
+    oidc:
+      authServeUrl: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0
+      client:
+        # API app "Polaris"; v2 access tokens carry it as aud, and Quarkus checks it against client-id.
+        id: 9e2548f4-5e10-440d-9444-cad813a20c87
+      principalMapper:
+        type: default
+        # No id-claim-path: the token carries no Polaris principal id. azp is the client app id.
+        nameClaimPath: azp
+      principalRolesMapper:
+        type: default
+        rolesClaimPath: roles
+        filter: "^(corvus-ingest|corvus-ml|lake-maintenance)$"
+        mappings:
+          - regex: "^corvus-ingest$"
+            replacement: corvus_ingest
+          - regex: "^corvus-ml$"
+            replacement: corvus_ml
+          - regex: "^lake-maintenance$"
+            replacement: lake_maintenance

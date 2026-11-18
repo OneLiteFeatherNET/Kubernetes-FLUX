@@ -1,0 +1,73 @@
+# Creates catalog corvus, principal roles, catalog roles, grants and namespace capture.
+# Idempotent (409 counts as done). Name carries a version: bump to polaris-setup-2 after editing
+# setup-catalog.py, because Jobs are immutable. Waits for Polaris to be ready itself.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: polaris-setup-1
+  namespace: data
+  labels:
+    app.kubernetes.io/name: polaris-setup
+    app.kubernetes.io/part-of: polaris
+spec:
+  backoffLimit: 30
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: polaris-setup
+    spec:
+      restartPolicy: OnFailure
+      priorityClassName: feather-high
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: setup
+          # Pin by digest before merge (Renovate can manage it). Tag not yet verified.
+          image: python:3.13-alpine
+          command: ["python3", "/scripts/setup-catalog.py"]
+          env:
+            - name: POLARIS_URL
+              value: http://polaris.data.svc.cluster.local:8181
+            - name: S3_ENDPOINT
+              value: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc
+            - name: S3_REGION
+              value: us-east-1
+            - name: BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: polaris-corvus
+                  key: BUCKET_NAME
+            - name: ROOT_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: polaris-bootstrap
+                  key: ROOT_CLIENT_ID
+            - name: ROOT_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: polaris-bootstrap
+                  key: ROOT_CLIENT_SECRET
+          volumeMounts:
+            - name: script
+              mountPath: /scripts
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+      volumes:
+        - name: script
+          configMap:
+            name: polaris-setup-script

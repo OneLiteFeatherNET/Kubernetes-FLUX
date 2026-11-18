@@ -1,0 +1,77 @@
+# One-off realm bootstrap with the Polaris admin tool (same image version as the server).
+# `bootstrap` is idempotent: a realm that already exists is not changed.
+# The Job name carries a version; bump it (bootstrap-2) only to force a re-run.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: polaris-bootstrap-1
+  namespace: data
+  labels:
+    app.kubernetes.io/name: polaris-bootstrap
+    app.kubernetes.io/part-of: polaris
+spec:
+  backoffLimit: 20
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: polaris-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      priorityClassName: feather-high
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: polaris-admin-tool
+          image: apache/polaris-admin-tool:1.9.0
+          args:
+            - bootstrap
+            - -r
+            - POLARIS
+            - -c
+            - POLARIS,$(ROOT_CLIENT_ID),$(ROOT_CLIENT_SECRET)
+          env:
+            - name: polaris.persistence.type
+              value: relational-jdbc
+            - name: quarkus.datasource.jdbc.additional-jdbc-properties.currentSchema
+              value: public
+            - name: quarkus.datasource.username
+              valueFrom:
+                secretKeyRef:
+                  name: polaris-db
+                  key: username
+            - name: quarkus.datasource.password
+              valueFrom:
+                secretKeyRef:
+                  name: polaris-db
+                  key: password
+            - name: quarkus.datasource.jdbc.url
+              valueFrom:
+                secretKeyRef:
+                  name: polaris-db
+                  key: jdbcUrl
+            - name: ROOT_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: polaris-bootstrap
+                  key: ROOT_CLIENT_ID
+            - name: ROOT_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: polaris-bootstrap
+                  key: ROOT_CLIENT_SECRET
+          securityContext:
+            allowPrivilegeEscalation: false
+            # The Java admin tool may write scratch files; kept writable on purpose.
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
