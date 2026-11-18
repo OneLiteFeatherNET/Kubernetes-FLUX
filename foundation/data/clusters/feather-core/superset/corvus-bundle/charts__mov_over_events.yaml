@@ -1,0 +1,48 @@
+slice_name: "Auff\xE4llige Ereignisse \xFCber 10 Bl\xF6cke/s"
+description: null
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 3__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters:
+  - expressionType: SIMPLE
+    subject: over_threshold
+    operator: ==
+    operatorId: EQUALS
+    comparator: 1
+    clause: WHERE
+    sqlExpression: null
+    filterOptionName: filter_over_threshold
+    isExtra: false
+    isNew: false
+    datasourceWarning: false
+  extra_form_data: {}
+  row_limit: 200
+  query_mode: raw
+  groupby: []
+  metrics: []
+  order_desc: true
+  timeseries_limit_metric: offset_s
+  include_search: true
+  page_length: 25
+  show_totals: false
+  all_columns:
+  - session
+  - offset_s
+  - speed_bps
+  - vertical_bps
+  - on_ground
+  - y
+  order_by_cols:
+  - - offset_s
+    - true
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: ad1360ef-51c6-45d2-8756-2ada27de9cf5
+version: 1.0.0
+dataset_uuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d

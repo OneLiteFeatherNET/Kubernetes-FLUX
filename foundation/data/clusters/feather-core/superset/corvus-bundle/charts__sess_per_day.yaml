@@ -1,0 +1,27 @@
+slice_name: Sitzungen pro Tag
+description: null
+certified_by: null
+certification_details: null
+viz_type: echarts_timeseries_bar
+params:
+  datasource: 5__table
+  viz_type: echarts_timeseries_bar
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  x_axis: date
+  time_grain_sqla: P1D
+  metrics:
+  - session_count
+  order_desc: true
+  y_axis_format: SMART_NUMBER
+  show_legend: false
+  rich_tooltip: true
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: ca85f9d7-3e73-4a55-8614-1ffacf558bad
+version: 1.0.0
+dataset_uuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31

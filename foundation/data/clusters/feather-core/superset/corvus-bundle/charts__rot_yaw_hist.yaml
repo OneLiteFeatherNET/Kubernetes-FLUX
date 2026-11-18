@@ -1,0 +1,28 @@
+slice_name: "Gierwinkel-\xC4nderung je Ereignis (5er-Klassen, Grad)"
+description: null
+certified_by: null
+certification_details: null
+viz_type: echarts_timeseries_bar
+params:
+  datasource: 4__table
+  viz_type: echarts_timeseries_bar
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  x_axis: yaw_bucket
+  groupby:
+  - session
+  metrics:
+  - events
+  order_desc: true
+  y_axis_format: SMART_NUMBER
+  show_legend: true
+  x_axis_title: Grad
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 39fd6776-6fef-4824-9a67-265350eba9ac
+version: 1.0.0
+dataset_uuid: c0d3e5f6-8b9a-4c2d-9e1f-3a4b5c6d7e8f

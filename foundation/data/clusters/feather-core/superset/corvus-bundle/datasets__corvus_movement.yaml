@@ -1,0 +1,324 @@
+table_name: corvus_movement
+main_dttm_col: date
+currency_code_column: null
+description: Position events with horizontal and vertical speed between consecutive
+  positions in a segment.
+default_endpoint: null
+offset: 0
+cache_timeout: null
+catalog: null
+schema: null
+sql: "WITH pos AS (\n  SELECT date, session_id, segment, seq, offset_nanos, x, y,\
+  \ z, on_ground\n  FROM corvus.capture.events\n  WHERE has_position = true\n),\n\
+  lagged AS (\n  SELECT *,\n    LAG(offset_nanos) OVER (PARTITION BY session_id, segment\
+  \ ORDER BY seq) AS prev_offset,\n    LAG(x) OVER (PARTITION BY session_id, segment\
+  \ ORDER BY seq) AS prev_x,\n    LAG(y) OVER (PARTITION BY session_id, segment ORDER\
+  \ BY seq) AS prev_y,\n    LAG(z) OVER (PARTITION BY session_id, segment ORDER BY\
+  \ seq) AS prev_z\n  FROM pos\n),\nmoves AS (\n  SELECT date, session_id, segment,\
+  \ seq, offset_nanos, x, y, z, on_ground,\n    (offset_nanos - prev_offset) / 1e9\
+  \ AS dt_s,\n    sqrt(power(x - prev_x, 2) + power(z - prev_z, 2)) AS horizontal_m,\n\
+  \    y - prev_y AS dy\n  FROM lagged\n  WHERE prev_offset IS NOT NULL AND offset_nanos\
+  \ > prev_offset\n)\nSELECT\n  date,\n  substr(to_hex(session_id), 1, 12) AS session,\n\
+  \  segment,\n  seq,\n  offset_nanos / 1e9 AS offset_s,\n  x,\n  y,\n  z,\n  CAST(on_ground\
+  \ AS integer) AS on_ground,\n  horizontal_m / dt_s AS speed_bps,\n  CAST(floor(horizontal_m\
+  \ / dt_s) AS bigint) AS speed_bucket,\n  dy / dt_s AS vertical_bps,\n  CAST(horizontal_m\
+  \ / dt_s > 10 AS integer) AS over_threshold\nFROM moves\n"
+params: null
+template_params: null
+filter_select_enabled: true
+fetch_values_predicate: null
+extra: null
+normalize_columns: false
+always_filter_main_dttm: false
+folders: null
+uuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d
+metrics:
+- metric_name: over_threshold_share
+  verbose_name: Share over 10 b/s
+  metric_type: null
+  expression: SUM(over_threshold) * 1.0 / COUNT(*)
+  description: null
+  d3format: .2%
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: speed_p50
+  verbose_name: Speed p50 (b/s)
+  metric_type: null
+  expression: approx_percentile(speed_bps, 0.5)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: speed_p95
+  verbose_name: Speed p95 (b/s)
+  metric_type: null
+  expression: approx_percentile(speed_bps, 0.95)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: speed_p99
+  verbose_name: Speed p99 (b/s)
+  metric_type: null
+  expression: approx_percentile(speed_bps, 0.99)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: over_threshold_count
+  verbose_name: Events over 10 b/s
+  metric_type: null
+  expression: SUM(over_threshold)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: on_ground_share
+  verbose_name: On ground share
+  metric_type: null
+  expression: AVG(on_ground)
+  description: null
+  d3format: .1%
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: speed_max
+  verbose_name: Speed max (b/s)
+  metric_type: null
+  expression: MAX(speed_bps)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: vertical_max
+  verbose_name: Vertical max (b/s)
+  metric_type: null
+  expression: MAX(vertical_bps)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: vertical_min
+  verbose_name: Vertical min (b/s)
+  metric_type: null
+  expression: MIN(vertical_bps)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: events
+  verbose_name: Position events
+  metric_type: null
+  expression: COUNT(*)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: y_max
+  verbose_name: Y max
+  metric_type: null
+  expression: MAX(y)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: y_min
+  verbose_name: Y min
+  metric_type: null
+  expression: MIN(y)
+  description: null
+  d3format: ',.2f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: session_count
+  verbose_name: Sessions
+  metric_type: null
+  expression: COUNT(DISTINCT session)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+columns:
+- column_name: session
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: date
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: DATE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: vertical_bps
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: speed_bps
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: offset_s
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: x
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: y
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: z
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: seq
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: speed_bucket
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: segment
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: over_threshold
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: on_ground
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+version: 1.0.0
+database_uuid: 2601a04b-ec63-4dec-9763-91b41e285890

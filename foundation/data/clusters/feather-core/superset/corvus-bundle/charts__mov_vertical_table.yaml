@@ -1,0 +1,33 @@
+slice_name: "Vertikal, Bodenkontakt und H\xF6he"
+description: null
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 3__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 500
+  query_mode: aggregate
+  groupby:
+  - session
+  metrics:
+  - vertical_max
+  - vertical_min
+  - on_ground_share
+  - y_min
+  - y_max
+  order_desc: true
+  timeseries_limit_metric: vertical_max
+  include_search: true
+  page_length: 25
+  show_totals: false
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: ffc44e9b-2d43-4710-96d9-1c6fe29c6e3b
+version: 1.0.0
+dataset_uuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d

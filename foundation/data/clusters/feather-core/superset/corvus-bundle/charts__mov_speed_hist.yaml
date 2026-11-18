@@ -1,0 +1,28 @@
+slice_name: 'Horizontalgeschwindigkeit: Verteilung (1-b/s-Klassen)'
+description: null
+certified_by: null
+certification_details: null
+viz_type: echarts_timeseries_bar
+params:
+  datasource: 3__table
+  viz_type: echarts_timeseries_bar
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  x_axis: speed_bucket
+  groupby:
+  - session
+  metrics:
+  - events
+  order_desc: true
+  y_axis_format: SMART_NUMBER
+  show_legend: true
+  x_axis_title: "Bl\xF6cke/s"
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: c27d7b66-8f6f-42cc-96d3-7b6500debdef
+version: 1.0.0
+dataset_uuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d

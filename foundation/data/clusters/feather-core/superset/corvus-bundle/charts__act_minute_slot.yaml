@@ -1,0 +1,28 @@
+slice_name: Slot-Wechsel pro Minute
+description: null
+certified_by: null
+certification_details: null
+viz_type: echarts_timeseries_line
+params:
+  datasource: 2__table
+  viz_type: echarts_timeseries_line
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  x_axis: session_minute
+  groupby:
+  - session
+  metrics:
+  - slot_switches
+  order_desc: true
+  y_axis_format: SMART_NUMBER
+  show_legend: true
+  x_axis_title: Minute der Sitzung
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 0f081f21-c462-4953-a0e9-7d911c0feebc
+version: 1.0.0
+dataset_uuid: d1e4f607-9c0b-4d3e-8f2a-4b5c6d7e8f90

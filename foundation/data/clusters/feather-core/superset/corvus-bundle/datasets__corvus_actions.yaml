@@ -1,0 +1,434 @@
+table_name: corvus_actions
+main_dttm_col: date
+currency_code_column: null
+description: Interaction, swing, dig, place and held-item events (event kinds 2-6)
+  with sneak toggles.
+default_endpoint: null
+offset: 0
+cache_timeout: null
+catalog: null
+schema: null
+sql: "WITH sneak AS (\n  SELECT session_id, segment, seq, sneaking,\n    LAG(sneaking)\
+  \ OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_sneaking\n  FROM\
+  \ corvus.capture.events\n  WHERE event_kind = 2\n),\nacts AS (\n  SELECT date, session_id,\
+  \ segment, seq, offset_nanos, event_kind, action, entity_id,\n    sneaking, block_x,\
+  \ block_y, block_z, face, status, slot\n  FROM corvus.capture.events\n  WHERE event_kind\
+  \ BETWEEN 2 AND 6\n)\nSELECT\n  a.date,\n  substr(to_hex(a.session_id), 1, 12) AS\
+  \ session,\n  a.segment,\n  a.seq,\n  a.offset_nanos / 1e9 AS offset_s,\n  CAST(floor(a.offset_nanos\
+  \ / 1e9) AS bigint) AS second_bucket,\n  CAST(floor(a.offset_nanos / 60e9) AS bigint)\
+  \ AS session_minute,\n  CASE a.event_kind WHEN 2 THEN 'interact_entity' WHEN 3 THEN\
+  \ 'swing' WHEN 4 THEN 'dig'\n    WHEN 5 THEN 'place' WHEN 6 THEN 'held_item' END\
+  \ AS event_name,\n  CASE\n    WHEN a.event_kind = 2 THEN CASE a.action WHEN 1 THEN\
+  \ 'INTERACT' WHEN 2 THEN 'ATTACK'\n      WHEN 3 THEN 'INTERACT_AT' ELSE 'UNSPECIFIED'\
+  \ END\n    WHEN a.event_kind = 4 THEN 'DIG_STATUS_' || CAST(a.status AS varchar)\n\
+  \    WHEN a.event_kind = 6 THEN 'SLOT_' || CAST(a.slot AS varchar)\n  END AS action_label,\n\
+  \  CAST(a.event_kind = 2 AND a.action = 2 AS integer) AS is_attack,\n  CAST(a.event_kind\
+  \ = 2 AS integer) AS is_interact,\n  CAST(a.event_kind = 3 AS integer) AS is_swing,\n\
+  \  CAST(a.event_kind = 4 AS integer) AS is_dig,\n  CAST(a.event_kind = 5 AS integer)\
+  \ AS is_place,\n  CAST(a.event_kind = 6 AS integer) AS is_slot_switch,\n  COALESCE(CAST(s.prev_sneaking\
+  \ IS NOT NULL AND a.sneaking <> s.prev_sneaking AS integer), 0) AS sneak_toggle,\n\
+  \  a.entity_id,\n  a.block_x,\n  a.block_y,\n  a.block_z,\n  a.face,\n  a.slot,\n\
+  \  a.sneaking\nFROM acts AS a\nLEFT JOIN sneak AS s ON s.session_id = a.session_id\
+  \ AND s.segment = a.segment AND s.seq = a.seq\n"
+params: null
+template_params: null
+filter_select_enabled: true
+fetch_values_predicate: null
+extra: null
+normalize_columns: false
+always_filter_main_dttm: false
+folders: null
+uuid: d1e4f607-9c0b-4d3e-8f2a-4b5c6d7e8f90
+metrics:
+- metric_name: digs
+  verbose_name: Dig events
+  metric_type: null
+  expression: SUM(is_dig)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: interacts
+  verbose_name: Entity interactions
+  metric_type: null
+  expression: SUM(is_interact)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: places
+  verbose_name: Place events
+  metric_type: null
+  expression: SUM(is_place)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: slot_switches
+  verbose_name: Slot switches
+  metric_type: null
+  expression: SUM(is_slot_switch)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: sneak_toggles
+  verbose_name: Sneak toggles
+  metric_type: null
+  expression: SUM(sneak_toggle)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: entity_count
+  verbose_name: Entities
+  metric_type: null
+  expression: COUNT(DISTINCT entity_id)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: session_count
+  verbose_name: Sessions
+  metric_type: null
+  expression: COUNT(DISTINCT session)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: events
+  verbose_name: Events
+  metric_type: null
+  expression: COUNT(*)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: attacks
+  verbose_name: Attacks
+  metric_type: null
+  expression: SUM(is_attack)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: swings
+  verbose_name: Swings
+  metric_type: null
+  expression: SUM(is_swing)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+columns:
+- column_name: action_label
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: event_name
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: session
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: sneaking
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: date
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: DATE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: offset_s
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: seq
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: second_bucket
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: session_minute
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: segment
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: is_slot_switch
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: is_attack
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: is_interact
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: is_place
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: sneak_toggle
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: block_x
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: block_y
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: block_z
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: entity_id
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: is_dig
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: is_swing
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: face
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: slot
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+version: 1.0.0
+database_uuid: 2601a04b-ec63-4dec-9763-91b41e285890

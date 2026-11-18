@@ -1,0 +1,409 @@
+table_name: corvus_session_packets
+main_dttm_col: date
+currency_code_column: null
+description: Every captured frame (events table) with seq gaps, vocabulary name and
+  payload info from raw.
+default_endpoint: null
+offset: 0
+cache_timeout: null
+catalog: null
+schema: null
+sql: "WITH vocabulary (id, name, vocab_direction, private, payload_policy) AS (\n\
+  \  VALUES\n    (1, 'C_TELEPORT_CONFIRM', 'serverbound', false, 'default'),\n   \
+  \ (2, 'C_CLIENT_STATUS', 'serverbound', false, 'default'),\n    (3, 'C_CLIENT_SETTINGS',\
+  \ 'serverbound', false, 'default'),\n    (4, 'C_WINDOW_CONFIRMATION', 'serverbound',\
+  \ false, 'default'),\n    (5, 'C_CLICK_WINDOW_BUTTON', 'serverbound', false, 'default'),\n\
+  \    (6, 'C_CLICK_WINDOW', 'serverbound', false, 'stripped'),\n    (7, 'C_CLOSE_WINDOW',\
+  \ 'serverbound', false, 'default'),\n    (8, 'C_PLUGIN_MESSAGE', 'serverbound',\
+  \ false, 'stripped'),\n    (9, 'C_INTERACT_ENTITY', 'serverbound', false, 'default'),\n\
+  \    (10, 'C_KEEP_ALIVE', 'serverbound', false, 'default'),\n    (11, 'C_PLAYER_POSITION',\
+  \ 'serverbound', false, 'default'),\n    (12, 'C_PLAYER_POSITION_AND_ROTATION',\
+  \ 'serverbound', false, 'default'),\n    (13, 'C_PLAYER_ROTATION', 'serverbound',\
+  \ false, 'default'),\n    (14, 'C_PLAYER_FLYING', 'serverbound', false, 'default'),\n\
+  \    (15, 'C_VEHICLE_MOVE', 'serverbound', false, 'default'),\n    (16, 'C_STEER_BOAT',\
+  \ 'serverbound', false, 'default'),\n    (17, 'C_PLAYER_ABILITIES', 'serverbound',\
+  \ false, 'default'),\n    (18, 'C_PLAYER_DIGGING', 'serverbound', false, 'default'),\n\
+  \    (19, 'C_ENTITY_ACTION', 'serverbound', false, 'default'),\n    (20, 'C_STEER_VEHICLE',\
+  \ 'serverbound', false, 'default'),\n    (21, 'C_PONG', 'serverbound', false, 'default'),\n\
+  \    (22, 'C_HELD_ITEM_CHANGE', 'serverbound', false, 'default'),\n    (23, 'C_CREATIVE_INVENTORY_ACTION',\
+  \ 'serverbound', false, 'stripped'),\n    (24, 'C_ANIMATION', 'serverbound', false,\
+  \ 'default'),\n    (25, 'C_PLAYER_BLOCK_PLACEMENT', 'serverbound', false, 'default'),\n\
+  \    (26, 'C_USE_ITEM', 'serverbound', false, 'default'),\n    (27, 'C_CLIENT_TICK_END',\
+  \ 'serverbound', false, 'default'),\n    (28, 'C_PLAYER_INPUT', 'serverbound', false,\
+  \ 'default'),\n    (29, 'C_ATTACK', 'serverbound', false, 'default'),\n    (30,\
+  \ 'C_PUNCH', 'serverbound', false, 'default'),\n    (31, 'C_SPECTATE', 'serverbound',\
+  \ false, 'stripped'),\n    (32, 'C_PICK_ITEM', 'serverbound', false, 'default'),\n\
+  \    (33, 'C_CONFIGURATION_ACK', 'serverbound', false, 'default'),\n    (34, 'C_CHUNK_BATCH_ACK',\
+  \ 'serverbound', false, 'default'),\n    (35, 'C_RESOURCE_PACK_STATUS', 'serverbound',\
+  \ false, 'default'),\n    (36, 'C_PLAYER_LOADED', 'serverbound', false, 'default'),\n\
+  \    (37, 'C_EDIT_BOOK', 'serverbound', false, 'stripped'),\n    (38, 'C_NAME_ITEM',\
+  \ 'serverbound', false, 'stripped'),\n    (39, 'C_UPDATE_COMMAND_BLOCK', 'serverbound',\
+  \ false, 'stripped'),\n    (40, 'C_UPDATE_COMMAND_BLOCK_MINECART', 'serverbound',\
+  \ false, 'stripped'),\n    (41, 'C_UPDATE_STRUCTURE_BLOCK', 'serverbound', false,\
+  \ 'stripped'),\n    (42, 'C_UPDATE_JIGSAW_BLOCK', 'serverbound', false, 'stripped'),\n\
+  \    (43, 'C_UPDATE_SIGN', 'serverbound', false, 'stripped'),\n    (44, 'C_COOKIE_RESPONSE',\
+  \ 'serverbound', false, 'stripped'),\n    (45, 'C_SET_TEST_BLOCK', 'serverbound',\
+  \ false, 'stripped'),\n    (46, 'C_TEST_INSTANCE_BLOCK_ACTION', 'serverbound', false,\
+  \ 'stripped'),\n    (47, 'C_CUSTOM_CLICK_ACTION', 'serverbound', false, 'stripped'),\n\
+  \    (48, 'C_SET_GAME_RULE', 'serverbound', false, 'stripped'),\n    (49, 'C_CHAT_PREVIEW',\
+  \ 'serverbound', true, 'frame_dropped'),\n    (50, 'C_CHAT_MESSAGE', 'serverbound',\
+  \ true, 'frame_dropped'),\n    (51, 'C_TAB_COMPLETE', 'serverbound', true, 'frame_dropped'),\n\
+  \    (52, 'C_CHAT_COMMAND', 'serverbound', true, 'frame_dropped'),\n    (53, 'C_CHAT_COMMAND_UNSIGNED',\
+  \ 'serverbound', true, 'frame_dropped'),\n    (54, 'C_CHAT_ACK', 'serverbound',\
+  \ true, 'frame_dropped'),\n    (55, 'C_CHAT_SESSION_UPDATE', 'serverbound', true,\
+  \ 'frame_dropped'),\n    (100, 'S_ENTITY_RELATIVE_MOVE', 'clientbound', false, 'default'),\n\
+  \    (101, 'S_ENTITY_RELATIVE_MOVE_AND_ROTATION', 'clientbound', false, 'default'),\n\
+  \    (102, 'S_ENTITY_ROTATION', 'clientbound', false, 'default'),\n    (103, 'S_ENTITY_HEAD_LOOK',\
+  \ 'clientbound', false, 'default'),\n    (104, 'S_ENTITY_TELEPORT', 'clientbound',\
+  \ false, 'default'),\n    (105, 'S_ENTITY_VELOCITY', 'clientbound', false, 'default'),\n\
+  \    (106, 'S_ENTITY_POSITION_SYNC', 'clientbound', false, 'default'),\n    (107,\
+  \ 'S_PLAYER_POSITION_AND_LOOK', 'clientbound', false, 'default'),\n    (108, 'S_KEEP_ALIVE',\
+  \ 'clientbound', false, 'all_only'),\n    (109, 'S_PING', 'clientbound', false,\
+  \ 'all_only'),\n    (110, 'S_WINDOW_CONFIRMATION', 'clientbound', false, 'all_only'),\n\
+  \    (111, 'S_DAMAGE_EVENT', 'clientbound', false, 'all_only'),\n    (112, 'S_HURT_ANIMATION',\
+  \ 'clientbound', false, 'all_only'),\n    (113, 'S_ENTITY_ANIMATION', 'clientbound',\
+  \ false, 'all_only'),\n    (114, 'S_ENTITY_STATUS', 'clientbound', false, 'all_only'),\n\
+  \    (115, 'S_EXPLOSION', 'clientbound', false, 'all_only'),\n    (116, 'S_UPDATE_HEALTH',\
+  \ 'clientbound', false, 'all_only'),\n    (117, 'S_RESPAWN', 'clientbound', false,\
+  \ 'all_only'),\n    (118, 'S_JOIN_GAME', 'clientbound', false, 'all_only'),\n  \
+  \  (119, 'S_DESTROY_ENTITIES', 'clientbound', false, 'all_only'),\n    (120, 'S_SPAWN_ENTITY',\
+  \ 'clientbound', false, 'all_only'),\n    (121, 'S_ENTITY_EFFECT', 'clientbound',\
+  \ false, 'all_only'),\n    (122, 'S_REMOVE_ENTITY_EFFECT', 'clientbound', false,\
+  \ 'all_only'),\n    (123, 'S_ENTITY_EQUIPMENT', 'clientbound', false, 'all_only'),\n\
+  \    (124, 'S_ENTITY_METADATA', 'clientbound', false, 'all_only'),\n    (125, 'S_BLOCK_CHANGE',\
+  \ 'clientbound', false, 'all_only'),\n    (126, 'S_ACKNOWLEDGE_PLAYER_DIGGING',\
+  \ 'clientbound', false, 'all_only'),\n    (127, 'S_ACKNOWLEDGE_BLOCK_CHANGES', 'clientbound',\
+  \ false, 'all_only'),\n    (128, 'S_CHANGE_GAME_STATE', 'clientbound', false, 'all_only'),\n\
+  \    (129, 'S_PLAYER_ABILITIES', 'clientbound', false, 'all_only'),\n    (130, 'S_SET_SLOT',\
+  \ 'clientbound', false, 'all_only'),\n    (131, 'S_WINDOW_ITEMS', 'clientbound',\
+  \ false, 'all_only'),\n    (132, 'S_CLOSE_WINDOW', 'clientbound', false, 'all_only'),\n\
+  \    (133, 'S_OPEN_WINDOW', 'clientbound', false, 'all_only'),\n    (134, 'S_UPDATE_ATTRIBUTES',\
+  \ 'clientbound', false, 'all_only'),\n    (135, 'S_PLUGIN_MESSAGE', 'clientbound',\
+  \ false, 'all_only'),\n    (136, 'S_DISCONNECT', 'clientbound', false, 'all_only'),\n\
+  \    (137, 'S_SET_PASSENGERS', 'clientbound', false, 'all_only'),\n    (138, 'S_ATTACH_ENTITY',\
+  \ 'clientbound', false, 'all_only'),\n    (139, 'S_COLLECT_ITEM', 'clientbound',\
+  \ false, 'all_only'),\n    (140, 'S_ENTITY_MOVEMENT', 'clientbound', false, 'all_only'),\n\
+  \    (141, 'S_PLAYER_ROTATION', 'clientbound', false, 'all_only'),\n    (142, 'S_MOVE_MINECART',\
+  \ 'clientbound', false, 'all_only'),\n    (143, 'S_BUNDLE', 'clientbound', false,\
+  \ 'all_only'),\n    (144, 'S_TIME_UPDATE', 'clientbound', false, 'all_only'),\n\
+  \    (145, 'S_SET_COOLDOWN', 'clientbound', false, 'all_only'),\n    (146, 'S_CHAT_PREVIEW_PACKET',\
+  \ 'clientbound', true, 'frame_dropped'),\n    (147, 'S_PLAYER_CHAT_HEADER', 'clientbound',\
+  \ true, 'frame_dropped'),\n    (148, 'S_TAB_COMPLETE', 'clientbound', true, 'frame_dropped'),\n\
+  \    (149, 'S_DECLARE_COMMANDS', 'clientbound', true, 'frame_dropped'),\n    (150,\
+  \ 'S_CHAT_MESSAGE', 'clientbound', true, 'frame_dropped'),\n    (151, 'S_SYSTEM_CHAT_MESSAGE',\
+  \ 'clientbound', true, 'frame_dropped'),\n    (152, 'S_DELETE_CHAT', 'clientbound',\
+  \ true, 'frame_dropped'),\n    (153, 'S_DISGUISED_CHAT', 'clientbound', true, 'frame_dropped'),\n\
+  \    (154, 'S_DISPLAY_CHAT_PREVIEW', 'clientbound', true, 'frame_dropped'),\n  \
+  \  (155, 'S_CUSTOM_CHAT_COMPLETIONS', 'clientbound', true, 'frame_dropped'),\n \
+  \   (156, 'S_SERVER_DATA', 'clientbound', true, 'frame_dropped'),\n    (157, 'S_PLAYER_INFO',\
+  \ 'clientbound', true, 'frame_dropped'),\n    (158, 'S_PLAYER_INFO_UPDATE', 'clientbound',\
+  \ true, 'frame_dropped'),\n    (159, 'S_PLAYER_INFO_REMOVE', 'clientbound', true,\
+  \ 'frame_dropped'),\n    (160, 'S_SPAWN_PLAYER', 'clientbound', false, 'all_only'),\n\
+  \    (200, 'CFG_C_CLIENT_SETTINGS', 'serverbound', false, 'all_only'),\n    (201,\
+  \ 'CFG_C_PLUGIN_MESSAGE', 'serverbound', false, 'all_only'),\n    (202, 'CFG_C_CONFIGURATION_END_ACK',\
+  \ 'serverbound', false, 'all_only'),\n    (203, 'CFG_C_KEEP_ALIVE', 'serverbound',\
+  \ false, 'all_only'),\n    (204, 'CFG_C_PONG', 'serverbound', false, 'all_only'),\n\
+  \    (205, 'CFG_C_RESOURCE_PACK_STATUS', 'serverbound', false, 'all_only'),\n  \
+  \  (206, 'CFG_C_SELECT_KNOWN_PACKS', 'serverbound', false, 'all_only'),\n    (220,\
+  \ 'CFG_S_PLUGIN_MESSAGE', 'clientbound', false, 'all_only'),\n    (221, 'CFG_S_DISCONNECT',\
+  \ 'clientbound', false, 'all_only'),\n    (222, 'CFG_S_CONFIGURATION_END', 'clientbound',\
+  \ false, 'all_only'),\n    (223, 'CFG_S_KEEP_ALIVE', 'clientbound', false, 'all_only'),\n\
+  \    (224, 'CFG_S_PING', 'clientbound', false, 'all_only'),\n    (225, 'CFG_S_REGISTRY_DATA',\
+  \ 'clientbound', false, 'all_only'),\n    (226, 'CFG_S_UPDATE_TAGS', 'clientbound',\
+  \ false, 'all_only'),\n    (227, 'CFG_S_SELECT_KNOWN_PACKS', 'clientbound', false,\
+  \ 'all_only'),\n    (228, 'CFG_S_RESET_CHAT', 'clientbound', true, 'frame_dropped')\n\
+  ),\nframes AS (\n  SELECT e.date, e.session_id, e.segment, e.seq, e.offset_nanos,\
+  \ e.direction, e.packet_type\n  FROM corvus.capture.events AS e\n),\nlagged AS (\n\
+  \  SELECT *, LAG(seq) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_seq\n\
+  \  FROM frames\n)\nSELECT\n  l.date,\n  substr(to_hex(l.session_id), 1, 12) AS session,\n\
+  \  l.segment,\n  l.seq,\n  l.offset_nanos / 1e9 AS offset_s,\n  l.packet_type,\n\
+  \  COALESCE(v.name, 'UNKNOWN_' || CAST(l.packet_type AS varchar)) AS packet_name,\n\
+  \  CAST(v.name IS NULL AS integer) AS unknown,\n  CASE l.direction WHEN 1 THEN 'serverbound'\
+  \ WHEN 2 THEN 'clientbound' ELSE 'unspecified' END AS direction_label,\n  CAST(CASE\
+  \ WHEN l.prev_seq IS NULL THEN 0 WHEN l.seq - l.prev_seq > 1 THEN 1 ELSE 0 END AS\
+  \ integer) AS seq_gap,\n  CAST(r.seq IS NOT NULL AS integer) AS has_payload,\n \
+  \ r.protocol_version,\n  CAST(COALESCE(r.payload_original_size > length(r.payload),\
+  \ false) AS integer) AS truncated\nFROM lagged AS l\nLEFT JOIN vocabulary AS v ON\
+  \ v.id = l.packet_type\nLEFT JOIN corvus.capture.raw AS r\n  ON r.session_id = l.session_id\
+  \ AND r.segment = l.segment AND r.seq = l.seq\n"
+params: null
+template_params: null
+filter_select_enabled: true
+fetch_values_predicate: null
+extra: null
+normalize_columns: false
+always_filter_main_dttm: false
+folders: null
+uuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31
+metrics:
+- metric_name: truncated_share
+  verbose_name: Truncated payload share
+  metric_type: null
+  expression: SUM(truncated) * 1.0 / NULLIF(SUM(has_payload), 0)
+  description: null
+  d3format: .2%
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: unknown_share
+  verbose_name: Unknown packet type share
+  metric_type: null
+  expression: SUM(unknown) * 1.0 / COUNT(*)
+  description: null
+  d3format: .2%
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: frames_per_s
+  verbose_name: Frames per second
+  metric_type: null
+  expression: COUNT(*) / NULLIF(MAX(offset_s), 0)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: packet_type_count
+  verbose_name: Packet types
+  metric_type: null
+  expression: COUNT(DISTINCT packet_type)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: packets_with_payload
+  verbose_name: Frames with payload
+  metric_type: null
+  expression: SUM(has_payload)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: duration_s
+  verbose_name: Duration (s)
+  metric_type: null
+  expression: MAX(offset_s)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: seq_gaps
+  verbose_name: Seq gaps
+  metric_type: null
+  expression: SUM(seq_gap)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: protocol_version_max
+  verbose_name: Protocol version
+  metric_type: null
+  expression: MAX(protocol_version)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: segment_count
+  verbose_name: Segments
+  metric_type: null
+  expression: COUNT(DISTINCT segment)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: session_count
+  verbose_name: Sessions
+  metric_type: null
+  expression: COUNT(DISTINCT session)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: frames
+  verbose_name: Frames
+  metric_type: null
+  expression: COUNT(*)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+columns:
+- column_name: packet_name
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: direction_label
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: session
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: date
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: DATE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: offset_s
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: seq
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: packet_type
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: segment
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: has_payload
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: seq_gap
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: protocol_version
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: truncated
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+- column_name: unknown
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: INTEGER
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  datetime_format: null
+  extra: null
+version: 1.0.0
+database_uuid: 2601a04b-ec63-4dec-9763-91b41e285890

@@ -1,0 +1,23 @@
+slice_name: "Seq-L\xFCcken (Datenverlust-Indikator)"
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number_total
+params:
+  datasource: 5__table
+  viz_type: big_number_total
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  metric: seq_gaps
+  header_font_size: 0.4
+  subheader_font_size: 0.15
+  y_axis_format: ',.0f'
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 50d46393-92b5-4db0-af9d-3451d662aa12
+version: 1.0.0
+dataset_uuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31

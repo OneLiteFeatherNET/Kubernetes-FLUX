@@ -1,0 +1,31 @@
+slice_name: "Seq-L\xFCcken je Sitzung und Segment"
+description: null
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 5__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 500
+  query_mode: aggregate
+  groupby:
+  - session
+  - segment
+  metrics:
+  - seq_gaps
+  - frames
+  order_desc: true
+  timeseries_limit_metric: seq_gaps
+  include_search: true
+  page_length: 25
+  show_totals: false
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: ad3064a9-2448-4c65-b0dc-2e8aefd2eed7
+version: 1.0.0
+dataset_uuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31

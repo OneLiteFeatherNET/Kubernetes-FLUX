@@ -1,0 +1,23 @@
+slice_name: "Ereignisse \xFCber 10 Bl\xF6cke/s"
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number_total
+params:
+  datasource: 3__table
+  viz_type: big_number_total
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  metric: over_threshold_count
+  header_font_size: 0.4
+  subheader_font_size: 0.15
+  y_axis_format: ',.0f'
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: df9f3f22-0c1c-4bd8-8d3e-e80da3b72c24
+version: 1.0.0
+dataset_uuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d

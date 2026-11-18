@@ -25,17 +25,49 @@ configMapGenerator:
   - name: superset-corvus-bundle
     files:
       - corvus-bundle/build_bundle.py
-      - corvus-bundle/owner_username.py
-      - corvus-bundle/metadata.yaml
-      - corvus-bundle/databases__corvus.yaml
-      - corvus-bundle/datasets__corvus_packet_types.yaml
+      - corvus-bundle/charts__act_attacks.yaml
+      - corvus-bundle/charts__act_cps.yaml
+      - corvus-bundle/charts__act_entities.yaml
+      - corvus-bundle/charts__act_minute_dig.yaml
+      - corvus-bundle/charts__act_minute_slot.yaml
+      - corvus-bundle/charts__act_mix.yaml
+      - corvus-bundle/charts__act_peaks.yaml
+      - corvus-bundle/charts__act_slots.yaml
+      - corvus-bundle/charts__act_sneak.yaml
+      - corvus-bundle/charts__direction_share.yaml
+      - corvus-bundle/charts__heatmap_types_minutes.yaml
+      - corvus-bundle/charts__minute_by_direction.yaml
+      - corvus-bundle/charts__mov_over.yaml
+      - corvus-bundle/charts__mov_over_events.yaml
+      - corvus-bundle/charts__mov_speed_hist.yaml
+      - corvus-bundle/charts__mov_speed_table.yaml
+      - corvus-bundle/charts__mov_vertical_table.yaml
+      - corvus-bundle/charts__packet_type_table.yaml
+      - corvus-bundle/charts__rot_table.yaml
+      - corvus-bundle/charts__rot_yaw_hist.yaml
+      - corvus-bundle/charts__sess_frames.yaml
+      - corvus-bundle/charts__sess_gaps_segment.yaml
+      - corvus-bundle/charts__sess_per_day.yaml
+      - corvus-bundle/charts__sess_protocol.yaml
+      - corvus-bundle/charts__sess_seq_gaps.yaml
+      - corvus-bundle/charts__sess_table.yaml
+      - corvus-bundle/charts__sess_truncated.yaml
+      - corvus-bundle/charts__sess_unknown.yaml
+      - corvus-bundle/charts__top_types_by_direction.yaml
       - corvus-bundle/charts__total_packets.yaml
       - corvus-bundle/charts__total_sessions.yaml
       - corvus-bundle/charts__total_types.yaml
-      - corvus-bundle/charts__top_types_by_direction.yaml
-      - corvus-bundle/charts__direction_share.yaml
-      - corvus-bundle/charts__packet_type_table.yaml
-      - corvus-bundle/charts__minute_by_direction.yaml
-      - corvus-bundle/charts__heatmap_types_minutes.yaml
       - corvus-bundle/charts__unknown_types.yaml
+      - corvus-bundle/dashboards__corvus-aktionen.yaml
+      - corvus-bundle/dashboards__corvus-bewegung.yaml
+      - corvus-bundle/dashboards__corvus-sitzungen-datenqualitaet.yaml
       - corvus-bundle/dashboards__corvus_pakettypen.yaml
+      - corvus-bundle/databases__corvus.yaml
+      - corvus-bundle/datasets__corvus_actions.yaml
+      - corvus-bundle/datasets__corvus_movement.yaml
+      - corvus-bundle/datasets__corvus_packet_types.yaml
+      - corvus-bundle/datasets__corvus_rotations.yaml
+      - corvus-bundle/datasets__corvus_seq_segments.yaml
+      - corvus-bundle/datasets__corvus_sessions.yaml
+      - corvus-bundle/metadata.yaml
+      - corvus-bundle/owner_username.py

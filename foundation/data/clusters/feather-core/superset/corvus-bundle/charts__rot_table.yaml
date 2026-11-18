@@ -1,0 +1,35 @@
+slice_name: Drehung je Sitzung
+description: null
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 4__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 500
+  query_mode: aggregate
+  groupby:
+  - session
+  metrics:
+  - events
+  - yaw_delta_max
+  - yaw_delta_p95
+  - pitch_delta_max
+  - pitch_delta_p95
+  - pitch_min
+  - pitch_max
+  order_desc: true
+  timeseries_limit_metric: yaw_delta_max
+  include_search: true
+  page_length: 25
+  show_totals: false
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: f84a7c04-3ef7-484f-9cc2-fada84460ef7
+version: 1.0.0
+dataset_uuid: c0d3e5f6-8b9a-4c2d-9e1f-3a4b5c6d7e8f

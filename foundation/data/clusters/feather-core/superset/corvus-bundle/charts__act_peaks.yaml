@@ -1,0 +1,32 @@
+slice_name: Spitzen-Sekunden (Top 10)
+description: null
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 2__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10
+  query_mode: aggregate
+  groupby:
+  - session
+  - second_bucket
+  metrics:
+  - attacks
+  - interacts
+  - swings
+  order_desc: true
+  timeseries_limit_metric: attacks
+  include_search: true
+  page_length: 25
+  show_totals: false
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 7ba0222a-67f0-4961-b66a-4a9248081b27
+version: 1.0.0
+dataset_uuid: d1e4f607-9c0b-4d3e-8f2a-4b5c6d7e8f90

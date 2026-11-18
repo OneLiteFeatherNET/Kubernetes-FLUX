@@ -1,0 +1,275 @@
+dashboard_title: "Corvus \u2013 Aktionen"
+description: Angriffe, Block-Abbau, Platzierung, Slot-Wechsel und Interaktionen.
+css: ''
+slug: corvus-aktionen
+certified_by: null
+certification_details: null
+published: false
+uuid: a4b7c93a-2f3e-4a6b-9c5d-7e8f90123456
+position:
+  DASHBOARD_VERSION_KEY: v2
+  ROOT_ID:
+    type: ROOT
+    id: ROOT_ID
+    children:
+    - GRID_ID
+  GRID_ID:
+    type: GRID
+    id: GRID_ID
+    children:
+    - ROW-1
+    - ROW-2
+    - ROW-3
+    - ROW-4
+    - ROW-5
+    - ROW-6
+    parents:
+    - ROOT_ID
+  CHART-act_attacks:
+    type: CHART
+    id: CHART-act_attacks
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-1
+    meta:
+      width: 3
+      height: 25
+      chartId: 10
+      sliceName: Angriffe (ATTACK) gesamt
+      uuid: 92c88c50-855f-41b3-bc0e-96b58e7d69f4
+  CHART-act_slots:
+    type: CHART
+    id: CHART-act_slots
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-1
+    meta:
+      width: 3
+      height: 25
+      chartId: 17
+      sliceName: Slot-Wechsel gesamt
+      uuid: afdc0f3c-ec12-4f6d-a49f-872e2a752dac
+  CHART-act_sneak:
+    type: CHART
+    id: CHART-act_sneak
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-1
+    meta:
+      width: 3
+      height: 25
+      chartId: 18
+      sliceName: Sneak-Umschaltungen
+      uuid: cd72ff23-7821-43fd-9f38-bdb7852675fe
+  ROW-1:
+    type: ROW
+    id: ROW-1
+    children:
+    - CHART-act_attacks
+    - CHART-act_slots
+    - CHART-act_sneak
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-act_mix:
+    type: CHART
+    id: CHART-act_mix
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-2
+    meta:
+      width: 6
+      height: 50
+      chartId: 15
+      sliceName: Ereignisarten im Datensatz
+      uuid: 0d5795eb-2c45-4edc-8961-a440281959c3
+  ROW-2:
+    type: ROW
+    id: ROW-2
+    children:
+    - CHART-act_mix
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-act_cps:
+    type: CHART
+    id: CHART-act_cps
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-3
+    meta:
+      width: 6
+      height: 50
+      chartId: 11
+      sliceName: Angriffe pro Sekunde je Sitzung
+      uuid: 2f81793a-2357-46f5-b140-dd09b6dc088c
+  ROW-3:
+    type: ROW
+    id: ROW-3
+    children:
+    - CHART-act_cps
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-act_peaks:
+    type: CHART
+    id: CHART-act_peaks
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-4
+    meta:
+      width: 6
+      height: 50
+      chartId: 16
+      sliceName: Spitzen-Sekunden (Top 10)
+      uuid: 7ba0222a-67f0-4961-b66a-4a9248081b27
+  ROW-4:
+    type: ROW
+    id: ROW-4
+    children:
+    - CHART-act_peaks
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-act_minute_dig:
+    type: CHART
+    id: CHART-act_minute_dig
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-5
+    meta:
+      width: 6
+      height: 50
+      chartId: 13
+      sliceName: Block-Abbau und Platzierung pro Minute
+      uuid: 8e6adb79-5eda-4c7a-81a2-98a4da9b0348
+  CHART-act_minute_slot:
+    type: CHART
+    id: CHART-act_minute_slot
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-5
+    meta:
+      width: 6
+      height: 50
+      chartId: 14
+      sliceName: Slot-Wechsel pro Minute
+      uuid: 0f081f21-c462-4953-a0e9-7d911c0feebc
+  ROW-5:
+    type: ROW
+    id: ROW-5
+    children:
+    - CHART-act_minute_dig
+    - CHART-act_minute_slot
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-act_entities:
+    type: CHART
+    id: CHART-act_entities
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-6
+    meta:
+      width: 12
+      height: 50
+      chartId: 12
+      sliceName: "Top-Entit\xE4ten bei Interaktion"
+      uuid: 925a9893-e490-4ed8-8826-a4e06e9cb7e9
+  ROW-6:
+    type: ROW
+    id: ROW-6
+    children:
+    - CHART-act_entities
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+metadata:
+  native_filter_configuration:
+  - id: NATIVE_FILTER-actions-date
+    controlValues: {}
+    name: Datum
+    filterType: filter_time
+    targets:
+    - column:
+        name: date
+      datasetUuid: d1e4f607-9c0b-4d3e-8f2a-4b5c6d7e8f90
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  - id: NATIVE_FILTER-actions-session
+    controlValues:
+      enableEmptyFilter: false
+      defaultToFirstItem: false
+      multiSelect: true
+      searchAllOptions: false
+      inverseSelection: false
+    name: Sitzung
+    filterType: filter_select
+    targets:
+    - column:
+        name: session
+      datasetUuid: d1e4f607-9c0b-4d3e-8f2a-4b5c6d7e8f90
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  color_scheme: ''
+  refresh_frequency: 0
+  label_colors: {}
+  shared_label_colors: {}
+  color_scheme_domain: []
+  cross_filters_enabled: false
+  expanded_slices: {}
+  timed_refresh_immune_slices: []
+theme_uuid: null
+version: 1.0.0
