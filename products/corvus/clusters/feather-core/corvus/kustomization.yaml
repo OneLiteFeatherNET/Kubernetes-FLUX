@@ -56,3 +56,8 @@ secretGenerator:
   - name: corvus-lake-ml-oauth
     envs:
       - ml-oauth.sops.env
+  # S3 keys of RGW user corvus-lake (copied from rook-ceph-object-user-feather-s3-corvus-lake);
+  # the bucket policy on polaris-corvus grants this user object access to the Iceberg warehouse.
+  - name: corvus-lake-s3
+    envs:
+      - lake-s3.sops.env
