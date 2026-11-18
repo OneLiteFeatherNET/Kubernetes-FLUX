@@ -52,7 +52,12 @@ GRANTS = {
         {"type": "namespace", "namespace": [NAMESPACE], "privilege": p}
         for p in ("TABLE_READ_DATA", "TABLE_LIST", "NAMESPACE_LIST")
     ],
-    "maintenance": [{"type": "catalog", "privilege": "CATALOG_MANAGE_CONTENT"}],
+    # Table maintenance (delete, rewrite, expire, orphan cleanup) needs read and write on
+    # existing tables only; no table or namespace creation (spec: maintenance cannot create).
+    "maintenance": [
+        {"type": "catalog", "privilege": p}
+        for p in ("TABLE_READ_DATA", "TABLE_WRITE_DATA", "TABLE_LIST", "NAMESPACE_LIST")
+    ],
     "admin": [{"type": "catalog", "privilege": "CATALOG_MANAGE_METADATA"}],
 }
 
