@@ -55,8 +55,7 @@ spec:
           secretKeyRef:
             name: trino-oauth
             key: POLARIS_TRINO_CLIENT_SECRET
-      # Secret trino-lake-s3 is created after the first reconcile of the RGW user trino-lake
-      # (post-merge step in the pull request). Until then the pods wait in CreateContainerConfigError.
+      # Keys of the read-only RGW user trino-lake (Secret trino-lake-s3, kustomization.yaml).
       - name: TRINO_LAKE_ACCESS_KEY
         valueFrom:
           secretKeyRef:
