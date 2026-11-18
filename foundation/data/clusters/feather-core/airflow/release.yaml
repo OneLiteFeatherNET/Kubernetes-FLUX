@@ -5,8 +5,8 @@ metadata:
   namespace: data
 spec:
   values:
-    airflowVersion: "3.3.2"
-    defaultAirflowTag: "3.3.2"
+    airflowVersion: "3.4.0"
+    defaultAirflowTag: "3.4.0"
 
     executor: KubernetesExecutor
 
