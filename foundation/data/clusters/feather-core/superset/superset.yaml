@@ -87,7 +87,8 @@ spec:
       seccompProfile:
         type: RuntimeDefault
     initContainers:
-      # Trino client for the corvus connection and psycopg2 for the metastore. The Superset 6.1.0 image
+      # Trino client for the corvus connection, psycopg2 for the metastore and authlib for the
+      # Entra login (AUTH_OAUTH imports it; the image does not ship it). The Superset 6.1.0 image
       # is the minimal build without database drivers. Same tag as spec.image.tag.
       - name: install-drivers
         image: apachesuperset.docker.scarf.sh/apache/superset:6.1.0
@@ -96,7 +97,7 @@ spec:
           - -c
           # The image's venv (/app/.venv) has no pip; the image installs packages with uv
           # (/usr/local/bin/uv, see the upstream Dockerfile), so the init container does the same.
-          - uv pip install --no-cache --python /app/.venv/bin/python --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13
+          - uv pip install --no-cache --python /app/.venv/bin/python --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13 authlib==1.9.3
         volumeMounts:
           - name: pydeps
             mountPath: /opt/pydeps
