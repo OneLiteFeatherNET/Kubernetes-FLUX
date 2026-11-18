@@ -508,6 +508,15 @@ class HarborTests(unittest.TestCase):
                          (upload.name, upload.version, upload.tag))
         self.assertEqual(["left-pad"], [c["name"] for c in json.loads(upload.bom)["components"]])
 
+    def test_harbor_host_names_projects_when_harbor_url_is_internal(self):
+        world = World()
+        world.harbor = {"library": {"app": [harbor_artifact(digest=DIGEST_B, tags=("2.0.0",))]}}
+        world.harbor_sboms[DIGEST_B] = spdx("left-pad")
+
+        run(world, harbor_host="registry.example")
+
+        self.assertEqual("registry.example/library/app", world.uploads[0].name)
+
     def test_artifact_without_sbom_requests_generation_and_uploads_nothing(self):
         world = World()
         world.harbor = {"library": {"app": [harbor_artifact(digest=DIGEST_B, tags=("2.0.1",), status=None)]}}
@@ -699,6 +708,11 @@ class ConfigTests(unittest.TestCase):
         config = sync.load_config({**self.ENV, "DRY_RUN": "true"}, self.FILES.__getitem__)
 
         self.assertTrue(config.dry_run)
+
+    def test_harbor_host_overrides_the_host_taken_from_harbor_url(self):
+        config = sync.load_config({**self.ENV, "HARBOR_HOST": "registry.example"}, self.FILES.__getitem__)
+
+        self.assertEqual("registry.example", config.harbor_host)
 
     def test_non_positive_page_size_is_a_configuration_error(self):
         with self.assertRaises(sync.ConfigError):

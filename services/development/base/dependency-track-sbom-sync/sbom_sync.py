@@ -658,6 +658,8 @@ class Config:
     max_uploads: int = 200
     max_bom_bytes: int = MAX_BOM_BYTES
     dry_run: bool = False
+    # Public registry host for project names when HARBOR_URL is an internal address.
+    harbor_host: str = ""
 
 
 def run_sync(config: Config, http, k8s_http, clock: Clock) -> Counter:
@@ -675,7 +677,7 @@ def run_sync(config: Config, http, k8s_http, clock: Clock) -> Counter:
         _log_failure("sbomreports listing", exc, redact)
         counts["failed"] += 1
         cluster = Source(TAG_CLUSTER)
-    harbor_host = urllib.parse.urlsplit(config.harbor_url).netloc
+    harbor_host = config.harbor_host or urllib.parse.urlsplit(config.harbor_url).netloc
     harbor_src = load_harbor(harbor, harbor_host, redact)
     counts["failed"] += cluster.failed + harbor_src.failed
 
@@ -746,6 +748,7 @@ def load_config(environ: Mapping[str, str], read_file: Callable[[str], str], dry
         page_size_k8s=number("K8S_PAGE_SIZE", 100),
         max_uploads=number("MAX_UPLOADS_PER_RUN", 200),
         dry_run=dry_run or environ.get("DRY_RUN", "").strip().lower() in TRUTHY,
+        harbor_host=environ.get("HARBOR_HOST", "").strip(),
     )
 
 
