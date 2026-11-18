@@ -44,6 +44,22 @@ spec:
         secret:
           name: polaris-db
 
+    # The server's own S3 client (writing table metadata) uses the AWS default credential chain;
+    # without STS (catalog stsUnavailable) it does not use the storage.secret keys below.
+    extraEnv:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: polaris-corvus
+            key: AWS_ACCESS_KEY_ID
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: polaris-corvus
+            key: AWS_SECRET_ACCESS_KEY
+      - name: AWS_REGION
+        value: us-east-1
+
     storage:
       secret:
         # Keys of the Rook ObjectBucketClaim Secret (bucket polaris-corvus).
