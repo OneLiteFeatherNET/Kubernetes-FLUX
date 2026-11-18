@@ -50,6 +50,9 @@ resources:
   - telepresence.yaml
   - gha-runner-scale-set-controller.yaml
   - vmware-tanzu.yaml
+  - polaris.yaml
+  - spark-kubernetes-operator.yaml
+  - airflow.yaml
 
 # The OCIRepositories above pull from the private onelitefeather Harbor project,
 # so flux-system needs the same pull credential the workloads use.
