@@ -79,6 +79,11 @@ spec:
     priorityClassName: feather-standard
     podSecurityContext:
       runAsNonRoot: true
+      # The image names its user (superset, created by useradd without -u: UID/GID 1000), so the
+      # kubelet cannot verify runAsNonRoot without a numeric id.
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
       seccompProfile:
         type: RuntimeDefault
     initContainers:
