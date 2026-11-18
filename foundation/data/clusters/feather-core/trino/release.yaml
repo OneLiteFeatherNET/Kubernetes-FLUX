@@ -58,16 +58,19 @@ spec:
           rollingUpdate:
             maxSurge: 0
             maxUnavailable: 1
-      # One worker per node, so losing a node never takes both workers.
+      # Spread the workers over nodes when there is room. Preferred, not required: the XL nodes are
+      # nearly full, and a hard rule left the second worker unschedulable.
       affinity:
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: trino
-                  app.kubernetes.io/instance: trino
-                  app.kubernetes.io/component: worker
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: trino
+                    app.kubernetes.io/instance: trino
+                    app.kubernetes.io/component: worker
 
     # Environment for the catalog properties (${ENV:...}). Applies to coordinator and worker.
     # The client id is not a secret; the client secret and the trino-lake keys are.
