@@ -4,7 +4,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: polaris-setup-5
+  name: polaris-setup-6
   namespace: data
   labels:
     app.kubernetes.io/name: polaris-setup

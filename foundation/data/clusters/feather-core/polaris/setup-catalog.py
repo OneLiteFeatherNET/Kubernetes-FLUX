@@ -47,13 +47,18 @@ PRINCIPALS = {
 
 # catalog role -> grants (namespace capture, or the whole catalog)
 GRANTS = {
+    # Corvus loads the namespace on start (LOAD_NAMESPACE_METADATA needs NAMESPACE_READ_PROPERTIES)
+    # and its erasure expires snapshots, a metadata change that needs TABLE_WRITE_PROPERTIES.
     "ingest": [
         {"type": "namespace", "namespace": [NAMESPACE], "privilege": p}
-        for p in ("TABLE_CREATE", "TABLE_WRITE_DATA", "TABLE_LIST", "NAMESPACE_LIST")
+        for p in (
+            "TABLE_CREATE", "TABLE_WRITE_DATA", "TABLE_WRITE_PROPERTIES", "TABLE_LIST",
+            "NAMESPACE_LIST", "NAMESPACE_READ_PROPERTIES",
+        )
     ],
     "ml": [
         {"type": "namespace", "namespace": [NAMESPACE], "privilege": p}
-        for p in ("TABLE_READ_DATA", "TABLE_LIST", "NAMESPACE_LIST")
+        for p in ("TABLE_READ_DATA", "TABLE_LIST", "NAMESPACE_LIST", "NAMESPACE_READ_PROPERTIES")
     ],
     # Table maintenance (delete, rewrite, expire, orphan cleanup) needs read and write on
     # existing tables only; no table or namespace creation (spec: maintenance cannot create).
