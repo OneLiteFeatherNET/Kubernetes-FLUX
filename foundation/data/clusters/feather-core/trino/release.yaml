@@ -43,9 +43,11 @@ spec:
         query:
           maxMemoryPerNode: "1500MB"
       resources:
+        # The XL nodes are nearly full on requests: request what the old worker had, so the pods
+        # schedule, and keep the limit as the headroom above the 3G heap.
         requests:
           cpu: 500m
-          memory: 4608Mi
+          memory: 3Gi
         limits:
           memory: 4608Mi
       # One worker per node, so losing a node never takes both workers.
