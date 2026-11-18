@@ -1,0 +1,12 @@
+# Access identity of the Corvus ingest, score and ML jobs for the Polaris warehouse bucket
+# polaris-corvus (foundation/data/.../buckets/polaris-corvus.yaml). It owns no bucket: the
+# bucket grants it object access through a bucket policy, so no quota is needed. Its keys
+# reach namespace corvus as a SOPS-encrypted copy (see products/corvus/.../SECRETS.sops.env.TEMPLATE).
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: corvus-lake
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: corvus-lake

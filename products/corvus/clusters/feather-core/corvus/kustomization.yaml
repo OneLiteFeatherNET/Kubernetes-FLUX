@@ -48,3 +48,11 @@ secretGenerator:
   - name: corvus-jobs-env
     envs:
       - jobs-env.sops.env
+  # Entra client secret of "Polaris Corvus Ingest" (app 41380977-...), for the lake access.
+  - name: corvus-lake-oauth
+    envs:
+      - lake-oauth.sops.env
+  # Entra client secret of "Polaris Corvus ML" (app cea8487b-...), for the ML jobs.
+  - name: corvus-lake-ml-oauth
+    envs:
+      - ml-oauth.sops.env

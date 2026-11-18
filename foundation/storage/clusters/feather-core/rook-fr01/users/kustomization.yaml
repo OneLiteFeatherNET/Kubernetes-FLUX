@@ -22,6 +22,7 @@ resources:
   - sentry.yaml
   - sturnus.yaml
   - corvus.yaml
+  - corvus-lake.yaml
   - polaris.yaml
   - blackhole.yaml
   - vikunja.yaml

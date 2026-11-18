@@ -12,3 +12,23 @@ spec:
   storageClassName: ceph-bucket-fr01
   additionalConfig:
     bucketOwner: polaris
+    # Object access for the Corvus ingest, score and ML jobs (CephObjectStoreUser corvus-lake in
+    # foundation/storage/.../rook-fr01/users/corvus-lake.yaml). Rook applies additionalConfig when
+    # it provisions the claim; see the PR for the post-merge check.
+    bucketPolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "CorvusLakeObjects",
+            "Effect": "Allow",
+            "Principal": {"AWS": ["arn:aws:iam:::user/corvus-lake"]},
+            "Action": [
+              "s3:ListBucket", "s3:ListBucketMultipartUploads", "s3:GetBucketLocation",
+              "s3:GetObject", "s3:PutObject", "s3:DeleteObject",
+              "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"
+            ],
+            "Resource": ["arn:aws:s3:::polaris-corvus", "arn:aws:s3:::polaris-corvus/*"]
+          }
+        ]
+      }
