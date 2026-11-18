@@ -1,0 +1,56 @@
+# Airflow worker pods (KubernetesExecutor task pods, serviceAccountName airflow-worker as rendered
+# by chart 1.22.0) submit SparkApplications in namespace data.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: airflow-spark-submitter
+  namespace: data
+rules:
+  - apiGroups: ["spark.apache.org"]
+    resources: ["sparkapplications"]
+    verbs: ["create", "get", "list", "watch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: airflow-spark-submitter
+  namespace: data
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: airflow-spark-submitter
+subjects:
+  - kind: ServiceAccount
+    name: airflow-worker
+    namespace: data
+---
+# Driver identity for SparkApplications (spark-kubernetes-operator). Drivers create their executors.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spark
+  namespace: data
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: spark-driver
+  namespace: data
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: spark-driver
+  namespace: data
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: spark-driver
+subjects:
+  - kind: ServiceAccount
+    name: spark
+    namespace: data

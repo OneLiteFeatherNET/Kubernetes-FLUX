@@ -1,3 +1,22 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources: []
+namespace: data
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/airflow
+  - rbac.yaml
+  - servicemonitor.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  # fernet-key, api-secret-key, jwt-secret (referenced by the chart's *SecretName values).
+  - name: airflow-keys
+    envs:
+      - airflow-keys.sops.env
+  # Entra client of the lake-maintenance job. client_secret is a PLACEHOLDER (REPLACE_ME)
+  # until the maintainer sets the real secret with `sops`.
+  - name: lake-maintenance-oauth
+    envs:
+      - lake-maintenance-oauth.sops.env
