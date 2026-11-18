@@ -230,11 +230,12 @@ spec:
         connectionLimit: 20
         passwordSecret:
           name: role-airflow
-      # Superset metadata database. Separate role, capped against max_connections: 200.
+      # Superset metadata database. Separate role, capped against max_connections: 200. Each gunicorn
+      # worker of the web server keeps its own pool, so 10 ran out while charts loaded in parallel.
       - name: superset
         login: true
         ensure: present
-        connectionLimit: 10
+        connectionLimit: 25
         passwordSecret:
           name: role-superset
     services:
