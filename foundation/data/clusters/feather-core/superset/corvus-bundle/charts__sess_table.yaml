@@ -1,0 +1,34 @@
+slice_name: Sitzungen im Detail
+description: Duration is the largest event offset from session start. Frames come from the events table.
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 1__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 500
+  query_mode: aggregate
+  groupby:
+  - session
+  metrics:
+  - frames
+  - duration_s
+  - frames_per_s
+  - segments
+  - protocol_version_max
+  - packet_type_count
+  - unmapped_share
+  order_desc: true
+  timeseries_limit_metric: frames
+  include_search: true
+  page_length: 25
+  show_totals: false
+query_context: null
+cache_timeout: null
+uuid: 9589a40f-67a1-45bb-9df7-38c995fe8b81
+version: 1.0.0
+dataset_uuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31

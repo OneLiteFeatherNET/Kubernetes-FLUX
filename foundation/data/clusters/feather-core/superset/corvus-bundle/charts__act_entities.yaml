@@ -1,0 +1,41 @@
+slice_name: "Top-Entit\xE4ten bei Interaktion"
+description: Entity interactions (interact_entity events). Empty while none are captured.
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 2__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters:
+  - expressionType: SIMPLE
+    subject: event_name
+    operator: ==
+    operatorId: EQUALS
+    comparator: interact_entity
+    clause: WHERE
+    sqlExpression: null
+    filterOptionName: filter_event_name
+    isExtra: false
+    isNew: false
+    datasourceWarning: false
+  extra_form_data: {}
+  row_limit: 25
+  query_mode: aggregate
+  groupby:
+  - entity_id
+  metrics:
+  - interacts
+  - attacks
+  order_desc: true
+  timeseries_limit_metric: interacts
+  include_search: true
+  page_length: 25
+  show_totals: false
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 925a9893-e490-4ed8-8826-a4e06e9cb7e9
+version: 1.0.0
+dataset_uuid: d1e4f607-9c0b-4d3e-8f2a-4b5c6d7e8f90

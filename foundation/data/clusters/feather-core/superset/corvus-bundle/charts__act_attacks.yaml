@@ -1,0 +1,23 @@
+slice_name: Angriffe (ATTACK) gesamt
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number_total
+params:
+  datasource: 2__table
+  viz_type: big_number_total
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 10000
+  metric: attacks
+  header_font_size: 0.4
+  subheader_font_size: 0.15
+  y_axis_format: ',.0f'
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 92c88c50-855f-41b3-bc0e-96b58e7d69f4
+version: 1.0.0
+dataset_uuid: d1e4f607-9c0b-4d3e-8f2a-4b5c6d7e8f90

@@ -1,0 +1,215 @@
+table_name: corvus_rotations
+main_dttm_col: date
+description: Rotation events with yaw change wrapped to [-180, 180] and absolute pitch change.
+default_endpoint: null
+offset: 0
+cache_timeout: null
+schema: null
+sql: "WITH rot AS (\n  SELECT date, session_id, segment, seq, offset_nanos, yaw, pitch\n  FROM corvus.capture.events\n  WHERE has_rotation = true AND date >= current_date - INTERVAL '7' DAY AND date <=\
+  \ current_date\n),\nlagged AS (\n  SELECT *,\n    LAG(offset_nanos) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_offset,\n    LAG(yaw) OVER (PARTITION BY session_id, segment ORDER BY seq)\
+  \ AS prev_yaw,\n    LAG(pitch) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_pitch\n  FROM rot\n),\ndeltas AS (\n  SELECT date, session_id, segment, seq, offset_nanos, yaw, pitch,\n   \
+  \ abs(((((CAST(yaw AS double) - CAST(prev_yaw AS double)) + 180) % 360) + 360) % 360 - 180) AS yaw_delta,\n    abs(CAST(pitch AS double) - CAST(prev_pitch AS double)) AS pitch_delta\n  FROM lagged\n \
+  \ WHERE prev_offset IS NOT NULL AND offset_nanos > prev_offset\n)\nSELECT\n  date,\n  substr(to_hex(session_id), 1, 12) AS session,\n  segment,\n  seq,\n  offset_nanos / 1e9 AS offset_s,\n  yaw,\n  pitch,\n\
+  \  yaw_delta,\n  pitch_delta,\n  CAST(floor(yaw_delta / 5) * 5 AS bigint) AS yaw_bucket\nFROM deltas\n"
+params: null
+template_params: null
+filter_select_enabled: true
+fetch_values_predicate: null
+extra: null
+uuid: c0d3e5f6-8b9a-4c2d-9e1f-3a4b5c6d7e8f
+metrics:
+- metric_name: events
+  verbose_name: Rotation events
+  metric_type: null
+  expression: COUNT(*)
+  description: null
+  d3format: ',.0f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: session_count
+  verbose_name: Sessions
+  metric_type: null
+  expression: COUNT(DISTINCT session)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: yaw_delta_max
+  verbose_name: Yaw change max (deg)
+  metric_type: null
+  expression: MAX(yaw_delta)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: yaw_delta_p95
+  verbose_name: Yaw change p95 (deg)
+  metric_type: null
+  expression: approx_percentile(yaw_delta, 0.95)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: pitch_delta_max
+  verbose_name: Pitch change max (deg)
+  metric_type: null
+  expression: MAX(pitch_delta)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: pitch_delta_p95
+  verbose_name: Pitch change p95 (deg)
+  metric_type: null
+  expression: approx_percentile(pitch_delta, 0.95)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: pitch_min
+  verbose_name: Pitch min
+  metric_type: null
+  expression: MIN(pitch)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: pitch_max
+  verbose_name: Pitch max
+  metric_type: null
+  expression: MAX(pitch)
+  description: null
+  d3format: ',.1f'
+  currency: null
+  extra: null
+  warning_text: null
+columns:
+- column_name: date
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: DATE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: session
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: VARCHAR
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: segment
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: seq
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: offset_s
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: yaw
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: REAL
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: pitch
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: REAL
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: yaw_delta
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: pitch_delta
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: DOUBLE
+  advanced_data_type: null
+  groupby: false
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: yaw_bucket
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BIGINT
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+database_uuid: 2601a04b-ec63-4dec-9763-91b41e285890
+version: 1.0.0

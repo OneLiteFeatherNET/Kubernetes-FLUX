@@ -1,0 +1,252 @@
+dashboard_title: "Corvus \u2013 Bewegung"
+description: "Geschwindigkeit, vertikale Bewegung, Drehung und auff\xE4llige Werte\
+  \ je Sitzung."
+css: ''
+slug: corvus-bewegung
+certified_by: null
+certification_details: null
+published: false
+uuid: f3a6b829-1e2d-4f5a-8b4c-6d7e8f901234
+position:
+  DASHBOARD_VERSION_KEY: v2
+  ROOT_ID:
+    type: ROOT
+    id: ROOT_ID
+    children:
+    - GRID_ID
+  GRID_ID:
+    type: GRID
+    id: GRID_ID
+    children:
+    - ROW-1
+    - ROW-2
+    - ROW-3
+    - ROW-4
+    - ROW-5
+    - ROW-6
+    parents:
+    - ROOT_ID
+  CHART-mov_over:
+    type: CHART
+    id: CHART-mov_over
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-1
+    meta:
+      width: 3
+      height: 25
+      chartId: 19
+      sliceName: "Ereignisse \xFCber 10 Bl\xF6cke/s"
+      uuid: df9f3f22-0c1c-4bd8-8d3e-e80da3b72c24
+  ROW-1:
+    type: ROW
+    id: ROW-1
+    children:
+    - CHART-mov_over
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-mov_speed_hist:
+    type: CHART
+    id: CHART-mov_speed_hist
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-2
+    meta:
+      width: 6
+      height: 50
+      chartId: 21
+      sliceName: 'Horizontalgeschwindigkeit: Verteilung (1-b/s-Klassen)'
+      uuid: c27d7b66-8f6f-42cc-96d3-7b6500debdef
+  CHART-rot_yaw_hist:
+    type: CHART
+    id: CHART-rot_yaw_hist
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-2
+    meta:
+      width: 6
+      height: 50
+      chartId: 25
+      sliceName: "Gierwinkel-\xC4nderung je Ereignis (5er-Klassen, Grad)"
+      uuid: 39fd6776-6fef-4824-9a67-265350eba9ac
+  ROW-2:
+    type: ROW
+    id: ROW-2
+    children:
+    - CHART-mov_speed_hist
+    - CHART-rot_yaw_hist
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-mov_speed_table:
+    type: CHART
+    id: CHART-mov_speed_table
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-3
+    meta:
+      width: 12
+      height: 55
+      chartId: 22
+      sliceName: Geschwindigkeit je Sitzung
+      uuid: 05b6f1aa-ded8-41dd-801e-3ee81b8d6456
+  ROW-3:
+    type: ROW
+    id: ROW-3
+    children:
+    - CHART-mov_speed_table
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-mov_vertical_table:
+    type: CHART
+    id: CHART-mov_vertical_table
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-4
+    meta:
+      width: 12
+      height: 50
+      chartId: 23
+      sliceName: "Vertikal, Bodenkontakt und H\xF6he"
+      uuid: ffc44e9b-2d43-4710-96d9-1c6fe29c6e3b
+  ROW-4:
+    type: ROW
+    id: ROW-4
+    children:
+    - CHART-mov_vertical_table
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-rot_table:
+    type: CHART
+    id: CHART-rot_table
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-5
+    meta:
+      width: 12
+      height: 50
+      chartId: 24
+      sliceName: Drehung je Sitzung
+      uuid: f84a7c04-3ef7-484f-9cc2-fada84460ef7
+  ROW-5:
+    type: ROW
+    id: ROW-5
+    children:
+    - CHART-rot_table
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+  CHART-mov_over_events:
+    type: CHART
+    id: CHART-mov_over_events
+    children: []
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-6
+    meta:
+      width: 12
+      height: 60
+      chartId: 20
+      sliceName: "Auff\xE4llige Ereignisse \xFCber 10 Bl\xF6cke/s"
+      uuid: ad1360ef-51c6-45d2-8756-2ada27de9cf5
+  ROW-6:
+    type: ROW
+    id: ROW-6
+    children:
+    - CHART-mov_over_events
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    meta:
+      background: BACKGROUND_TRANSPARENT
+metadata:
+  native_filter_configuration:
+  - id: NATIVE_FILTER-movement-date
+    controlValues: {}
+    name: Datum
+    filterType: filter_time
+    targets:
+    - column:
+        name: date
+      datasetUuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d
+    - column:
+        name: date
+      datasetUuid: c0d3e5f6-8b9a-4c2d-9e1f-3a4b5c6d7e8f
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  - id: NATIVE_FILTER-movement-session
+    controlValues:
+      enableEmptyFilter: false
+      defaultToFirstItem: false
+      multiSelect: true
+      searchAllOptions: false
+      inverseSelection: false
+    name: Sitzung
+    filterType: filter_select
+    targets:
+    - column:
+        name: session
+      datasetUuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d
+    - column:
+        name: session
+      datasetUuid: c0d3e5f6-8b9a-4c2d-9e1f-3a4b5c6d7e8f
+    defaultDataMask:
+      extraFormData: {}
+      filterState: {}
+      ownState: {}
+    cascadeParentIds: []
+    scope:
+      rootPath:
+      - ROOT_ID
+      excluded: []
+    type: NATIVE_FILTER
+    description: ''
+    chartsInScope: []
+    tabsInScope: []
+  color_scheme: ''
+  refresh_frequency: 0
+  label_colors: {}
+  shared_label_colors: {}
+  color_scheme_domain: []
+  cross_filters_enabled: false
+  expanded_slices: {}
+  timed_refresh_immune_slices: []
+theme_uuid: null
+version: 1.0.0

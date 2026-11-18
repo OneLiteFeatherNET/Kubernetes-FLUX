@@ -1,0 +1,36 @@
+slice_name: Geschwindigkeit je Sitzung
+description: Horizontal blocks per second between consecutive position events. Threshold
+  10 b/s is a column, not a verdict.
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 3__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 500
+  query_mode: aggregate
+  groupby:
+  - session
+  metrics:
+  - events
+  - speed_p50
+  - speed_p95
+  - speed_p99
+  - speed_max
+  - over_threshold_count
+  - over_threshold_share
+  order_desc: true
+  timeseries_limit_metric: speed_max
+  include_search: true
+  page_length: 25
+  show_totals: false
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 05b6f1aa-ded8-41dd-801e-3ee81b8d6456
+version: 1.0.0
+dataset_uuid: b9e2c1d4-7a58-4f3e-8c6d-0e1f2a3b4c5d

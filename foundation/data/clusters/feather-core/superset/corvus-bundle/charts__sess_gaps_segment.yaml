@@ -1,0 +1,30 @@
+slice_name: Fehlende Sequenznummern je Sitzung und Segment
+description: Missing = max - min + 1 - distinct seq within a segment. Non-zero means frames were dropped.
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 1__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters: []
+  extra_form_data: {}
+  row_limit: 500
+  query_mode: aggregate
+  groupby:
+  - session
+  - segment
+  metrics:
+  - missing_seq
+  - frames
+  order_desc: true
+  timeseries_limit_metric: missing_seq
+  include_search: true
+  page_length: 25
+  show_totals: false
+query_context: null
+cache_timeout: null
+uuid: ad3064a9-2448-4c65-b0dc-2e8aefd2eed7
+version: 1.0.0
+dataset_uuid: e5f7a8b9-0d1e-4f2a-8b3c-9d0e1f2a3b4c
