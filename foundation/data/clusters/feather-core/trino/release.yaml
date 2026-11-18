@@ -50,6 +50,14 @@ spec:
           memory: 3Gi
         limits:
           memory: 4608Mi
+      # Replace one worker at a time without a surge pod: with one worker per node and full nodes,
+      # a surge pod has nowhere to go and the rollout (and the Helm upgrade) times out.
+      deployment:
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxSurge: 0
+            maxUnavailable: 1
       # One worker per node, so losing a node never takes both workers.
       affinity:
         podAntiAffinity:
