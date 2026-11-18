@@ -17,6 +17,8 @@ CLIENT_SECRET = os.environ["ROOT_CLIENT_SECRET"]
 BUCKET = os.environ["BUCKET_NAME"]
 S3_ENDPOINT = os.environ["S3_ENDPOINT"]
 S3_REGION = os.environ.get("S3_REGION", "us-east-1")
+# Quarkus health lives on the management port (8182), not on the API port.
+HEALTH_URL = os.environ["POLARIS_HEALTH_URL"]
 
 CATALOG = "corvus"
 NAMESPACE = "capture"
@@ -30,6 +32,14 @@ ASSIGNMENTS = {
     "lake_maintenance": "maintenance",
     # Lets the root principal create the namespace through the Iceberg REST API.
     "service_admin": "admin",
+}
+
+# Entra ID client app id (token claim azp) -> principal role. Polaris resolves the token's
+# principal by name, so every client must exist as a Polaris principal.
+PRINCIPALS = {
+    "41380977-879c-4c49-8e0d-fb1047f1bb7a": "corvus_ingest",     # Polaris Corvus Ingest
+    "cea8487b-adef-45ef-917e-e4506cc38922": "corvus_ml",         # Polaris Corvus ML
+    "1f752161-5002-468d-a39b-12c46f6b874d": "lake_maintenance",  # Polaris Lake Maintenance
 }
 
 # catalog role -> grants (namespace capture, or the whole catalog)
@@ -73,7 +83,7 @@ def call(method, url, body=None, token=None, form=None, ok=(200, 201, 204, 409))
 def wait_for_polaris():
     for _ in range(60):
         try:
-            with urllib.request.urlopen(f"{POLARIS}/q/health/ready", timeout=5) as r:
+            with urllib.request.urlopen(HEALTH_URL, timeout=5) as r:
                 if r.status == 200:
                     return
         except Exception:
@@ -119,17 +129,30 @@ def main():
         call("POST", f"{MGMT}/catalogs/{CATALOG}/catalog-roles", token=token,
              body={"catalogRole": {"name": catalog_role}})
 
-    for catalog_role, grants in GRANTS.items():
-        for grant in grants:
+    def grant_and_assign(catalog_role):
+        for grant in GRANTS[catalog_role]:
             call("PUT", f"{MGMT}/catalogs/{CATALOG}/catalog-roles/{catalog_role}/grants",
                  token=token, body={"grant": grant})
+        for principal_role, assigned in ASSIGNMENTS.items():
+            if assigned == catalog_role:
+                call("PUT", f"{MGMT}/principal-roles/{principal_role}/catalog-roles/{CATALOG}",
+                     token=token, body={"catalogRole": {"name": catalog_role}})
 
-    for principal_role, catalog_role in ASSIGNMENTS.items():
-        call("PUT", f"{MGMT}/principal-roles/{principal_role}/catalog-roles/{CATALOG}",
-             token=token, body={"catalogRole": {"name": catalog_role}})
-
+    # Catalog-level grants first: the root needs "admin" to create the namespace, and
+    # namespace-level grants fail with 404 until the namespace exists.
+    grant_and_assign("admin")
+    grant_and_assign("maintenance")
     call("POST", f"{CATALOG_API}/{CATALOG}/namespaces", token=token,
          body={"namespace": [NAMESPACE]})
+    grant_and_assign("ingest")
+    grant_and_assign("ml")
+    for principal, principal_role in PRINCIPALS.items():
+        # The returned internal credentials are not used; clients authenticate with Entra ID.
+        call("POST", f"{MGMT}/principals", token=token,
+             body={"principal": {"name": principal}, "credentialRotationRequired": False})
+        call("PUT", f"{MGMT}/principals/{principal}/principal-roles", token=token,
+             body={"principalRole": {"name": principal_role}})
+
     print("polaris setup complete", flush=True)
 
 

@@ -4,7 +4,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: polaris-setup-1
+  name: polaris-setup-2
   namespace: data
   labels:
     app.kubernetes.io/name: polaris-setup
@@ -32,6 +32,8 @@ spec:
           env:
             - name: POLARIS_URL
               value: http://polaris.data.svc.cluster.local:8181
+            - name: POLARIS_HEALTH_URL
+              value: http://polaris-mgmt.data.svc.cluster.local:8182/q/health/ready
             - name: S3_ENDPOINT
               value: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc
             - name: S3_REGION
