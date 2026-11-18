@@ -75,8 +75,8 @@ spec:
         filter: "^(corvus-ingest|corvus-ml|lake-maintenance)$"
         mappings:
           - regex: "^corvus-ingest$"
-            replacement: corvus_ingest
+            replacement: PRINCIPAL_ROLE:corvus_ingest
           - regex: "^corvus-ml$"
-            replacement: corvus_ml
+            replacement: PRINCIPAL_ROLE:corvus_ml
           - regex: "^lake-maintenance$"
-            replacement: lake_maintenance
+            replacement: PRINCIPAL_ROLE:lake_maintenance
