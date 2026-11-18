@@ -230,6 +230,13 @@ spec:
         connectionLimit: 20
         passwordSecret:
           name: role-airflow
+      # Superset metadata database. Separate role, capped against max_connections: 200.
+      - name: superset
+        login: true
+        ensure: present
+        connectionLimit: 10
+        passwordSecret:
+          name: role-superset
     services:
       additional:
         - selectorType: rw

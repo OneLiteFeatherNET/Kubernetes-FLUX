@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: data
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - superset.yaml
+  - httproute.yaml
+  - networkpolicy.yaml
+
+secretGenerator:
+  # Read by the Superset CR: secret-key (SUPERSET_SECRET_KEY), metastore host/port/dbname/username/
+  # password (CNPG role superset) and entra-client-secret (Superset Entra app).
+  - name: superset-secrets
+    envs:
+      - superset-secrets.sops.env
+
+configMapGenerator:
+  # Mounted at /app/configs by the Superset CR. Plain, no secret.
+  - name: superset-datasources
+    files:
+      - import_datasources.yaml

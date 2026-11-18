@@ -1,0 +1,22 @@
+# Internal front door for Superset (Envoy terminates TLS, cert from step-issuer, see
+# foundation-certificates). Backend: the Service the operator creates, superset-web-server.
+# Not published through the Cloudflare Tunnel.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: superset
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - superset.apps.onelite.feather
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: superset-web-server
+          port: 8088

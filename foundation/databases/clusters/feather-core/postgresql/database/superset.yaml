@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: superset
+spec:
+  name: superset
+  owner: superset
+  # Keep the metadata database when this CR is deleted; it holds the dashboards and the Entra-synced users.
+  databaseReclaimPolicy: retain
+  cluster:
+    name: feather-core-cluster-pg

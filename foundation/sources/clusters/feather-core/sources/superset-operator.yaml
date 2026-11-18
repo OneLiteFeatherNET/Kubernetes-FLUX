@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: superset-operator
+  namespace: flux-system
+spec:
+  interval: 5m
+  # Chart published by the Apache Superset Kubernetes Operator project (chart source:
+  # charts/superset-operator at tag v0.3.0). Pinned to the release tag, not a moving tag.
+  url: oci://ghcr.io/apache/superset-kubernetes-operator/charts/superset-operator
+  ref:
+    tag: "0.3.0"

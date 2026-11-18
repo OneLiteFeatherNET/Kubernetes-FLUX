@@ -53,6 +53,8 @@ resources:
   - polaris.yaml
   - spark-kubernetes-operator.yaml
   - airflow.yaml
+  - trino.yaml
+  - superset-operator.yaml
 
 # The OCIRepositories above pull from the private onelitefeather Harbor project,
 # so flux-system needs the same pull credential the workloads use.

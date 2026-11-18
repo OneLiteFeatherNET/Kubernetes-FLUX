@@ -1,0 +1,166 @@
+# Superset instance managed by the Apache Superset Kubernetes Operator (superset-system, watches data).
+# Operator: https://apache.github.io/superset-kubernetes-operator/ (chart 0.3.0, see superset-operator sources).
+# Secrets come from the SOPS Secret superset-secrets; no secret value appears in this file.
+apiVersion: superset.apache.org/v1alpha1
+kind: Superset
+metadata:
+  name: superset
+spec:
+  environment: Production
+  image:
+    # Pinned release tag. The operator keys migrations off repository:tag, so never a mutable tag.
+    tag: "6.1.0"
+  secretKeyFrom:
+    name: superset-secrets
+    key: secret-key
+  metastore:
+    # CloudNativePG database superset (role superset), reached through the rw service.
+    hostFrom:
+      name: superset-secrets
+      key: host
+    portFrom:
+      name: superset-secrets
+      key: port
+    databaseFrom:
+      name: superset-secrets
+      key: dbname
+    usernameFrom:
+      name: superset-secrets
+      key: username
+    passwordFrom:
+      name: superset-secrets
+      key: password
+  # Driver packages (trino client, psycopg2) are installed by the init container in podTemplate into
+  # /opt/pydeps. This script puts that directory on PYTHONPATH and keeps the image's own entry.
+  bootstrapScript: |
+    export PYTHONPATH="/opt/pydeps${PYTHONPATH:+:$PYTHONPATH}"
+  # Appended to superset_config.py of every Python component. Login is Entra ID only; the
+  # Superset role mapping and the Trino connection come from this file and from lifecycle.init.
+  config: |
+    import os
+    from flask_appbuilder.security.manager import AUTH_OAUTH
+
+    # Entra ID is the only login (AUTH_OAUTH, provider azure). Assignment to the enterprise
+    # app is enforced by Entra; Superset creates no user for an unassigned account.
+    AUTH_TYPE = AUTH_OAUTH
+    OAUTH_PROVIDERS = [
+        {
+            "name": "azure",
+            "icon": "fa-windows",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "b592b27d-d127-4de6-9e4d-d3e252b46852",
+                "client_secret": os.environ.get("ENTRA_CLIENT_SECRET"),
+                "server_metadata_url": "https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/v2.0/.well-known/openid-configuration",
+                "client_kwargs": {"scope": "openid profile email"},
+            },
+        }
+    ]
+    # Roles come from the id token "roles" claim (Entra app roles), synced at every login.
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = "Gamma"
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+    AUTH_ROLES_MAPPING = {"superset-admin": ["Admin"]}
+    # Behind the Envoy Gateway: honour X-Forwarded-* for the OAuth redirect URL.
+    ENABLE_PROXY_FIX = True
+
+    # No shared cache (no Valkey): file-system caches, no Celery, no async queries.
+    CACHE_CONFIG = {
+        "CACHE_TYPE": "FileSystemCache",
+        "CACHE_DIR": "/tmp/superset-cache",
+        "CACHE_DEFAULT_TIMEOUT": 86400,
+    }
+    DATA_CACHE_CONFIG = CACHE_CONFIG
+    FILTER_STATE_CACHE_CONFIG = CACHE_CONFIG
+    EXPLORE_FORM_DATA_CACHE_CONFIG = CACHE_CONFIG
+    FEATURE_FLAGS = {"GLOBAL_ASYNC_QUERIES": False}
+
+  podTemplate:
+    priorityClassName: feather-standard
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    initContainers:
+      # Trino client for the corvus connection and psycopg2 for the metastore. The Superset 6.1.0 image
+      # is the minimal build without database drivers. Same tag as spec.image.tag.
+      - name: install-drivers
+        image: apachesuperset.docker.scarf.sh/apache/superset:6.1.0
+        command:
+          - /bin/sh
+          - -c
+          - python -m pip install --no-cache-dir --disable-pip-version-check --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13
+        volumeMounts:
+          - name: pydeps
+            mountPath: /opt/pydeps
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+    volumes:
+      - name: pydeps
+        emptyDir: {}
+      # Datasource import (Trino connection corvus). Plain ConfigMap, no credential inside.
+      - name: datasource-import
+        configMap:
+          name: superset-datasources
+    container:
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        # Superset writes /tmp (file cache) and the rendered config path.
+        readOnlyRootFilesystem: false
+      volumeMounts:
+        - name: pydeps
+          mountPath: /opt/pydeps
+        - name: datasource-import
+          mountPath: /app/configs
+          readOnly: true
+      env:
+        - name: ENTRA_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: superset-secrets
+              key: entra-client-secret
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          memory: 2Gi
+
+  webServer:
+    # Service superset-web-server (operator naming: {name}-web-server), port 8088.
+    replicas: 1
+    service:
+      type: ClusterIP
+
+  # No celeryWorker, celeryBeat, celeryFlower, websocketServer or mcpServer: absent means disabled.
+  # No networkPolicy: the operator creates its own policies only when this field is set, and those
+  # would allow all egress. The policies of this overlay (networkpolicy.yaml) replace them.
+
+  lifecycle:
+    podTemplate:
+      container:
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            memory: 1Gi
+    init:
+      # A custom init command is not wrapped by the operator, so it sources the bootstrap script itself.
+      # Same as `superset init` plus the datasource import the Helm chart used to do.
+      command:
+        - /bin/sh
+        - -c
+        - |
+          . /app/pythonpath/superset_bootstrap.sh
+          superset init
+          if [ -f /app/configs/import_datasources.yaml ]; then
+            superset import_datasources -p /app/configs/import_datasources.yaml
+          fi

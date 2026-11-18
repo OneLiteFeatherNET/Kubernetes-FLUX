@@ -5,3 +5,5 @@ resources:
   - ../../../data/clusters/feather-core/database-secrets
   - ../../../data/clusters/feather-core/polaris
   - ../../../data/clusters/feather-core/airflow
+  - ../../../data/clusters/feather-core/trino
+  - ../../../data/clusters/feather-core/superset

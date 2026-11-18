@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../../../data/clusters/feather-core/namespace
   - ../../../data/clusters/feather-core/spark-operator
+  - ../../../data/clusters/feather-core/superset-operator

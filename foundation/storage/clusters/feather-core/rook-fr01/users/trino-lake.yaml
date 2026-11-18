@@ -1,0 +1,13 @@
+# Access identity of the Trino coordinator and workers (Iceberg catalog corvus, read-only) for the
+# Polaris warehouse bucket polaris-corvus (foundation/data/.../buckets/polaris-corvus.yaml). It owns
+# no bucket: the bucket grants it read access through the TrinoLakeRead statement of the bucket policy.
+# Its keys reach namespace data as a SOPS-encrypted Secret trino-lake-s3, created after the first
+# reconcile (see the post-merge steps of the pull request).
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: trino-lake
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: trino-lake

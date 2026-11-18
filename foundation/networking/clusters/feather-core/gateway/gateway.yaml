@@ -38,6 +38,8 @@ spec:
           - kind: Secret
             name: airflow-apps-onelite-feather-tls
           - kind: Secret
+            name: superset-apps-onelite-feather-tls
+          - kind: Secret
             name: grafana-apps-onelite-feather-tls
           - kind: Secret
             name: harbor-apps-onelite-feather-tls
