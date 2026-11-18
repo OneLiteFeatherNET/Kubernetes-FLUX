@@ -5,10 +5,8 @@ default_endpoint: null
 offset: 0
 cache_timeout: null
 schema: null
-sql: "{% if from_dttm %}{% set lo = \"DATE '\" ~ (from_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set lo = \"current_date - INTERVAL '7' DAY\" %}{% endif %}{% if to_dttm %}{% set hi\
-  \ = \"DATE '\" ~ (to_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set hi = \"current_date\" %}{% endif %}\nSELECT\n  min(date) AS date,\n  substr(to_hex(session_id), 1, 12) AS session,\n\
-  \  segment,\n  count(*) AS frames,\n  min(seq) AS seq_min,\n  max(seq) AS seq_max,\n  max(seq) - min(seq) + 1 - count(DISTINCT seq) AS missing_seq\nFROM corvus.capture.events\nWHERE date >= {{ lo }} AND\
-  \ date <= {{ hi }}\nGROUP BY session_id, segment\n"
+sql: "SELECT\n  min(date) AS date,\n  substr(to_hex(session_id), 1, 12) AS session,\n  segment,\n  count(*) AS frames,\n  min(seq) AS seq_min,\n  max(seq) AS seq_max,\n  max(seq) - min(seq) + 1 - count(DISTINCT\
+  \ seq) AS missing_seq\nFROM corvus.capture.events\nWHERE date >= current_date - INTERVAL '7' DAY AND date <= current_date\nGROUP BY session_id, segment\n"
 params: null
 template_params: null
 filter_select_enabled: true

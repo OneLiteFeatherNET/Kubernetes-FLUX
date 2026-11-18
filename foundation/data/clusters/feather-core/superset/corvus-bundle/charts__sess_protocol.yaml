@@ -1,35 +1,23 @@
-slice_name: Protokollversionen (Frames mit Payload)
+slice_name: Protokollversion je Sitzung
 description: null
 certified_by: null
 certification_details: null
 viz_type: pie
 params:
-  datasource: 5__table
+  datasource: 1__table
   viz_type: pie
   granularity_sqla: date
   time_range: No filter
-  adhoc_filters:
-  - expressionType: SIMPLE
-    subject: has_payload
-    operator: ==
-    operatorId: EQUALS
-    comparator: 1
-    clause: WHERE
-    sqlExpression: null
-    filterOptionName: filter_has_payload
-    isExtra: false
-    isNew: false
-    datasourceWarning: false
+  adhoc_filters: []
   extra_form_data: {}
   row_limit: 10000
   groupby:
-  - protocol_version
-  metric: packets_with_payload
+  - protocol_version_max
+  metric: session_count
   donut: true
   show_labels: true
   label_type: key_value_percent
   show_legend: true
-  annotation_layers: []
 query_context: null
 cache_timeout: null
 uuid: 2d8b27ab-55bf-440d-b3d1-49081edcdfe9

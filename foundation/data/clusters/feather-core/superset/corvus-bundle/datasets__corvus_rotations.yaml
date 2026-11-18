@@ -5,13 +5,12 @@ default_endpoint: null
 offset: 0
 cache_timeout: null
 schema: null
-sql: "{% if from_dttm %}{% set lo = \"DATE '\" ~ (from_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set lo = \"current_date - INTERVAL '7' DAY\" %}{% endif %}{% if to_dttm %}{% set hi\
-  \ = \"DATE '\" ~ (to_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set hi = \"current_date\" %}{% endif %}\nWITH rot AS (\n  SELECT date, session_id, segment, seq, offset_nanos, yaw,\
-  \ pitch\n  FROM corvus.capture.events\n  WHERE has_rotation = true AND date >= {{ lo }} AND date <= {{ hi }}\n),\nlagged AS (\n  SELECT *,\n    LAG(offset_nanos) OVER (PARTITION BY session_id, segment\
-  \ ORDER BY seq) AS prev_offset,\n    LAG(yaw) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_yaw,\n    LAG(pitch) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_pitch\n  FROM\
-  \ rot\n),\ndeltas AS (\n  SELECT date, session_id, segment, seq, offset_nanos, yaw, pitch,\n    abs(((((CAST(yaw AS double) - CAST(prev_yaw AS double)) + 180) % 360) + 360) % 360 - 180) AS yaw_delta,\n\
-  \    abs(CAST(pitch AS double) - CAST(prev_pitch AS double)) AS pitch_delta\n  FROM lagged\n  WHERE prev_offset IS NOT NULL AND offset_nanos > prev_offset\n)\nSELECT\n  date,\n  substr(to_hex(session_id),\
-  \ 1, 12) AS session,\n  segment,\n  seq,\n  offset_nanos / 1e9 AS offset_s,\n  yaw,\n  pitch,\n  yaw_delta,\n  pitch_delta,\n  CAST(floor(yaw_delta / 5) * 5 AS bigint) AS yaw_bucket\nFROM deltas\n"
+sql: "WITH rot AS (\n  SELECT date, session_id, segment, seq, offset_nanos, yaw, pitch\n  FROM corvus.capture.events\n  WHERE has_rotation = true AND date >= current_date - INTERVAL '7' DAY AND date <=\
+  \ current_date\n),\nlagged AS (\n  SELECT *,\n    LAG(offset_nanos) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_offset,\n    LAG(yaw) OVER (PARTITION BY session_id, segment ORDER BY seq)\
+  \ AS prev_yaw,\n    LAG(pitch) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_pitch\n  FROM rot\n),\ndeltas AS (\n  SELECT date, session_id, segment, seq, offset_nanos, yaw, pitch,\n   \
+  \ abs(((((CAST(yaw AS double) - CAST(prev_yaw AS double)) + 180) % 360) + 360) % 360 - 180) AS yaw_delta,\n    abs(CAST(pitch AS double) - CAST(prev_pitch AS double)) AS pitch_delta\n  FROM lagged\n \
+  \ WHERE prev_offset IS NOT NULL AND offset_nanos > prev_offset\n)\nSELECT\n  date,\n  substr(to_hex(session_id), 1, 12) AS session,\n  segment,\n  seq,\n  offset_nanos / 1e9 AS offset_s,\n  yaw,\n  pitch,\n\
+  \  yaw_delta,\n  pitch_delta,\n  CAST(floor(yaw_delta / 5) * 5 AS bigint) AS yaw_bucket\nFROM deltas\n"
 params: null
 template_params: null
 filter_select_enabled: true

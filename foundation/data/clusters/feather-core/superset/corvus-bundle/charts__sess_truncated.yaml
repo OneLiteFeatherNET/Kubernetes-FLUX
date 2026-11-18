@@ -4,7 +4,7 @@ certified_by: null
 certification_details: null
 viz_type: big_number_total
 params:
-  datasource: 5__table
+  datasource: 1__table
   viz_type: big_number_total
   granularity_sqla: date
   time_range: No filter
@@ -15,7 +15,6 @@ params:
   header_font_size: 0.4
   subheader_font_size: 0.15
   y_axis_format: .2%
-  annotation_layers: []
 query_context: null
 cache_timeout: null
 uuid: 8da428b7-f677-42fd-8850-7021504fa335

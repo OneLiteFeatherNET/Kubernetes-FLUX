@@ -1,11 +1,10 @@
 slice_name: Sitzungen im Detail
-description: Duration is the largest offset from session start. Seq gaps count missing
-  sequence numbers.
+description: Duration is the largest event offset from session start. Frames come from the events table.
 certified_by: null
 certification_details: null
 viz_type: table
 params:
-  datasource: 5__table
+  datasource: 1__table
   viz_type: table
   granularity_sqla: date
   time_range: No filter
@@ -19,18 +18,16 @@ params:
   - frames
   - duration_s
   - frames_per_s
-  - segment_count
+  - segments
   - protocol_version_max
   - packet_type_count
   - truncated_share
-  - seq_gaps
-  - unknown_share
+  - unmapped_share
   order_desc: true
   timeseries_limit_metric: frames
   include_search: true
   page_length: 25
   show_totals: false
-  annotation_layers: []
 query_context: null
 cache_timeout: null
 uuid: 9589a40f-67a1-45bb-9df7-38c995fe8b81

@@ -5,14 +5,13 @@ default_endpoint: null
 offset: 0
 cache_timeout: null
 schema: null
-sql: "{% if from_dttm %}{% set lo = \"DATE '\" ~ (from_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set lo = \"current_date - INTERVAL '7' DAY\" %}{% endif %}{% if to_dttm %}{% set hi\
-  \ = \"DATE '\" ~ (to_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set hi = \"current_date\" %}{% endif %}\nWITH pos AS (\n  SELECT date, session_id, segment, seq, offset_nanos, x, y,\
-  \ z, on_ground\n  FROM corvus.capture.events\n  WHERE has_position = true AND date >= {{ lo }} AND date <= {{ hi }}\n),\nlagged AS (\n  SELECT *,\n    LAG(offset_nanos) OVER (PARTITION BY session_id,\
-  \ segment ORDER BY seq) AS prev_offset,\n    LAG(x) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_x,\n    LAG(y) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_y,\n    LAG(z)\
-  \ OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_z\n  FROM pos\n),\nmoves AS (\n  SELECT date, session_id, segment, seq, offset_nanos, x, y, z, on_ground,\n    (offset_nanos - prev_offset)\
-  \ / 1e9 AS dt_s,\n    sqrt(power(x - prev_x, 2) + power(z - prev_z, 2)) AS horizontal_m,\n    y - prev_y AS dy\n  FROM lagged\n  WHERE prev_offset IS NOT NULL AND offset_nanos > prev_offset\n)\nSELECT\n\
-  \  date,\n  substr(to_hex(session_id), 1, 12) AS session,\n  segment,\n  seq,\n  offset_nanos / 1e9 AS offset_s,\n  x,\n  y,\n  z,\n  CAST(on_ground AS integer) AS on_ground,\n  horizontal_m / dt_s AS\
-  \ speed_bps,\n  CAST(floor(horizontal_m / dt_s) AS bigint) AS speed_bucket,\n  dy / dt_s AS vertical_bps,\n  CAST(horizontal_m / dt_s > 10 AS integer) AS over_threshold\nFROM moves\n"
+sql: "WITH pos AS (\n  SELECT date, session_id, segment, seq, offset_nanos, x, y, z, on_ground\n  FROM corvus.capture.events\n  WHERE has_position = true AND date >= current_date - INTERVAL '7' DAY AND\
+  \ date <= current_date\n),\nlagged AS (\n  SELECT *,\n    LAG(offset_nanos) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_offset,\n    LAG(x) OVER (PARTITION BY session_id, segment ORDER\
+  \ BY seq) AS prev_x,\n    LAG(y) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_y,\n    LAG(z) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_z\n  FROM pos\n),\nmoves AS (\n\
+  \  SELECT date, session_id, segment, seq, offset_nanos, x, y, z, on_ground,\n    (offset_nanos - prev_offset) / 1e9 AS dt_s,\n    sqrt(power(x - prev_x, 2) + power(z - prev_z, 2)) AS horizontal_m,\n \
+  \   y - prev_y AS dy\n  FROM lagged\n  WHERE prev_offset IS NOT NULL AND offset_nanos > prev_offset\n)\nSELECT\n  date,\n  substr(to_hex(session_id), 1, 12) AS session,\n  segment,\n  seq,\n  offset_nanos\
+  \ / 1e9 AS offset_s,\n  x,\n  y,\n  z,\n  CAST(on_ground AS integer) AS on_ground,\n  horizontal_m / dt_s AS speed_bps,\n  CAST(floor(horizontal_m / dt_s) AS bigint) AS speed_bucket,\n  dy / dt_s AS vertical_bps,\n\
+  \  CAST(horizontal_m / dt_s > 10 AS integer) AS over_threshold\nFROM moves\n"
 params: null
 template_params: null
 filter_select_enabled: true

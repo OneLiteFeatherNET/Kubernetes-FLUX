@@ -5,18 +5,16 @@ default_endpoint: null
 offset: 0
 cache_timeout: null
 schema: null
-sql: "{% if from_dttm %}{% set lo = \"DATE '\" ~ (from_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set lo = \"current_date - INTERVAL '7' DAY\" %}{% endif %}{% if to_dttm %}{% set hi\
-  \ = \"DATE '\" ~ (to_dttm | string | truncate(10, true, '')) ~ \"'\" %}{% else %}{% set hi = \"current_date\" %}{% endif %}\nWITH sneak AS (\n  SELECT session_id, segment, seq, sneaking,\n    LAG(sneaking)\
-  \ OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_sneaking\n  FROM corvus.capture.events\n  WHERE event_kind = 2 AND date >= {{ lo }} AND date <= {{ hi }}\n),\nacts AS (\n  SELECT date, session_id,\
-  \ segment, seq, offset_nanos, event_kind, action, entity_id,\n    sneaking, block_x, block_y, block_z, face, status, slot\n  FROM corvus.capture.events\n  WHERE event_kind BETWEEN 2 AND 6 AND date >=\
-  \ {{ lo }} AND date <= {{ hi }}\n)\nSELECT\n  a.date,\n  substr(to_hex(a.session_id), 1, 12) AS session,\n  a.segment,\n  a.seq,\n  a.offset_nanos / 1e9 AS offset_s,\n  CAST(floor(a.offset_nanos / 1e9)\
-  \ AS bigint) AS second_bucket,\n  CAST(floor(a.offset_nanos / 60e9) AS bigint) AS session_minute,\n  CASE a.event_kind WHEN 2 THEN 'interact_entity' WHEN 3 THEN 'swing' WHEN 4 THEN 'dig'\n    WHEN 5 THEN\
-  \ 'place' WHEN 6 THEN 'held_item' END AS event_name,\n  CASE\n    WHEN a.event_kind = 2 THEN CASE a.action WHEN 1 THEN 'INTERACT' WHEN 2 THEN 'ATTACK'\n      WHEN 3 THEN 'INTERACT_AT' ELSE 'UNSPECIFIED'\
-  \ END\n    WHEN a.event_kind = 4 THEN 'DIG_STATUS_' || CAST(a.status AS varchar)\n    WHEN a.event_kind = 6 THEN 'SLOT_' || CAST(a.slot AS varchar)\n  END AS action_label,\n  CAST(a.event_kind = 2 AND\
-  \ a.action = 2 AS integer) AS is_attack,\n  CAST(a.event_kind = 2 AS integer) AS is_interact,\n  CAST(a.event_kind = 3 AS integer) AS is_swing,\n  CAST(a.event_kind = 4 AS integer) AS is_dig,\n  CAST(a.event_kind\
-  \ = 5 AS integer) AS is_place,\n  CAST(a.event_kind = 6 AS integer) AS is_slot_switch,\n  COALESCE(CAST(s.prev_sneaking IS NOT NULL AND a.sneaking <> s.prev_sneaking AS integer), 0) AS sneak_toggle,\n\
-  \  a.entity_id,\n  a.block_x,\n  a.block_y,\n  a.block_z,\n  a.face,\n  a.slot,\n  a.sneaking\nFROM acts AS a\nLEFT JOIN sneak AS s ON s.session_id = a.session_id AND s.segment = a.segment AND s.seq =\
-  \ a.seq\n"
+sql: "WITH sneak AS (\n  SELECT session_id, segment, seq, sneaking,\n    LAG(sneaking) OVER (PARTITION BY session_id, segment ORDER BY seq) AS prev_sneaking\n  FROM corvus.capture.events\n  WHERE event_kind\
+  \ = 2 AND date >= current_date - INTERVAL '7' DAY AND date <= current_date\n),\nacts AS (\n  SELECT date, session_id, segment, seq, offset_nanos, event_kind, action, entity_id,\n    sneaking, block_x,\
+  \ block_y, block_z, face, status, slot\n  FROM corvus.capture.events\n  WHERE event_kind BETWEEN 2 AND 6 AND date >= current_date - INTERVAL '7' DAY AND date <= current_date\n)\nSELECT\n  a.date,\n  substr(to_hex(a.session_id),\
+  \ 1, 12) AS session,\n  a.segment,\n  a.seq,\n  a.offset_nanos / 1e9 AS offset_s,\n  CAST(floor(a.offset_nanos / 1e9) AS bigint) AS second_bucket,\n  CAST(floor(a.offset_nanos / 60e9) AS bigint) AS session_minute,\n\
+  \  CASE a.event_kind WHEN 2 THEN 'interact_entity' WHEN 3 THEN 'swing' WHEN 4 THEN 'dig'\n    WHEN 5 THEN 'place' WHEN 6 THEN 'held_item' END AS event_name,\n  CASE\n    WHEN a.event_kind = 2 THEN CASE\
+  \ a.action WHEN 1 THEN 'INTERACT' WHEN 2 THEN 'ATTACK'\n      WHEN 3 THEN 'INTERACT_AT' ELSE 'UNSPECIFIED' END\n    WHEN a.event_kind = 4 THEN 'DIG_STATUS_' || CAST(a.status AS varchar)\n    WHEN a.event_kind\
+  \ = 6 THEN 'SLOT_' || CAST(a.slot AS varchar)\n  END AS action_label,\n  CAST(a.event_kind = 2 AND a.action = 2 AS integer) AS is_attack,\n  CAST(a.event_kind = 2 AS integer) AS is_interact,\n  CAST(a.event_kind\
+  \ = 3 AS integer) AS is_swing,\n  CAST(a.event_kind = 4 AS integer) AS is_dig,\n  CAST(a.event_kind = 5 AS integer) AS is_place,\n  CAST(a.event_kind = 6 AS integer) AS is_slot_switch,\n  COALESCE(CAST(s.prev_sneaking\
+  \ IS NOT NULL AND a.sneaking <> s.prev_sneaking AS integer), 0) AS sneak_toggle,\n  a.entity_id,\n  a.block_x,\n  a.block_y,\n  a.block_z,\n  a.face,\n  a.slot,\n  a.sneaking\nFROM acts AS a\nLEFT JOIN\
+  \ sneak AS s ON s.session_id = a.session_id AND s.segment = a.segment AND s.seq = a.seq\n"
 params: null
 template_params: null
 filter_select_enabled: true

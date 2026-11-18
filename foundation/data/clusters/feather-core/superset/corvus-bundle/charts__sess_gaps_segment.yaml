@@ -1,10 +1,10 @@
-slice_name: "Seq-L\xFCcken je Sitzung und Segment"
-description: null
+slice_name: Fehlende Sequenznummern je Sitzung und Segment
+description: Missing = max - min + 1 - distinct seq within a segment. Non-zero means frames were dropped.
 certified_by: null
 certification_details: null
 viz_type: table
 params:
-  datasource: 5__table
+  datasource: 1__table
   viz_type: table
   granularity_sqla: date
   time_range: No filter
@@ -16,16 +16,15 @@ params:
   - session
   - segment
   metrics:
-  - seq_gaps
+  - missing_seq
   - frames
   order_desc: true
-  timeseries_limit_metric: seq_gaps
+  timeseries_limit_metric: missing_seq
   include_search: true
   page_length: 25
   show_totals: false
-  annotation_layers: []
 query_context: null
 cache_timeout: null
 uuid: ad3064a9-2448-4c65-b0dc-2e8aefd2eed7
 version: 1.0.0
-dataset_uuid: 5a1f8e26-3c4d-4b71-9e0a-2f6c8d1b7e31
+dataset_uuid: e5f7a8b9-0d1e-4f2a-8b3c-9d0e1f2a3b4c

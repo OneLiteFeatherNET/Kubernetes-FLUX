@@ -1,21 +1,20 @@
-slice_name: Unbekannte Pakettypen
+slice_name: Ungemappte Pakettypen
 description: null
 certified_by: null
 certification_details: null
 viz_type: big_number_total
 params:
-  datasource: 5__table
+  datasource: 1__table
   viz_type: big_number_total
   granularity_sqla: date
   time_range: No filter
   adhoc_filters: []
   extra_form_data: {}
   row_limit: 10000
-  metric: unknown_share
+  metric: unmapped_share
   header_font_size: 0.4
   subheader_font_size: 0.15
   y_axis_format: .2%
-  annotation_layers: []
 query_context: null
 cache_timeout: null
 uuid: 05ab43bd-0f70-4dca-9eb1-8f439ba31372
