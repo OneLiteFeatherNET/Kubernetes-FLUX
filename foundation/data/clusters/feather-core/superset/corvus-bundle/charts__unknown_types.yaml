@@ -1,0 +1,41 @@
+slice_name: Packet types not in the vocabulary
+description: Should stay empty while the vocabulary covers every packet type.
+certified_by: null
+certification_details: null
+viz_type: table
+params:
+  datasource: 1__table
+  viz_type: table
+  granularity_sqla: date
+  time_range: No filter
+  adhoc_filters:
+  - expressionType: SIMPLE
+    subject: in_vocabulary
+    operator: ==
+    operatorId: EQUALS
+    comparator: false
+    clause: WHERE
+    sqlExpression: null
+    filterOptionName: filter_in_vocabulary
+    isExtra: false
+    isNew: false
+    datasourceWarning: false
+  extra_form_data: {}
+  row_limit: 10000
+  query_mode: aggregate
+  groupby:
+  - packet_name
+  - direction_label
+  - state_label
+  metrics:
+  - count
+  - avg_payload_size
+  timeseries_limit_metric: count
+  order_desc: true
+  include_search: true
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: ac29f37a-b464-4359-802d-99d48c206d1e
+version: 1.0.0
+dataset_uuid: 7d3c0c1e-4f1a-4b8e-9a52-6c1f0e2b9a10

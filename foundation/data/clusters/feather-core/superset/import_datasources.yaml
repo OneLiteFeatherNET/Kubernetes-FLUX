@@ -3,6 +3,8 @@
 # Trino read-only access control.
 databases:
   - database_name: corvus
+    # Fixed so a fresh install gets the same database object the corvus-bundle dashboards reference.
+    uuid: 2601a04b-ec63-4dec-9763-91b41e285890
     sqlalchemy_uri: trino://superset@trino.data.svc.cluster.local:8080/corvus
     allow_run_async: false
     allow_ctas: false
