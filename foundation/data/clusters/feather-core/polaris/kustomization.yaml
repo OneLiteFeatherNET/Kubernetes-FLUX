@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: data
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - ../../../base/polaris
+  - token-keys.sops.yaml
+  - bootstrap-job.yaml
+  - setup-job.yaml
+patches:
+  - path: release.yaml
+
+secretGenerator:
+  # ROOT_CLIENT_ID / ROOT_CLIENT_SECRET for the one-off admin-tool bootstrap and the setup Job.
+  - name: polaris-bootstrap
+    envs:
+      - polaris-bootstrap.sops.env
+
+configMapGenerator:
+  # Plain Python (no secrets). Named without a hash suffix; changing it needs a new Job name.
+  - name: polaris-setup-script
+    files:
+      - setup-catalog.py

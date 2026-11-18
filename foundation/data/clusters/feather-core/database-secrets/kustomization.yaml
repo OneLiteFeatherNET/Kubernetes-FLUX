@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: data
+generatorOptions:
+  disableNameSuffixHash: true
+secretGenerator:
+  # Connection secrets for the CNPG roles polaris and airflow (same passwords as role-polaris and role-airflow
+  # in cnpg-system). Polaris reads username, password and jdbcUrl; Airflow reads connection.
+  - name: polaris-db
+    envs:
+      - polaris-db.sops.env
+  - name: airflow-db
+    envs:
+      - airflow-db.sops.env

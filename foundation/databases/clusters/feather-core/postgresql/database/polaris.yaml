@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: polaris
+spec:
+  name: polaris
+  owner: polaris
+  # Keep the catalog database when this CR is deleted; it holds the Iceberg catalog state.
+  databaseReclaimPolicy: retain
+  cluster:
+    name: feather-core-cluster-pg

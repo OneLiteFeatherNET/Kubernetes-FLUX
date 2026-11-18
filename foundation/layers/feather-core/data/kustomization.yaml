@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../data/clusters/feather-core/buckets
+  - ../../../data/clusters/feather-core/database-secrets
+  - ../../../data/clusters/feather-core/polaris
+  - ../../../data/clusters/feather-core/airflow

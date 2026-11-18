@@ -1,0 +1,14 @@
+# Dedicated owner of the polaris-corvus bucket (foundation/data/.../buckets/polaris-corvus.yaml), the
+# warehouse of the Polaris catalog "corvus". Its own user, so no access is shared with the Corvus
+# product bucket corvus-lake. No admin capabilities; the quota limits it to one bucket.
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: polaris
+  namespace: rook-ceph-fr01
+spec:
+  store: feather-s3
+  displayName: polaris
+  quotas:
+    maxBuckets: 1
+    maxSize: 1Ti

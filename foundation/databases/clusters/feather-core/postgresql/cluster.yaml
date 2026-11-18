@@ -216,6 +216,20 @@ spec:
         connectionLimit: 10
         passwordSecret:
           name: role-ingot-staging
+      # Polaris catalog state (relational-jdbc). Capped against max_connections: 200.
+      - name: polaris
+        login: true
+        ensure: present
+        connectionLimit: 20
+        passwordSecret:
+          name: role-polaris
+      # Airflow metadata database. Separate role, capped against max_connections: 200.
+      - name: airflow
+        login: true
+        ensure: present
+        connectionLimit: 20
+        passwordSecret:
+          name: role-airflow
     services:
       additional:
         - selectorType: rw

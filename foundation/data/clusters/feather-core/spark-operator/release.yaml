@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: spark-kubernetes-operator
+  namespace: spark-system
+spec:
+  values:
+    operatorDeployment:
+      operatorPod:
+        # Same platform class as cnpg and strimzi, so the operator is not evicted before workloads.
+        priorityClassName: feather-platform
+        operatorContainer:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+    workloadResources:
+      namespaces:
+        # The namespace comes from the data layer's namespace component, not from the chart.
+        create: false
+        overrideWatchedNamespaces: true
+        data:
+          - data

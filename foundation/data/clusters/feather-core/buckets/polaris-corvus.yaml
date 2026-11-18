@@ -1,0 +1,14 @@
+# Warehouse bucket of the Polaris catalog "corvus". Deliberately NOT in rook-ceph-fr01: Rook writes the
+# credentials Secret (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) and the ConfigMap into the claim's
+# namespace, and Polaris reads them from namespace data (same approach as products/corvus/.../bucket.yaml).
+# The name differs from the Corvus product bucket corvus-lake, which already exists with owner corvus.
+# The owner is the dedicated CephObjectStoreUser polaris in foundation/storage/.../rook-fr01/users/polaris.yaml.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: polaris-corvus
+spec:
+  bucketName: polaris-corvus
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketOwner: polaris

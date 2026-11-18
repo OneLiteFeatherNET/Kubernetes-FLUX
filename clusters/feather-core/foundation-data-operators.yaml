@@ -1,0 +1,43 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: foundation-data-operators
+  namespace: flux-system
+spec:
+  # Spark Kubernetes operator (watches namespace data) and the data namespace itself. The chart renders
+  # its RBAC into namespace data at install time, so the namespace must come from this layer.
+  dependsOn:
+    - name: foundation-platform
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 15m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./foundation/layers/feather-core/data-operators
+  prune: true
+  # Orphan: deleting this CR must never delete what it manages
+  deletionPolicy: Orphan
+  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  patches:
+    # CRD-heavy release: retries only, no automatic rollback.
+    - target:
+        group: helm.toolkit.fluxcd.io
+        kind: HelmRelease
+        labelSelector: "flux.onelitefeather.dev/remediation=retries-only"
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: not-used
+        spec:
+          install:
+            remediation:
+              retries: 3
+          upgrade:
+            remediation:
+              retries: 3

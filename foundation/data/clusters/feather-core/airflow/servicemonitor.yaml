@@ -1,0 +1,19 @@
+# Scrapes the chart's StatsD exporter (Airflow metrics). Alloy discovers ServiceMonitors cluster-wide.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: airflow-statsd
+  namespace: data
+spec:
+  endpoints:
+    - port: statsd-scrape
+      interval: 30s
+      scheme: http
+  namespaceSelector:
+    matchNames:
+      - data
+  selector:
+    matchLabels:
+      tier: airflow
+      component: statsd
+      release: airflow

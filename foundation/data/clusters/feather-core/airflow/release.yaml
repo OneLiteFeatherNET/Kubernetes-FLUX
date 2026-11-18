@@ -1,0 +1,104 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: airflow
+  namespace: data
+spec:
+  values:
+    airflowVersion: "3.3.2"
+    defaultAirflowTag: "3.3.2"
+
+    executor: KubernetesExecutor
+
+    # Replaced by the chart's own components: no Celery, no Redis, no flower, no PgBouncer.
+    redis:
+      enabled: false
+    postgresql:
+      enabled: false
+    pgbouncer:
+      enabled: false
+    flower:
+      enabled: false
+    # Airflow 3 serves the UI from the api-server; the legacy webserver stays off.
+    webserver:
+      enabled: false
+
+    data:
+      # Secret airflow-db (from the CNPG change), key `connection`.
+      metadataSecretName: airflow-db
+
+    # Keys from SOPS secret airflow-keys: fernet-key, api-secret-key, jwt-secret.
+    fernetKeySecretName: airflow-keys
+    apiSecretKeySecretName: airflow-keys
+    jwtSecretName: airflow-keys
+
+    # The chart's default admin/admin user is not created. Login via Entra ID is a follow-up.
+    createUserJob:
+      enabled: false
+
+    dags:
+      persistence:
+        enabled: false
+      gitSync:
+        enabled: true
+        # The DAG repository does not exist yet. Change this one value when it does.
+        repo: https://github.com/OneLiteFeatherNET/lake-dags.git
+        branch: main
+        subPath: dags
+        depth: 1
+
+    # KubernetesExecutor task pods write their logs to this RWX volume (the chart hard-codes RWX).
+    logs:
+      persistence:
+        enabled: true
+        size: 20Gi
+        storageClassName: ceph-cephfs-fr01
+
+    dagProcessor:
+      enabled: true
+      replicas: 1
+      priorityClassName: feather-standard
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+
+    scheduler:
+      replicas: 1
+      priorityClassName: feather-standard
+      resources:
+        requests:
+          cpu: 250m
+          memory: 768Mi
+        limits:
+          memory: 1536Mi
+
+    apiServer:
+      replicas: 1
+      priorityClassName: feather-standard
+      service:
+        # Internal only. The chart's ingress.apiServer stays disabled (default).
+        type: ClusterIP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+
+    triggerer:
+      enabled: true
+      replicas: 1
+      priorityClassName: feather-standard
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+
+    # StatsD exporter (chart default, on). A ServiceMonitor in this overlay scrapes it.
+    statsd:
+      enabled: true
