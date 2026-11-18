@@ -81,6 +81,31 @@ spec:
       key: key
       keyId: k1
 
+    # Capture data goes to the Iceberg tables in the Polaris catalog `corvus` (bucket
+    # polaris-corvus, raw packets in plaintext, kept permanently). The ingest principal is
+    # the Entra app "Polaris Corvus Ingest"; S3 access uses the static keys of RGW user
+    # corvus-lake, as the catalog vends no credentials. Snapshot expiry and compaction run
+    # in the Airflow DAG iceberg_maintenance, not in housekeeping.
+    lake:
+      format: iceberg
+      catalogUri: http://polaris.data.svc.cluster.local:8181/api/catalog
+      warehouse: corvus
+      namespace: capture
+      maintenance:
+        enabled: false
+      oauth:
+        tokenUrl: https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/oauth2/v2.0/token
+        scope: api://9e2548f4-5e10-440d-9444-cad813a20c87/.default
+        clientId: 41380977-879c-4c49-8e0d-fb1047f1bb7a
+        existingSecret: corvus-lake-oauth # gitleaks:allow (Secret name, not a value)
+        clientSecretKey: client-secret
+      s3:
+        endpointUrl: http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc:80
+        region: us-east-1
+        existingSecret: corvus-lake-s3 # gitleaks:allow (Secret name, not a value)
+        accessKeyKey: access-key
+        secretKeyKey: secret-key
+
     # Raw payloads are deleted after defaultDays; a pool may keep them up to maxDays.
     rawRetention:
       defaultDays: 21
