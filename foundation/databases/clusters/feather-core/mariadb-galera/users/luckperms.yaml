@@ -11,7 +11,9 @@ spec:
     name: user-luckperms-secret
     key: password
   # This field defaults to 10
-  maxUserConnections: 250
+  # Every service and proxy keeps a pool of 10, and MaxScale opens each client session on all
+  # three Galera nodes: 250 left no room once all proxies were restarted.
+  maxUserConnections: 350
   host: "%"
   # Delete the resource in the database whenever the CR gets deleted.
   # Alternatively, you can specify Skip in order to omit deletion.
