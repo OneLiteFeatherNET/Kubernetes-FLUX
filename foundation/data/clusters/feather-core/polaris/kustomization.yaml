@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: data
+# No namespace transformer: it would overwrite the SOPS-encrypted metadata.namespace of
+# token-keys.sops.yaml with plain text and break decryption. Every resource sets namespace data itself.
 generatorOptions:
   disableNameSuffixHash: true
 resources:
@@ -14,11 +15,13 @@ patches:
 secretGenerator:
   # ROOT_CLIENT_ID / ROOT_CLIENT_SECRET for the one-off admin-tool bootstrap and the setup Job.
   - name: polaris-bootstrap
+    namespace: data
     envs:
       - polaris-bootstrap.sops.env
 
 configMapGenerator:
   # Plain Python (no secrets). Named without a hash suffix; changing it needs a new Job name.
   - name: polaris-setup-script
+    namespace: data
     files:
       - setup-catalog.py
