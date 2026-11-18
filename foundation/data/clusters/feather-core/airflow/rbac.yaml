@@ -1,5 +1,5 @@
 # Airflow worker pods (KubernetesExecutor task pods, serviceAccountName airflow-worker as rendered
-# by chart 1.22.0) submit SparkApplications in namespace data.
+# by chart 1.22.0) submit SparkApplications and their script ConfigMaps in namespace data.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -9,6 +9,10 @@ rules:
   - apiGroups: ["spark.apache.org"]
     resources: ["sparkapplications"]
     verbs: ["create", "get", "list", "watch", "delete"]
+  # Each maintenance task ships its PySpark script as a per-run ConfigMap and deletes it afterwards.
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create", "get", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
