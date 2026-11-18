@@ -36,6 +36,8 @@ spec:
           # PartiallyInvalidCertificateRef but keeps serving the valid
           # public certs; only these internal hosts lack TLS briefly.
           - kind: Secret
+            name: airflow-apps-onelite-feather-tls
+          - kind: Secret
             name: grafana-apps-onelite-feather-tls
           - kind: Secret
             name: harbor-apps-onelite-feather-tls

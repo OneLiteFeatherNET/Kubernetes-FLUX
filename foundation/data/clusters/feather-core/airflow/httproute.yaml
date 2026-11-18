@@ -1,0 +1,22 @@
+# Internal front door for the Airflow UI and API (Airflow 3 api-server). Envoy
+# terminates TLS (cert from step-issuer, see foundation-certificates) and forwards
+# HTTP to the api-server Service. Not published through the Cloudflare Tunnel.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: airflow
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - airflow.apps.onelite.feather
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: airflow-api-server
+          port: 8080
