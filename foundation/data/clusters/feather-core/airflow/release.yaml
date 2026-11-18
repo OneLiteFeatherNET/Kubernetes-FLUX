@@ -48,6 +48,12 @@ spec:
         depth: 1
 
     # KubernetesExecutor task pods write their logs to this RWX volume (the chart hard-codes RWX).
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
     logs:
       persistence:
         enabled: true
@@ -65,6 +71,13 @@ spec:
         limits:
           memory: 1Gi
 
+      logGroomerSidecar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
     scheduler:
       replicas: 1
       priorityClassName: feather-standard
@@ -75,6 +88,13 @@ spec:
         limits:
           memory: 1536Mi
 
+      logGroomerSidecar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
     apiServer:
       replicas: 1
       priorityClassName: feather-standard
@@ -100,5 +120,36 @@ spec:
           memory: 512Mi
 
     # StatsD exporter (chart default, on). A ServiceMonitor in this overlay scrapes it.
+      logGroomerSidecar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
     statsd:
       enabled: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    # Flux waits for the pods before post-install hooks run, while the pods wait for the
+    # migration: run the migration as a plain Job instead of a Helm hook.
+    migrateDatabaseJob:
+      useHelmHooks: false
+      applyCustomEnv: false
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+    workers:
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          memory: 2Gi
