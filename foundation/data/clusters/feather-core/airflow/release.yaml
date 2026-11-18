@@ -10,6 +10,13 @@ spec:
 
     executor: KubernetesExecutor
 
+    config:
+      api:
+        # Links, redirects and the UI's API calls use the internal HTTPS host
+        # (Envoy Gateway, see httproute.yaml). The execution API stays on the
+        # in-cluster Service (core.execution_api_server_url, chart default).
+        base_url: https://airflow.apps.onelite.feather
+
     # Replaced by the chart's own components: no Celery, no Redis, no flower, no PgBouncer.
     redis:
       enabled: false
