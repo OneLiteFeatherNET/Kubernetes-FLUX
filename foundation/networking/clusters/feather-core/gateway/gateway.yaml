@@ -91,3 +91,5 @@ spec:
             name: nats-apps-onelite-feather-tls
           - kind: Secret
             name: corvus-apps-onelite-feather-tls
+          - kind: Secret
+            name: dependency-track-apps-onelite-feather-tls
