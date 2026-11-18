@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dependency-track-v5
+resources:
+  - ../../../base/dependency-track-sbom-sync
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: dependency-track-sbom-sync-config
+    literals:
+      - DT_URL=http://dependency-track-v5-api-server:8080
+      # In-cluster Harbor API: the public host sits behind Cloudflare's bot challenge.
+      - HARBOR_URL=http://harbor-core.harbor
+      - HARBOR_HOST=harbor.onelitefeather.dev
+secretGenerator:
+  - name: dependency-track-sbom-sync
+    envs:
+      - sbom-sync.sops.env
