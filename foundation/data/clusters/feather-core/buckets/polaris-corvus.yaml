@@ -29,6 +29,13 @@ spec:
               "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"
             ],
             "Resource": ["arn:aws:s3:::polaris-corvus", "arn:aws:s3:::polaris-corvus/*"]
+          },
+          {
+            "Sid": "TrinoLakeRead",
+            "Effect": "Allow",
+            "Principal": {"AWS": ["arn:aws:iam:::user/trino-lake"]},
+            "Action": ["s3:GetObject", "s3:ListBucket", "s3:GetBucketLocation"],
+            "Resource": ["arn:aws:s3:::polaris-corvus", "arn:aws:s3:::polaris-corvus/*"]
           }
         ]
       }

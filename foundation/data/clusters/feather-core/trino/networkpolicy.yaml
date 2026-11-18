@@ -1,0 +1,29 @@
+# Trino accepts connections on 8080 only from Superset and from its own coordinator and worker pods.
+# No Ingress or HTTPRoute references the chart's Services.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: trino-ingress
+  namespace: data
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: trino
+      app.kubernetes.io/instance: trino
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        # Superset web-server pods of the operator-managed instance (labels from the operator's
+        # componentLabels: name=superset, component=web-server, instance=superset).
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: superset
+              app.kubernetes.io/component: web-server
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: trino
+              app.kubernetes.io/instance: trino
+      ports:
+        - protocol: TCP
+          port: 8080

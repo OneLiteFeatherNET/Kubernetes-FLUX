@@ -23,6 +23,7 @@ resources:
   - sturnus.yaml
   - corvus.yaml
   - corvus-lake.yaml
+  - trino-lake.yaml
   - polaris.yaml
   - blackhole.yaml
   - vikunja.yaml

@@ -1,0 +1,39 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: superset-operator
+  namespace: superset-system
+spec:
+  values:
+    image:
+      tag: "0.3.0"
+    replicas: 1
+    watch:
+      # Only namespace data. The chart renders a Role and RoleBinding for it, no ClusterRole.
+      scope: namespaces
+      namespaces:
+        - data
+    # The metrics endpoint adds two ClusterRoles (tokenreviews, metrics reader). Off, nothing
+    # scrapes the operator in this change, so the operator needs no cluster-scoped RBAC at all.
+    metrics:
+      enabled: false
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        # Null removes the chart's default CPU limit: CPU requests only.
+        cpu: null
+        memory: 256Mi
+  # The chart has no priorityClassName value; inject it post-render (same as mongodb-operator).
+  # Platform class, like the spark operator, so the operator is not evicted before workloads.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: superset-operator
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: feather-platform

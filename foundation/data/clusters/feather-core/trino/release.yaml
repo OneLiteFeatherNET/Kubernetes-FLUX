@@ -1,0 +1,109 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: trino
+  namespace: data
+spec:
+  values:
+    # Pinned explicitly, same as the chart's appVersion (484) at the time of the pin.
+    image:
+      tag: "484"
+
+    server:
+      # One worker is enough for the smoke tests and the read-only SQL workload; scale later.
+      workers: 1
+      config:
+        query:
+          # Cluster-wide query memory, below the worker heap (2400M).
+          maxMemory: "1GB"
+
+    coordinator:
+      priorityClassName: feather-standard
+      jvm:
+        maxHeapSize: "1536M"
+      config:
+        query:
+          maxMemoryPerNode: "1GB"
+      resources:
+        requests:
+          cpu: 250m
+          memory: 2Gi
+        limits:
+          memory: 2Gi
+
+    worker:
+      priorityClassName: feather-standard
+      jvm:
+        maxHeapSize: "2400M"
+      config:
+        query:
+          maxMemoryPerNode: "1GB"
+      resources:
+        requests:
+          cpu: 500m
+          memory: 3Gi
+        limits:
+          memory: 3Gi
+
+    # Environment for the catalog properties (${ENV:...}). Applies to coordinator and worker.
+    # The client id is not a secret; the client secret and the trino-lake keys are.
+    env:
+      - name: POLARIS_TRINO_CLIENT_ID
+        value: "8832de30-7197-40ed-a2bc-68c88bc770cb"
+      - name: POLARIS_TRINO_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: trino-oauth
+            key: POLARIS_TRINO_CLIENT_SECRET
+      # Secret trino-lake-s3 is created after the first reconcile of the RGW user trino-lake
+      # (post-merge step in the pull request). Until then the pods wait in CreateContainerConfigError.
+      - name: TRINO_LAKE_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: trino-lake-s3
+            key: access-key
+      - name: TRINO_LAKE_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: trino-lake-s3
+            key: secret-key
+
+    catalogs:
+      # Iceberg catalog of the Polaris warehouse "corvus". Polaris issues no vended credentials
+      # (RGW has no STS), Trino reads S3 with the keys of the RGW user trino-lake.
+      corvus: |
+        connector.name=iceberg
+        iceberg.catalog.type=rest
+        iceberg.rest-catalog.uri=http://polaris.data.svc.cluster.local:8181/api/catalog
+        iceberg.rest-catalog.warehouse=corvus
+        iceberg.rest-catalog.security=OAUTH2
+        iceberg.rest-catalog.oauth2.credential=${ENV:POLARIS_TRINO_CLIENT_ID}:${ENV:POLARIS_TRINO_CLIENT_SECRET}
+        iceberg.rest-catalog.oauth2.server-uri=https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/oauth2/v2.0/token
+        iceberg.rest-catalog.oauth2.scope=api://9e2548f4-5e10-440d-9444-cad813a20c87/.default
+        iceberg.rest-catalog.vended-credentials-enabled=false
+        # Second layer besides the file-based access control: the connector itself writes nothing.
+        iceberg.security=read_only
+        fs.native-s3.enabled=true
+        s3.endpoint=http://rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc
+        s3.path-style-access=true
+        s3.region=us-east-1
+        s3.aws-access-key=${ENV:TRINO_LAKE_ACCESS_KEY}
+        s3.aws-secret-key=${ENV:TRINO_LAKE_SECRET_KEY}
+
+    accessControl:
+      # File-based rules: the catalog corvus and the system catalog are read-only. Everything
+      # else (no rule matches) is denied. Trino does not authenticate users in this setup
+      # (no authenticationType); the NetworkPolicy is what limits callers to Superset.
+      type: configmap
+      refreshPeriod: 60s
+      rules:
+        rules.json: |-
+          {"catalogs": [{"catalog": "corvus", "allow": "read-only"}, {"catalog": "system", "allow": "read-only"}]}
+
+    # Metrics are not scraped in this change: the NetworkPolicy admits only Superset and Trino.
+    serviceMonitor:
+      enabled: false
+
+    networkPolicy:
+      # The overlay ships its own NetworkPolicy (networkpolicy.yaml); the chart's stays off.
+      enabled: false

@@ -1,0 +1,23 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: superset-operator
+  namespace: superset-system
+  labels:
+    # CRD-carrying release: retries only, no automatic rollback.
+    flux.onelitefeather.dev/remediation: retries-only
+spec:
+  releaseName: superset-operator
+  chartRef:
+    kind: OCIRepository
+    name: superset-operator
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: warn
+  interval: 10m0s

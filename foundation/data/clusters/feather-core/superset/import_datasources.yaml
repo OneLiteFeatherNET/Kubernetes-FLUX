@@ -1,0 +1,12 @@
+# Preconfigured database connection for the Superset CR (mounted at /app/configs, imported by lifecycle.init).
+# Holds no credential: Trino has no password here, access is limited by the NetworkPolicy and the
+# Trino read-only access control.
+databases:
+  - database_name: corvus
+    sqlalchemy_uri: trino://superset@trino.data.svc.cluster.local:8080/corvus
+    allow_run_async: false
+    allow_ctas: false
+    allow_cvas: false
+    allow_dml: false
+    expose_in_sqllab: true
+    tables: []

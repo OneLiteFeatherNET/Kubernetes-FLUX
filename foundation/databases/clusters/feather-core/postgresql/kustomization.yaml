@@ -42,6 +42,7 @@ resources:
   - database/ingot-staging.yaml
   - database/polaris.yaml
   - database/airflow.yaml
+  - database/superset.yaml
 
 secretGenerator:
   - name: role-corvus
@@ -228,3 +229,9 @@ secretGenerator:
         cnpg.io/reload: "true"
     envs:
       - roles/airflow.sops.env
+  - name: role-superset
+    options:
+      labels:
+        cnpg.io/reload: "true"
+    envs:
+      - roles/superset.sops.env

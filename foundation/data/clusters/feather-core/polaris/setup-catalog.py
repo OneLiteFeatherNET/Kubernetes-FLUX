@@ -30,6 +30,8 @@ ASSIGNMENTS = {
     "corvus_ingest": "ingest",
     "corvus_ml": "ml",
     "lake_maintenance": "maintenance",
+    # Read-only SQL access through Trino (Superset). Read grants on catalog corvus only.
+    "lake_sql": "sql",
     # Lets the root principal create the namespace through the Iceberg REST API.
     "service_admin": "admin",
 }
@@ -40,6 +42,7 @@ PRINCIPALS = {
     "41380977-879c-4c49-8e0d-fb1047f1bb7a": "corvus_ingest",     # Polaris Corvus Ingest
     "cea8487b-adef-45ef-917e-e4506cc38922": "corvus_ml",         # Polaris Corvus ML
     "1f752161-5002-468d-a39b-12c46f6b874d": "lake_maintenance",  # Polaris Lake Maintenance
+    "8832de30-7197-40ed-a2bc-68c88bc770cb": "lake_sql",          # Polaris Trino
 }
 
 # catalog role -> grants (namespace capture, or the whole catalog)
@@ -57,6 +60,11 @@ GRANTS = {
     "maintenance": [
         {"type": "catalog", "privilege": p}
         for p in ("TABLE_READ_DATA", "TABLE_WRITE_DATA", "TABLE_LIST", "NAMESPACE_LIST")
+    ],
+    # Trino (Superset SQL) reads only: no write privilege anywhere in this role.
+    "sql": [
+        {"type": "catalog", "privilege": p}
+        for p in ("TABLE_LIST", "NAMESPACE_LIST", "TABLE_READ_PROPERTIES", "TABLE_READ_DATA")
     ],
     "admin": [{"type": "catalog", "privilege": "CATALOG_MANAGE_METADATA"}],
 }
@@ -147,6 +155,7 @@ def main():
     # namespace-level grants fail with 404 until the namespace exists.
     grant_and_assign("admin")
     grant_and_assign("maintenance")
+    grant_and_assign("sql")
     call("POST", f"{CATALOG_API}/{CATALOG}/namespaces", token=token,
          body={"namespace": [NAMESPACE]})
     grant_and_assign("ingest")
