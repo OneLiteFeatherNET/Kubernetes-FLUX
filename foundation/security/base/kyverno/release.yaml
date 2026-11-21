@@ -66,9 +66,10 @@ spec:
         limits:
           memory: 128Mi
     reportsController:
+      # 128Mi OOM-killed it ~1600 times in 7 days; every restart re-lists all watched resources.
       resources:
         requests:
           cpu: 10m
-          memory: 64Mi
+          memory: 256Mi
         limits:
-          memory: 128Mi
+          memory: 512Mi
