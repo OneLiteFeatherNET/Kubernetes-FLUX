@@ -46,6 +46,15 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # Scaled to 0 on 2026-11-21 to free memory; set back to restore.
+          # The chart hardcodes replicas: 1 on the StatefulSet.
+          - target:
+              kind: StatefulSet
+              name: dependency-track-api-server
+            patch: |
+              - op: replace
+                path: /spec/replicas
+                value: 0
   values:
 
     frontend:
@@ -54,7 +63,8 @@ spec:
         tag: "4.14.6"
       extraPodLabels:
         logs.onelitefeather.net/env: prod
-      replicaCount: 3
+      # Scaled to 0 on 2026-11-21 to free memory; set back to restore.
+      replicaCount: 0
       resources:
         requests:
           cpu: 10m

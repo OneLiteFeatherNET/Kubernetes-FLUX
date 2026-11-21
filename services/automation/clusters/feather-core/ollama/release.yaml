@@ -5,6 +5,8 @@ metadata:
   namespace: ollama
 spec:
   values:
+    # Scaled to 0 on 2026-11-21 to free memory; set back to restore.
+    replicaCount: 0
     priorityClassName: feather-standard
     # Conservative on purpose. ollama keeps 11 GB of models on a 30 Gi PVC
     # mounted at /root/.ollama; moving off uid 0 changes HOME, so the models

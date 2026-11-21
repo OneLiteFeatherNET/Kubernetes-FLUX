@@ -21,6 +21,15 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # Scaled to 0 on 2026-11-21 to free memory; set back to restore.
+          # workerReplicaCount 0 would drop the Deployment, so patch replicas instead.
+          - target:
+              kind: Deployment
+              name: n8n-worker
+            patch: |
+              - op: replace
+                path: /spec/replicas
+                value: 0
   values:
     # Covers main, worker and webhook-processor pod templates.
     podLabels:
@@ -32,7 +41,8 @@ spec:
 
     # Queue mode: 1 main (UI/API) + N workers (BullMQ executors).
     # multiMain stays off — it requires an enterprise license.
-    replicaCount: 1
+    # Scaled to 0 on 2026-11-21 to free memory; set back to restore.
+    replicaCount: 0
     queueMode:
       enabled: true
       workerReplicaCount: 2
