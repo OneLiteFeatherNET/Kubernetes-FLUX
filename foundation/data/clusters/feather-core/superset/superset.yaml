@@ -128,7 +128,8 @@ spec:
       seccompProfile:
         type: RuntimeDefault
     initContainers:
-      # Trino client, DuckDB with duckdb-engine and its extensions for the corvus connection, psycopg2 for the metastore and authlib for the
+      # Trino client, DuckDB with duckdb-engine and its extensions for the corvus connection,
+      # psycopg2 for the metastore and authlib for the
       # Entra login (AUTH_OAUTH imports it; the image does not ship it). The Superset 6.1.0 image
       # is the minimal build without database drivers. Same tag as spec.image.tag.
       - name: install-drivers
@@ -158,7 +159,7 @@ spec:
     volumes:
       - name: pydeps
         emptyDir: {}
-      # Datasource import (Trino connection corvus). Plain ConfigMap, no credential inside.
+      # Datasource import (DuckDB connection corvus). Plain ConfigMap, no credential inside.
       - name: datasource-import
         configMap:
           name: superset-datasources
