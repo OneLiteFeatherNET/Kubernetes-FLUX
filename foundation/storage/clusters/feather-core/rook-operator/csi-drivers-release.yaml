@@ -40,7 +40,7 @@ spec:
               operator: Equal
               value: "true"
               effect: NoSchedule
-          # Requests sized at ~2x the 7-day peak working set (2026-11-21); limits 4x.
+          # Requests sized at ~2x the 7-day peak working set (2026-11-21); limits unchanged.
           resources:
             registrar:
               requests:
@@ -48,13 +48,13 @@ spec:
                 memory: 32Mi
               limits:
                 cpu: 100m
-                memory: 128Mi
+                memory: 256Mi
             logRotator:
               requests:
                 cpu: 5m
                 memory: 32Mi
               limits:
-                memory: 128Mi
+                memory: 32Mi
             plugin:
               requests:
                 cpu: 50m
@@ -70,7 +70,7 @@ spec:
                 cpu: 5m
                 memory: 32Mi
               limits:
-                memory: 128Mi
+                memory: 32Mi
             provisioner:
               requests:
                 cpu: 25m
@@ -105,7 +105,7 @@ spec:
                 memory: 128Mi
               limits:
                 cpu: 500m
-                memory: 512Mi
+                memory: 1Gi
       cephfs:
         enabled: true
         name: rook-ceph.cephfs.csi.ceph.com
@@ -126,20 +126,20 @@ spec:
                 memory: 32Mi
               limits:
                 cpu: 100m
-                memory: 128Mi
+                memory: 256Mi
             logRotator:
               requests:
                 cpu: 5m
                 memory: 32Mi
               limits:
-                memory: 128Mi
+                memory: 32Mi
             plugin:
               requests:
                 cpu: 50m
                 memory: 128Mi
               limits:
                 cpu: 500m
-                memory: 512Mi
+                memory: 4Gi
         controllerPlugin:
           replicas: 2
           resources:
@@ -148,7 +148,7 @@ spec:
                 cpu: 5m
                 memory: 32Mi
               limits:
-                memory: 128Mi
+                memory: 32Mi
             provisioner:
               requests:
                 cpu: 25m
@@ -183,7 +183,7 @@ spec:
                 memory: 128Mi
               limits:
                 cpu: 500m
-                memory: 512Mi
+                memory: 1Gi
       nfs:
         enabled: false
       nvmeof:
