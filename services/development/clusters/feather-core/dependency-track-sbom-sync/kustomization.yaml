@@ -12,6 +12,7 @@ configMapGenerator:
       # In-cluster Harbor API: the public host sits behind Cloudflare's bot challenge.
       - HARBOR_URL=http://harbor-core.harbor
       - HARBOR_HOST=harbor.onelitefeather.dev
+      - K8S_PAGE_SIZE=20
 secretGenerator:
   - name: dependency-track-sbom-sync
     envs:
