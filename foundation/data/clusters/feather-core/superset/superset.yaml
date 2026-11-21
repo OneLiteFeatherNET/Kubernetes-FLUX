@@ -31,7 +31,7 @@ spec:
     passwordFrom:
       name: superset-secrets
       key: password
-  # Driver packages (trino client, psycopg2) are installed by the init container in podTemplate into
+  # Driver packages (psycopg2) are installed by the init container in podTemplate into
   # /opt/pydeps. This script puts that directory on PYTHONPATH and keeps the image's own entry.
   bootstrapScript: |
     export PYTHONPATH="/opt/pydeps${PYTHONPATH:+:$PYTHONPATH}"
@@ -76,7 +76,7 @@ spec:
     EXPLORE_FORM_DATA_CACHE_CONFIG = CACHE_CONFIG
     FEATURE_FLAGS = {"GLOBAL_ASYNC_QUERIES": False}
 
-    # DuckDB reads the corvus Iceberg tables through Polaris and S3 directly (replaces Trino).
+    # DuckDB reads the corvus Iceberg tables through Polaris and S3 directly.
     # Every new DuckDB connection loads the pre-installed extensions and attaches the catalog.
     from sqlalchemy import event
     from sqlalchemy.engine import Engine
@@ -128,7 +128,7 @@ spec:
       seccompProfile:
         type: RuntimeDefault
     initContainers:
-      # Trino client, DuckDB with duckdb-engine and its extensions for the corvus connection,
+      # DuckDB with duckdb-engine and its extensions for the corvus connection,
       # psycopg2 for the metastore and authlib for the
       # Entra login (AUTH_OAUTH imports it; the image does not ship it). The Superset 6.1.0 image
       # is the minimal build without database drivers. Same tag as spec.image.tag.
@@ -141,7 +141,7 @@ spec:
           # (/usr/local/bin/uv, see the upstream Dockerfile), so the init container does the same.
           - |
             set -e
-            uv pip install --no-cache --python /app/.venv/bin/python --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13 authlib==1.9.3 duckdb==2.0.1
+            uv pip install --no-cache --python /app/.venv/bin/python --target /opt/pydeps psycopg2-binary==2.9.13 authlib==1.9.3 duckdb==2.0.1
             # Without dependencies: duckdb-engine would pull a SQLAlchemy 2 that shadows Superset's 1.4.
             uv pip install --no-cache --no-deps --python /app/.venv/bin/python --target /opt/pydeps duckdb-engine==0.17.0
             # Extensions are installed here so the Superset container never downloads at query time.
@@ -190,7 +190,7 @@ spec:
             secretKeyRef:
               name: superset-secrets
               key: entra-client-secret
-        # DuckDB: Polaris principal and read-only S3 keys, shared with Trino until Trino is removed.
+        # DuckDB: Polaris principal and read-only S3 keys (Secrets from kustomization.yaml).
         - name: POLARIS_CLIENT_ID
           value: "8832de30-7197-40ed-a2bc-68c88bc770cb"
         - name: POLARIS_CLIENT_SECRET
