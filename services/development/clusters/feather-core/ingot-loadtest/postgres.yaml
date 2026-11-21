@@ -26,14 +26,16 @@ spec:
   storage:
     size: 10Gi
     storageClass: ceph-rbd-fr01
+  # Small enough to fit the nearly full workers. feather-low would be preempted by any default pod,
+  # and the development layer waits for this cluster to be ready.
   resources:
     requests:
       cpu: 250m
-      memory: 1Gi
+      memory: 512Mi
     limits:
       cpu: "2"
-      memory: 1Gi
-  priorityClassName: feather-low
+      memory: 512Mi
+  priorityClassName: feather-standard
   affinity:
     nodeSelector:
       topology.kubernetes.io/zone: fr01
