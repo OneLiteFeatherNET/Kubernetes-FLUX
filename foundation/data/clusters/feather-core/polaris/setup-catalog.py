@@ -99,11 +99,11 @@ GRANTS = {
             "TABLE_LIST", "NAMESPACE_LIST", "NAMESPACE_READ_PROPERTIES",
         )
     ],
-    # Erasure (lake_erasure): read capture.raw and capture.events for the guards only, write the
+    # Erasure (lake_erasure): read the five capture tables for the guards only, write the
     # lake namespaces for the deletes and the status write. No write on capture (Corvus erases it).
     "erasure": [
         {"type": "table", "namespace": [NAMESPACE], "tableName": t, "privilege": p}
-        for t in ("raw", "events") for p in ("TABLE_READ_DATA", "TABLE_READ_PROPERTIES")
+        for t in CAPTURE_TABLES for p in ("TABLE_READ_DATA", "TABLE_READ_PROPERTIES")
     ] + [
         {"type": "namespace", "namespace": [NAMESPACE], "privilege": p}
         for p in ("NAMESPACE_READ_PROPERTIES", "TABLE_LIST")

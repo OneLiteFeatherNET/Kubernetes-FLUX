@@ -81,8 +81,8 @@ class SetupCatalogTest(unittest.TestCase):
 
     def test_erasure_role_has_exactly_the_decision_4_grants(self):
         expected_keys = expected(
-            ("table", "capture", "raw", CAPTURE_READ),
-            ("table", "capture", "events", CAPTURE_READ),
+            *[("table", "capture", table, CAPTURE_READ)
+              for table in ("raw", "events", "sessions", "segments", "session_ends")],
             ("namespace", "capture", "", ("NAMESPACE_READ_PROPERTIES", "TABLE_LIST")),
             *[("namespace", ns, "", (
                 "TABLE_READ_DATA", "TABLE_WRITE_DATA", "TABLE_WRITE_PROPERTIES",
