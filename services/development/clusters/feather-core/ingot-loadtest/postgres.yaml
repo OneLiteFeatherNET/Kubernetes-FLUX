@@ -14,6 +14,11 @@ spec:
       owner: ingot
       secret:
         name: ingot-loadtest-pg-credentials
+  # The operator adds barman-cloud to every Cluster (CNPG_INCLUDE_PLUGINS). Without a backup store
+  # the instance cannot load it and never becomes ready. Test data needs no backup.
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      enabled: false
   postgresql:
     parameters:
       # Room for the scalable topologies with several replicas, each with its own pool.
