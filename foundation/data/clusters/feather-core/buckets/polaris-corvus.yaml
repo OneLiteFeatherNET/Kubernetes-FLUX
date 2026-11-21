@@ -15,6 +15,8 @@ spec:
     # Object access for the Corvus ingest, score and ML jobs (CephObjectStoreUser corvus-lake in
     # foundation/storage/.../rook-fr01/users/corvus-lake.yaml). Rook applies additionalConfig when
     # it provisions the claim; see the PR for the post-merge check.
+    # The owner polaris (Polaris server and lake maintenance jobs) needs its own statement: RGW does
+    # not let the bucket owner read objects written by other users, e.g. corvus-lake's data files.
     bucketPolicy: |
       {
         "Version": "2012-10-17",
@@ -35,6 +37,17 @@ spec:
             "Effect": "Allow",
             "Principal": {"AWS": ["arn:aws:iam:::user/trino-lake"]},
             "Action": ["s3:GetObject", "s3:ListBucket", "s3:GetBucketLocation"],
+            "Resource": ["arn:aws:s3:::polaris-corvus", "arn:aws:s3:::polaris-corvus/*"]
+          },
+          {
+            "Sid": "PolarisOwnerObjects",
+            "Effect": "Allow",
+            "Principal": {"AWS": ["arn:aws:iam:::user/polaris"]},
+            "Action": [
+              "s3:ListBucket", "s3:ListBucketMultipartUploads", "s3:GetBucketLocation",
+              "s3:GetObject", "s3:PutObject", "s3:DeleteObject",
+              "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"
+            ],
             "Resource": ["arn:aws:s3:::polaris-corvus", "arn:aws:s3:::polaris-corvus/*"]
           }
         ]
