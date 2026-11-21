@@ -90,8 +90,8 @@ spec:
         for statement in (
             "SET extension_directory = '/opt/pydeps/duckdb-extensions'",
             "SET autoinstall_known_extensions = false",
-            "SET memory_limit = '2GB'",
-            "SET threads = 4",
+            "SET memory_limit = '768MB'",
+            "SET threads = 2",
             "SET temp_directory = '/tmp/duckdb'",
             "LOAD httpfs",
             "LOAD iceberg",
@@ -208,17 +208,34 @@ spec:
             secretKeyRef:
               name: trino-lake-s3
               key: secret-key
-      # Queries run in the Superset process (DuckDB memory_limit 2GB per connection, spills to /tmp/duckdb).
+      # Queries run in the Superset process: up to 8 at once (gunicorn below) x DuckDB memory_limit
+      # 768MB, spilling to /tmp/duckdb.
       resources:
         requests:
           cpu: 500m
           memory: 2Gi
         limits:
-          memory: 6Gi
+          memory: 8Gi
 
   webServer:
     # Service superset-web-server (operator naming: {name}-web-server), port 8088.
     replicas: 1
+    # A dashboard fires all its chart queries at once; cap them at 8 and allow slow cold queries.
+    gunicorn:
+      workers: 2
+      threads: 4
+      timeout: 120
+    podTemplate:
+      container:
+        # The default probe (5 s timeout, 3 failures) restarted the pod while dashboards loaded.
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8088
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 6
     service:
       type: ClusterIP
 
