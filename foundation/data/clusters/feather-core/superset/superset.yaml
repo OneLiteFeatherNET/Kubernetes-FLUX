@@ -75,6 +75,8 @@ spec:
     FILTER_STATE_CACHE_CONFIG = CACHE_CONFIG
     EXPLORE_FORM_DATA_CACHE_CONFIG = CACHE_CONFIG
     FEATURE_FLAGS = {"GLOBAL_ASYNC_QUERIES": False}
+    # Cold DuckDB queries on a full dashboard can exceed the 60 s default.
+    SUPERSET_WEBSERVER_TIMEOUT = 300
 
     # DuckDB reads the corvus Iceberg tables through Polaris and S3 directly.
     # Every new DuckDB connection loads the pre-installed extensions and attaches the catalog.
@@ -220,11 +222,11 @@ spec:
   webServer:
     # Service superset-web-server (operator naming: {name}-web-server), port 8088.
     replicas: 1
-    # A dashboard fires all its chart queries at once; cap them at 8 and allow slow cold queries.
+    # A dashboard fires all its chart queries at once; cap them at 8 and allow slow cold queries (300 s, matches SUPERSET_WEBSERVER_TIMEOUT).
     gunicorn:
       workers: 2
       threads: 4
-      timeout: 120
+      timeout: 300
     podTemplate:
       container:
         # The default probe (5 s timeout, 3 failures) restarted the pod while dashboards loaded.

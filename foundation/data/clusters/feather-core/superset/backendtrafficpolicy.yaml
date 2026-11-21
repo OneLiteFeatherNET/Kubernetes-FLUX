@@ -1,0 +1,13 @@
+# Envoy's route timeout must cover Superset's 300 s chart query timeout.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: superset-timeout
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: superset
+  timeout:
+    http:
+      requestTimeout: 300s
