@@ -12,7 +12,8 @@ spec:
     controllers:
       vllm:
         type: deployment
-        replicas: 1
+        # Scaled to 0 on 2026-11-21 to free memory; set back to restore.
+        replicas: 0
         # The model cache is a ReadWriteOnce volume: a rolling update would start the
         # new pod while the old one still holds it.
         strategy: Recreate

@@ -21,6 +21,22 @@ spec:
               - op: add
                 path: /spec/template/spec/priorityClassName
                 value: feather-standard
+          # Scaled to 0 on 2026-11-21 to free memory; set back to restore.
+          # The chart schema forbids replicaCount 0 and workerReplicaCount 0 drops the Deployment.
+          - target:
+              kind: Deployment
+              name: n8n-main
+            patch: |
+              - op: replace
+                path: /spec/replicas
+                value: 0
+          - target:
+              kind: Deployment
+              name: n8n-worker
+            patch: |
+              - op: replace
+                path: /spec/replicas
+                value: 0
   values:
     # Covers main, worker and webhook-processor pod templates.
     podLabels:
