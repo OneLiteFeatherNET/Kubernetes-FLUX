@@ -78,7 +78,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       resources:
-        # Request ~2x the 7-day peak working set (2026-11-21).
+        # Request ~1.4x the 7-day peak working set of 1.8 GB (2026-11-21).
         requests:
           cpu: 500m
           memory: 2560Mi
