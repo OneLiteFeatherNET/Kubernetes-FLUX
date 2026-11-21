@@ -22,6 +22,9 @@ HEALTH_URL = os.environ["POLARIS_HEALTH_URL"]
 
 CATALOG = "corvus"
 NAMESPACE = "capture"
+# Lake namespaces written by lake-dags (add-lake-layers). capture stays owned by Corvus.
+LAKE_NAMESPACES = ["refined", "features", "labels", "ref", "quality"]
+CAPTURE_TABLES = ["raw", "events", "sessions", "segments", "session_ends"]
 MGMT = f"{POLARIS}/api/management/v1"
 CATALOG_API = f"{POLARIS}/api/catalog/v1"
 
@@ -30,6 +33,8 @@ ASSIGNMENTS = {
     "corvus_ingest": "ingest",
     "corvus_ml": "ml",
     "lake_maintenance": "maintenance",
+    "lake_pipeline": "pipeline",
+    "lake_erasure": "erasure",
     # Read-only SQL access through Trino (Superset). Read grants on catalog corvus only.
     "lake_sql": "sql",
     # Lets the root principal create the namespace through the Iceberg REST API.
@@ -42,6 +47,8 @@ PRINCIPALS = {
     "41380977-879c-4c49-8e0d-fb1047f1bb7a": "corvus_ingest",     # Polaris Corvus Ingest
     "cea8487b-adef-45ef-917e-e4506cc38922": "corvus_ml",         # Polaris Corvus ML
     "1f752161-5002-468d-a39b-12c46f6b874d": "lake_maintenance",  # Polaris Lake Maintenance
+    "872fb660-791b-482e-83ce-33252b9cca47": "lake_pipeline",     # Polaris Lake Pipeline
+    "2579bb7f-518a-4d99-8bbc-a72dc8bde15f": "lake_erasure",      # Polaris Lake Erasure
     "8832de30-7197-40ed-a2bc-68c88bc770cb": "lake_sql",          # Polaris Trino
 }
 
@@ -55,6 +62,10 @@ GRANTS = {
             "TABLE_CREATE", "TABLE_WRITE_DATA", "TABLE_WRITE_PROPERTIES", "TABLE_LIST",
             "NAMESPACE_LIST", "NAMESPACE_READ_PROPERTIES",
         )
+    ] + [
+        # Corvus appends erasure requests (lake-dags add-lake-layers decision 14). Table level only.
+        {"type": "table", "namespace": ["quality"], "tableName": "erasure_requests", "privilege": p}
+        for p in ("TABLE_WRITE_DATA", "TABLE_READ_PROPERTIES")
     ],
     "ml": [
         {"type": "namespace", "namespace": [NAMESPACE], "privilege": p}
@@ -72,7 +83,62 @@ GRANTS = {
         {"type": "catalog", "privilege": p}
         for p in ("TABLE_LIST", "VIEW_LIST", "NAMESPACE_LIST", "TABLE_READ_PROPERTIES", "TABLE_READ_DATA")
     ],
+    # Pipeline (lake_pipeline): read the five capture tables, write the lake namespaces.
+    # No delete right on capture and no TABLE_DROP anywhere.
+    "pipeline": [
+        {"type": "table", "namespace": [NAMESPACE], "tableName": t, "privilege": p}
+        for t in CAPTURE_TABLES for p in ("TABLE_READ_DATA", "TABLE_READ_PROPERTIES")
+    ] + [
+        {"type": "namespace", "namespace": [NAMESPACE], "privilege": p}
+        for p in ("NAMESPACE_READ_PROPERTIES", "TABLE_LIST")
+    ] + [
+        {"type": "namespace", "namespace": [ns], "privilege": p}
+        for ns in LAKE_NAMESPACES
+        for p in (
+            "TABLE_CREATE", "TABLE_READ_DATA", "TABLE_WRITE_DATA", "TABLE_WRITE_PROPERTIES",
+            "TABLE_LIST", "NAMESPACE_LIST", "NAMESPACE_READ_PROPERTIES",
+        )
+    ],
+    # Erasure (lake_erasure): read the five capture tables for the guards only, write the
+    # lake namespaces for the deletes and the status write. No write on capture (Corvus erases it).
+    "erasure": [
+        {"type": "table", "namespace": [NAMESPACE], "tableName": t, "privilege": p}
+        for t in CAPTURE_TABLES for p in ("TABLE_READ_DATA", "TABLE_READ_PROPERTIES")
+    ] + [
+        {"type": "namespace", "namespace": [NAMESPACE], "privilege": p}
+        for p in ("NAMESPACE_READ_PROPERTIES", "TABLE_LIST")
+    ] + [
+        {"type": "namespace", "namespace": [ns], "privilege": p}
+        for ns in LAKE_NAMESPACES if ns != "ref"
+        for p in (
+            "TABLE_READ_DATA", "TABLE_WRITE_DATA", "TABLE_WRITE_PROPERTIES",
+            "TABLE_LIST", "NAMESPACE_LIST", "NAMESPACE_READ_PROPERTIES",
+        )
+    ],
     "admin": [{"type": "catalog", "privilege": "CATALOG_MANAGE_METADATA"}],
+}
+
+# Iceberg table quality.erasure_requests: the contract of lake-dags add-lake-layers decision 14.
+# Copied once; a change needs lake-dags review and a new table or schema evolution.
+ERASURE_REQUESTS_TABLE = {
+    "namespace": "quality",
+    "name": "erasure_requests",
+    "schema": {
+        "type": "struct",
+        "schema-id": 0,
+        "fields": [
+            {"id": 1, "name": "request_id", "required": True, "type": "string"},
+            {"id": 2, "name": "player_key", "required": True, "type": "fixed[32]"},
+            {"id": 3, "name": "requested_at", "required": True, "type": "timestamptz"},
+            {"id": 4, "name": "capture_erased_at", "required": False, "type": "timestamptz"},
+            {"id": 5, "name": "capture_raw_snapshot_id", "required": False, "type": "long"},
+            {"id": 6, "name": "capture_events_snapshot_id", "required": False, "type": "long"},
+            {"id": 7, "name": "status", "required": True, "type": "string"},
+            {"id": 8, "name": "failure_reason", "required": False, "type": "string"},
+            {"id": 9, "name": "lake_run_id", "required": False, "type": "string"},
+            {"id": 10, "name": "completed_at", "required": False, "type": "timestamptz"},
+        ],
+    },
 }
 
 
@@ -164,8 +230,17 @@ def main():
     grant_and_assign("sql")
     call("POST", f"{CATALOG_API}/{CATALOG}/namespaces", token=token,
          body={"namespace": [NAMESPACE]})
+    for namespace in LAKE_NAMESPACES:
+        call("POST", f"{CATALOG_API}/{CATALOG}/namespaces", token=token,
+             body={"namespace": [namespace]})
+    # The table exists before any table-level grant on it (a grant on a missing table fails).
+    call("POST", f"{CATALOG_API}/{CATALOG}/namespaces/{ERASURE_REQUESTS_TABLE['namespace']}/tables",
+         token=token, body={"name": ERASURE_REQUESTS_TABLE["name"],
+                            "schema": ERASURE_REQUESTS_TABLE["schema"]})
     grant_and_assign("ingest")
     grant_and_assign("ml")
+    grant_and_assign("pipeline")
+    grant_and_assign("erasure")
     for principal, principal_role in PRINCIPALS.items():
         # The returned internal credentials are not used; clients authenticate with Entra ID.
         call("POST", f"{MGMT}/principals", token=token,

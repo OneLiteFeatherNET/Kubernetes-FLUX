@@ -1,10 +1,10 @@
 # Creates catalog corvus, principal roles, catalog roles, grants and namespace capture.
-# Idempotent (409 counts as done). Name carries a version: bump to polaris-setup-2 after editing
+# Idempotent (409 counts as done). Name carries a version: bump to polaris-setup-8 after editing
 # setup-catalog.py, because Jobs are immutable. Waits for Polaris to be ready itself.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: polaris-setup-6
+  name: polaris-setup-7
   namespace: data
   labels:
     app.kubernetes.io/name: polaris-setup

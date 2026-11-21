@@ -8,6 +8,7 @@ resources:
   - rbac.yaml
   - servicemonitor.yaml
   - httproute.yaml
+  - airflow-pools-job.yaml
 patches:
   - path: release.yaml
 
@@ -21,3 +22,17 @@ secretGenerator:
   - name: lake-maintenance-oauth
     envs:
       - lake-maintenance-oauth.sops.env
+  # Entra clients of the lake pipeline and erasure DAGs (roles lake-pipeline, lake-erasure).
+  # SOPS-encrypted client_id and client_secret, created by the maintainer in Entra ID.
+  - name: lake-pipeline-oauth
+    envs:
+      - lake-pipeline-oauth.sops.env
+  - name: lake-erasure-oauth
+    envs:
+      - lake-erasure-oauth.sops.env
+
+configMapGenerator:
+  # Pool definitions for the import Job (no secrets).
+  - name: airflow-pools
+    files:
+      - pools.json

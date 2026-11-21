@@ -1,0 +1,58 @@
+# Imports the pool file (ConfigMap airflow-pools) into the Airflow metadata database.
+# `airflow pools import` upserts, so a re-run is safe. Name carries a version: bump to
+# airflow-pools-2 after editing pools.json, because Jobs are immutable.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-pools-1
+  namespace: data
+  labels:
+    app.kubernetes.io/name: airflow-pools
+    app.kubernetes.io/part-of: airflow
+spec:
+  backoffLimit: 20
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: airflow-pools
+    spec:
+      restartPolicy: OnFailure
+      priorityClassName: feather-high
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 50000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: import-pools
+          # Same image as the chart's components: defaultAirflowRepository and defaultAirflowTag
+          # of airflow/release.yaml (3.4.0). Keep the two in step.
+          image: apache/airflow:3.4.0
+          command: ["airflow", "pools", "import", "/pools/pools.json"]
+          env:
+            # Metadata database, as the chart's components read it (secret airflow-db, key connection).
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              valueFrom:
+                secretKeyRef:
+                  name: airflow-db
+                  key: connection
+          volumeMounts:
+            - name: pools
+              mountPath: /pools
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: pools
+          configMap:
+            name: airflow-pools
