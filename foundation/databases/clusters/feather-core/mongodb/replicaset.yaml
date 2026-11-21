@@ -98,20 +98,22 @@ spec:
                         app: feather-core-mongodb-svc
                     topologyKey: kubernetes.io/hostname
           containers:
-            # Memory request==limit for OOM safety; no CPU limit, to avoid
+            # Memory limit for OOM safety; no CPU limit, to avoid
             # throttling the database, same as the CNPG cluster.
             - name: mongod
+              # Request ~2x the 7-day peak working set (2026-11-21).
               resources:
                 requests:
                   cpu: 250m
-                  memory: 2Gi
+                  memory: 512Mi
                 limits:
                   memory: 2Gi
             - name: mongodb-agent
+              # Request ~2x the 7-day peak working set (2026-11-21).
               resources:
                 requests:
                   cpu: 50m
-                  memory: 200Mi
+                  memory: 128Mi
                 limits:
                   memory: 500Mi
       volumeClaimTemplates:
