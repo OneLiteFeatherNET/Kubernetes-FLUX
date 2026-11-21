@@ -1,10 +1,11 @@
-# Hourly SBOM bridge into Dependency-Track 5. Dry run until the v5 cutover.
+# SBOM bridge into Dependency-Track 5, every 6 hours. Suspended while the kube-apiservers are memory-bound.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: dependency-track-sbom-sync
 spec:
-  schedule: "17 * * * *"
+  schedule: "17 */6 * * *"
+  suspend: true
   timeZone: Etc/UTC
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 600
