@@ -1,0 +1,10 @@
+# The only namespace the Ingot load test runner accepts (loadtest/lib/config.ts in the Ingot repository).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingot-loadtest
+  labels:
+    purpose: ingot-loadtest
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted

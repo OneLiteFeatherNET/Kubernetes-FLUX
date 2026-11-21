@@ -1,0 +1,34 @@
+# Dedicated PostgreSQL of the load tests, so a run never loads the shared feather-core-cluster-pg.
+# Ingot reads the connection string from Secret ingot-loadtest-database, key database
+# ("postgresql ingot-loadtest-pg-rw.ingot-loadtest.svc.cluster.local:5432 ingot ingot <password>").
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ingot-loadtest-pg
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
+  bootstrap:
+    initdb:
+      database: ingot
+      owner: ingot
+      secret:
+        name: ingot-loadtest-pg-credentials
+  postgresql:
+    parameters:
+      # Room for the scalable topologies with several replicas, each with its own pool.
+      max_connections: "200"
+  storage:
+    size: 10Gi
+    storageClass: ceph-rbd-fr01
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 1Gi
+  priorityClassName: feather-low
+  affinity:
+    nodeSelector:
+      topology.kubernetes.io/zone: fr01

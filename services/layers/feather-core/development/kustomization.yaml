@@ -9,3 +9,5 @@ resources:
   - ../../../development/clusters/feather-core/sentry
   - ../../../development/clusters/feather-core/telepresence
   - ../../../development/clusters/feather-core/actions-runners
+  - ../../../development/clusters/feather-core/k6-operator
+  - ../../../development/clusters/feather-core/ingot-loadtest

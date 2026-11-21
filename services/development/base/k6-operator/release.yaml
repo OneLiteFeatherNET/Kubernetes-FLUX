@@ -1,0 +1,34 @@
+# Grafana k6-operator: provides the TestRun CRD (k6.io/v1alpha1) the Ingot load tests start.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: k6-operator
+  labels:
+    flux.onelitefeather.dev/remediation: retries-only
+  namespace: k6-operator-system
+spec:
+  releaseName: k6-operator
+  chart:
+    spec:
+      chart: k6-operator
+      version: "=4.7.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-labs
+        namespace: flux-system
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  interval: 10m0s
+  timeout: 5m
+  # Default values
+  # https://github.com/grafana/k6-operator/blob/main/charts/k6-operator/values.yaml
+  values:
+    # The namespace comes from namespace.yaml, not from the chart.
+    namespace:
+      create: false
