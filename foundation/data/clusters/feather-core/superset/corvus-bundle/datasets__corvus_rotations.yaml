@@ -48,7 +48,7 @@ metrics:
 - metric_name: yaw_delta_p95
   verbose_name: Yaw change p95 (deg)
   metric_type: null
-  expression: approx_percentile(yaw_delta, 0.95)
+  expression: approx_quantile(yaw_delta, 0.95)
   description: null
   d3format: ',.1f'
   currency: null
@@ -66,7 +66,7 @@ metrics:
 - metric_name: pitch_delta_p95
   verbose_name: Pitch change p95 (deg)
   metric_type: null
-  expression: approx_percentile(pitch_delta, 0.95)
+  expression: approx_quantile(pitch_delta, 0.95)
   description: null
   d3format: ',.1f'
   currency: null

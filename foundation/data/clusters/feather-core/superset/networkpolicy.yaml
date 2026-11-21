@@ -1,5 +1,5 @@
 # Superset (operator pods, label app.kubernetes.io/name=superset): web UI reachable from the internal
-# Gateway only; egress limited to DNS, Trino (8080), CloudNativePG (5432) and HTTPS for Entra ID login
+# Gateway only; egress limited to DNS, Trino (8080), Polaris (8181), RGW S3 (80), CloudNativePG (5432) and HTTPS for Entra ID login
 # and the driver install at pod start. The operator's own policy is not used (see superset.yaml).
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -39,6 +39,26 @@ spec:
       ports:
         - protocol: TCP
           port: 8080
+    # DuckDB: Polaris REST catalog and the RGW S3 endpoint.
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: polaris
+              app.kubernetes.io/instance: polaris
+      ports:
+        - protocol: TCP
+          port: 8181
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: rook-ceph-fr01
+          podSelector:
+            matchLabels:
+              app: rook-ceph-rgw
+              rook_object_store: feather-s3
+      ports:
+        - protocol: TCP
+          port: 80
     - to:
         - namespaceSelector:
             matchLabels:

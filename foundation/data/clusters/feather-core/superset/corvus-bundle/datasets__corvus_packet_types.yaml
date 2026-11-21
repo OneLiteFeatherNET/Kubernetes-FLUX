@@ -68,7 +68,7 @@ metrics:
 - metric_name: p95_payload_size
   verbose_name: P95 payload (bytes)
   metric_type: null
-  expression: approx_percentile(payload_original_size, 0.95)
+  expression: approx_quantile(payload_original_size, 0.95)
   description: null
   d3format: ',.0f'
   currency: null
