@@ -1,0 +1,14 @@
+# Bucket of the load tests. Rook writes Secret ingot-loadtest-s3 (AWS_ACCESS_KEY_ID,
+# AWS_SECRET_ACCESS_KEY) and ConfigMap ingot-loadtest-s3 (BUCKET_NAME, BUCKET_HOST, BUCKET_PORT)
+# into this namespace, which is what objectStorage.existingSecret of the Ingot chart reads.
+# No bucketOwner: Rook creates a user for this claim alone. The quota keeps a deploy run from
+# filling the shared Ceph store.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: ingot-loadtest-s3
+spec:
+  bucketName: ingot-loadtest
+  storageClassName: ceph-bucket-fr01
+  additionalConfig:
+    bucketMaxSize: "50G"

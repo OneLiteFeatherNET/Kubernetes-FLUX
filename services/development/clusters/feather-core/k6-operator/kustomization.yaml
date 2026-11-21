@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: k6-operator-system
+resources:
+  - ../../../base/k6-operator
+patches:
+  - path: release.yaml
