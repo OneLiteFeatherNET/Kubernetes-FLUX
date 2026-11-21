@@ -40,24 +40,25 @@ spec:
               operator: Equal
               value: "true"
               effect: NoSchedule
+          # Requests sized at ~2x the 7-day peak working set (2026-11-21); limits unchanged.
           resources:
             registrar:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 32Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             logRotator:
               requests:
                 cpu: 5m
-                memory: 16Mi
+                memory: 32Mi
               limits:
                 memory: 32Mi
             plugin:
               requests:
                 cpu: 50m
-                memory: 512Mi
+                memory: 256Mi
               limits:
                 cpu: 500m
                 memory: 1Gi
@@ -67,41 +68,41 @@ spec:
             logRotator:
               requests:
                 cpu: 5m
-                memory: 16Mi
+                memory: 32Mi
               limits:
                 memory: 32Mi
             provisioner:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             resizer:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             attacher:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             snapshotter:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             plugin:
               requests:
                 cpu: 50m
-                memory: 512Mi
+                memory: 128Mi
               limits:
                 cpu: 500m
                 memory: 1Gi
@@ -122,20 +123,20 @@ spec:
             registrar:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 32Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             logRotator:
               requests:
                 cpu: 5m
-                memory: 16Mi
+                memory: 32Mi
               limits:
                 memory: 32Mi
             plugin:
               requests:
                 cpu: 50m
-                memory: 512Mi
+                memory: 128Mi
               limits:
                 cpu: 500m
                 memory: 4Gi
@@ -145,41 +146,41 @@ spec:
             logRotator:
               requests:
                 cpu: 5m
-                memory: 16Mi
+                memory: 32Mi
               limits:
                 memory: 32Mi
             provisioner:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             resizer:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             attacher:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             snapshotter:
               requests:
                 cpu: 25m
-                memory: 128Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
                 memory: 256Mi
             plugin:
               requests:
                 cpu: 50m
-                memory: 512Mi
+                memory: 128Mi
               limits:
                 cpu: 500m
                 memory: 1Gi
