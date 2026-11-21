@@ -1,0 +1,7 @@
+{
+  "lake_spark": {
+    "description": "Concurrent Spark jobs of the lake DAGs (lake-dags add-lake-layers decision 16)",
+    "slots": 2,
+    "include_deferred": false
+  }
+}
