@@ -14,6 +14,15 @@ secretGenerator:
   - name: superset-secrets
     envs:
       - superset-secrets.sops.env
+  # DuckDB (Superset): Entra client secret of "Polaris Trino" (client id is inline in superset.yaml).
+  - name: trino-oauth
+    envs:
+      - trino-oauth.sops.env
+  # DuckDB (Superset): S3 keys of RGW user trino-lake (copied from rook-ceph-object-user-feather-s3-trino-lake
+  # in rook-ceph-fr01); the bucket policy on polaris-corvus allows this user to read only.
+  - name: trino-lake-s3
+    envs:
+      - trino-lake-s3.sops.env
 
 configMapGenerator:
   # Mounted at /app/configs by the Superset CR. Plain, no secret.
