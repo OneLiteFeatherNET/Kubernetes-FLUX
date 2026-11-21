@@ -7,6 +7,9 @@ spec:
   values:
     priorityClassName: feather-low
 
+    # Ephemeral ARC runner pods churn reports and bloat the apiservers.
+    excludeNamespaces: "arc-runners"
+
     resources:
       requests:
         cpu: 100m
@@ -80,6 +83,8 @@ spec:
 
     operator:
       builtInTrivyServer: true
+      # One ClusterSbomReport per image digest instead of one SbomReport per workload.
+      clusterSbomCacheEnabled: true
       scannerReportTTL: "168h"
       scanJobsConcurrentLimit: 5
       scanJobTimeout: "10m"
