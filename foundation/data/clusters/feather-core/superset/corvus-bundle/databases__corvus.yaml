@@ -1,5 +1,5 @@
 database_name: corvus
-sqlalchemy_uri: trino://superset@trino.data.svc.cluster.local:8080/corvus
+sqlalchemy_uri: "duckdb:///:memory:"
 cache_timeout: null
 expose_in_sqllab: true
 allow_run_async: false

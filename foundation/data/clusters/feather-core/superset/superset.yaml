@@ -9,7 +9,8 @@ spec:
   environment: Production
   image:
     # Pinned release tag. The operator keys migrations off repository:tag, so never a mutable tag.
-    tag: "6.1.0"
+    # py311 variant: DuckDB 2.x needs Python >= 3.11 (the default 6.1.0 image ships 3.10).
+    tag: "6.1.0-py311"
   secretKeyFrom:
     name: superset-secrets
     key: secret-key
@@ -35,7 +36,7 @@ spec:
   bootstrapScript: |
     export PYTHONPATH="/opt/pydeps${PYTHONPATH:+:$PYTHONPATH}"
   # Appended to superset_config.py of every Python component. Login is Entra ID only; the
-  # Superset role mapping and the Trino connection come from this file and from lifecycle.init.
+  # Superset role mapping and the DuckDB connection come from this file and from lifecycle.init.
   config: |
     import os
     from flask_appbuilder.security.manager import AUTH_OAUTH
@@ -75,6 +76,46 @@ spec:
     EXPLORE_FORM_DATA_CACHE_CONFIG = CACHE_CONFIG
     FEATURE_FLAGS = {"GLOBAL_ASYNC_QUERIES": False}
 
+    # DuckDB reads the corvus Iceberg tables through Polaris and S3 directly (replaces Trino).
+    # Every new DuckDB connection loads the pre-installed extensions and attaches the catalog.
+    from sqlalchemy import event
+    from sqlalchemy.engine import Engine
+
+
+    @event.listens_for(Engine, "connect")
+    def _attach_corvus(dbapi_connection, connection_record):
+        if not type(dbapi_connection).__module__.startswith(("duckdb", "_duckdb")):
+            return
+        env = os.environ
+        for statement in (
+            "SET extension_directory = '/opt/pydeps/duckdb-extensions'",
+            "SET autoinstall_known_extensions = false",
+            "SET memory_limit = '2GB'",
+            "SET threads = 4",
+            "SET temp_directory = '/tmp/duckdb'",
+            "LOAD httpfs",
+            "LOAD iceberg",
+        ):
+            dbapi_connection.execute(statement)
+        dbapi_connection.execute(
+            "CREATE SECRET lake_s3 (TYPE s3, KEY_ID $1, SECRET $2, REGION 'us-east-1',"
+            " ENDPOINT 'rook-ceph-rgw-feather-s3.rook-ceph-fr01.svc', URL_STYLE 'path', USE_SSL false)",
+            [env["LAKE_S3_ACCESS_KEY"], env["LAKE_S3_SECRET_KEY"]],
+        )
+        dbapi_connection.execute(
+            "CREATE SECRET polaris (TYPE iceberg, CLIENT_ID $1, CLIENT_SECRET $2,"
+            " OAUTH2_SERVER_URI 'https://login.microsoftonline.com/1a14dfb5-0eac-41bf-94cb-195c2e387520/oauth2/v2.0/token',"
+            " OAUTH2_SCOPE 'api://9e2548f4-5e10-440d-9444-cad813a20c87/.default')",
+            [env["POLARIS_CLIENT_ID"], env["POLARIS_CLIENT_SECRET"]],
+        )
+        dbapi_connection.execute(
+            "ATTACH 'corvus' AS corvus (TYPE iceberg, SECRET polaris, ACCESS_DELEGATION_MODE 'none',"
+            " ENDPOINT 'http://polaris.data.svc.cluster.local:8181/api/catalog')"
+        )
+        # SQL Lab users must not read the pod's files or change these limits; S3 goes through httpfs.
+        dbapi_connection.execute("SET disabled_filesystems = 'LocalFileSystem'")
+        dbapi_connection.execute("SET lock_configuration = true")
+
   podTemplate:
     priorityClassName: feather-standard
     podSecurityContext:
@@ -87,17 +128,24 @@ spec:
       seccompProfile:
         type: RuntimeDefault
     initContainers:
-      # Trino client for the corvus connection, psycopg2 for the metastore and authlib for the
+      # Trino client, DuckDB with duckdb-engine and its extensions for the corvus connection, psycopg2 for the metastore and authlib for the
       # Entra login (AUTH_OAUTH imports it; the image does not ship it). The Superset 6.1.0 image
       # is the minimal build without database drivers. Same tag as spec.image.tag.
       - name: install-drivers
-        image: apachesuperset.docker.scarf.sh/apache/superset:6.1.0
+        image: apachesuperset.docker.scarf.sh/apache/superset:6.1.0-py311
         command:
           - /bin/sh
           - -c
           # The image's venv (/app/.venv) has no pip; the image installs packages with uv
           # (/usr/local/bin/uv, see the upstream Dockerfile), so the init container does the same.
-          - uv pip install --no-cache --python /app/.venv/bin/python --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13 authlib==1.9.3
+          - |
+            set -e
+            uv pip install --no-cache --python /app/.venv/bin/python --target /opt/pydeps trino==0.340.0 psycopg2-binary==2.9.13 authlib==1.9.3 duckdb==2.0.1
+            # Without dependencies: duckdb-engine would pull a SQLAlchemy 2 that shadows Superset's 1.4.
+            uv pip install --no-cache --no-deps --python /app/.venv/bin/python --target /opt/pydeps duckdb-engine==0.17.0
+            # Extensions are installed here so the Superset container never downloads at query time.
+            mkdir -p /opt/pydeps/duckdb-extensions
+            HOME=/tmp PYTHONPATH=/opt/pydeps /app/.venv/bin/python -c "import duckdb; c = duckdb.connect(config={'extension_directory': '/opt/pydeps/duckdb-extensions'}); [c.execute('INSTALL ' + e) for e in ('httpfs', 'avro', 'iceberg')]"
         volumeMounts:
           - name: pydeps
             mountPath: /opt/pydeps
@@ -141,12 +189,31 @@ spec:
             secretKeyRef:
               name: superset-secrets
               key: entra-client-secret
+        # DuckDB: Polaris principal and read-only S3 keys, shared with Trino until Trino is removed.
+        - name: POLARIS_CLIENT_ID
+          value: "8832de30-7197-40ed-a2bc-68c88bc770cb"
+        - name: POLARIS_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: trino-oauth
+              key: POLARIS_TRINO_CLIENT_SECRET
+        - name: LAKE_S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trino-lake-s3
+              key: access-key
+        - name: LAKE_S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trino-lake-s3
+              key: secret-key
+      # Queries run in the Superset process (DuckDB memory_limit 2GB per connection, spills to /tmp/duckdb).
       resources:
         requests:
           cpu: 500m
-          memory: 1Gi
-        limits:
           memory: 2Gi
+        limits:
+          memory: 6Gi
 
   webServer:
     # Service superset-web-server (operator naming: {name}-web-server), port 8088.

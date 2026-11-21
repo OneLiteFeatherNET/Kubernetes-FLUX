@@ -40,7 +40,7 @@ metrics:
 - metric_name: speed_p50
   verbose_name: Speed p50 (b/s)
   metric_type: null
-  expression: approx_percentile(speed_bps, 0.5)
+  expression: approx_quantile(speed_bps, 0.5)
   description: null
   d3format: ',.2f'
   currency: null
@@ -49,7 +49,7 @@ metrics:
 - metric_name: speed_p95
   verbose_name: Speed p95 (b/s)
   metric_type: null
-  expression: approx_percentile(speed_bps, 0.95)
+  expression: approx_quantile(speed_bps, 0.95)
   description: null
   d3format: ',.2f'
   currency: null
@@ -58,7 +58,7 @@ metrics:
 - metric_name: speed_p99
   verbose_name: Speed p99 (b/s)
   metric_type: null
-  expression: approx_percentile(speed_bps, 0.99)
+  expression: approx_quantile(speed_bps, 0.99)
   description: null
   d3format: ',.2f'
   currency: null
