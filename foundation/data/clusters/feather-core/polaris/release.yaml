@@ -88,7 +88,7 @@ spec:
       principalRolesMapper:
         type: default
         rolesClaimPath: roles
-        filter: "^(corvus-ingest|corvus-ml|lake-maintenance|lake-sql)$"
+        filter: "^(corvus-ingest|corvus-ml|lake-maintenance|lake-sql|lake-pipeline|lake-erasure)$"
         mappings:
           - regex: "^corvus-ingest$"
             replacement: PRINCIPAL_ROLE:corvus_ingest
@@ -98,3 +98,7 @@ spec:
             replacement: PRINCIPAL_ROLE:lake_maintenance
           - regex: "^lake-sql$"
             replacement: PRINCIPAL_ROLE:lake_sql
+          - regex: "^lake-pipeline$"
+            replacement: PRINCIPAL_ROLE:lake_pipeline
+          - regex: "^lake-erasure$"
+            replacement: PRINCIPAL_ROLE:lake_erasure
