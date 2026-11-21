@@ -23,7 +23,7 @@ spec:
     spec:
       automountServiceAccountToken: false
       enableServiceLinks: false
-      priorityClassName: feather-low
+      priorityClassName: feather-standard
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
