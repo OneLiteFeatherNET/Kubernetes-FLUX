@@ -2,7 +2,7 @@
 
 The lake layers in `lake-dags` (`add-lake-layers`, merged) cannot run in production yet. They need four things that live in this repository: namespaces in catalog `corvus` to write into, Polaris principals that are allowed to read the Corvus tables and write those namespaces, a separate principal for the erasure DAG, and an Airflow pool that limits concurrent Spark jobs. Without them the nightly `refined` build fails at its first catalog call, and the erasure path that GDPR requests depend on has no identity of its own.
 
-Corvus now writes four more tables next to `capture.raw` and `capture.events`: `capture.sessions`, `capture.segments` and `capture.session_ends`. The pipeline needs read access to those too. Corvus also needs one new write right: appending erasure requests to `quality.erasure_requests`, the table through which the lake learns about an erasure.
+Corvus now writes three more tables next to `capture.raw` and `capture.events`: `capture.sessions`, `capture.segments` and `capture.session_ends`. The pipeline needs read access to those too. Corvus also needs one new write right: appending erasure requests to `quality.erasure_requests`, the table through which the lake learns about an erasure.
 
 This change specifies that platform work. It does not implement the layers and does not change the packet path.
 
