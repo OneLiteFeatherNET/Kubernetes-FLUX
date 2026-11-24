@@ -1,0 +1,14 @@
+# Prototype of the Grus control plane (products/grus/clusters/feather-core/grus-dev).
+# Remove together with that release once the prototype is done.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: grus
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://github.com/OneLiteFeatherNET/grus.git
+  # Pinned to one commit of the Grus repository, never a moving branch. Bump it
+  # together with the image tag in grus-dev/release.yaml, through a pull request.
+  ref:
+    commit: 4f5d5169e20f6e1f8f35a728e1f1f8d4de708b59

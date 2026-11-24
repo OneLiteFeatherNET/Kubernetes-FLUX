@@ -33,6 +33,7 @@ resources:
   - sturnus.yaml
   - menura.yaml
   - menura-prototype.yaml
+  - grus.yaml
   - corvus.yaml
   - pmint93.yml
   - stelaris-ui.yaml

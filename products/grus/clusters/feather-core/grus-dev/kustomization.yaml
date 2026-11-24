@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: grus-dev
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - namespace.yaml
+  - networkpolicy.yaml
+  - release.yaml
+
+# Own Secret, own namespace: the admin token of the HTTP API and the Velocity
+# forwarding secret. Plain values never enter Git.
+secretGenerator:
+  - name: grus-dev-secrets
+    envs:
+      - grus-dev-secrets.sops.env
+  # Same shared Harbor robot as the other apps in the private `onelitefeather`
+  # project (see products/menura/clusters/feather-core/menura-dev/kustomization.yaml).
+  - name: harbor-pull
+    type: kubernetes.io/dockerconfigjson
+    files:
+      - .dockerconfigjson=harbor.onelitefeather.dev.dockerconfigjson.sops.json
