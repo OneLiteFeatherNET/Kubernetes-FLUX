@@ -1,0 +1,11 @@
+# Template bucket of grus-dev. Rook writes Secret grus-templates-dev (AWS_ACCESS_KEY_ID,
+# AWS_SECRET_ACCESS_KEY) and ConfigMap grus-templates-dev (BUCKET_NAME, BUCKET_HOST,
+# BUCKET_PORT) into this namespace; the release reads both (templates.s3.*).
+# No bucketOwner: Rook creates a user for this claim alone, so no foundation change is needed.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: grus-templates-dev
+spec:
+  bucketName: grus-templates-dev
+  storageClassName: ceph-bucket-fr01

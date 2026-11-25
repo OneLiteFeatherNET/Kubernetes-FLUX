@@ -1,7 +1,8 @@
 # Default deny for every pod of the prototype, then the only paths it needs: the
 # controller API inside the namespace, proxy-to-lobby traffic, DNS, the Kubernetes API
-# for the controller only, and HTTPS egress for the proxy's Mojang session check.
-# Private ranges are excluded from the HTTPS egress. Audit only until enforcement is
+# for the controller only, and HTTPS egress for the proxy's Mojang session check. The v2
+# additions: gateway to the controller API (agent hostname), controller to the Rook RGW
+# (template bucket) and proxy to the agent host mc01. Private ranges are excluded from the HTTPS egress. Audit only until enforcement is
 # decided cluster-wide.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -71,6 +72,75 @@ spec:
       ports:
         - protocol: TCP
           port: 3000
+---
+# The internal Envoy gateway reaches the controller API (TCP 8080) for the agent hostname
+# grus-dev-api.apps.onelite.feather; the route allows only the agent paths.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-envoy-gateway-controller-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: grus
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: envoy
+              app.kubernetes.io/component: proxy
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+# The controller stores templates in the Rook RGW (template bucket, TCP 80).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-controller-rgw-egress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: grus
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: rook-ceph-fr01
+          podSelector:
+            matchLabels:
+              app: rook-ceph-rgw
+      ports:
+        - protocol: TCP
+          port: 80
+---
+# The Velocity proxy joins instances on the agent host mc01, which picks ports from
+# 30000-30100 (agent --port-range). Keep both in step.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-proxy-agent-host-egress
+spec:
+  podSelector:
+    matchLabels:
+      grus.olf/role: proxy
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.200.2.35/32
+      ports:
+        - protocol: TCP
+          port: 30000
+          endPort: 30100
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

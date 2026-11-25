@@ -1,5 +1,5 @@
-# Internal gateway route for the Grus web UI (no login; see the internal-access
-# proposal). The API paths for the event and instance streams are long-lived
+# Internal gateway routes: the Grus web UI (no login; see the internal-access
+# proposal) and, further down, the agent API on its own hostname. The API paths for the event and instance streams are long-lived
 # Server-Sent-Events streams, so they carry no request deadline.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -70,3 +70,54 @@ spec:
       requestTimeout: 0s
       maxStreamDuration: 0s
       streamIdleTimeout: 1h
+---
+# Agent API for hosts outside Kubernetes (mc01). Allow list only: everything else,
+# including the admin API, is not matched and answers 404 at the gateway. Identity
+# stays in the controller (agent and instance tokens).
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: grus-dev-api
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - grus-dev-api.apps.onelite.feather
+  rules:
+    # Register, long-poll desired state (about 25s) and report observed state.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /v1/agents
+      timeouts:
+        request: "60s"
+        backendRequest: "60s"
+      backendRefs:
+        - name: grus
+          port: 8080
+    # Instances report readiness and player counts with their per-instance token.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /v1/self
+      backendRefs:
+        - name: grus
+          port: 8080
+    # Template archive download only; uploads are not routed.
+    - matches:
+        - method: GET
+          path:
+            type: PathPrefix
+            value: /v1/templates
+      backendRefs:
+        - name: grus
+          port: 8080
+    - matches:
+        - path:
+            type: Exact
+            value: /healthz
+      backendRefs:
+        - name: grus
+          port: 8080

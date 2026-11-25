@@ -1,4 +1,4 @@
-# Prototype of the Grus control plane (products/grus/clusters/feather-core/grus-dev).
+# Grus control plane (v2 build) (products/grus/clusters/feather-core/grus-dev).
 # Remove together with that release once the prototype is done.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -10,7 +10,6 @@ spec:
   url: https://github.com/OneLiteFeatherNET/grus.git
   # Pinned to one commit of the Grus repository, never a moving branch. The commit also
   # carries the CRDs (deploy/crds, applied by grus-dev-crds). Bump it through a pull
-  # request. The image tag in grus-dev/release.yaml stays at the prototype tag until
-  # images are built for this commit.
+  # request. The image tags in grus-dev/release.yaml move together with it.
   ref:
-    commit: 7055f78123030e85e6af83c4222519e6efaff4db
+    commit: ccc250b18ede7e530a57f9f375ba51fb809013cd
