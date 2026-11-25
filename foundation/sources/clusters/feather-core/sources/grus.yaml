@@ -8,7 +8,9 @@ metadata:
 spec:
   interval: 10m
   url: https://github.com/OneLiteFeatherNET/grus.git
-  # Pinned to one commit of the Grus repository, never a moving branch. Bump it
-  # together with the image tag in grus-dev/release.yaml, through a pull request.
+  # Pinned to one commit of the Grus repository, never a moving branch. The commit also
+  # carries the CRDs (deploy/crds, applied by grus-dev-crds). Bump it through a pull
+  # request. The image tag in grus-dev/release.yaml stays at the prototype tag until
+  # images are built for this commit.
   ref:
-    commit: 4839dd3c77dfd90c436a4f0bceabcc7e1128f2d7
+    commit: 7055f78123030e85e6af83c4222519e6efaff4db

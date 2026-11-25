@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../../menura/clusters/feather-core/menura-dev
   - ../../../otis/clusters/feather-core/otis-dev
+  - ../../../grus/clusters/feather-core/grus-dev-crds
   - ../../../grus/clusters/feather-core/grus-dev
   - ../../../stelaris/clusters/feather-core/stelaris-dev
   - ../../../vulpes/clusters/feather-core/vulpes-backend-dev
