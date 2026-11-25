@@ -33,7 +33,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/grus
       # Pinned v2 tag; move it together with ref.commit in foundation/sources/.../grus.yaml.
-      tag: prototype-58123e1
+      tag: prototype-82a3d5a
       pullPolicy: IfNotPresent
     imagePullSecrets:
       - name: harbor-pull
@@ -91,7 +91,7 @@ spec:
       image:
         repository: harbor.onelitefeather.dev/onelitefeather/grus-web
         # Same commit as the controller; move it together with ref.commit in foundation/sources/.../grus.yaml.
-        tag: prototype-58123e1
+        tag: prototype-82a3d5a
 
     # Templates in S3: credentials and endpoint come from the Rook claim grus-templates-dev
     # (templates-bucket.yaml). Plain http because the RGW traffic stays inside the cluster.
