@@ -1,4 +1,6 @@
-# Dev-only prototype: controller, Velocity proxy and Minestom lobbies as pods.
+# Dev-only Grus v2: controller, Velocity proxy and Minestom lobbies as pods, plus an
+# agent on mc01 (outside Kubernetes) that reaches the controller on
+# grus-dev-api.apps.onelite.feather. Templates live in S3, pools may come from CRs.
 # Web UI reachable on the internal gateway (grus-dev.apps.onelite.feather, no login)
 # and through kubectl port-forward. No Service of type LoadBalancer.
 # Remove the layer line in products/layers/feather-core/dev to roll back.
@@ -30,8 +32,8 @@ spec:
   values:
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/grus
-      # Pinned prototype tag; move it together with ref.commit in foundation/sources/.../grus.yaml.
-      tag: prototype-4839dd3
+      # Pinned v2 tag; move it together with ref.commit in foundation/sources/.../grus.yaml.
+      tag: prototype-58123e1
       pullPolicy: IfNotPresent
     imagePullSecrets:
       - name: harbor-pull
@@ -39,6 +41,16 @@ spec:
     adminToken:
       existingSecret: grus-dev-secrets
       key: GRUS_ADMIN_TOKEN
+
+    # Agent hosts: only the SHA-256 of each agent token is stored (host=<hash>).
+    agents:
+      tokens:
+        existingSecret: grus-dev-secrets
+        key: GRUS_AGENT_TOKENS
+
+    # Watch Environment, Group and Pool CRs of this namespace (CRDs: grus-dev-crds).
+    crds:
+      watch: true
 
     controller:
       debugEndpoints: true
@@ -79,9 +91,16 @@ spec:
       image:
         repository: harbor.onelitefeather.dev/onelitefeather/grus-web
         # Same commit as the controller; move it together with ref.commit in foundation/sources/.../grus.yaml.
-        tag: prototype-4839dd3
+        tag: prototype-58123e1
 
+    # Templates in S3: credentials and endpoint come from the Rook claim grus-templates-dev
+    # (templates-bucket.yaml). Plain http because the RGW traffic stays inside the cluster.
     templates:
+      backend: s3
+      s3:
+        existingSecret: grus-templates-dev
+        existingConfigMap: grus-templates-dev
+        insecure: true
       seed:
         lobby-config:
           - path: grus-template.txt
