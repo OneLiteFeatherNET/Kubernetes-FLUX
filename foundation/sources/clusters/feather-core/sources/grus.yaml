@@ -11,4 +11,4 @@ spec:
   # Pinned to one commit of the Grus repository, never a moving branch. Bump it
   # together with the image tag in grus-dev/release.yaml, through a pull request.
   ref:
-    commit: 4f5d5169e20f6e1f8f35a728e1f1f8d4de708b59
+    commit: 4839dd3c77dfd90c436a4f0bceabcc7e1128f2d7
