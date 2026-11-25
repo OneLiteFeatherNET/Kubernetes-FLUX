@@ -1,0 +1,49 @@
+# Internal Minecraft entry point for the Grus dev proxies, for testers on the internal
+# network and the site VPN. Fixed address from Cilium pool lb-fr01; no public hostname.
+# externalTrafficPolicy Cluster spreads connections over every proxy pod (Local would
+# announce only from nodes that hold one). The source may arrive SNATed to a node.
+apiVersion: v1
+kind: Service
+metadata:
+  name: grus-dev-proxy
+  namespace: grus-dev
+  annotations:
+    lbipam.cilium.io/ips: "10.200.90.11"
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  selector:
+    grus.olf/pool: proxy
+    grus.olf/role: proxy
+  ports:
+    - name: minecraft
+      port: 25565
+      targetPort: minecraft
+      protocol: TCP
+---
+# Admits TCP 25565 to the proxy pods only, from the internal ranges. Lobbies, the
+# controller and the web UI are not opened. Sources follow the dragonfly LB pattern.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internal-proxy-ingress
+spec:
+  podSelector:
+    matchLabels:
+      grus.olf/role: proxy
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        # fr01 node network: covers traffic SNATed to a node address.
+        - ipBlock:
+            cidr: 192.168.15.0/24
+        # Management network (mc01), as admitted for the dragonfly LB VIP.
+        - ipBlock:
+            cidr: 10.200.2.0/24
+        # Maintainer's site network, reached over the site VPN.
+        - ipBlock:
+            cidr: 172.16.20.0/24
+      ports:
+        - protocol: TCP
+          port: 25565
