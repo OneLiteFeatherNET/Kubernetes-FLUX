@@ -30,7 +30,7 @@ spec:
     image:
       repository: harbor.onelitefeather.dev/onelitefeather/grus
       # Pinned prototype tag; move it together with ref.commit in foundation/sources/.../grus.yaml.
-      tag: prototype-4f5d516
+      tag: prototype-4839dd3
       pullPolicy: IfNotPresent
     imagePullSecrets:
       - name: harbor-pull
@@ -69,6 +69,16 @@ spec:
     persistence:
       enabled: true
       size: 1Gi
+
+    # Web UI for the controller API. It has no login yet, so reach it only through
+    # kubectl -n grus-dev port-forward svc/grus-web 3000:3000 and open http://localhost:3000.
+    # Its pull secret falls back to imagePullSecrets (harbor-pull).
+    web:
+      enabled: true
+      image:
+        repository: harbor.onelitefeather.dev/onelitefeather/grus-web
+        # Same commit as the controller; move it together with ref.commit in foundation/sources/.../grus.yaml.
+        tag: prototype-4839dd3
 
     templates:
       seed:
