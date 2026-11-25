@@ -13,6 +13,10 @@ It also drops Flux Kustomizations outside flux-system from the cluster
 entry files (clusters/*/*.yaml). Those link a tenant repository whose path
 is not in this checkout, the same skip validate.sh applies.
 
+Flux Kustomizations anywhere in the tree whose sourceRef is a GitRepository
+other than flux-system are dropped as well (for example CRDs that a product
+ships from its own repository); flux-local cannot read their path either.
+
 usage: flux-local-sanitize.py ROOT
 """
 import glob
@@ -63,8 +67,57 @@ def drop_tenant_kustomizations(root):
         print(f"dropped tenant kustomization from {os.path.relpath(full, root)}")
 
 
+def is_external_kustomization(doc):
+    if not isinstance(doc, dict) or doc.get("kind") != "Kustomization":
+        return False
+    if not str(doc.get("apiVersion", "")).startswith("kustomize.toolkit.fluxcd.io"):
+        return False
+    ref = (doc.get("spec") or {}).get("sourceRef") or {}
+    return ref.get("kind") == "GitRepository" and ref.get("name", "flux-system") != "flux-system"
+
+
+def drop_external_kustomizations(root):
+    """Drop Flux Kustomizations that read another repository (path not in this checkout).
+
+    A file left empty is removed together with its entry in the sibling kustomization.yaml.
+    """
+    for dirpath, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if d != ".git"]
+        for name in files:
+            if not name.endswith((".yaml", ".yml")) or name.startswith("kustomization."):
+                continue
+            full = os.path.join(dirpath, name)
+            try:
+                with open(full) as fh:
+                    docs = list(yaml.safe_load_all(fh))
+            except yaml.YAMLError:
+                continue
+            kept = [d for d in docs if d is not None and not is_external_kustomization(d)]
+            if len(kept) == len([d for d in docs if d is not None]):
+                continue
+            rel = os.path.relpath(full, root)
+            if kept:
+                with open(full, "w") as fh:
+                    yaml.safe_dump_all(kept, fh, sort_keys=False)
+                print(f"dropped external kustomization from {rel}")
+                continue
+            os.remove(full)
+            for kname in ("kustomization.yaml", "kustomization.yml"):
+                kfull = os.path.join(dirpath, kname)
+                if not os.path.exists(kfull):
+                    continue
+                with open(kfull) as fh:
+                    kdoc = yaml.safe_load(fh)
+                if isinstance(kdoc, dict) and isinstance(kdoc.get("resources"), list):
+                    kdoc["resources"] = [r for r in kdoc["resources"] if r != name]
+                    with open(kfull, "w") as fh:
+                        yaml.safe_dump(kdoc, fh, sort_keys=False)
+            print(f"removed external kustomization file {rel}")
+
+
 def main(root):
     drop_tenant_kustomizations(root)
+    drop_external_kustomizations(root)
     stripped = 0
     for dirpath, dirs, files in os.walk(root):
         dirs[:] = [d for d in dirs if d != ".git"]
