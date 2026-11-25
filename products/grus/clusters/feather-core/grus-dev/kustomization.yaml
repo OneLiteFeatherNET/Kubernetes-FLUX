@@ -5,6 +5,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - namespace.yaml
+  - httproute.yaml
   - networkpolicy.yaml
   - release.yaml
 

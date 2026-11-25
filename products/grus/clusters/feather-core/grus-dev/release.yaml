@@ -1,6 +1,7 @@
 # Dev-only prototype: controller, Velocity proxy and Minestom lobbies as pods.
-# Reachable only through kubectl port-forward (no Service of type LoadBalancer,
-# no HTTPRoute). Remove the layer line in products/layers/feather-core/dev to roll back.
+# Web UI reachable on the internal gateway (grus-dev.apps.onelite.feather, no login)
+# and through kubectl port-forward. No Service of type LoadBalancer.
+# Remove the layer line in products/layers/feather-core/dev to roll back.
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -70,8 +71,8 @@ spec:
       enabled: true
       size: 1Gi
 
-    # Web UI for the controller API. It has no login yet, so reach it only through
-    # kubectl -n grus-dev port-forward svc/grus-web 3000:3000 and open http://localhost:3000.
+    # Web UI for the controller API. It has no login yet; it is reachable on the internal
+    # gateway (httproute.yaml) and through kubectl -n grus-dev port-forward svc/grus-web 3000:3000.
     # Its pull secret falls back to imagePullSecrets (harbor-pull).
     web:
       enabled: true

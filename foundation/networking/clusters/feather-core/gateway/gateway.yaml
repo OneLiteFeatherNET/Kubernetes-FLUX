@@ -84,6 +84,8 @@ spec:
           - kind: Secret
             name: menura-dev-apps-onelite-feather-tls
           - kind: Secret
+            name: grus-dev-apps-onelite-feather-tls
+          - kind: Secret
             name: files-apps-onelite-feather-tls
           - kind: Secret
             name: jellyfin-apps-onelite-feather-tls

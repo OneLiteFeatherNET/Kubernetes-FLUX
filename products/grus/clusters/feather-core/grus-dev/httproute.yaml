@@ -1,0 +1,72 @@
+# Internal gateway route for the Grus web UI (no login; see the internal-access
+# proposal). The API paths for the event and instance streams are long-lived
+# Server-Sent-Events streams, so they carry no request deadline.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: grus-dev
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy
+      sectionName: https
+  hostnames:
+    - grus-dev.apps.onelite.feather
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/grus/v1/events
+        - path:
+            type: PathPrefix
+            value: /api/grus/v1/instances
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: Strict-Transport-Security
+                value: max-age=31536000
+              - name: Referrer-Policy
+                value: no-referrer
+              - name: X-Content-Type-Options
+                value: nosniff
+      timeouts:
+        request: "0s"
+        backendRequest: "0s"
+      backendRefs:
+        - name: grus-web
+          port: 3000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: Strict-Transport-Security
+                value: max-age=31536000
+              - name: Referrer-Policy
+                value: no-referrer
+              - name: X-Content-Type-Options
+                value: nosniff
+      backendRefs:
+        - name: grus-web
+          port: 3000
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: grus-dev
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: grus-dev
+  timeout:
+    http:
+      # SSE event stream and live log stream. The event stream carries instance
+      # updates every few seconds; the idle timeout is a backstop only.
+      requestTimeout: 0s
+      maxStreamDuration: 0s
+      streamIdleTimeout: 1h
