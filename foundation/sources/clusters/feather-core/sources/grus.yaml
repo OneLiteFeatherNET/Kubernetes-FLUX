@@ -12,4 +12,4 @@ spec:
   # carries the CRDs (deploy/crds, applied by grus-dev-crds). Bump it through a pull
   # request. The image tags in grus-dev/release.yaml move together with it.
   ref:
-    commit: ccc250b18ede7e530a57f9f375ba51fb809013cd
+    commit: 82a3d5acab6709de0de49e86510970708171ce34
