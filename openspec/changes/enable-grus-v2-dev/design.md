@@ -1,6 +1,6 @@
 ## Context
 
-`grus-dev` is a dev-only prototype (`add-grus-prototype`, `enable-grus-web-ui`, `expose-grus-web-ui-internally`). Grus v2 adds three things that touch the cluster: S3 as the template backend, a CRD watch for declarations, and an HTTP agent protocol for machines outside Kubernetes. The first external machine is `mc01`, the Helsinki host where CloudNet runs. Instances there are plain processes started by a Grus agent. The agent talks to the controller, and the Velocity proxy pods in `grus-dev` talk to the instances.
+`grus-dev` is a dev-only prototype (`add-grus-prototype`, `enable-grus-web-ui`, `expose-grus-web-ui-internally`). Grus v2 adds three things that touch the cluster: S3 as the template backend, a CRD watch for declarations, and an HTTP agent protocol for machines outside Kubernetes. The first external machine is `mc01`, the host where CloudNet runs. Instances there are plain processes started by a Grus agent. The agent talks to the controller, and the Velocity proxy pods in `grus-dev` talk to the instances.
 
 Decision drivers:
 
