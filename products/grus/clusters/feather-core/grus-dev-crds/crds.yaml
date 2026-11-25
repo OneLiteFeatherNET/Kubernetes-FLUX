@@ -1,0 +1,18 @@
+# CRDs of the Grus custom resources (Environment, Group, Pool). Applied from the pinned
+# grus source (deploy/crds), not by the Helm chart: Helm never upgrades a chart's crds/.
+# prune: false and deletionPolicy: Orphan keep the CRDs and every custom resource when this
+# object or a manifest disappears. Deleting a CRD deletes its custom resources: do it by hand.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: grus-crds
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: grus
+  path: ./deploy/crds
+  prune: false
+  deletionPolicy: Orphan
+  wait: true
