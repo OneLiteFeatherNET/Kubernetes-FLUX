@@ -147,9 +147,8 @@ spec:
 
       database:
         type: postgres
-        # The -rw service directly, not the PgBouncer pooler — same reasoning
-        # as n8n and penpot.
-        host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
+        # Transaction pooler; no session state or startup parameters are set.
+        host: feather-core-cluster-pg-pooler-rw-tx.cnpg-system.svc.cluster.local
         user: vikunja
         database: vikunja
         schema: public
