@@ -139,3 +139,9 @@ spec:
   # Cascade noise: a dependent waiting on a failed layer, not a failure itself.
   exclusionList:
     - "dependency .* is not ready"
+    # Transient status-update timeouts: Grafana reports stuck objects after 15 min.
+    - "timed out waiting for the condition"
+    - "failed to update status"
+    - "unable to update the healthy status"
+    - "etcdserver: request timed out"
+    - "health check failed after"
