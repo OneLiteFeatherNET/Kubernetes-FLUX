@@ -147,8 +147,9 @@ spec:
 
       database:
         type: postgres
-        # Transaction pooler; no session state or startup parameters are set.
-        host: feather-core-cluster-pg-pooler-rw-tx.cnpg-system.svc.cluster.local
+        # The -rw service: Vikunja's pgx driver sends search_path and
+        # default_transaction_isolation as startup parameters, which PgBouncer rejects.
+        host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
         user: vikunja
         database: vikunja
         schema: public
