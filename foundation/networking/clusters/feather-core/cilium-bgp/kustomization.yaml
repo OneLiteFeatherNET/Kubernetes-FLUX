@@ -5,3 +5,6 @@ resources:
   - peer-config-v4.yaml
   - peer-config-v6.yaml
   - advertisement.yaml
+  - cluster-config-hel01.yaml
+  - peer-config-fw01-v4.yaml
+  - advertisement-hel01.yaml

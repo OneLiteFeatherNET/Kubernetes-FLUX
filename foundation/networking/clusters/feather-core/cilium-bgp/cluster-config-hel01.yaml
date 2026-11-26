@@ -1,0 +1,18 @@
+# Helsinki edge nodes announce only the gateway VIP to fw01 (add-helsinki-anycast-ingress).
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
+metadata:
+  name: hel01
+spec:
+  nodeSelector:
+    matchLabels:
+      topology.kubernetes.io/zone: hel01
+  bgpInstances:
+    - name: hel01
+      localASN: 64606
+      peers:
+        - name: fw01-v4
+          peerAddress: 10.200.2.1
+          peerASN: 64504
+          peerConfigRef:
+            name: fw01-v4

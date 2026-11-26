@@ -1,0 +1,16 @@
+# Only Services labelled for Helsinki; fr01 peers never select this advertisement.
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: hel01-ingress
+  labels:
+    bgp.onelite.feather/advertise: hel01-ingress
+spec:
+  advertisements:
+    - advertisementType: Service
+      service:
+        addresses:
+          - LoadBalancerIP
+      selector:
+        matchLabels:
+          bgp.onelite.feather/site: hel01
