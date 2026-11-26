@@ -38,6 +38,8 @@ spec:
     enableIPv6Masquerade: true
     loadBalancer:
       mode: snat
+      # Honour trafficDistribution, so in-cluster clients prefer backends in their own zone.
+      serviceTopology: true
     # BGP for LoadBalancer IPs (peers in cilium-bgp/).
     bgpControlPlane:
       enabled: true

@@ -28,6 +28,12 @@ spec:
           lbipam.cilium.io/ips: "10.200.90.1"
         labels:
           onelite.feather/bgp: "announce"
+        # In-cluster clients stay on Envoy pods in their own zone (fr01 vs hel01).
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              trafficDistribution: PreferSameZone
   telemetry:
     tracing:
       # 10% sampling: this gateway fronts every ingress route in the
