@@ -14,3 +14,8 @@ spec:
       selector:
         matchLabels:
           bgp.onelite.feather/site: hel01
+      # Site community "anycast, hel01": the routers filter Helsinki routes by this tag.
+      attributes:
+        communities:
+          standard:
+            - "64606:901"
