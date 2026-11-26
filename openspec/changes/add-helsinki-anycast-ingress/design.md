@@ -97,11 +97,22 @@
 - **What is dropped:** the fw01 import filter that removes the mkgfire-learned VIP routes ("Part B") and the static fallback question.
 - **Ludwigsburg:** loses only fw01's backup path for the VIPs, because fw01 never re-advertises a Helsinki-originated best path. Ludwigsburg already prefers its direct path to mkgfire.
 
-### 6. Tolerations
+### 6. Tolerations and game compute on the edge nodes
 
-- **This change:** Envoy is the only workload that newly tolerates `node-role.feather/edge`.
-- **Already tolerated:** Cilium and node-exporter tolerate all taints; spegel and alloy-logs did so since #742.
-- **Kept off the edge nodes:** everything else, including Rook CSI, envoy-gateway (the controller), loki-canary and all applications.
+**Decision:** on 2026-11-26 the operator decided that the edge nodes serve both as ingress and as game compute.
+
+**Tolerations:**
+- **New in this change:** Envoy.
+- **Already tolerated:**
+  - Cilium and node-exporter tolerate all taints.
+  - spegel and alloy-logs since #742.
+- **CloudNet workloads:** the namespace `cloudnet` (change `add-cloudnet-kubernetes-runtime`) may tolerate `node-role.feather/edge`.
+- **Kept off the edge nodes:** everything else, including Rook CSI, envoy-gateway (the controller), loki-canary and all other applications.
+
+**Guard rails for game workloads** (each edge node has about 3.9 CPU and 5.2 GiB allocatable):
+- **Lower priority:** CloudNet pods use a PriorityClass below `feather-platform`, normally `feather-standard`. They never use `feather-platform` or `feather-critical`, so the kubelet and the scheduler evict them before Envoy or a system DaemonSet.
+- **Memory requests equal limits:** set on every CloudNet container, so the scheduler never overcommits node memory.
+- **Fixed reserve:** the system DaemonSets plus Envoy keep about 1 GiB and 0.5 CPU free per node. CloudNet capacity is what remains.
 
 ## Risks / Trade-offs
 

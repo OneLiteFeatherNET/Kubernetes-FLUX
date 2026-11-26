@@ -53,10 +53,29 @@ WHEN no hel01 node announces `10.200.90.1`, THE fw01 router SHALL route Helsinki
 
 ### Requirement: Only listed workloads run on the edge nodes
 
-THE cluster SHALL schedule on nodes tainted `node-role.feather/edge` only Cilium, cilium-envoy, node-exporter, spegel, alloy-logs and the Envoy Gateway data plane.
+THE cluster SHALL schedule on nodes tainted `node-role.feather/edge` only these workloads:
+
+- Cilium;
+- cilium-envoy;
+- node-exporter;
+- spegel;
+- alloy-logs;
+- the Envoy Gateway data plane;
+- pods in namespace `cloudnet`.
 
 #### Scenario: Pods on an edge node
 
 - **GIVEN** the change is reconciled
 - **WHEN** the pods on `hel01-wrk-ed-01` are listed
 - **THEN** each pod belongs to one of the listed workloads
+
+### Requirement: Game workloads never starve the ingress
+
+WHERE a pod in namespace `cloudnet` runs on an edge node, THE pod SHALL use a PriorityClass with a lower value than `feather-platform`, and every container SHALL set its memory request equal to its memory limit.
+
+#### Scenario: Memory pressure on an edge node
+
+- **GIVEN** an edge node runs Envoy and CloudNet pods
+- **WHEN** the node comes under memory pressure
+- **THEN** the kubelet evicts CloudNet pods before the Envoy pod
+- **AND** the Envoy pod and the system DaemonSets stay Running
