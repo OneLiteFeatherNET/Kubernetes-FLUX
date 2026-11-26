@@ -17,6 +17,9 @@ spec:
         - key: node-role.feather/storage
           operator: Exists
           effect: NoSchedule
+        - key: node-role.feather/edge
+          operator: Exists
+          effect: NoSchedule
       podLabels:
         logs.onelitefeather.net/env: prod
     serviceMonitor:

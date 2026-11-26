@@ -47,6 +47,10 @@ spec:
         operator: Equal
         value: "true"
         effect: NoSchedule
+      # Helsinki edge nodes pull images through the peer mirror too.
+      - key: node-role.feather/edge
+        operator: Exists
+        effect: NoSchedule
     spegel:
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
       # Default 20ms is too tight for DHT lookups on busy (storage/Ceph) nodes,
