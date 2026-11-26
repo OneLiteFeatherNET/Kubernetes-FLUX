@@ -25,7 +25,8 @@ spec:
       enabled: true
     routingMode: tunnel
     tunnelProtocol: vxlan
-    MTU: 1500
+    # Pods get route MTU 1350 (VXLAN overhead), which fits the 1400 Helsinki site link.
+    MTU: 1400
     devices: [ens18]
     bpf:
       masquerade: false
