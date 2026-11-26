@@ -111,11 +111,10 @@ spec:
           scopes: "openid profile email"
           roles: ""
 
-      # The -rw service directly, NOT the PgBouncer pooler — same reasoning as
-      # n8n: PgBouncer rejects some startup parameters and Penpot is untested
-      # against it here.
+      # Transaction pooler: 2.19.0 only takes transaction-scoped advisory locks. Newer releases
+      # add session locks (audit consumers); recheck app/db.clj before upgrading.
       postgresql:
-        host: feather-core-cluster-pg-rw.cnpg-system.svc.cluster.local
+        host: feather-core-cluster-pg-pooler-rw-tx.cnpg-system.svc.cluster.local
         port: 5432
         database: penpot
         existingSecret: penpot-db
