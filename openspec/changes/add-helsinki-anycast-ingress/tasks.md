@@ -49,9 +49,17 @@
   - every `cloudnet` pod has a PriorityClass below `feather-platform`;
   - every `cloudnet` container has its memory request equal to its limit.
 
-## 5. Documentation
+## 5. Site community instead of VIP lists
 
-- [ ] 5.1 Write the Outline runbook for the Helsinki ingress (collection Infrastruktur). It covers:
+- [ ] 5.1 Add the community `64606:901` to `CiliumBGPAdvertisement` `hel01-ingress` (`attributes.communities.standard`). Open the code pull request `feat(networking): tag helsinki routes with a site community`, without files under `openspec/`. Verification: `show bgp ipv4 unicast 10.200.90.1/32` on fw01 lists `Community: 64606:901` on the hel01 paths, and the sessions keep their uptime.
+- [ ] 5.2 Operator: on fw01, switch `HEL01-IN` and `TO-SITES-OUT` to the community plus the pool range, and widen the source NAT alias to `10.200.90.0/24`. Verification:
+  - the best path for `.1` is unchanged;
+  - no site session resets;
+  - no `64606:901` route is advertised to mkgfire or Ludwigsburg.
+
+## 6. Documentation
+
+- [ ] 6.1 Write the Outline runbook for the Helsinki ingress (collection Infrastruktur). It covers:
   - the topology;
   - the BGP sessions and router filters;
   - the source NAT rule;

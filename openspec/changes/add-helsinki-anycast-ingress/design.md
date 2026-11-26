@@ -59,10 +59,13 @@
 - **`CiliumBGPPeerConfig` `fw01-v4`:** same timers (hold 180 s, keepalive 60 s) and graceful restart (120 s) as `mkgfire-v4`. Family IPv4 unicast, advertisement selector `bgp.onelite.feather/advertise: hel01-ingress`.
 - **`CiliumBGPAdvertisement` `hel01-ingress`:** type `Service`, `LoadBalancerIP`, selector `bgp.onelite.feather/site: hel01`. Only the Envoy Service carries that label. The advertisement has no `lb-ips` label, so the fr01 peers never select it.
 - **No IPv6 session:** the gateway Service has no IPv6 address.
-- **fw01 side:** live since 2026-11-26, configured through the OPNsense model:
-  - `HEL01-IN` permits only the four VIP /32s and sets local-preference 200; everything else is denied.
+- **Site community:** the advertisement tags every route with the standard community `64606:901`, meaning "anycast, site hel01". The routers filter by this tag, not by a list of VIPs. A new Helsinki VIP therefore needs only the Service label in Git and no router change.
+- **fw01 side** (OPNsense model, applied without session reset):
+  - `HEL01-IN` permits a route only if it carries `64606:901` **and** lies inside the LoadBalancer pool `10.200.90.0/24` (`le 32`), and sets local-preference 200. Everything else is denied. The pool range is a fixed guard: a wrong label in Git can never make fw01 accept another network or a default route.
   - `HEL01-OUT` denies all, so the nodes learn nothing and keep using their default route.
-  - `TO-SITES-OUT` on the four site sessions denies a VIP route whose AS path is exactly `64606` (learned straight from a hel01 node). Transit routes are unchanged.
+  - `TO-SITES-OUT` on the four site sessions denies routes that carry `64606:901`. Transit routes are unchanged.
+  - The source NAT destination alias covers the pool `10.200.90.0/24`. That is safe because the rule only matches traffic that fw01 routes into MGMT.
+- **mkgfire side** (optional, in place since 2026-11-26): `FROM-HEL-IN` denies routes with `64606:901` from fw01 and Ludwigsburg.
 
 ### 3. Symmetry for MGMT clients: source NAT on fw01
 
