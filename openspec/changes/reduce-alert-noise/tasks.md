@@ -3,13 +3,14 @@
 - [ ] 1.1 Confirm that the provisioned Grafana (12.4) accepts `unloadEvaluator` on the threshold expression; if not, use the fallback in design (keep 80% and `keepFiringFor: 15m`)
 - [ ] 1.2 List the Flux error messages of the last 14 days and check each exclusion regex against them; confirm no build, SOPS, validation or install error matches
 - [ ] 1.3 Confirm that a Kustomization that is not Ready for 15 minutes still produces one Grafana alert (rule "Flux core layer not ready")
+- [ ] 1.4 Confirm that the name list of "Core infrastructure HelmRelease not ready" and the `name!~` list of the new rule are identical, so every HelmRelease matches exactly one of them
 
 ## 2. Implementation
 
 - [ ] 2.1 Extend `exclusionList` in `foundation/sources/base/flux-notifications/alert.yaml` with the five transient-timeout regexes (`timed out waiting for the condition`, `failed to update status`, `unable to update the healthy status`, `etcdserver: request timed out`, `health check failed after`)
 - [ ] 2.2 "CNPG Postgres connection saturation high": add the recovery threshold (resolve below 70%) and `keepFiringFor: 15m` in `services/observability/clusters/feather-core/grafana/alerting/rules.yaml`
 - [ ] 2.3 "Otis health check failing": `for: 10m`, `keepFiringFor: 10m`
-- [ ] 2.4 "Otis container restarting": fire at 2 or more restarts within 1h (`increase(...[1h])`, threshold above 1)
+- [ ] 2.4 Add the Grafana rule "Flux HelmRelease not ready" in group `core_services` (folder `Core Services`), next to "Core infrastructure HelmRelease not ready": same `min_over_time` 15m sustain pattern, `keepFiringFor: 15m`, `name!~"<same list as the core rule>"`, `by (exported_namespace, name)`, severity `warning`
 - [ ] 2.5 "Ceph RGW failed request rate elevated": `keepFiringFor: 15m`
 - [ ] 2.6 "Minecraft TPS low": `keepFiringFor: 10m`
 - [ ] 2.7 Leave resolved notifications, `group_by` and the Discord template unchanged

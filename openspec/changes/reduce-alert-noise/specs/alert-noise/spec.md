@@ -27,6 +27,17 @@ WHEN a Flux Kustomization or HelmRelease has not been Ready for 15 minutes, Graf
 - **THEN** one firing notification is sent for that Kustomization
 - **AND** when it becomes Ready again, one resolved notification is sent
 
+### Requirement: One alert for a stalled HelmRelease
+
+WHEN any HelmRelease has not been Ready for 15 minutes, Grafana SHALL send one alert.
+
+#### Scenario: HelmRelease outside the core list fires once
+
+- **GIVEN** a HelmRelease that is not in the core name list is not Ready for 15 minutes
+- **WHEN** the Grafana rule "Flux HelmRelease not ready" evaluates
+- **THEN** one firing notification is sent for that HelmRelease
+- **AND** when it becomes Ready again, one resolved notification is sent
+
 ### Requirement: Hysteresis for the CNPG connection ratio
 
 WHILE the CNPG connection ratio stays between 70% and 80% after firing, the alert "CNPG Postgres connection saturation high" SHALL remain firing.
@@ -42,22 +53,6 @@ WHILE the CNPG connection ratio stays between 70% and 80% after firing, the aler
 - **GIVEN** the alert is firing
 - **WHEN** the ratio drops below 70%
 - **THEN** the alert resolves
-
-### Requirement: Single Otis restart is not an alert
-
-IF Otis restarts once within one hour, THEN no alert "Otis container restarting" SHALL be sent.
-
-#### Scenario: One restart in an hour
-
-- **GIVEN** an Otis pod restarts once
-- **WHEN** the rule "Otis container restarting" evaluates
-- **THEN** the alert stays in Normal state
-
-#### Scenario: Two restarts in an hour
-
-- **GIVEN** an Otis pod restarts twice within one hour
-- **WHEN** the rule "Otis container restarting" evaluates
-- **THEN** the alert fires
 
 ### Requirement: Short dips do not fire
 
