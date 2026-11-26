@@ -21,6 +21,7 @@ The database VIPs `.3`, `.4` and `.5` are out of scope for now (design, decision
 - **New BGP objects:** a `CiliumBGPClusterConfig` `hel01` (zone `hel01`, local ASN 64606) with one IPv4 session per node to fw01, plus a `CiliumBGPAdvertisement` `hel01-ingress` that announces only Services labelled `bgp.onelite.feather/site: hel01`.
 - **Service label:** `bgp.onelite.feather/site: hel01` goes on the Envoy Service only.
 - **Edge toleration:** the Envoy DaemonSet tolerates `node-role.feather/edge`.
+- **Game compute (operator decision, 2026-11-26):** the edge nodes also host CloudNet game workloads (namespace `cloudnet`, change `add-cloudnet-kubernetes-runtime`). Lower priority and fixed memory keep them from starving Envoy and the system DaemonSets (design, decision 6).
 - **Routers (operator work outside this repository):**
   - fw01 BGP neighbours and filters, already in place since 2026-11-26;
   - a source NAT rule on fw01 for MGMT clients that connect to the anycast VIPs;

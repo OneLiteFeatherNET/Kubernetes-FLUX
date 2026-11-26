@@ -44,6 +44,11 @@
   - a request to 65.108.236.147 still succeeds.
 - [ ] 4.6 Fallback test: delete the Envoy pod on one hel01 node. Verification: fw01 withdraws that next hop, and requests from mc01 keep succeeding.
 
+- [ ] 4.7 After `add-cloudnet-kubernetes-runtime` is rolled out, check the guard rails. Verification:
+  - `kubectl get pods -A --field-selector spec.nodeName=hel01-wrk-ed-01` shows only the listed workloads;
+  - every `cloudnet` pod has a PriorityClass below `feather-platform`;
+  - every `cloudnet` container has its memory request equal to its limit.
+
 ## 5. Documentation
 
 - [ ] 5.1 Write the Outline runbook for the Helsinki ingress (collection Infrastruktur). It covers:
