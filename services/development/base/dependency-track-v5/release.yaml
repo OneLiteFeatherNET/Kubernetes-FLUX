@@ -42,7 +42,7 @@ spec:
     apiServer:
       image:
         repository: dependencytrack/apiserver
-        tag: "5.2.1"
+        tag: "5.2.2"
       # The migrator bootstraps the schema; the chart initializer would run first on the empty target.
       initializer:
         enabled: false
@@ -61,7 +61,7 @@ spec:
     frontend:
       image:
         repository: dependencytrack/frontend
-        tag: "5.2.1"
+        tag: "5.2.2"
       replicaCount: 3
       priorityClassName: feather-standard
       pdb:
