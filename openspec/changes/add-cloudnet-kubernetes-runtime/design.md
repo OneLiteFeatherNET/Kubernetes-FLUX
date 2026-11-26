@@ -68,29 +68,34 @@ Two repository facts constrain the design:
 
 **Decision:** `cloudnet-services` with `clusterIP: None`, `publishNotReadyAddresses: true`, selector `cloudnet.eu/component: service`, port 25565 named `game`, copied from `deploy/headless-service.yaml`.
 
-**Consequences:** one service for all runtime pods, with per-pod DNS names `<pod>.cloudnet-services.cloudnet.svc.cluster.local`. The module reads that name back through its node-service DNS setting; the value must match the namespace (open question 6).
+**Consequences:** one service for all runtime pods, with per-pod DNS names `<pod>.cloudnet-services.cloudnet.svc.cluster.local`. The node is not reached through this service; its address is set in decision 10.
 
-### 5. Staging bucket as an ObjectBucketClaim in the namespace
+### 5. Staging bucket as a dedicated ObjectBucketClaim
 
-**Decision:** an `ObjectBucketClaim` in `cloudnet` with `storageClassName: ceph-bucket-fr01`, following `products/blackhole/clusters/feather-core/blackhole/evidence-bucket.yaml`. Rook writes a Secret and ConfigMap into `cloudnet`. The bucket is separate from `cloudnet-templates` (owned by the existing Ceph user `cloudnet`), which holds CloudNet templates and must not receive per-service staging objects.
+**Decision:** an `ObjectBucketClaim` in `cloudnet` with `storageClassName: ceph-bucket-fr01`, following `products/blackhole/clusters/feather-core/blackhole/evidence-bucket.yaml`. Rook writes a Secret and ConfigMap into `cloudnet`. The claim has its own credentials, separate from the existing Ceph user `cloudnet`. The bucket is separate from `cloudnet-templates`, which holds CloudNet templates and must not receive per-service staging objects.
 
 **Alternatives considered:**
 
 - *Reuse `cloudnet-templates`.* Rejected: staging objects are short-lived and would mix with templates the team edits by hand.
-- *A `CephObjectStoreUser` secret.* The module's example names this shape (`accessKey`, `secretKey`), so it fits the module's own `config.json`. Chosen only if the bucket owner question (open question 3) requires a new user.
+- *Reuse the existing Ceph user `cloudnet`.* Rejected: one key would then cover templates and staging, and revoking the staging access would also cut template access. The dedicated claim can be revoked on its own, with a smaller blast radius.
+- *A separate `CephObjectStoreUser`.* Not needed: the claim already issues its own credentials. The module's example `config.json` names the `accessKey`/`secretKey` shape, which is mapped on `mc01`.
 
-**Consequences:** the OBC Secret uses `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, not the keys the module reads. The credentials must be transferred to `mc01`'s `config.json` by hand or through a SOPS file (open question 4).
+**Consequences:** the OBC Secret uses `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, not the keys the module reads. The credentials must be transferred to `mc01`'s `config.json` by hand or through a SOPS file (open question 1).
 
 ### 6. Priority below the platform tier
 
-**Decision:** `PriorityClass` `cloudnet-workload` with `preemptionPolicy: PreemptLowerPriority` and a value that sits below `feather-platform` (900000000). Pods of this product never use `feather-platform`. The concrete value is open question 1, with a proposal in the code pull request.
+**Decision:** `PriorityClass` `cloudnet-workload` with value `0` and `preemptionPolicy: Never`. The value sits between `feather-low` (-10) and `feather-standard` (1000), and far below `feather-platform` (900000000). Pods of this product never use `feather-platform`.
+
+**Rationale:** under memory pressure, game servers yield first, which protects databases and monitoring. `preemptionPolicy: Never` because game pods must not evict other workloads; a pod that does not fit waits in `Pending`.
 
 **Alternatives considered:**
 
 - *`feather-low` (-10).* Rejected: it is the first class evicted under pressure, and a team proxy must not be evicted before best-effort apps.
+- *`feather-standard` (1000).* Rejected: game pods would then count as standard apps under pressure and would not yield first.
 - *`feather-platform`.* Rejected by the brief: Envoy and databases use it, and a CloudNet pod must never share that tier.
+- *`preemptionPolicy: PreemptLowerPriority`.* Rejected: it would let a game pod evict lower-priority workloads to get scheduled.
 
-**Consequences:** under pressure on an edge node, Cilium (system) and Envoy (`feather-platform`) keep their place. CloudNet pods are evicted before them.
+**Consequences:** under pressure on an edge node, Cilium (system), Envoy (`feather-platform`) and the other platform tiers keep their place. CloudNet pods are evicted before standard apps. A game pod that does not fit stays `Pending` and displaces nothing.
 
 ### 7. Placement on the edge nodes
 
@@ -100,11 +105,11 @@ Two repository facts constrain the design:
 
 - *Any worker node.* Rejected: the brief names the edge nodes; the fr01 workers carry the storage and database load.
 
-**Consequences:** the toleration is a request for the edge taint only. The edge-scheduling delta in `add-helsinki-anycast-ingress` decides whether these pods may run there. Edge nodes have about 3.9 CPU and 5.2 GiB each, so the total memory limit of all runtime pods is capped by three nodes minus Cilium and Envoy.
+**Consequences:** the toleration is a request for the edge taint only. The edge-scheduling delta in `add-helsinki-anycast-ingress` decides whether these pods may run there (open question 4). Edge nodes have about 3.9 CPU and 5.2 GiB each, so the total memory limit of all runtime pods is capped by three nodes minus Cilium and Envoy.
 
 ### 8. Team proxy as an internal LoadBalancer on the Helsinki site
 
-**Decision:** `Service` `cloudnet-team-proxy` of type `LoadBalancer`, port 25565, selecting the team proxy pods. It is pinned with `lbipam.cilium.io/ips` to one free address of `lb-fr01` (open question 2). It carries `bgp.onelite.feather/site: hel01`, so the `hel01-ingress` advertisement announces it from the edge nodes. It uses `externalTrafficPolicy: Local`, so the address is announced only from a node that runs a proxy pod, and the client source address is kept.
+**Decision:** `Service` `cloudnet-team-proxy` of type `LoadBalancer`, port 25565, selecting the team proxy pods. It is pinned with `lbipam.cilium.io/ips` to `10.200.90.12` in pool `lb-fr01`. A live check on 2026-11-26 found `.1`, `.3`, `.4`, `.5`, `.7`, `.8`, `.10` and `.11` in use; `.12` is to be verified again before implementation (task 1.1). It carries `bgp.onelite.feather/site: hel01`, so the `hel01-ingress` advertisement announces it from the edge nodes. It uses `externalTrafficPolicy: Local`, so the address is announced only from a node that runs a proxy pod, and the client source address is kept.
 
 **Alternatives considered:**
 
@@ -115,9 +120,34 @@ Two repository facts constrain the design:
 
 ### 9. NetworkPolicy in the repository default-deny pattern
 
-**Decision:** a default-deny policy for both ingress and egress in `cloudnet`, then explicit allows: DNS egress to `kube-dns`; ingress TCP 25565 from the internal ranges to the team proxy; ingress among pods of the namespace on game ports; egress to Ceph RGW for the staging bucket; egress to `mc01` on the ports the node and wrappers use (open question 5). Private ranges are excluded from general HTTPS egress, as in `menura-dev`.
+**Decision:** a default-deny policy for both ingress and egress in `cloudnet`, then explicit allows: DNS egress to `kube-dns`; ingress TCP 25565 from the source ranges in decision 11 to the team proxy; ingress among pods of the namespace on game ports; egress to Ceph RGW for the staging bucket; egress to the node and the `mc01` game ports as set in decision 10. Private ranges are excluded from general HTTPS egress, as in `menura-dev`.
 
 **Consequences:** Cilium runs in policy audit mode, so these policies are recorded but not enforced. They describe the target state. Enforcement is decided cluster-wide.
+
+### 10. Node address, ports and nodeServiceDns
+
+**Decision:** the CloudNet node on `mc01` listens on `10.200.2.35:1410`, IPv4 only, and has no IPv6 listener. Pods in `cloudnet` get an egress allow for TCP 1410 to `10.200.2.35/32`, plus egress to the game ports of the services that remain on `mc01`. The module setting `nodeServiceDns` is set to the IPv4 address `10.200.2.35`, not to `mc01.onelite.feather`.
+
+**Rationale:** the address and port were read from the live node on `mc01` (read-only, PR 746 comment). Pods resolve `mc01.onelite.feather` to IPv6 first, and the node does not listen on IPv6, so the name would fail. The module default `cloudnet-node.cloudnet.svc.cluster.local` assumes an in-cluster node and does not apply here.
+
+**Alternatives considered:**
+
+- *Keep the hostname `mc01.onelite.feather`.* Rejected: resolves to IPv6 first, and the node has no IPv6 listener.
+- *Keep the module default.* Rejected: it names an in-cluster service that does not exist for this node.
+
+**Consequences:** the headless service `cloudnet-services` is unaffected, because it serves pod addresses, not the node. The `mc01` game-port list for the egress rule is taken from the services that stay on `mc01` (task 1.4).
+
+### 11. Team proxy source ranges
+
+**Decision:** the team proxy accepts TCP 25565 only from the internal networks and the site VPN, the same ranges as the Grus proxy. It is never reachable from the public internet.
+
+**Rationale:** the team proxy is an internal service; public exposure is out of scope for this change. Reusing the Grus proxy's ranges keeps one definition for internal proxies.
+
+**Alternatives considered:**
+
+- *Any source with a route to the address.* Rejected: the address is in a pool that Helsinki advertises, so routing alone is not an access control.
+
+**Consequences:** the exact CIDR list is taken from `expose-grus-proxy-load-balancer` and recorded in the code pull request (task 1.5). The ingress NetworkPolicy and the rollout check (no route from outside) use the same list.
 
 ## Risks / Trade-offs
 
@@ -126,13 +156,13 @@ Two repository facts constrain the design:
 | The `products` layer waits for a pending load balancer address and holds back other products | Verify the address is announced before the layer change; the layer-removal rollback in the proposal |
 | An edge node runs out of memory and Cilium or Envoy are starved | Requests equal limits, priority below `feather-platform`, toleration only for the edge taint |
 | The node token leaks | Token lives only in a Secret and on `mc01`; deleting the Secret revokes it; never committed |
-| The address `.11` or another reserved address is taken by a parallel change | Choose from the free list live in preflight; record the address in the code pull request |
+| `10.200.90.12` or another reserved address is taken by a parallel change | Verify live in preflight (task 1.1); record the address in the code pull request |
 | The pod spec created by the node is not PSA-compliant | `baseline` is enforced; `restricted` violations are warnings to be fixed in the module |
 | `externalTrafficPolicy: Local` withdraws the address during a rollout | Keep at least one proxy pod on an edge node at all times; a rollout notes item |
 
 ## Migration Plan
 
-1. Preflight (tasks 1.x): choose the address, confirm the module commit, confirm the bucket owner, confirm edge capacity.
+1. Preflight (tasks 1.x): verify the address, confirm the module commit and node address, confirm the bucket name, confirm edge capacity.
 2. The proposal pull request merges to `main`.
 3. The code pull request is opened from a fresh `main`.
 4. Flux reconciles `products`. Verify read-only (tasks 4.x).
@@ -142,13 +172,7 @@ Two repository facts constrain the design:
 
 ## Open Questions
 
-1. **PriorityClass value.** Which value below 900000000 is used? Proposed: a value between `feather-standard` (1000) and `feather-low` (-10), so pods preempt nothing above them and are not evicted first. The exact number is chosen in the code pull request and recorded there.
-2. **Team proxy address.** Which free address of `lb-fr01` is pinned? Candidates from the brief: `.2`, `.6`, `.9`, `.12` to `.15`. Not `.11` (reserved by `expose-grus-proxy-load-balancer`), not `.1`, `.3` to `.5`. Also check the address reserved by `harden-observability-coverage` (task 1.2, not yet chosen). Verify with `kubectl get svc -A -o wide` before implementing.
-3. **Bucket owner.** Does the staging bucket get a dedicated `CephObjectStoreUser`, or does the existing user `cloudnet` (which owns `cloudnet-templates`) own it too? The brief does not decide. Proposed: a dedicated user, so templates and staging stay separate.
-4. **Credential transfer.** The OBC Secret uses `AWS_*` keys, but the module reads `accessKey` and `secretKey` from its own `config.json`. How do the values reach `mc01` without plaintext in Git: a SOPS file in this repository, or a manual copy?
-5. **Ports between the node, wrappers and `mc01`.** Which `mc01` address and port range must pods reach, and which ports must `mc01` accept from the pods? The Grus proposal uses `10.200.2.35` on ports 30000 to 30100 for its agent. The module's ports are not in the brief and must be read from its configuration before the egress rule is written.
-6. **Node-service DNS.** Does the module's `nodeServiceDns` setting match `cloudnet-services.cloudnet.svc.cluster.local`? Check against the module's `config.json` defaults.
-7. **Source range for the team proxy.** Which VPN and internal ranges may reach the team proxy? Same question as task 1.4 of `expose-grus-proxy-load-balancer`; the answer is recorded in the code pull request.
-8. **Layer wait behaviour.** The `products` layer waits for its resources. Does a pending load balancer address or a blocked runtime pod hold back other products? Proposed: keep `wait` as in the layer, and verify with the rollout tasks before merge.
-9. **Pod sizing.** How much memory and CPU does each runtime pod get? Not in the brief. Set in the node's configuration, and bounded by the edge capacity of about 3.9 CPU and 5.2 GiB per node.
-10. **Edge scheduling delta.** Does `add-helsinki-anycast-ingress` accept the edge toleration for these pods, and does its `hel01-ingress` advertisement announce a service labelled `bgp.onelite.feather/site: hel01` in namespace `cloudnet`? Owned by that change; confirm before the code pull request is opened.
+1. **Credential transfer.** The OBC Secret uses `AWS_*` keys, but the module reads `accessKey` and `secretKey` from its own `config.json`. How do the values reach `mc01` without plaintext in Git: a SOPS file in this repository, or a manual copy?
+2. **Layer wait behaviour.** The `products` layer waits for its resources. Does a pending load balancer address or a blocked runtime pod hold back other products? Proposed: keep `wait` as in the layer, and verify with the rollout tasks before merge.
+3. **Pod sizing.** How much memory and CPU does each runtime pod get? Not in the brief. Set in the node's configuration, and bounded by the edge capacity of about 3.9 CPU and 5.2 GiB per node.
+4. **Edge scheduling delta.** Does `add-helsinki-anycast-ingress` accept the edge toleration for these pods, and does its `hel01-ingress` advertisement announce a service labelled `bgp.onelite.feather/site: hel01` in namespace `cloudnet`? Owned by that change; confirm before the code pull request is opened.

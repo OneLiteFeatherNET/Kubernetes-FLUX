@@ -13,8 +13,8 @@ This change adds those objects to `feather-core` and allows the new services to 
 - A long-lived token `Secret` for that ServiceAccount. The node on `mc01` builds its kubeconfig from it. `mc01` can reach the API server; this was verified. No token and no kubeconfig content go into Git.
 - Headless `Service` `cloudnet-services` from `deploy/headless-service.yaml`: `clusterIP: None`, `publishNotReadyAddresses: true`, selector `cloudnet.eu/component: service`, port 25565 named `game`.
 - `ObjectBucketClaim` for the staging bucket that the node uploads prepared service directories to. It is a bucket of its own, separate from the existing `cloudnet-templates` bucket.
-- `PriorityClass` `cloudnet-workload` with a value below `feather-platform` (900000000). Pods of this product never use `feather-platform`.
-- `LoadBalancer` `Service` for the team proxy, internal only. Its address is pinned with `lbipam.cilium.io/ips` to a free address of pool `lb-fr01`. It carries the label `bgp.onelite.feather/site: hel01` and uses `externalTrafficPolicy: Local`.
+- `PriorityClass` `cloudnet-workload` with value `0` and `preemptionPolicy: Never`: below `feather-standard` (1000), above `feather-low` (-10), far below `feather-platform` (900000000). Game pods yield first under memory pressure. Pods of this product never use `feather-platform`.
+- `LoadBalancer` `Service` for the team proxy, internal only. Its address is pinned with `lbipam.cilium.io/ips` to `10.200.90.12` in pool `lb-fr01`, verified live before implementation. It carries the label `bgp.onelite.feather/site: hel01` and uses `externalTrafficPolicy: Local`.
 - `NetworkPolicy` objects in the repository's default-deny pattern. Cilium runs in policy audit mode, so they describe the target state and do not enforce yet.
 - Placement rules for the runtime pods that the node creates at runtime: `topology.kubernetes.io/zone=hel01`, a toleration for `node-role.feather/edge=true:NoSchedule`, memory request equal to memory limit, and priority class `cloudnet-workload`. Each edge node has about 3.9 CPU and 5.2 GiB, so the request budget is bounded per node.
 

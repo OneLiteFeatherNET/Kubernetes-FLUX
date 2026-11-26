@@ -72,13 +72,21 @@ THE cluster SHALL provide an `ObjectBucketClaim` in `cloudnet` for the staging b
 
 ### Requirement: Priority class below the platform tier
 
-THE cluster SHALL define the PriorityClass `cloudnet-workload` with a value lower than 900000000 (`feather-platform`), and THE pods of `cloudnet` SHALL NOT use `feather-platform`.
+THE cluster SHALL define the PriorityClass `cloudnet-workload` with value `0` and `preemptionPolicy: Never`, and THE pods of `cloudnet` SHALL NOT use `feather-platform` (900000000).
 
 #### Scenario: Runtime pod runs at the cloudnet priority
 
 - **GIVEN** a runtime pod created by the node
 - **WHEN** its spec is read
 - **THEN** `priorityClassName` is `cloudnet-workload`
+- **AND** the PriorityClass value is `0`, below `feather-standard` (1000) and above `feather-low` (-10)
+
+#### Scenario: Game pod does not preempt
+
+- **GIVEN** a runtime pod that does not fit on any edge node
+- **WHEN** the scheduler considers preemption for it
+- **THEN** it evicts no running pod
+- **AND** the pod stays `Pending`
 
 #### Scenario: Platform pod is not displaced
 
@@ -105,13 +113,13 @@ EVERY pod created by the node in `cloudnet` SHALL set the node selector `topolog
 
 ### Requirement: Internal team proxy on a pinned address
 
-THE cluster SHALL expose the team proxy pods through a Service `cloudnet-team-proxy` of type `LoadBalancer` on TCP port 25565, with the address pinned through `lbipam.cilium.io/ips` to one address of the pool `lb-fr01` that no other Service holds, with the label `bgp.onelite.feather/site: hel01` and with `externalTrafficPolicy: Local`.
+THE cluster SHALL expose the team proxy pods through a Service `cloudnet-team-proxy` of type `LoadBalancer` on TCP port 25565, with the address pinned through `lbipam.cilium.io/ips` to `10.200.90.12` in the pool `lb-fr01`, with the label `bgp.onelite.feather/site: hel01` and with `externalTrafficPolicy: Local`. The ingress to that port SHALL admit only the internal networks and the site VPN.
 
 #### Scenario: Address is pinned and not shared
 
 - **GIVEN** the code pull request
 - **WHEN** the Service `cloudnet-team-proxy` is read
-- **THEN** `lbipam.cilium.io/ips` names one address inside `10.200.90.1` to `10.200.90.15`
+- **THEN** `lbipam.cilium.io/ips` is `10.200.90.12`
 - **AND** no other Service in the cluster holds that address
 
 #### Scenario: Client address is kept
@@ -119,6 +127,14 @@ THE cluster SHALL expose the team proxy pods through a Service `cloudnet-team-pr
 - **GIVEN** a Helsinki client connected to the team proxy address
 - **WHEN** a proxy pod on an edge node receives the connection
 - **THEN** the source address of the connection is the client address
+
+#### Scenario: Source ranges are internal only
+
+- **GIVEN** the team proxy is running
+- **WHEN** a client from the internal networks or the site VPN connects on TCP 25565
+- **THEN** the connection is admitted
+- **WHEN** a client from any other source connects on TCP 25565
+- **THEN** the connection is refused
 
 ### Requirement: No public exposure
 
@@ -132,7 +148,15 @@ THE code pull request SHALL NOT add an `HTTPRoute`, a `Certificate`, a DNAT rule
 
 ### Requirement: Default-deny network policies
 
-THE namespace `cloudnet` SHALL define a NetworkPolicy that denies all ingress and egress by default, and explicit NetworkPolicies that allow only DNS egress, the team proxy ingress on TCP 25565, the in-namespace game traffic, the staging bucket egress and the egress to `mc01` listed in the design.
+THE namespace `cloudnet` SHALL define a NetworkPolicy that denies all ingress and egress by default, and explicit NetworkPolicies that allow only DNS egress, the team proxy ingress on TCP 25565, the in-namespace game traffic, the staging bucket egress, and the egress to the node `10.200.2.35` on TCP 1410 and to the `mc01` game ports listed in the design.
+
+#### Scenario: Node is reached over IPv4 only
+
+- **GIVEN** a runtime pod in `cloudnet`
+- **WHEN** it connects to the CloudNet node
+- **THEN** the policy allows TCP 1410 to `10.200.2.35/32`
+- **AND** the node is addressed by `10.200.2.35`, not by the name `mc01.onelite.feather`
+
 
 #### Scenario: Default deny is present
 
