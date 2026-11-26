@@ -49,13 +49,13 @@ spec:
       rollingUpdate:
         maxSurge: 0
         maxUnavailable: 1
+    # No CPU limit: throttling broke leader-election lease renewal.
     resources:
       limits:
-        cpu: "40m"
-        memory: "80Mi"
+        memory: "160Mi"
       requests:
         cpu: "20m"
-        memory: "40Mi"
+        memory: "96Mi"
     webhook:
       replicaCount: 2
       podDisruptionBudget:
@@ -97,10 +97,10 @@ spec:
             matchLabels:
               app.kubernetes.io/name: cainjector
               app.kubernetes.io/instance: cert-manager
+      # No CPU limit: throttling broke leader-election lease renewal.
       resources:
         limits:
-          cpu: "50m"
-          memory: "256Mi"
+          memory: "384Mi"
         requests:
           cpu: "30m"
-          memory: "128Mi"
+          memory: "224Mi"
