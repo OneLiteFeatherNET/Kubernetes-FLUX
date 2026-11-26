@@ -1,41 +1,54 @@
 ## Why
 
-Every LoadBalancer VIP in `feather-core` is announced only from the fr01 nodes. Clients in Helsinki (the public address 65.108.236.147 on fw01, and Helsinki hosts such as mc01 and mail01) therefore reach HTTP(S) and database services across the inter-site link, and an fr01 outage removes them completely.
+Every LoadBalancer VIP in `feather-core` is announced only from the fr01 nodes. Helsinki clients therefore reach the Envoy Gateway VIP `10.200.90.1` across the inter-site link. This affects two clients:
 
-This change adds two ingress nodes in Helsinki, `hel01-wrk-in-01` and `hel01-wrk-in-02`. They announce the same four VIPs as fr01 (anycast), so Helsinki clients enter the cluster on a local node:
+- the public reverse proxy behind 65.108.236.147 (`10.200.2.69`);
+- mc01 (`10.200.2.35`).
 
-- `10.200.90.1`: Envoy Gateway (HTTP/HTTPS)
-- `10.200.90.3`: PostgreSQL read-write
-- `10.200.90.4`: MaxScale (MariaDB Galera)
-- `10.200.90.5`: Dragonfly master
+The three edge nodes `hel01-wrk-ed-01..03` have now joined the cluster, with taint `node-role.feather/edge=true:NoSchedule`. This change lets them announce `10.200.90.1` as well (anycast), so Helsinki HTTP(S) traffic enters the cluster on a local node.
 
-The database pods stay in fr01, so the database VIPs need a Helsinki-side TCP proxy (design, decision 1). The routers keep the two sites apart: fr01 never learns these VIPs from Helsinki, and Helsinki never learns the Rosenau-only VIPs.
+The database VIPs `.3`, `.4` and `.5` are out of scope for now (design, decision 1).
 
-**Commit type and scope:** `feat(networking)`. The code pull request title is `feat(networking): announce the ingress vips from helsinki`.
+**Commit type and scope:** `feat(networking)`. Two code pull requests ship it, in this order:
+
+1. `feat(networking): keep in-cluster gateway traffic in its zone`
+2. `feat(networking): announce the gateway vip from helsinki`
 
 ## What Changes
 
-- New `CiliumBGPClusterConfig` `hel01` (zone `hel01`, local ASN 64606) with one session per family to fw01.
-- New `CiliumBGPAdvertisement` `hel01-ingress` that announces only the four ingress VIPs.
-- Label `bgp.onelite.feather/site: hel01` on the four Services.
-- A Helsinki database proxy on the hel01 nodes for `10.200.90.3`, `.4` and `.5` (design, decision 1).
-- Tolerations for the taint `node-role.feather/ingress=true:NoSchedule` on the Envoy, database proxy, Cilium, node-exporter, alloy and trivy DaemonSets (design, decision 4).
-- Router configuration on fw01 and mkgfire, and the DNAT of 65.108.236.147:80/443 on fw01. These are operator tasks outside this repository.
+- **Cilium topology:** turn on topology-aware service routing (`loadBalancer.serviceTopology`).
+- **Envoy Service:** set `trafficDistribution: PreferSameZone`, so in-cluster clients in fr01 keep using the fr01 Envoy pods.
+- **New BGP objects:** a `CiliumBGPClusterConfig` `hel01` (zone `hel01`, local ASN 64606) with one IPv4 session per node to fw01, plus a `CiliumBGPAdvertisement` `hel01-ingress` that announces only Services labelled `bgp.onelite.feather/site: hel01`.
+- **Service label:** `bgp.onelite.feather/site: hel01` goes on the Envoy Service only.
+- **Edge toleration:** the Envoy DaemonSet tolerates `node-role.feather/edge`.
+- **Routers (operator work outside this repository):**
+  - fw01 BGP neighbours and filters, already in place since 2026-11-26;
+  - a source NAT rule on fw01 for MGMT clients that connect to the anycast VIPs;
+  - an optional import filter on mkgfire.
 
 ## Out of scope
 
-- Node provisioning and the taint itself (talos change `add-helsinki-ingress-nodes`).
-- Moving any database pod to Helsinki.
-- The other LoadBalancer VIPs: Harbor `.6`, MaxScale GUI `.7` and alloy logs `.8` stay announced from fr01 only.
-- IPv6 VIPs for Helsinki. The ingress Services have no IPv6 address today.
+- **Database VIPs:** `10.200.90.3`, `.4` and `.5`, and with them any Helsinki database proxy.
+- **DNAT change:** the DNAT of 65.108.236.147 is unchanged. It keeps pointing at `10.200.2.69`, which then reaches the gateway on a hel01 node.
+- **Other LoadBalancer VIPs:** all of them stay announced from fr01 only.
+- **IPv6:** no IPv6 VIPs and no IPv6 session from Helsinki.
+- **Node provisioning:** done in the Talos repository (FeatherCore#19).
 
 ## Dependencies
 
-- `lower-cilium-mtu` (pod MTU 1350 on every node). It must be live before the hel01 nodes join the pod network.
-- The talos change `add-helsinki-ingress-nodes`. The nodes must be Ready, carry the zone label `hel01` and the ingress taint.
+- **Pod MTU:** `lower-cilium-mtu` is live (#741), so pods have MTU 1350. A Path MTU test from HEL to fr01 passed at 1400 bytes.
+- **spegel and alloy-logs:** both already run on the edge nodes (#742).
+- **fw01 BGP configuration:** live since 2026-11-26. Neighbours `10.200.2.21`–`.23` with AS 64606:
+  - `HEL01-IN` imports only the four VIPs, with local-preference 200;
+  - `HEL01-OUT` sends nothing to the nodes;
+  - `TO-SITES-OUT` keeps Helsinki-originated VIP routes away from mkgfire and Ludwigsburg.
 
 ## Impact
 
-- Layers: `foundation-networking` (Cilium BGP, Envoy, Service labels) and `foundation-databases` (database proxy). No new layer, no rename.
-- Runtime: two BGP sessions from the new nodes, two more announcers for `.1`, and new DaemonSet pods on the hel01 nodes. No running pod is evicted or restarted by this change.
-- Routing: the Helsinki entry point changes. This is the main risk and is controlled by the router steps in `tasks.md`, not by Git.
+- **Layers:** `foundation-networking` only. No new layer and no rename.
+- **Runtime, first PR:** one rolling restart of the Cilium agents to load the topology flag. The Envoy Service changes only in metadata and spec.
+- **Runtime, second PR:**
+  - one rolling update of the Envoy DaemonSet, the same as any Envoy upgrade;
+  - three new Envoy pods on the edge nodes;
+  - three BGP sessions to fw01.
+- **Routing:** when the first hel01 node announces `.1`, fw01 switches the best path from mkgfire to Helsinki. TCP connections that MGMT clients hold open to `.1` at that moment are reset once and reconnect. Fallback to fr01 stays automatic.

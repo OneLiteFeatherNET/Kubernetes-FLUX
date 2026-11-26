@@ -1,125 +1,120 @@
 ## Context
 
-- The fr01 pool `lb-fr01` gives LoadBalancer IPs `10.200.90.1` to `.15`. Every Service pins its IP with `lbipam.cilium.io/ips`.
-- The Cilium advertisement `lb-ips` announces all LoadBalancer IPs without the label `bgp.onelite.feather/no-advertise`. The fr01 peers select it through `bgp.onelite.feather/advertise: lb-ips`.
-- The four VIPs use `externalTrafficPolicy: Local`. Cilium announces such an IP only from nodes with a local ready endpoint.
-  - `.1` (Envoy `eg-proxy`) runs as a DaemonSet, so every node with an Envoy pod announces it. Once the Envoy DaemonSet tolerates the ingress taint, the hel01 nodes run Envoy and announce `.1` as soon as a BGP config selects them.
-  - `.3` (PostgreSQL `rw-external`), `.4` (MaxScale `kubernetesService`) and `.5` (`dragonfly-master-lb`) have their endpoints in fr01 only. The hel01 nodes would never announce them.
-- The Dragonfly NetworkPolicy allows the Helsinki management range `10.200.2.0/24` as a client source. Cilium enforces it since the 2026-11-05 cutover. Clients that reach a database through a proxy show the proxy pod address as source (decision 1).
-- Assumption to confirm in task 1.4: Helsinki reaches the VIPs today through fw01 routes learned from mkgfire over WG_ROSENAU.
+**LoadBalancer IPs**
+- Pool `lb-fr01` hands out `10.200.90.1`–`.15`.
+- Advertisement `lb-ips` announces every LoadBalancer IP to mkgfire (AS 64501) from the fr01 nodes (AS 64606). Its selector is the absence of `bgp.onelite.feather/no-advertise`.
+
+**Envoy**
+- Envoy (`EnvoyProxy` `eg-proxy`) runs as a DaemonSet on the four xl workers.
+- The Service has `externalTrafficPolicy: Local`. Cilium therefore announces `.1` only from nodes that have a ready Envoy pod.
+
+**Helsinki edge nodes**
+- Nodes `hel01-wrk-ed-01..03` live in MGMT, `10.200.2.0/24`.
+- They carry the label `topology.kubernetes.io/zone: hel01` and the taint `node-role.feather/edge=true:NoSchedule`.
+- Their default gateway is fw01 (`10.200.2.1`, OPNsense, AS 64504).
+
+**Current clients of the VIPs** (pf states on fw01, 2026-11-26)
+- Helsinki: only `10.200.2.35` (mc01) and `10.200.2.69` (public reverse proxy, DNAT target of 65.108.236.147:80/443). Both are in MGMT, the same subnet as the edge nodes.
+- Today fw01 routes them over WG_ROSENAU to mkgfire, with best path `64501 64606`.
+
+**Other BGP peers and in-cluster use**
+- Ludwigsburg (AS 64503) peers with fw01 and mkgfire. It prefers its direct path to mkgfire for the VIPs.
+- In-cluster pods reach `.1` too: the `*.apps.onelite.feather` wildcard points at it.
+- Cilium's socket LB balances such connections over all Envoy backends unless topology hints restrict them.
 
 ## Goals / Non-Goals
 
 **Goals**
 
-- Helsinki clients reach `.1`, `.3`, `.4` and `.5` on a hel01 node, and the return traffic leaves through the same node.
-- Helsinki traffic never enters through fr01 while a hel01 node is healthy.
-- A single hel01 node failure is invisible to clients, apart from connections on that node.
+- Helsinki HTTP(S) clients reach `10.200.90.1` on a hel01 node, and return traffic is symmetric through fw01.
+- Pods in fr01 never reach a hel01 Envoy pod while an fr01 Envoy pod is ready.
+- If one hel01 node fails, clients do not notice. If all of them fail, Helsinki falls back to fr01 automatically.
+- Rolling this out does not interrupt any service beyond resetting the connections that are open to `.1` when the path switches.
 
 **Non-Goals**
 
-- Moving database pods or the ingress VIPs' backends out of fr01.
-- Changing the fr01 ingress path.
-- Automatic fallback from Helsinki to fr01 (see decision 3).
-
-## Decision drivers
-
-- Source addresses and return paths must stay symmetric. An earlier incident came from Helsinki announcing the same VIPs without filters.
-- No change to the fr01 path and no new layer.
-- Third-party software arrives through official charts only.
+- Database VIPs, a database proxy, and moving any backend out of fr01.
+- Changing the fr01 ingress path, the public DNAT, or IPv6.
 
 ## Decisions
 
-### 1. How database traffic enters at Helsinki (MADR)
+### 1. Database VIPs stay fr01-only (MADR)
 
-**Context:** `.3`, `.4` and `.5` need an entry point on the hel01 nodes. A Helsinki node announces such a VIP only if it has a local endpoint, and the databases have none there.
-
-**Decision drivers:** one VIP per database for all clients; no asymmetric database traffic; no change to the fr01 database path; no new address space.
+**Context:** the first draft also announced `.3`, `.4` and `.5` from Helsinki through a TCP proxy on the edge nodes.
 
 **Considered options:**
+- **A. Proxy plus LB-IPAM IP sharing.** Cilium shares one IP between Services only when their ports do not conflict, and the database ports are fixed.
+- **B. Proxy plus separate Helsinki database VIPs.** This means new client configuration, a new source address in pg_hba, the MaxScale host rules and the Dragonfly policy, and a new component to run.
+- **C. Do nothing for the databases.**
 
-- **A. `externalTrafficPolicy: Cluster` on the database Services.** Rejected. Traffic is SNAT'd to the node address and may cross nodes on the return path. This breaks the rule that database traffic must never be asymmetric.
-- **B. Envoy Gateway TCPRoutes on `eg`.** Rejected. The Gateway `eg` owns only `.1`. A second Gateway needs its own address, which is option D.
-- **C. LB-IPAM IP sharing.** Two Services with the same `lbipam.cilium.io/sharing-key` (plus `lbipam.cilium.io/sharing-cross-namespace` if the namespaces differ) share one IP. The fr01 database Service keeps the VIP. A second Service, `ETP: Local`, selects the hel01 proxy pods and exposes the same port. The proxy forwards to the fr01 internal Service of the database, never to the LoadBalancer Service.
-- **D. Separate Helsinki database VIPs from a new pool.** Rejected for now by the operator in favour of anycast. Kept as the fallback.
-
-**Decision:** C, pending verification in task 2.1. Caveat: sharing an IP normally requires that the Services do not use the same port and protocol. The database ports (5432, 3306, 6379) are fixed, so C probably fails. If it does, D is the fallback. The operator decides between them, not automation.
-
-**Rejected in passing:** one Service with endpoints in both sites. The proxy would forward into the same ClusterIP and can loop back to itself.
-
-**Consequences:**
-
-- The proxy's own Service selects only the hel01 proxy pods, so the forwarding target and the entry point are never the same Service.
-- The database sees the proxy pod address as client address for Helsinki clients. The pg_hba rules, the MaxScale host rules and the Dragonfly NetworkPolicy must allow the proxy pod CIDR (task 3.7).
-- The proxy packaging follows the repository rule: the official chart of the chosen proxy, or an existing in-repo chart.
+**Decision:** C.
+- Every database backend lives in fr01, so a Helsinki proxy would add a hop without removing the inter-site crossing.
+- It also gives no resilience: when fr01 fails, the database fails too.
+- The cost of A or B (new component, access-rule changes, a risk to database connections) buys nothing today.
+- Revisit when a database replica runs in Helsinki.
 
 ### 2. BGP for hel01
 
-**Decision:**
+- **`CiliumBGPClusterConfig` `hel01`:** `nodeSelector` `topology.kubernetes.io/zone: hel01`, local ASN 64606, one peer `fw01-v4` at `10.200.2.1` with peer ASN 64504.
+- **`CiliumBGPPeerConfig` `fw01-v4`:** same timers (hold 180 s, keepalive 60 s) and graceful restart (120 s) as `mkgfire-v4`. Family IPv4 unicast, advertisement selector `bgp.onelite.feather/advertise: hel01-ingress`.
+- **`CiliumBGPAdvertisement` `hel01-ingress`:** type `Service`, `LoadBalancerIP`, selector `bgp.onelite.feather/site: hel01`. Only the Envoy Service carries that label. The advertisement has no `lb-ips` label, so the fr01 peers never select it.
+- **No IPv6 session:** the gateway Service has no IPv6 address.
+- **fw01 side:** live since 2026-11-26, configured through the OPNsense model:
+  - `HEL01-IN` permits only the four VIP /32s and sets local-preference 200; everything else is denied.
+  - `HEL01-OUT` denies all, so the nodes learn nothing and keep using their default route.
+  - `TO-SITES-OUT` on the four site sessions denies a VIP route whose AS path is exactly `64606` (learned straight from a hel01 node). Transit routes are unchanged.
 
-- `CiliumBGPClusterConfig` `hel01`: `nodeSelector` `topology.kubernetes.io/zone: hel01`, local ASN `64606`, peers `fw01-v4` (`10.200.2.1`) and `fw01-v6` (address to confirm). Peer ASN: fw01's ASN, to confirm (task 1.3).
-- `CiliumBGPPeerConfig` `fw01-v4` and `fw01-v6`: same timers (hold 180 s, keepalive 60 s) and graceful restart (120 s) as the mkgfire peers. Advertisement selector `bgp.onelite.feather/advertise: hel01-ingress`.
-- `CiliumBGPAdvertisement` `hel01-ingress`: `Service` `LoadBalancerIP`, selector `bgp.onelite.feather/site: hel01`. It carries no `lb-ips` label, so no fr01 peer selects it.
-- Only the four Services carry `bgp.onelite.feather/site: hel01`. The other LoadBalancer VIPs (`.6`, `.7`, `.8`) are never announced from hel01.
+### 3. Symmetry for MGMT clients: source NAT on fw01
 
-**IPv6:** the v6 session is configured for symmetry with fr01. The ingress Services have no IPv6 address, so this session carries no routes in the first rollout.
+**Problem:**
+- A MGMT client sends to `.1` through its gateway fw01, and fw01 forwards to a hel01 node in the same subnet.
+- The node replies straight to the client on the link and bypasses fw01.
+- pf sees only one direction and drops or resets the flow.
+- WAN-sourced traffic is not affected, because its replies go back through fw01 anyway.
 
-### 3. Symmetry, preference and failure
+**Considered options:**
+- **Move the edge nodes into their own subnet.** A Talos and Proxmox re-IP; too large for this change.
+- **Use sloppy pf state.** Weakens the firewall and keeps the hairpin.
+- **Use source NAT on fw01** (outbound NAT on interface MGMT): source `10.200.2.0/24`, destination the four VIPs, translated to `10.200.2.1`.
 
-**Symmetry:** a Helsinki client sends to the VIP, fw01 forwards to the hel01 node, and the reply uses the node's default gateway, fw01. The same node and the same router carry both directions.
+**Decision:** source NAT.
+- The rule only matches packets that leave fw01 through MGMT. While the VIP route points to mkgfire, packets leave through WG_ROSENAU and the rule does nothing, so it can be applied before the rollout.
+- Consequence: Envoy sees `10.200.2.1` instead of `.35` or `.69` as the source of Helsinki MGMT clients. That address is still inside `10.200.2.0/24`, the only network that rules in this repository allow for these clients.
+- The reverse proxy at `.69` passes the real client address in `X-Forwarded-For`.
 
-**Route policy:**
+### 4. Keep in-cluster traffic in its zone
 
-- fw01 imports the four VIP prefixes from the hel01 sessions and gives them a higher local preference.
-- fw01 does not export the Helsinki VIP prefixes to mkgfire or WG_ROSENAU.
-- mkgfire does not import the VIP prefixes from fw01. mkgfire keeps the fr01-learned routes.
-- fw01 does not import the VIP prefixes from mkgfire either. Without that, fw01 would hold a fallback to fr01 that the operator has ruled out.
-- Rosenau clients never enter at Helsinki, and Helsinki clients never enter through Rosenau by default.
+- **Problem:** without topology hints, 3 of 7 in-cluster connections to `.1` would cross to Helsinki and back.
+- **Settings:** `loadBalancer.serviceTopology: true` in Cilium, and `trafficDistribution: PreferSameZone` on the Envoy Service (through `envoyService.patch`).
+- **Cilium behaviour:** it then picks only backends whose hint matches its own node's zone. When no backend matches, it falls back to all backends.
+- **Order:** this ships and the agents restart before any Envoy pod runs on a hel01 node.
+- **Other Services:** none sets `trafficDistribution`, so the flag does not change them.
 
-**Failure modes:**
+### 5. Fallback instead of fail-closed
 
-- One hel01 node fails: its BGP session drops and its routes are withdrawn. The other node keeps serving. Both hel01 nodes announce each VIP, because the Envoy and proxy DaemonSets run on both.
-- Both hel01 nodes fail: fw01 has no route to the VIPs, and Helsinki clients fail closed. The fr01 cluster is still up and reachable, but Helsinki does not fall back to it. This is the recommended behaviour: silent fallback would push database traffic across the inter-site link and risk asymmetry during partial failures.
-- Operator-controlled option: a static route on fw01 for the four VIPs via WG_ROSENAU, active only while no hel01 route exists. Open question 4.
+- **Original reason for fail-closed:** the first draft did not want database traffic to fall back to fr01 asymmetrically. With the database VIPs out, that reason is gone.
+- **What happens on failure:** if every hel01 Envoy is down, the hel01 routes are withdrawn and fw01 uses the mkgfire path again, which is today's symmetric path.
+- **What is dropped:** the fw01 import filter that removes the mkgfire-learned VIP routes ("Part B") and the static fallback question.
+- **Ludwigsburg:** loses only fw01's backup path for the VIPs, because fw01 never re-advertises a Helsinki-originated best path. Ludwigsburg already prefers its direct path to mkgfire.
 
-**Rollback:** the Helsinki entry is controlled on the routers. Re-allowing the fr01 VIP import on fw01 restores the old path. Reverting the Git change alone does not restore it, because the fail-closed filter lives on fw01.
+### 6. Tolerations
 
-### 4. Tolerations
-
-Only these DaemonSets tolerate `node-role.feather/ingress=true:NoSchedule`:
-
-- Envoy (`EnvoyProxy` `eg-proxy`, `envoyDaemonSet.pod.tolerations`): the entry point for `.1`.
-- The Helsinki database proxy: the entry point for `.3`, `.4` and `.5`.
-- Cilium agent: only if the chart default does not already tolerate it.
-- node-exporter, alloy (logs) and trivy: so that the ingress nodes are observed and scanned like the others.
-
-Everything else stays off the ingress nodes, including Ceph, CloudNativePG, Galera and the application workloads.
+- **This change:** Envoy is the only workload that newly tolerates `node-role.feather/edge`.
+- **Already tolerated:** Cilium and node-exporter tolerate all taints; spegel and alloy-logs did so since #742.
+- **Kept off the edge nodes:** everything else, including Rook CSI, envoy-gateway (the controller), loki-canary and all applications.
 
 ## Risks / Trade-offs
 
-- **Wrong preference or leak:** Helsinki traffic enters fr01, or a VIP is announced from fr01 to Helsinki. Mitigation: the router filters are applied before the code PR merges, and task 4.3 checks the route tables on fw01 and mkgfire.
-- **Sharing rejected (task 2.1):** option D changes the Helsinki IP for the databases. Mitigation: the decision is recorded before any manifest is written.
-- **Source address change:** database access rules see the proxy pod address. Mitigation: task 3.7 updates the rules before rollout, and task 4.4 proves the path with a real client.
-- **Full Helsinki outage on double failure:** accepted as the fail-closed trade-off. Mitigation: open question 4.
-- **Proxy loop:** a proxy that forwards into its own Service. Mitigation: decision 1 consequences.
+- **Path switch resets open connections:** TCP connections from `.35` and `.69` to `.1` that are open when the hel01 route appears are reset once. Mitigation: apply in a quiet hour. The reverse proxy and HTTP clients reconnect.
+- **In-cluster traffic crosses sites:** happens if the topology flag is not active before hel01 Envoy pods start. Mitigation: separate pull requests, and the second one is merged only after `cilium-dbg config` shows `EnableServiceTopology` on every agent.
+- **Envoy rolling update on fr01:** maxUnavailable 1, drained by the shutdown manager, the same as a version upgrade.
+- **Wrong router filter:** a Helsinki route leaks to mkgfire. Mitigation: `TO-SITES-OUT` on fw01 plus the optional mkgfire import filter, checked in task 4.3.
 
 ## Migration Plan
 
-1. Talos change lands; hel01 nodes Ready, labelled and tainted (task 1.2).
-2. Verify the LB-IPAM sharing behaviour and record decision 1 (group 2).
-3. Operator: mkgfire import filter first (task 1.5). It has no effect on current traffic.
-4. Operator: fw01 BGP neighbours and preference (task 1.6). Still no effect until the hel01 sessions come up.
-5. Merge the code PR. Flux reconciles `foundation-networking` and `foundation-databases`.
-6. Verify the hel01 sessions and the route tables on fw01 and mkgfire (tasks 4.2 and 4.3).
-7. Operator: fw01 import filter that drops the mkgfire-learned VIP prefixes (task 4.4). This is the point where the fallback goes.
-8. Operator: DNAT of 65.108.236.147:80/443 to `10.200.90.1` (task 4.5).
-9. Connection tests and the failover test (tasks 4.6 to 4.8).
+1. Operator: source NAT rule on fw01 (no effect yet). The optional mkgfire import filter can be added at any time.
+2. First code PR: topology flag and `trafficDistribution`. Restart the Cilium agents one by one, with a gate per node, and verify the hints.
+3. Second code PR: BGP objects, Service label and Envoy toleration. Flux reconciles `foundation-networking`.
+4. Verify the sessions, the routes on fw01, and the path from `.35` and `.69`.
 
-## Open Questions
-
-1. **fw01 ASN and IPv6 ULA address:** pending from the operator (task 1.3). The peer manifests need both.
-2. **Current Helsinki path:** whether fw01 learns the VIP prefixes from mkgfire today (task 1.4). Rollback depends on it.
-3. **Sharing feasibility:** task 2.1 decides between C and D.
-4. **Static fallback route on fw01:** the operator decides whether to add a static route to fr01 via WG_ROSENAU for double-failure cases. Default: none.
-5. **Database proxy implementation:** HAProxy or an Envoy TCP listener, packaged per the chart rule. Chosen in task 2.3 with the decision.
-6. **Proxy source address in database rules:** the exact CIDR of the proxy pods, taken from the cluster after task 3.6.
+**Rollback:** revert the second PR. Envoy pods leave the edge nodes, the routes are withdrawn, and fw01 falls back to mkgfire by itself.
