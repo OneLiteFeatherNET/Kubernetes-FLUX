@@ -43,10 +43,11 @@ spec:
             sourceLabels: [__name__]
             regex: (apiserver_request(|_slo)|etcd_request(|_sli|_slo)|rest_client_request(|_sli|_slo))_duration_seconds_bucket
           # SLI histogram: keep only le in {0.1, 1, 5, +Inf} (~9k series); the other buckets were ~66k.
+          # Prometheus 3 normalises le to float strings ("1.0"), so match both forms.
           - action: replace
             sourceLabels: [__name__, le]
             separator: ;
-            regex: apiserver_request_sli_duration_seconds_bucket;(0\.1|1|5|\+Inf)
+            regex: apiserver_request_sli_duration_seconds_bucket;(0\.1|1(\.0)?|5(\.0)?|\+Inf)
             targetLabel: __tmp_keep_le
             replacement: "yes"
           - action: drop
