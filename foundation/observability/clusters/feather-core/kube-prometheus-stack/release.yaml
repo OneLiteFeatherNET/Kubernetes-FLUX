@@ -41,7 +41,20 @@ spec:
         metricRelabelings:
           - action: drop
             sourceLabels: [__name__]
-            regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
+            regex: (apiserver_request(|_slo)|etcd_request(|_sli|_slo)|rest_client_request(|_sli|_slo))_duration_seconds_bucket
+          # SLI histogram: keep only le in {0.1, 1, 5, +Inf} (~9k series); the other buckets were ~66k.
+          - action: replace
+            sourceLabels: [__name__, le]
+            separator: ;
+            regex: apiserver_request_sli_duration_seconds_bucket;(0\.1|1|5|\+Inf)
+            targetLabel: __tmp_keep_le
+            replacement: "yes"
+          - action: drop
+            sourceLabels: [__name__, __tmp_keep_le]
+            separator: ;
+            regex: apiserver_request_sli_duration_seconds_bucket;
+          - action: labeldrop
+            regex: __tmp_keep_le
           # Unused histograms, ~64k series; they pushed Mimir to its series limit.
           - action: drop
             sourceLabels: [__name__]
@@ -67,13 +80,24 @@ spec:
           credentials:
             name: control-plane-scrape-token
             key: token
+    # etcd is a Talos system service (no pods); the :2381 metrics listener comes from the talos-cluster repo.
     kubeEtcd:
+      endpoints: [192.168.15.10, 192.168.15.11, 192.168.15.12]
+      service:
+        enabled: true
+        port: 2381
+        targetPort: 2381
       serviceMonitor:
+        scheme: http
         authorization:
           type: Bearer
           credentials:
             name: control-plane-scrape-token
             key: token
+        metricRelabelings:
+          - action: keep
+            sourceLabels: [__name__]
+            regex: (etcd_disk_wal_fsync_duration_seconds_(bucket|sum|count)|etcd_disk_backend_commit_duration_seconds_(bucket|sum|count)|etcd_server_(leader_changes_seen_total|has_leader|is_leader|proposals_.*|slow_.*|heartbeat_send_failures_total)|etcd_mvcc_db_total_size(_in_use)?_in_bytes|etcd_network_peer_round_trip_time_seconds_(bucket|sum|count)|process_resident_memory_bytes|up)
     kubeScheduler:
       serviceMonitor:
         authorization:
