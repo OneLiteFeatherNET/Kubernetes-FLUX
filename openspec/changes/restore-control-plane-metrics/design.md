@@ -37,7 +37,7 @@ Constraints:
 
 ### 2. apiserver histogram buckets (MADR)
 
-**Context and problem:** `apiserver_request_sli_duration_seconds_bucket` (and the other request histograms) were dropped entirely to save about 127k series. The SLI histogram is what the apiserver latency analysis needs. Its full bucket set, however, is about 66k series.
+**Context and problem:** `apiserver_request_sli_duration_seconds_bucket` (and the other request histograms) were dropped entirely to stay under the series limit (PR #582). The SLI histogram is what the apiserver latency analysis needs. Its full bucket set, however, is about 66k series.
 
 **Decision drivers:**
 
