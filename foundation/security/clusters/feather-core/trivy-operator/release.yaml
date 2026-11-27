@@ -83,8 +83,10 @@ spec:
 
     operator:
       builtInTrivyServer: true
-      # One ClusterSbomReport per image digest instead of one SbomReport per workload.
-      clusterSbomCacheEnabled: true
+      # SBOM reports were the largest objects in etcd (156 MB) and pushed the apiservers into OOM;
+      # nothing consumes them until the Dependency-Track sync is redesigned.
+      sbomGenerationEnabled: false
+      clusterSbomCacheEnabled: false
       scannerReportTTL: "168h"
       scanJobsConcurrentLimit: 5
       scanJobTimeout: "10m"
