@@ -24,7 +24,8 @@ spec:
   # (rule: maxmemory >= proactor_threads * 256MiB, kept below the memory limit).
   resources:
     requests:
-      cpu: 250m
+      # Two proactor threads; a low request gave them so little CPU weight that the master stalled for seconds.
+      cpu: 1
       memory: 512Mi
     limits:
       memory: 1536Mi
