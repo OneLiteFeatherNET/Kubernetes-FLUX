@@ -16,8 +16,11 @@ spec:
         name: strimzi
         namespace: flux-system
   install:
+    crds: CreateReplace
     remediation:
       retries: 3
+  upgrade:
+    crds: CreateReplace
   driftDetection:
     mode: warn
     ignore:
