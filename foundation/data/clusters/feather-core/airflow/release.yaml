@@ -53,6 +53,8 @@ spec:
         branch: main
         subPath: dags
         depth: 1
+        # Retry forever; git-sync keeps the last good checkout, so one failed fetch must not restart it.
+        maxFailures: -1
 
     # KubernetesExecutor task pods write their logs to this RWX volume (the chart hard-codes RWX).
         resources:
