@@ -46,7 +46,7 @@ spec:
           app:
             image:
               repository: vllm/vllm-openai-cpu
-              tag: v0.33.0-x86_64@sha256:4154467a886f8b7ffa9dbab32f873f5ca4528409d042a6ec866e8888223263d3
+              tag: v0.34.0-x86_64@sha256:b14c3a46a4b08852b32528643e070d57f3731cccb0fa33ef86d4f3b3f8ac36c4
             # The image's entrypoint is `vllm serve`; these are its arguments.
             # `whisper-1` is the name Sturnus posts, which the served-model-name maps to
             # openai/whisper-large-v3. The full model, not -turbo, and float32, not a
