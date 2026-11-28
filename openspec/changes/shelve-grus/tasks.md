@@ -2,7 +2,8 @@
 
 - [ ] 1.1 Remove the two grus entries from `products/layers/feather-core/dev/kustomization.yaml`
 - [ ] 1.2 Remove `foundation/sources/clusters/feather-core/sources/grus.yaml` and its kustomization entry
-- [ ] 1.3 Run `./.github/scripts/validate.sh`
+- [ ] 1.3 Remove the grus-dev Certificates from `foundation/certificates/clusters/feather-core/internal-certs/internal-certificates.yaml` and the two grus listeners from `foundation/networking/clusters/feather-core/gateway/gateway.yaml`
+- [ ] 1.4 Run `./.github/scripts/validate.sh`
 
 ## 2. Rollout and verification
 
