@@ -397,42 +397,6 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: grus-dev-apps-onelite-feather
-  namespace: envoy
-spec:
-  secretName: grus-dev-apps-onelite-feather-tls
-  issuerRef:
-    group: certmanager.step.sm
-    kind: StepClusterIssuer
-    name: step-ca-issuer
-  privateKey:
-    algorithm: RSA
-    size: 2048
-    rotationPolicy: Always
-  dnsNames:
-    - grus-dev.apps.onelite.feather
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: grus-dev-api-apps-onelite-feather
-  namespace: envoy
-spec:
-  secretName: grus-dev-api-apps-onelite-feather-tls
-  issuerRef:
-    group: certmanager.step.sm
-    kind: StepClusterIssuer
-    name: step-ca-issuer
-  privateKey:
-    algorithm: RSA
-    size: 2048
-    rotationPolicy: Always
-  dnsNames:
-    - grus-dev-api.apps.onelite.feather
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
   name: files-apps-onelite-feather
   namespace: envoy
 spec:
